@@ -6263,3 +6263,32 @@ display:none;
 .attachments-list {
 	float:left;
 }
+
+.page-actions {
+    font-size: 80%;
+    list-style: none outside none;
+    position: absolute;
+    right: 28px;
+    top: 7px;
+}
+
+.page-actions > li {
+    float: left;
+    padding: 0 9px;
+}
+.page-actions > li {
+    line-height: 20px;
+}
+
+.page-actions > li > a:link {
+    color: #4F6B72;
+    font-size: 13px;
+    text-decoration: none;
+}
+.page-actions > li > a:active {
+    color: #0000FF;
+}
+.page-actions > li > a:hover {
+    color: #000000;
+    text-decoration: none;
+}
