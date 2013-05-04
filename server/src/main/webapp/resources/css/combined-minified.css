@@ -1,0 +1,321 @@
+.container:after {
+    clear: both;
+    content: " ";
+    display: block;
+    font-size: 0;
+    height: 0;
+    visibility: hidden;
+}
+.container {
+    width: 940px;
+}
+.container {
+    width: 724px;
+}
+.container {
+    margin: 0 auto;
+    width: 440px;
+}
+.container {
+    display: block;
+}
+
+
+input[type="text"], input[type="password"], input.text, input.title, textarea, select {
+    background-color: #FFFFFF;
+    border: 1px solid #BBBBBB;
+    width: 400px;
+}
+label {
+    clear: both;
+    float: left;
+    margin: 0 10px 10px 0;
+    text-align: right;
+    width: 300px;
+}
+
+.add-ugc-blog a {
+    margin-right: 10px;
+}
+
+.add-ugc-blog div.fields-line {
+    margin: 10 10 10 10;
+}
+
+div.attachment-list {
+    border-top: 1px solid #CCCCCC;
+    margin: 10px 0 !important;
+}
+
+div.attachment-line {
+	margin: 10px 0 !important;
+	min-height: 20px;
+}
+
+a.attachment-link {
+	color: #4F6B72;
+	font-size: 13px;
+	text-decoration: none;
+}
+
+div a:hover {
+	color: #005580;
+	text-decoration: underline
+}
+
+/* css reset */
+.yui3-cssbase html {
+	color: #000;
+	background: #FFF
+}
+
+.yui3-cssbase body,.yui3-cssbase div,.yui3-cssbase dl,.yui3-cssbase dt,.yui3-cssbase dd,.yui3-cssbase ul,.yui3-cssbase ol,.yui3-cssbase li,.yui3-cssbase h1,.yui3-cssbase h2,.yui3-cssbase h3,.yui3-cssbase h4,.yui3-cssbase h5,.yui3-cssbase h6,.yui3-cssbase pre,.yui3-cssbase code,.yui3-cssbase form,.yui3-cssbase fieldset,.yui3-cssbase legend,.yui3-cssbase input,.yui3-cssbase textarea,.yui3-cssbase p,.yui3-cssbase blockquote,.yui3-cssbase th,.yui3-cssbase td
+	{
+	margin: 0;
+	padding: 0
+}
+
+.yui3-cssbase table {
+	border-collapse: collapse;
+	border-spacing: 0
+}
+
+.yui3-cssbase fieldset,.yui3-cssbase img {
+	border: 0
+}
+
+.yui3-cssbase address,.yui3-cssbase caption,.yui3-cssbase cite,.yui3-cssbase code,.yui3-cssbase dfn,.yui3-cssbase em,.yui3-cssbase strong,.yui3-cssbase th,.yui3-cssbase var
+	{
+	font-style: normal;
+	font-weight: normal
+}
+
+.yui3-cssbase ol,.yui3-cssbase ul {
+	list-style: none
+}
+
+.yui3-cssbase caption,.yui3-cssbase th {
+	text-align: left
+}
+
+.yui3-cssbase h1,.yui3-cssbase h2,.yui3-cssbase h3,.yui3-cssbase h4,.yui3-cssbase h5,.yui3-cssbase h6
+	{
+	font-size: 100%;
+	font-weight: normal
+}
+
+.yui3-cssbase q:before,.yui3-cssbase q:after {
+	content: ''
+}
+
+.yui3-cssbase abbr,.yui3-cssbase acronym {
+	border: 0;
+	font-variant: normal
+}
+
+.yui3-cssbase sup {
+	vertical-align: text-top
+}
+
+.yui3-cssbase sub {
+	vertical-align: text-bottom
+}
+
+.yui3-cssbase input,.yui3-cssbase textarea,.yui3-cssbase select {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit
+}
+
+.yui3-cssbase input,.yui3-cssbase textarea,.yui3-cssbase select {
+	*font-size: 100%
+}
+
+.yui3-cssbase legend {
+	color: #000
+}
+/* css fonts */
+.yui3-cssbase body,.yui3-cssbase {
+	font: 13px/1.231 arial, helvetica, clean, sans-serif;
+	*font-size: small;
+	*font: x-small;
+}
+
+.yui3-cssbase select,.yui3-cssbase input,.yui3-cssbase button,.yui3-cssbase textarea
+	{
+	font: 99% arial, helvetica, clean, sans-serif;
+}
+
+.yui3-cssbase table {
+	font-size: inherit;
+	font: 100%;
+}
+
+.yui3-cssbase pre,.yui3-cssbase code,.yui3-cssbase kbd,.yui3-cssbase samp,.yui3-cssbase tt
+	{
+	font-family: monospace;
+	*font-size: 108%;
+	line-height: 100%;
+}
+/* css grids */
+.line,.lastUnit {
+	overflow: hidden;
+	_overflow: visible;
+	_zoom: 1;
+}
+
+.unit {
+	float: left;
+	_zoom: 1;
+}
+
+.unitExt {
+	float: right;
+}
+
+.size1of1 {
+	float: none;
+}
+
+.size1of2 {
+	width: 50%;
+}
+
+.size1of3 {
+	width: 33.33333%;
+}
+
+.size2of3 {
+	width: 66.66666%;
+}
+
+.size1of4 {
+	width: 25%;
+}
+
+.size3of4 {
+	width: 75%;
+}
+
+.size1of5 {
+	width: 20%;
+}
+
+.size2of5 {
+	width: 40%;
+}
+
+.size3of5 {
+	width: 60%;
+}
+
+.size4of5 {
+	width: 80%;
+}
+
+.size23of24 {
+	width: 95.8333%;
+}
+
+.size1of24 {
+	width: 4.1666%;
+}
+
+.lastUnit {
+	float: none;
+	_position: relative;
+	_left: -3px;
+	_margin-right: -3px;
+	width: auto;
+}
+
+.media {
+	width: auto;
+}
+/* css ugc */
+.avatar {
+	width: 50px;
+}
+
+.avatar img {
+	width: 40px;
+	height: 40px;
+}
+
+.user {
+	color: #004276;
+}
+
+.ugc .user-ugc {
+	margin-bottom: 20px;
+}
+
+.user-ugc .header {
+	border-bottom: 1px solid #CCCCCC;
+	color: #004276;
+	margin-bottom: 10px;
+	padding: 10px 0;
+}
+
+.header h4 {
+	font-size: 14px;
+}
+
+.user-ugc .body {
+	color: #555555;
+	margin-bottom: 15px;
+}
+
+.user-ugc .footer {
+	color: #888;
+}
+
+.footer .date {
+	margin-bottom: 5px;
+	font-size: 11px;
+}
+
+.footer .date-txt {
+	margin-left: 10px;
+}
+
+.actions a {
+	cursor: pointer;
+	color: #3B5998;
+}
+
+.footer .actions a {
+	height: 15px;
+}
+
+.thumbs-sprites {
+	background: url("../imgs/facebook-thumbs-sprites.jpg") no-repeat;
+}
+
+.thumbs-up {
+	padding-left: 22px;
+	margin-right: 10px;
+	background-position: 0 -15px;
+}
+
+.thumbs-down {
+	padding-left: 22px;
+	margin-top: 1px;
+	margin-right: 20px;
+	background-position: 0 0;
+}
+
+.add-ugc textarea {
+	width: 98%;
+	height: 100px;
+	padding: 5px;
+	margin-top: 10px;
+}
+
+.add-ugc a {
+	margin-right: 10px;
+}
+
+.add-ugc .actions {
+	margin-top: 5px;
+}

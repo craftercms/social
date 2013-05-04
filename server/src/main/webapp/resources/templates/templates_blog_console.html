@@ -1,0 +1,103 @@
+<script id="ugcListTmpl" type="text/x-jquery-tmpl">
+<div class="bloglist ugc-list yui3-cssbase">
+  
+  <div class="top">
+      <div class="pad">
+        <nav>
+          <ul class="main-nav clearfix">
+            <li><span class="top-title">Blogs > Entries</span></li>
+            <li><a href="#" id="newEntry" name="newEntry">New Entry</a></li>
+			<li><a href="#" id="deleteEntry" name="deleteEntry">Delete Entry</a></li>
+            <li><a href="entries_published" value="viewBlog" id="viewBlog" name="viewBlow">View Blog</a></li>
+          </ul>
+        </nav>
+      </div>
+   </div>
+  <table id="mytable" class="blogg-posttable">
+    <colgroup>
+        <col style="width: 40px;">
+        <col>
+        <col style="width: 6em;">
+        <col style="width: 8em;">
+    </colgroup>
+    <tbody style="">
+      {{each hierarchyList.list tmpl="ugcTmpl"}}
+    </tbody>
+  </table>
+</div>
+<div class="addUGCBlogPublish ugc-list yui3-cssbase" style="display:none">
+    <div class="top">
+        <div class="pad">
+          <nav>
+            <ul class="main-nav clearfix">
+                <li><span class="top-title">Blogs > New Entry</span></li>
+                <li class="save"><a href="#" class="saveEntry" id="saveEntry" name="{{=id}}">Save</a></li>
+                <li class="close"><a href="#" class="closeEntry" id="close" name="close">Close</a></li>
+              </ul>
+              
+          </nav>
+        </div>
+     </div>
+     <div class="box pad style-inputs">
+      <div class="errormsg" style="display:none"></div>
+      <p>
+        <label id="titleLabel" for="title">Title:</label> 
+        <input type="text" id="titleEntry" name="titleEntry" class="blog-title" placeholder="Entry Title" style="width:270px" value=""/>
+      </p>
+        <div id="editableContent" name="editableContent">
+           <textarea id="textContentField" name="textContentField"></textarea> 
+        </div>
+     </div>
+    
+  </div>
+
+</script>
+
+<script id="ugcTmpl" type="text/x-jquery-tmpl">
+   <tr class="trclass">
+        <td class="blogg-posttable"><input type=checkbox name="item" id="item" value="{{=id}}" unchecked></td>
+        <td class="blogg-posttable"><a id="detailEntryBtn" href="#" name="{{=id}}">{{=textContent.title}}</a></td>
+        <td class="blogg-posttable"><a href="#" name="{{=profile.userName}}">{{=profile.userName}}</a></td>
+        <td class="blogg-posttable">
+          <nav>
+            <ul style="width: 50px; position: relative; display: table-cell;">
+              <li style="margin-right:0px">{{=msgs-0 undef 0}}</li>
+              <span class="blogg-image-tooltip"></span>
+              </ul>
+          </nav>
+   </tr>
+</script>
+
+<script id="addUGCBlogPublish" type="text/x-jquery-tmpl">
+  <div class="ugc-list yui3-cssbase">
+    <div id="header">
+      <a class="logo" href="http://craftercms.org" title="Go to Crafter CMS"></a> 
+      <ul class="page-actions">
+        <li><a href="#" value="Logout" id="logout" name="logout">Logout</a></li>
+      </ul>
+      <h1 class="mainTitle">Blogs > New Entry</h1>
+    </div>
+    <div class="top">
+        <div class="pad">
+          <nav>
+            <ul class="main-nav clearfix">
+                <li><a href="#" id="saveEntry" name="{{=id}}">Save</a></li>
+                <li><a href="#" id="close" name="close">Close</a></li>
+              </ul>
+              
+          </nav>
+        </div>
+     </div>
+     <div class="box pad style-inputs">
+      <p>
+        <label id="titleLabel" for="title">Title:</label> 
+        <input type="text" id="titleEntry" name="titleEntry" class="blog-title" placeholder="Entry Title" style="width:270px" value="{{=textContent.title}}"/>
+      </p>
+      <div id="editableContent" name="editableContent">
+         <textarea id="textContentField" name="textContentField" style="width:100%;height:500px"></textarea> 
+      </div>
+     </div>
+    
+  </div>
+  
+</script>

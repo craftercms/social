@@ -1,0 +1,38 @@
+<html>
+	<head>
+		<title>Sample UGC page</title>
+	</head>
+    <body>
+
+		<div id="ugc_div"></div>
+	
+		<script type="text/javascript" src="http://social.demo.craftercms.org/resources/js/jquery-1.7.1.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/resources/js/jquery.form.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/resources/js/date.format.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/resources/js/jsrender.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/resources/js/jquery.observable.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/resources/js/jquery.views.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/resources/js/ugc.js"></script>
+		
+		<link rel="stylesheet" href="http://social.demo.craftercms.org/resources/css/combined-minified.css" type="text/css" media="screen">
+		
+		<script type="text/javascript">
+		jQuery(document).ready(function(){
+			jQuery('#ugc_div').ugc({
+				clientId : 'CrafterCMS',
+				restUrl : 'http://social.demo.craftercms.org/ugc/rest',
+				resourceUrl : 'http://social.demo.craftercms.org/resources', 
+				target : 'http://www.craftercms.org',
+				user : {
+					'userId' : 'vjalilov@craftercms.org', 
+					'idType' : 'crafter', 'nickName' : 'vjalilov', 
+					'firstName' : 'Vagif', 
+					'middleName' : 'M', 
+					'lastName' : 'Jalilov', 
+					'email' : 'vjalilov@craftercms.org' 
+				}
+			}).ugc('loadUGC');
+		});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,171 @@
+<script id="ugcListTmpl" type="text/x-jquery-tmpl">
+	<div id="header">
+		<a class="blog-crafter" href="entries_published" title="Go to Crafter Blog"></a> 
+	</div>
+<div class="ugc-list yui3-cssbase">
+	{{each hierarchyList.list tmpl="ugcTmpl"}}
+</div>
+</script>
+
+<script id="ugcTmpl" type="text/x-jquery-tmpl">
+<article role="article" class="post   post-ready" id="post-{{=id}}">
+	<header class="post-header">
+		<div class="top">
+			<div class="headline">
+				<h2 class="h2">
+					<a id="detailPostBtn" href="#" name="{{=id}}">{{=textContent.title}}</a>
+				</h2>
+			</div>
+			<p class="info">
+					By
+					<strong>{{=profile.userName}} </strong>
+						posted    
+					<span class="time" data-getfrom="$ctx.formattedDate([dateAdded])"/>
+			</p>
+		</div>
+	</header>
+	<div class="post-body">
+		<div class="copy">
+			<p>
+				{{=textContent.content!}}
+			</p>
+		</div>
+	<div>
+</article>
+</script>
+
+<script id="ugcDetailTmpl" type="text/x-jquery-tmpl">
+   
+		<header class="header">
+			<div id="header">
+				<a class="blog-crafter" href="entries_published" title="Go to Crafter Blog"></a> 
+			</div>
+				<h1 class="h1">
+						{{=UGC.textContent.title}}
+				</h1>
+				<p class="info">
+					By
+					<strong>{{=UGC.profile.userName}} </strong>
+						posted    
+					   <span class="time" data-getfrom="$ctx.formattedDate([UGC.dateAdded])"/>
+				</p>
+		</header>
+		<div id="page" class="container">
+			<div id="body">
+				<div class="copy post-body">
+					<p>
+						{{=UGC.textContent.content!}}
+					</p>
+				</div>
+			</div>
+		</div>
+		<div id="comments">
+			<div id="lf_comment_stream" class="ugc-width-medium ugc">
+				<div class="ugc-widget">
+					<div class="ugc-editor">
+						<textarea id="textContentField" name="textContentField" style="resize:none;width:99%"></textarea>
+						<div class="fyre-editor-toolbar">
+							<div class="goog-toolbar goog-toolbar-horizontal" style="-moz-user-select: none;" role="toolbar" 
+								aria-activedescendant="">
+								<div 
+								class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
+									<div class="goog-inline-block fyre-button-right-outer-box" id="post-comment">
+										<div class="goog-inline-block fyre-button-right-inner-box">Post comment</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="ugc-comment-stream">
+						<div class="ugc-stream-content">
+							{{each UGC.children tmpl="ugcComentTmpl"}}
+						</div>
+					</div>
+
+				</div>
+			</div>	
+		</div>
+</script>
+<script id="ugcComentTmpl" type="text/x-jquery-tmpl">
+<div style="margin-left: 62px;">
+	<div>
+	<article class="ugc-comment-article ugc-comment-source-5" id="ugc-message-{{=id}}" ugc-id="{{=id}}" user-id="{{=profileId}}">
+		
+	    <div class="ugc-comment-wrapper">
+			<div class="ugc-comment-user">
+				<img class="ugc-user-avatar" src="/crafter-social/resources/imgs/avatar-50x50.png">
+			</div>
+			<header class="ugc-comment-head" data-getfrom="$ctx.anonymousIfNull([profile.userName])"></header>
+			<section class="ugc-comment-body">
+				<div class="ugc-comment">
+					<p data-getfrom="[textContent]"></p>
+				</div>
+				<div class="attachment-list">
+					{{each attachmentModels tmpl="ugcTmplAttachments"}}
+				</div>
+				<div class="ugc-comment-raw-html">
+				</div>
+				<div class="ugc-comment-media ugc-comment-media-expanded">
+				</div>
+				<div class="ugc-comment-media ugc-comment-media-thumbnails">
+				</div>
+			</section>
+			<footer class="ugc-comment-footer">
+				<time class="ugc-comment-date"><span  data-getfrom="[ellapsedTime]"/></time>
+				<div class="unitExt size1of2 actions ugc-listen-actions-{{=id}} ugc-comment-actions">
+					<a class="reply unitExt ugc-comment-reply">Reply</a>
+					<a class="flag unitExt ugc-share-link thumbs-sprites thumbs-down" data-getfrom="[offenceCount]"></a>
+					<a class="like unitExt ugc-share-link thumbs-sprites thumbs-up" data-getfrom="[likeCount]"></a>
+					
+				</div>
+	      		
+			</footer>
+		</div>
+		{{each children tmpl="ugcComentTmpl"}}
+	</article>
+	</div>	
+</div>
+</script>
+
+<script id="addTextUGCTmpl" type="text/x-jquery-tmpl">
+	
+		<div class="line add-ugc">
+				<div class="unit size1of1 ugc-width-temp ugc-editor">
+					<textarea></textarea>
+					<div id="attachments-list" class="attachments-list"></div>
+				</div>
+				<div class="fyre-editor-toolbar">
+					<div class="goog-toolbar goog-toolbar-horizontal" style="-moz-user-select: none;" role="toolbar" 
+						aria-activedescendant="">
+						<div 
+						class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":c">
+							<div class="goog-inline-block fyre-button-right-outer-box cancel-btn" id="cancel-btn">
+								<div class="goog-inline-block fyre-button-right-inner-box">Cancel</div>
+							</div>
+						</div>
+						<div 
+						class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
+							<div class="goog-inline-block fyre-button-right-outer-box post-attach-btn" id="post-attach-btn">
+								<div class="goog-inline-block fyre-button-right-inner-box">Attach</div>
+							</div>
+						</div>
+						<div 
+						class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
+							<div class="goog-inline-block fyre-button-right-outer-box post-reply-btn" id="post-reply-btn">
+								<div class="goog-inline-block fyre-button-right-inner-box">Post reply</div>
+							</div>
+						</div>
+						
+					</div>
+				</div>
+				
+					
+		</div>
+	
+</script>
+<script id="ugcTmplAttachments" type="text/x-jquery-tmpl">
+	<div class="attachment-line" id="{{=filename}}">
+		<a class="attachment-link" id="attachmentOneBtn" href="#" name="{{=attachmentId}}">{{=filename}}</a>	
+	</div>
+</script>
+

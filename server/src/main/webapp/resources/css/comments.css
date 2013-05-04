@@ -1,0 +1,18 @@
+.avatar { width:50px; }
+.avatar img { width:40px; height:40px; }
+.user { color: #004276; }
+.ugc .user-ugc { margin-bottom:20px; }
+.user-ugc .header { border-bottom: 1px solid #CCCCCC; color: #004276; margin-bottom: 10px; padding: 10px 0; }
+.header h4 { font-size:14px; }
+.user-ugc .body { color: #555555; margin-bottom: 15px; }
+.user-ugc .footer { color:#888; }
+.footer .date { margin-bottom:5px; font-size:11px; }
+.footer .date-txt { margin-left:10px; }
+.actions a { cursor:pointer; color:#3B5998; }
+.footer .actions a { height:15px; }
+.thumbs-sprites {  background:url("http://social.demo.craftercms.org/resources/imgs/facebook-thumbs-sprites.jpg") no-repeat; }
+.thumbs-up {padding-left:22px; margin-right:10px; background-position:0 -15px; }
+.thumbs-down { padding-left:22px; margin-top:1px; margin-right:20px; background-position:0 0; }
+.add-ugc textarea { width:98%; height:100px; padding:5px; margin-top:10px; }
+.add-ugc a { margin-right:10px; }
+.add-ugc .actions { margin-top:5px; }

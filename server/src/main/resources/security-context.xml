@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+    <security:http security="none" pattern="/*.jsp"/>
+    <security:http security="none" pattern="/resources/**"/>
+
+    <security:http use-expressions="true" create-session="stateless" entry-point-ref="403EntryPoint" authentication-manager-ref="nullAuthenticationManager" >
+        <security:custom-filter ref="securityFilter" after="ANONYMOUS_FILTER"/>
+        <security:intercept-url pattern="/api/2/tenant/**" access="hasAdminRole()"/>
+        <security:intercept-url pattern="/api/2/ugc/create*" access="hasCreatePermission()"/>
+        <security:intercept-url pattern="/api/2/ugc/update*" access="hasUpdatePermission()"/>
+        <security:intercept-url pattern="/api/2/audit/**" access="hasAuditorRole()"/>
+        
+        <security:intercept-url pattern="/api/2/ugc/moderation/**/status*" access="hasModeratorPermission()"/>
+        <security:intercept-url pattern="/api/2/ugc/like/**" access="hasActOnPermission()"/>
+        <security:intercept-url pattern="/api/2/ugc/dislike/**" access="hasActOnPermission()"/>
+        <security:intercept-url pattern="/api/2/ugc/flag/**" access="hasActOnPermission()"/>
+        <security:expression-handler ref="ugcPermissionExpressionHandler"/>
+    </security:http>
+
+    <bean id="403EntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
+
+    <bean id="securityFilter" class="org.craftercms.social.util.support.security.CrafterProfileFilter">
+        <property name="profile" ref="crafterProfileCacheService" />
+    </bean>
+
+
+    <!-- bean with cache interceptor (should always use this one) -->
+    <bean id="crafterProfileCacheService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <ref local="crafterProfileService"/>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>cpMethodCachePointCut</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ********************************************************************** -->
+    <!-- ******************* START: CACHE CONFIGURATION *********************** -->
+    <!-- ********************************************************************** -->
+
+    <bean id="cpCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation">
+            <value>classpath:crafter/social/profile-ehcache.xml</value>
+        </property>
+    </bean>
+
+    <bean id="cpMethodCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager">
+            <ref local="cpCacheManager"/>
+        </property>
+        <property name="cacheName">
+            <value>org.craftercms.social.METHOD_CACHE</value>
+        </property>
+    </bean>
+
+    <bean id="cpMethodCacheInterceptor" class="org.craftercms.social.cache.MethodCacheInterceptor">
+        <property name="cache">
+            <ref local="cpMethodCache" />
+        </property>
+    </bean>
+
+    <bean id="cpMethodCachePointCut" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="cpMethodCacheInterceptor"/>
+        </property>
+        <property name="patterns">
+            <list>
+                <value>.*getProfile|.*getTenant</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- *************************************************************** -->
+    <!-- ******************* END: CACHE *********************** -->
+    <!-- *************************************************************** -->
+
+</beans>

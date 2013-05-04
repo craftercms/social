@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<title>Sample UGC page</title>
+	</head>
+    <body>
+
+		<div id="ugc_div"></div>
+	
+		<script type="text/javascript" src="http://social.demo.craftercms.org/craftersocial-rest/resources/js/jquery-1.7.1.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/craftersocial-rest/resources/js/jquery.form.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/craftersocial-rest/resources/js/date.format.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/craftersocial-rest/resources/js/jsrender.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/craftersocial-rest/resources/js/jquery.observable.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/craftersocial-rest/resources/js/jquery.views.js"></script>
+		<script type="text/javascript" src="http://social.demo.craftercms.org/craftersocial-rest/resources/js/ugc.js"></script>
+		
+		<link rel="stylesheet" href="http://social.demo.craftercms.org/craftersocial-rest/resources/css/combined-minified.css" type="text/css" media="screen"/>
+		
+		<script type="text/javascript">
+		jQuery(document).ready(function(){
+			jQuery('#ugc_div').ugc({
+				clientId : 'CrafterCMS',
+				restUrl : 'http://social.demo.craftercms.org/craftersocial-rest/api/1',
+				resourceUrl : 'http://social.demo.craftercms.org/craftersocial-rest/resources', 
+				target : 'http://www.craftercms.org',
+				ticket 	:'MyTickeId'
+			}).ugc('loadUGC');
+		});
+		</script>
+	</body>
+</html>

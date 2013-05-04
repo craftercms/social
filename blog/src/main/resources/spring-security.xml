@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security" xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">       
+	<context:annotation-config />
+	<context:component-scan base-package="org.craftercms.blog" />
+	
+	<http pattern="/resources" security="none" />  
+	<http pattern="/resources/**" security="none" /> 
+	<http pattern="/resources/css/**" security="none"/>
+	
+    <http pattern="/login.jsp*" security="none"/>
+	
+	<beans:bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+	    <beans:property name="loginFormUrl" value="/login"/>
+	</beans:bean>
+	
+	<beans:bean id="crafterProfileAuthenticationFilter" class="org.craftercms.security.spring.filter.CrafterProfileAuthenticationFilter">  
+		 <beans:property name="authenticationManager" ref="authenticationManager" />
+		 <beans:property name="authenticationFailureHandler" ref="failureHandler" />
+		 <beans:property name="authenticationSuccessHandler" ref="profileSuccessHandler" />  <!-- successHandler ordinarily -->
+    </beans:bean>
+    
+    <beans:bean id="profileSuccessHandler" class="org.craftercms.security.spring.handler.CrafterGeneralProfileHandler">
+	 	<beans:property name="target" ref="successHandler" />
+	 	<beans:property name="successUrl" value="blog-console/blog_entries"/>  
+	</beans:bean>
+    
+    <beans:bean id="successHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+	 	<beans:property name="defaultTargetUrl" value="/" />
+	 	<!-- there was a strange 404 error, so this makes the request always to be sent to the homepage (but kind of defeats the saved request handler) -->
+	 	<beans:property name="alwaysUseDefaultTargetUrl" value="true"/>  
+	</beans:bean>
+	
+	<beans:bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+	 	<beans:property name="defaultFailureUrl" value="/login?login_error=true" />
+	</beans:bean>
+	
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider ref="managementAuthenticationProvider"/>		
+	</security:authentication-manager>
+	
+	<!-- provider that performs actual authentication -->
+	<beans:bean id="managementAuthenticationProvider" class="org.craftercms.security.spring.filter.CrafterProfileAuthenticationProvider">
+		<beans:property name="profileRestClient" ref="profileRestClient" />
+	</beans:bean>
+	
+	<http use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
+		<intercept-url pattern="/resources/**" access="permitAll"/>
+		
+		<intercept-url pattern="/api/2/cache/clear_all" access="permitAll"/>
+		<intercept-url pattern="/login*" access="permitAll"/> 
+		<access-denied-handler error-page="/login?login_permission_error=true"/>
+		<intercept-url pattern="/blog-console/blog_entries" access="isAuthenticated()"/>
+		
+		<intercept-url pattern="/blog-console/*" access="isAuthenticated()"/>
+		<intercept-url pattern="/index*" access="permitAll"/> <!-- NEW -->
+
+		<logout invalidate-session="true" logout-success-url="/login?logout=true" logout-url="/logout"/>
+		<custom-filter position="FORM_LOGIN_FILTER" ref="crafterProfileAuthenticationFilter"/>		
+				
+	</http>
+	
+</beans:beans>

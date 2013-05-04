@@ -1,0 +1,43 @@
+<script id="ugcTmpl" type="text/x-jquery-tmpl">
+<div class="ugc">
+	{{for ugcList tmpl="ugcTmpl"}}
+</div>
+<div class="actions">
+	<input type="button" class="add-btn" value="UGC" />
+</div>
+</script>
+
+<script id="ugcTmpl" type="text/x-jquery-tmpl">
+<div class="ugc" id="ugc_{{=id}}" ugc-id="{{=id}}" user-id={{=userObjectId}}>
+	<div class="avatar"></div>
+	<div class="header">
+		<div class="user-name">Anonymous - {{=userObjectId}}</div>
+	</div>
+	<div class="body" data-getfrom="[body]"></div>
+	<div class="footer">
+		<div class="date" data-getfrom="$ctx.formattedDate([dateAdded])"></div>
+		<div class="actions">
+			<input type="button" class="like" value="Like" />
+			<input type="button" class="reply" value="Reply" />
+			<input type="button" class="flag" value="Flag" />
+			<div class="likes">Likes: <span class="like-count" data-getfrom="[likeCount]" /></div>
+			<div class="flags">Flags: <span class="flag-count" data-getfrom="[offenceCount]" /></div>
+		</div>
+	</div>
+	<div class="sub-ugc">
+		{{each children tmpl="ugcTmpl"}}
+	</div>
+</div>
+</script>
+
+<script id="addTextUGCTmpl" type="text/x-jquery-tmpl">
+<div class="ugc-dialog">
+	<div class="conent">
+		<textarea class="body"></textarea>
+	</div>
+	<div class="actions">
+		<input type="button" class="add-btn" value="Add UGC"/>
+		<input type="button" class="cancel-btn" value="Cancel"/>
+	</div>
+</div>
+</script>

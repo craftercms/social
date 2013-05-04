@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2007-2013 Crafter Software Corporation.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.craftercms.social.repositories;
+
+import java.util.List;
+
+import org.bson.types.ObjectId;
+import org.craftercms.social.domain.Tenant;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+
+public class TenantRepositoryImpl implements TenantRepositoryCustom {
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
+	@Override
+	public void setRoles(String tenantName, List<String> roles) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("id").is(tenantName));
+		Update update = new Update();
+		update.set("roles", roles);
+
+		mongoTemplate.updateFirst(query, update, Tenant.class);
+	}
+
+}

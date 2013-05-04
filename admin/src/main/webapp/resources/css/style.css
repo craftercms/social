@@ -1,0 +1,203 @@
+
+#index-center {
+	margin: 10px;
+}
+
+#index-footer {
+	margin-left: 5px;
+	color: white;
+	font-family: Adobe Garamond,Georgia,sans-serif;
+}
+
+.text-content-min {
+	margin-top: 4px;
+	margin-bottom: 4px;
+	height: 50px; 
+	width: 100%;
+	border-style: dashed;
+	border-width: 1px;
+	border-color: #dfdfdf;
+	overflow: auto;
+}
+
+.text-content-max {
+	margin-top: 4px;
+	margin-bottom: 4px;
+	height: 200px; 
+	width: 100%;
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+	overflow: auto;
+	background-color: white;
+}
+
+.text-content-detail {
+	margin-bottom: 4px;
+	height: 200px; 
+	width: 490px;
+	border: 1px solid black;
+	background-color: #fff;
+	overflow: auto; 
+}
+
+.form-label {
+	color: #767676;   
+}
+
+.toolbar-btn {
+	margin: 3px; 
+	vertical-align: middle;	
+}
+
+.audit-img {
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+.thread-container {
+	margin-top: 4px;
+	margin-bottom: 4px;
+	width: 100%;
+	border-style: dashed;
+	border-width: 1px;
+	border-color: black;
+	overflow: auto;
+	display: none;
+
+}
+
+.thread-title {
+	margin-top: 2px;
+	margin-left: 2px;
+	margin-bottom: 8px;
+	font-style: italic;
+	color: #767676; 
+}
+
+.thread-item {
+	margin-right: 10px;
+	margin-top: 10px;
+}
+
+.text-thread {
+	margin-bottom: 1px;
+	height: 40px; 
+	border-style: dashed;
+	border-width: 1px;
+	border-color: #dfdfdf;
+	overflow: auto;
+	background-color: white;
+}
+
+.audit-container {
+	width: 95%;
+	height: 99%;
+	margin: 5px;
+	overflow: auto;
+}
+
+.audit-item {
+	border-bottom-style: dashed;
+	border-bottom-width: 1px;
+	border-bottom-color: #dfdfdf;	
+	width: 100%;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+
+/* Page links */
+.yui-skin-sam a.yui-pg-first:link, .yui-skin-sam a.yui-pg-first:visited,
+.yui-skin-sam a.yui-pg-previous:link, .yui-skin-sam a.yui-pg-previous:visited,
+.yui-skin-sam a.yui-pg-next:link, .yui-skin-sam a.yui-pg-next:visited, 
+.yui-skin-sam a.yui-pg-last:link, .yui-skin-sam a.yui-pg-last:visited,
+.yui-skin-sam a.yui-pg-page:link, .yui-skin-sam a.yui-pg-page:visited,
+a:link, a:visited {
+	color: #207b9d;
+    text-decoration:none;	
+}
+
+/* Page links */
+.yui-skin-sam a.yui-pg-first:active, .yui-skin-sam a.yui-pg-first:hover, 
+.yui-skin-sam a.yui-pg-previous:active, .yui-skin-sam a.yui-pg-previous:hover, 
+.yui-skin-sam a.yui-pg-next:active, .yui-skin-sam a.yui-pg-next:hover, 
+.yui-skin-sam a.yui-pg-last:active, .yui-skin-sam a.yui-pg-last:hover, 
+.yui-skin-sam a.yui-pg-page:active, .yui-skin-sam a.yui-pg-page:hover,
+a:active, a:hover  {
+	color: #207b9d;
+    text-decoration:underline;  
+}
+
+
+/* Layout customization *****************************/
+/* Footer */
+.yui-skin-sam .yui-layout .yui-layout-unit-bottom div.yui-layout-bd { 
+	border: none;
+    background-color: #FFAC13;
+}
+
+/* Data table customization ************************/
+/* Table borders */
+.yui-skin-sam .yui-dt table {
+	border-color: #dfdfdf;
+	border-width: 1px;
+	border-bottom-width: 0px;
+}
+
+/* Paginator container */
+.yui-skin-sam div.yui-dt-paginator  {
+	margin: 2px;
+	padding: 1px;
+}
+
+/* Paginator start */
+.yui-skin-sam .yui-pg-container .yui-pg-first {
+	margin-left: 10px;	
+}
+
+/* Table headers */
+.yui-skin-sam .yui-dt th {
+	border: none;
+	background-image: none;
+	background-color: #e6e6e6;
+	vertical-align: middle;
+	font-family: "Trebuchet MS", sans-serif;
+	font-weight: bold;
+}
+
+/* Removing border from table cells */
+.yui-skin-sam .yui-dt .yui-dt-data > tr > td {
+	border: none;	
+	vertical-align: top;
+}
+
+/* Table cells with bottom border and background color */
+.yui-skin-sam .yui-dt .yui-dt-data > tr > td{
+	background-color: #ffffe2;
+	border-bottom-style: solid;
+	border-bottom-color: #dfdfdf;
+	border-bottom-width: 1px;
+}
+
+
+/* Dialog customization ************************/
+.yui-skin-sam .yui-panel div.hd  {
+	background-image: none;
+	background-color: #e6e6e6;
+}
+
+.yui-skin-sam .yui-panel div.bd  {
+	background-color: #ffffe2;
+}
+
+.yui-skin-sam .yui-panel div.ft  {
+	background-color: #ffffe2;
+}
+
+
+
+
+
+
+.
