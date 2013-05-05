@@ -104,10 +104,11 @@ public class CrafterProfile {
      * @return
      */
 	public Profile getProfile(String profileId) {
-		Profile profile = client.getProfile(getAppToken(), profileId);
-		if (profile.getId() == null) {
+		if (profileId == null || profileId.equals("")) {
 			return  ProfileConstants.ANONYMOUS;
 		}
+		Profile profile = client.getProfile(getAppToken(), profileId);
+		
 		return profile;
 	}
 

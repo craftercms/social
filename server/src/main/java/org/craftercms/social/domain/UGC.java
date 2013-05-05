@@ -75,7 +75,8 @@ public class UGC implements Hierarchical<UGC> {
 	@Transient
 	private int extraChildCount;
 	@Transient
-	private transient Profile profile = ProfileConstants.ANONYMOUS;
+	private transient Profile profile = null;
+	//private transient Profile profile = ProfileConstants.ANONYMOUS;
 	
 	@XmlElement(name="attributes")
 	@XStreamAlias("attributes")

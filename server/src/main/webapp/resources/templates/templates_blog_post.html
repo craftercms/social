@@ -1,6 +1,11 @@
 <script id="ugcListTmpl" type="text/x-jquery-tmpl">
 	<div id="header">
-		<a class="blog-crafter" href="entries_published" title="Go to Crafter Blog"></a> 
+		<a class="logo" title="Go to Crafter Blog" href="entries_published"></a>
+		<ul class="page-actions">
+	 		<li><a href="logout" value="Sign Out" id="signout" name="signout" class="signout">Sign-Out</a></li>
+	 		<li><a href="login" value="Sign In" id="signin" name="signin" class="signin">Sign-In</a></li>
+	 		<li><a href="blog-console/blog_entries" value="Blog Console" id="blogconsole" name="blogconsole" class="blogconsole">Blog Console</a></li>
+	 	</ul>
 	</div>
 <div class="ugc-list yui3-cssbase">
 	{{each hierarchyList.list tmpl="ugcTmpl"}}
@@ -38,7 +43,7 @@
    
 		<header class="header">
 			<div id="header">
-				<a class="blog-crafter" href="entries_published" title="Go to Crafter Blog"></a> 
+				<a class="logo" href="entries_published" title="Go to Crafter Blog"></a> 
 			</div>
 				<h1 class="h1">
 						{{=UGC.textContent.title}}
@@ -61,18 +66,25 @@
 		</div>
 		<div id="comments">
 			<div id="lf_comment_stream" class="ugc-width-medium ugc">
+				<form id="fileuploadForm" action="/crafter-social/api/2/ugc/create.json" method="POST" enctype="multipart/form-data" target="hidden_upload">
 				<div class="ugc-widget">
 					<div class="ugc-editor">
 						<textarea id="textContentField" name="textContentField" style="resize:none;width:99%"></textarea>
+						<div id="attachments-list" class="attachments-list"></div>
 						<div class="fyre-editor-toolbar">
 							<div class="goog-toolbar goog-toolbar-horizontal" style="-moz-user-select: none;" role="toolbar" 
 								aria-activedescendant="">
-								<div 
-								class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
-									<div class="goog-inline-block fyre-button-right-outer-box" id="post-comment">
-										<div class="goog-inline-block fyre-button-right-inner-box">Post comment</div>
+								<div class="fyre-attachment-button goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
+									<div class="goog-inline-block fyre-button-right-outer-box post-attach-btn" id="post-attach-btn">
+									<div class="goog-inline-block fyre-button-right-inner-box">Attach</div>
 									</div>
 								</div>
+								<div class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
+									<div class="goog-inline-block fyre-button-right-outer-box" id="post-comment">
+									<div class="goog-inline-block fyre-button-right-inner-box">Post comment</div>
+									
+								</div>
+							</div>
 							</div>
 						</div>
 					</div>
@@ -83,6 +95,7 @@
 					</div>
 
 				</div>
+				</form>
 			</div>	
 		</div>
 </script>
@@ -95,7 +108,7 @@
 			<div class="ugc-comment-user">
 				<img class="ugc-user-avatar" src="/crafter-social/resources/imgs/avatar-50x50.png">
 			</div>
-			<header class="ugc-comment-head" data-getfrom="$ctx.anonymousIfNull([profile.userName])"></header>
+			<header class="ugc-comment-head" data-getfrom="[profile.userName]"></header>
 			<section class="ugc-comment-body">
 				<div class="ugc-comment">
 					<p data-getfrom="[textContent]"></p>

@@ -7,8 +7,8 @@
             	alert('Service Permission not allowed');
             } else if (jqXHR.status == 403) {
                jqXHR.status = -1;
-            	//window.location = "login";
-               alert('Service Permission not allowed');
+               console.error('Invalid ticket. Sign in again: ' + jqXHR.statusText);
+               window.location = "login";
             }  else if (jqXHR.status == 404) {
                 alert('Requested page not found.');
             } else if (jqXHR.status == 500) {
@@ -158,6 +158,7 @@
 				}
 				try {
 					container.html($.render( data, 'ugcListTmpl')).link(data);
+					util.wireAuths(container, options);
 				} catch(e) {
 
 					console.error('There was an error loading the template: ' + e);
@@ -209,7 +210,7 @@
 				}
 				container.options = options;
 				
-				var $ugcDiv = $(' > div > div.ugc-width-medium > div.ugc-widget > div.ugc-comment-stream > div.ugc-stream-content', container);
+				var $ugcDiv = $(' > div > div.ugc-width-medium > form > div.ugc-widget > div.ugc-comment-stream > div.ugc-stream-content', container);
 
 				container.on( "click", "#attachmentOneBtn", function(event) {
 					var url = options.restUrl + '/get_attachment/' + event.target.name+"?ticket=" + options.ticket + "&tenant=" + options.tenant;
@@ -217,7 +218,39 @@
 						
 				});
 				
-				util.assignPermissions('CREATE',$(' > div > div.ugc-width-medium > div.ugc-widget > div.ugc-editor', container), data.UGC.id, options);
+				util.assignPermissions('CREATE',$(' > div > div.ugc-width-medium  > form > div.ugc-widget > div.ugc-editor', container), data.UGC.id, options);
+				
+				//var $postAttachmentButton = $(' > div > form > div.ugc-width-medium > div.ugc-widget > div.ugc-editor > div.fyre-editor-toolbar > div.goog-toolbar > div.fyre-attachment-button > div.post-attach-btn',container);
+				var $form = $(' > div > div.ugc-width-medium > form',container);
+
+				$(' > div > div.ugc-width-medium > form > div.ugc-widget > div.ugc-editor > div.fyre-editor-toolbar > div.goog-toolbar > div.fyre-attachment-button > div.post-attach-btn', container).click(function (event) {
+					var parentFileContent = $('<div></div>');
+					var newFileContent = $('<div style="display:none;"></div>');
+					var inputFile = document.createElement("input");
+		 			inputFile.type = "file";
+		 			inputFile.name = "attachments";
+		 			inputFile.id = "attachments";
+		 			inputFile.onchange = function(e) {
+		 				var fileContent = $(this.parentElement.parentElement);
+		 				var fileName = this.value.replace("C:\\fakepath\\","");
+		 				removeFile = $('<a class="MultiFile-remove" href="#">x</a>'), 
+		 				fileSpan = $('<span class="MultiFile-title" title="'+fileName+'" id="'+fileName+' name="'+fileName+'">'+fileName+'</span>');
+	         			$("#attachments-list").append(
+	         				fileContent.append(removeFile, " ", fileSpan)
+	         				);
+	         			
+						removeFile.click(function(){
+							var parent = $(this.parentElement);
+							parent.remove();
+						});
+		 			}
+		 			$("#attachments-list").append(
+		 				parentFileContent.append(newFileContent.append(inputFile))
+		 				);
+		 			inputFile.click();
+		 			return false;
+				});
+
 				
 				$('article.ugc-comment-article', $ugcDiv).each(function () {
 					util.wireUpUGC.apply( this, [ options ]);
@@ -226,7 +259,7 @@
 				container.on( "click", "#post-comment", function(event) {
 					var body = $("#textContentField").val();
 					$("#textContentField")[0].value = "";
-					util.addTextUGC(body, container.options.parentId, options,  $ugcDiv);
+					util.addTextUGC(body, container.options.parentId, options,  $ugcDiv,$("#attachments-list"),$form, false);
 						
 				});
 				util.scheduleTimeUpdates(options, data.UGC.children);
@@ -236,9 +269,9 @@
 			}
 		},
 
-		addTextUGC : function (body, parentId, options, appendTo,attachments, formContent) {
+		addTextUGC : function (body, parentId, options, appendTo,attachments, formContent, removeForm) {
 			if ( options ) {
-				if (attachments ==null || attachments.length == 0) {	
+				if (attachments ==null || attachments.children().length == 0) {	
 					if (body != null && body.length > 0) {
 						
 						var dataTextContent = body;
@@ -259,15 +292,15 @@
 						    		util.observableAddUGC.apply(appendTo, [aData.UGC]);
 						    		util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, appendTo), [options]);
 						    	}
-						    	if (formContent !=null) {
+						    	if (formContent !=null && removeForm) {
 						    		formContent.remove();
-						    	}
+						    	} 
 						    }
 
 						});
 					}
 				} else {
-					util.addTextAttachmentsUGC(body, parentId, options, appendTo, attachments, formContent);
+					util.addTextAttachmentsUGC(body, parentId, options, appendTo, attachments, formContent, removeForm);
 					
 				}
 			}
@@ -282,7 +315,7 @@
  			return inputField;
 		},
 
-		addTextAttachmentsUGC : function (body, parentId, options, appendTo, attachments, formContent) {
+		addTextAttachmentsUGC : function (body, parentId, options, appendTo, attachments, formContent, removeForm) {
 			$("#attachments-list").append(util.createHiddenInput("textContent",body));
  			$("#attachments-list").append(util.createHiddenInput("target",options.target));
  			var url = $("#fileuploadForm").attr("action");
@@ -332,13 +365,35 @@
 						    util.observableAddUGC.apply(appendTo, [aData.UGC]);
 						    util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, appendTo), [options]);
 				    	}
-				    	formContent.remove();
+				    	if (removeForm) {
+				    		formContent.remove();
+				    	} else {
+				    		while (attachments.children().length>0) {
+				    			$attachObj = $(attachments.children()[0]);
+				    			$attachObj.remove();
+				    		}
+				    	}
 				    }
 				});
 				
    			});
 			$("#fileuploadForm").submit();
 			return false;
+		},
+
+		wireAuths :  function(container, options) {
+			signin = $('> div > ul.page-actions > li > a.signin', container);
+			signout = $('> div > ul.page-actions > li > a.signout', container);
+			console = $('> div > ul.page-actions > li > a.blogconsole', container);
+			if (options.isAuthenticate) {
+				signout[0].style.display = "block";
+				signin[0].style.display = "none";
+				console[0].style.display = "block";
+			} else {
+				signout[0].style.display = "none";
+				signin[0].style.display = "block";
+				console[0].style.display = "none";
+			}
 		},
 		
 		wireUpUGC : function (options) {
@@ -375,11 +430,10 @@
 				$d = $('<form id="fileuploadForm" action="'+ $url + '" method="POST" enctype="multipart/form-data" target="hidden_upload">', {}).html(html),
 				$addUGC = $('> div.add-ugc', $d),
 				$body = $('> div > textarea', $addUGC);
-				$attachments = $('> div.attachments-list', $addUGC);
-			
+				$attachments = $(' > div.ugc-editor > div.attachments-list',$addUGC);
 				
 			$('> div.fyre-editor-toolbar > div.goog-toolbar > div.goog-inline-block > div.post-reply-btn', $addUGC).click(function (event) {
-				util.addTextUGC($body.val(), parentId, options,  appendUGCTo, $("#attachments-list").children(),$d);
+				util.addTextUGC($body.val(), parentId, options,  appendUGCTo, $attachments,$d, true);
 				
 				return false;
 			});
@@ -396,9 +450,12 @@
 	 				var fileName = this.value.replace("C:\\fakepath\\","");
 	 				removeFile = $('<a class="MultiFile-remove" href="#">x</a>'), 
 	 				fileSpan = $('<span class="MultiFile-title" title="'+fileName+'" id="'+fileName+' name="'+fileName+'">'+fileName+'</span>');
-         			$("#attachments-list").append(
+	 				$attachments.append(
+	 						fileContent.append(removeFile, " ", fileSpan)
+	 						);
+         			/*$("#attachments-list").append(
          				fileContent.append(removeFile, " ", fileSpan)
-         				);
+         				);*/
          			
 					removeFile.click(function(){
 						var parent = $(this.parentElement);

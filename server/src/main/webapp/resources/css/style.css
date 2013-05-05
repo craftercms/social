@@ -6244,11 +6244,22 @@ div.editable {
 		no-repeat scroll 0 0 transparent;
 	display: block;
     font-size: 0;
-    height: 90px;
+    height: 250px;
     position: relative;
     text-indent: -9999em;
     top: 20px;
     width: 400px;
+}
+
+#header a.logo {
+    background: url("../imgs/logo.png?img_id=10290&amp;t=1349974701037") no-repeat scroll 0 0 transparent;
+    display: block;
+    font-size: 0;
+    height: 190px;
+    position: relative;
+    text-indent: -9999em;
+    top: 20px;
+    width: 300px;
 }
 
 .notAllowed{
