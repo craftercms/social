@@ -261,6 +261,7 @@
 					$("#textContentField")[0].value = "";
 					options.container = $ugcDiv;
 					options.attachments = $("#attachments-list");
+					options.removeParent = false;
 					util.addTextUGC(body, container.options.parentId, options,  $ugcDiv,$("#attachments-list"),$form, false);
 						
 				});
@@ -296,15 +297,20 @@
 							    util.observableAddUGC.apply(options.container, [aData.UGC]);
 							    util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, options.container), [options]);
 					    	}
-					    	if (removeForm) {
-					    		formContent.remove();
-					    	} else {
-					    		//$('#hidden_upload').remove();
-					    		while (options.attachments.children().length>0) {
-					    			$attachObj = $(options.attachments.children()[0]);
-					    			$attachObj.remove();
-					    		}
+					    	//removeExtraInputs();
+					    	while (options.attachments.children().length>0) {
+					    		$attachObj = $(options.attachments.children()[0]);
+					    		$attachObj.remove();
 					    	}
+					    	while ($("#attachments-list").children().length>0) {
+					    		$attachObj = $($("#attachments-list").children()[0]);
+					    		$attachObj.remove();
+					    	}
+					    	if (options.removeParent) {
+					    		options.parentContainer.remove();
+					    	}
+							
+					    	
 					    }
 					});
 					
@@ -317,7 +323,7 @@
 			}
 		},
 
-		addTextUGC : function (body, parentId, options, appendTo,attachments, formContent, removeForm) {
+		addTextUGC : function (body, parentId, options, appendTo,attachments, container, removeContainer) {
 			if ( options ) {
 				if (attachments ==null || attachments.children().length == 0) {	
 					if (body != null && body.length > 0) {
@@ -340,15 +346,15 @@
 						    		util.observableAddUGC.apply(appendTo, [aData.UGC]);
 						    		util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, appendTo), [options]);
 						    	}
-						    	if (formContent !=null && removeForm) {
-						    		formContent.remove();
+						    	if (container !=null && removeContainer) {
+						    		container.remove();
 						    	} 
 						    }
 
 						});
 					}
 				} else {
-					util.addTextAttachmentsUGC(body, parentId, options, appendTo, attachments, formContent, removeForm);
+					util.addTextAttachmentsUGC(body, parentId, options, appendTo, attachments);
 					
 				}
 			}
@@ -363,7 +369,7 @@
  			return inputField;
 		},
 
-		addTextAttachmentsUGC : function (body, parentId, options, appendTo, attachments, formContent, removeForm) {
+		addTextAttachmentsUGC : function (body, parentId, options, appendTo, attachments) {
 			$("#attachments-list").append(util.createHiddenInput("textContent",body));
  			$("#attachments-list").append(util.createHiddenInput("target",options.target));
  			var url = $("#fileuploadForm").attr("action");
@@ -381,51 +387,6 @@
  			
  			
  			$("#fileuploadForm").attr("action",url);
-			
-//			$('#hidden_upload').load(function(e){
-//				var myIFrame = document.getElementById("hidden_upload");
-//				if (myIFrame.contentWindow.document.childNodes[0].childNodes.length == 0) {
-//					alert('Social server response unexpected');
-//					$.error('Social server response unexpected');
-//					return;
-//				}
-//				var newJson= $.parseJSON(myIFrame.contentWindow.document.childNodes[0].textContent);
-//				var idUgc = null;
-//				if (newJson) {
-//					idUgc = newJson.UGC.id;
-//				} else {
-//					idUgc = myIFrame.contentWindow.document.childNodes[0].children[0].textContent;
-//				}
-//			    var url = options.restUrl + '/ugc/get_ugc/' + idUgc + '.' + options.outputType;
-//			    
-//				var data = {ticket : options.ticket, tenant : options.tenant};
-//			    $.ajax({
-//				    url: url,
-//				    data: data,
-//				    dataType : options.outputType,
-//				    cache: false,
-//				    type: 'GET',
-//				    success: function(aData, textStatus, jqXHR){
-//				    	
-//				    	if (aData.UGC) {
-//				    		
-//				    		util.updateEllapsedTimeText([aData.UGC]);
-//						    util.observableAddUGC.apply(appendTo, [aData.UGC]);
-//						    util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, appendTo), [options]);
-//				    	}
-//				    	if (removeForm) {
-//				    		formContent.remove();
-//				    	} else {
-//				    		//$('#hidden_upload').remove();
-//				    		while (attachments.children().length>0) {
-//				    			$attachObj = $(attachments.children()[0]);
-//				    			$attachObj.remove();
-//				    		}
-//				    	}
-//				    }
-//				});
-//				
-//   			});
 			$("#fileuploadForm").submit();
 			return false;
 		},
@@ -461,6 +422,7 @@
 			util.assignPermissions('ACT_ON',$like, $this.attr('ugc-id'), options);
 
 			$reply.click(function (event) {
+				
 				util.showTextUGCDialog($this.attr('ugc-id'), options, $this, $this);
 			});
 			
@@ -473,17 +435,24 @@
 		},
 
 		showTextUGCDialog : function (parentId, options, appendTo, appendUGCTo) {
+			if (options.isReplying) {
+				return;
+			}
+			options.isReplying = true;
 			var data = { 'parentId' : parentId },
 				html = $.render( data, 'addTextUGCTmpl' ),
-				$url =  options.restUrl + "/ugc/create.json"
-				$d = $('<form id="fileuploadForm" action="'+ $url + '" method="POST" enctype="multipart/form-data" target="hidden_upload">', {}).html(html),
+
+				$d = $('<div>', {}).html(html),
 				$addUGC = $('> div.add-ugc', $d),
 				$body = $('> div > textarea', $addUGC);
 				$attachments = $(' > div.ugc-editor > div.attachments-list',$addUGC);
 				
 			$('> div.fyre-editor-toolbar > div.goog-toolbar > div.goog-inline-block > div.post-reply-btn', $addUGC).click(function (event) {
+				options.isReplying = false;
 				options.container = appendUGCTo;
 				options.attachments = $attachments;
+				options.removeParent = true;
+				options.parentContainer = $d;
 				util.addTextUGC($body.val(), parentId, options,  appendUGCTo, $attachments,$d, true);
 				
 				return false;
@@ -518,6 +487,7 @@
 			});
 
 			$('> div.fyre-editor-toolbar > div.goog-toolbar > div.goog-inline-block > div.cancel-btn', $addUGC).click(function (event) {
+				options.isReplying = false;
 				$d.remove();
 				return false;
 			});	

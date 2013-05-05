@@ -7,9 +7,9 @@
             	jqXHR.status = -1;
                 alert('Service not allowed');
             } else if (jqXHR.status == 403) {
-                jqXHR.status = -1;
-            	//window.location = "login";
-            	alert('Service not allowed');
+            	jqXHR.status = -1;
+                console.error('Invalid ticket. Sign in again: ' + jqXHR.statusText);
+                window.location = "../login";
             }  else if (jqXHR.status == 404) {
                 alert('Requested page not found.');
             } else if (jqXHR.status == 500) {
