@@ -43,7 +43,10 @@ public class BlogService {
 		blogListForm.setTicket(getTicket());
 		blogListForm.setTarget(this.appBlogName);
 		blogListForm.setActions(actionService.getActions(this.appBlogName));
-		
+		Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (!isAnonymousUser()) {
+			blogListForm.setAuthenticate(true);
+		}
 		return blogListForm;
 	}
 	
@@ -65,5 +68,12 @@ public class BlogService {
 			UserProfile profile = (UserProfile)user;
 			return profile.getTicket();
 		}
+	}
+	private boolean isAnonymousUser() {
+		Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (user == null || (user instanceof String)) {
+			return true;
+		}
+		return false;
 	}
 }

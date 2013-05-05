@@ -19,6 +19,8 @@ package org.craftercms.blog.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.craftercms.blog.model.BlogListForm;
 import org.craftercms.blog.services.BlogService;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
@@ -43,8 +45,11 @@ public class BlogController {
 	@Autowired
 	private BlogService blogService;
 	
-	@RequestMapping(value = {"/blog-console/blog_entries","/blog-console/*","blog-console/*","/blog-console"})
-	public ModelAndView getBlogs(Model model, @RequestParam(required=false) String message) throws Exception{
+	private static final String CONSOLE_URI = "blog_console";
+	
+	@RequestMapping(value = {"/blog-console/blog_entries","/blog-console/*","blog-console/*","/blog-console","/blog_entries","blog_entries"})
+	public ModelAndView getBlogs(Model model, @RequestParam(required=false) String message,
+			HttpServletRequest request) throws Exception{
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("blog_entries");
         mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
@@ -53,10 +58,12 @@ public class BlogController {
 	}
 	
 	@RequestMapping(value = {"blog-console/entries_published","entries_published","/index"}, method = RequestMethod.GET)
-	public ModelAndView getEntriesPublished(Model model, @RequestParam(required=false) String message) throws Exception{
+	public ModelAndView getEntriesPublished(Model model, @RequestParam(required=false) String message,
+			HttpServletRequest request) throws Exception{
+		String viewPublishedEntries = getPublishedEntriesView(request.getRequestURI());
 		ModelAndView mav = new ModelAndView();
 
-		mav.setViewName("index");
+		mav.setViewName(viewPublishedEntries);
         mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         return mav;
 		
@@ -85,6 +92,24 @@ public class BlogController {
 	@ExceptionHandler(RestException.class)
 	public String Exception() {
 		return "redirect:/logout";
+	}
+	
+	private String getPublishedEntriesView(String requestURI) {
+		String view = "entries_published";
+		if (requestURI.contains(CONSOLE_URI)) {
+			view = "../entries_published";
+		}
+		
+		return view;
+	}
+	
+	private String getBlogEntriesView(String requestURI) {
+		String view = "blog_entries";
+		if (requestURI.contains(CONSOLE_URI)) {
+			view = "../blog_entries";
+		}
+		
+		return view;
 	}
 
 }

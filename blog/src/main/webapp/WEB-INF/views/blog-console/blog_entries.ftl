@@ -63,6 +63,7 @@
 					resourceUrl : '/crafter-social/resources', 
 					target : data1.blogListForm.target,
 					username: data1.blogListForm.username,
+					isAuthenticate: data1.blogListForm.authenticate,
 					actions: data1.blogListForm.actions,
 					ticket 	: data1.blogListForm.ticket
 					}).ugc_blog_console('loadUGCBlogConsole');

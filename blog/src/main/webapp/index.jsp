@@ -1,3 +1,1 @@
-<jsp:forward page="/blog_entries" />
-   
- 
+<jsp:forward page="/entries_published" />

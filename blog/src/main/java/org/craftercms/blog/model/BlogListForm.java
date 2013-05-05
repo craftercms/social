@@ -29,7 +29,7 @@ public class BlogListForm implements Serializable {
 	
 	private String tenant;
 	private String target;
-
+	private boolean isAuthenticate = false;
     private String ticket;
     private ArrayList<Action> actions = new ArrayList();
 
@@ -57,7 +57,10 @@ public class BlogListForm implements Serializable {
     public void setTicket(String ticket) {
         this.ticket = ticket;
     }
-
-
-
+    public boolean isAuthenticate() {
+		return isAuthenticate;
+	}
+	public void setAuthenticate(boolean isAuthenticate) {
+		this.isAuthenticate = isAuthenticate;
+	}
 }

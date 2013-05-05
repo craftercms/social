@@ -57,6 +57,7 @@
 					target : data1.blogListForm.target,
 					tenant : data1.blogListForm.tenant,
 					actions: data1.blogListForm.actions,
+					isAuthenticate: data1.blogListForm.authenticate,
 					ticket 	: data1.blogListForm.ticket
 					}).ugc_blog_post('loadUGCBlogPost');
 			});

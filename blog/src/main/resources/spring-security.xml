@@ -26,7 +26,7 @@ xmlns:security="http://www.springframework.org/schema/security"
     
     <beans:bean id="profileSuccessHandler" class="org.craftercms.security.spring.handler.CrafterGeneralProfileHandler">
 	 	<beans:property name="target" ref="successHandler" />
-	 	<beans:property name="successUrl" value="blog-console/blog_entries"/>  
+	 	<beans:property name="successUrl" value="entries_published"/>    
 	</beans:bean>
     
     <beans:bean id="successHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
