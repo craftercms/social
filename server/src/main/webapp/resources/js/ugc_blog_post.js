@@ -259,9 +259,57 @@
 				container.on( "click", "#post-comment", function(event) {
 					var body = $("#textContentField").val();
 					$("#textContentField")[0].value = "";
+					options.container = $ugcDiv;
+					options.attachments = $("#attachments-list");
 					util.addTextUGC(body, container.options.parentId, options,  $ugcDiv,$("#attachments-list"),$form, false);
 						
 				});
+				
+				$('#hidden_upload').load(function(e){
+					var myIFrame = document.getElementById("hidden_upload");
+					if (myIFrame.contentWindow.document.childNodes[0].childNodes.length == 0) {
+						alert('Social server response unexpected');
+						$.error('Social server response unexpected');
+						return;
+					}
+					var newJson= $.parseJSON(myIFrame.contentWindow.document.childNodes[0].textContent);
+					var idUgc = null;
+					if (newJson) {
+						idUgc = newJson.UGC.id;
+					} else {
+						idUgc = myIFrame.contentWindow.document.childNodes[0].children[0].textContent;
+					}
+				    var url = options.restUrl + '/ugc/get_ugc/' + idUgc + '.' + options.outputType;
+				    
+					var data = {ticket : options.ticket, tenant : options.tenant};
+				    $.ajax({
+					    url: url,
+					    data: data,
+					    dataType : options.outputType,
+					    cache: false,
+					    type: 'GET',
+					    success: function(aData, textStatus, jqXHR){
+					    	
+					    	if (aData.UGC) {
+					    		
+					    		util.updateEllapsedTimeText([aData.UGC]);
+							    util.observableAddUGC.apply(options.container, [aData.UGC]);
+							    util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, options.container), [options]);
+					    	}
+					    	if (removeForm) {
+					    		formContent.remove();
+					    	} else {
+					    		//$('#hidden_upload').remove();
+					    		while (options.attachments.children().length>0) {
+					    			$attachObj = $(options.attachments.children()[0]);
+					    			$attachObj.remove();
+					    		}
+					    	}
+					    }
+					});
+					
+	   			});
+				
 				util.scheduleTimeUpdates(options, data.UGC.children);
 				
 			} else {
@@ -333,50 +381,51 @@
  			
  			
  			$("#fileuploadForm").attr("action",url);
-			var iframeStr = "<IFRAME id='hidden_upload' name='hidden_upload' src='' style='width:0;height:0;border:0px solid #fff'></IFRAME>";
-
-			$("#fileuploadForm").append(iframeStr);
-			$('#hidden_upload').load(function(e){
-				var myIFrame = document.getElementById("hidden_upload");
-				if (myIFrame.contentWindow.document.childNodes[0].childNodes.length == 0) {
-					alert('Social server response unexpected');
-					$.error('Social server response unexpected');
-					return;
-				}
-				var newJson= $.parseJSON(myIFrame.contentWindow.document.childNodes[0].textContent);
-				var idUgc = null;
-				if (newJson) {
-					idUgc = newJson.UGC.id;
-				} else {
-					idUgc = myIFrame.contentWindow.document.childNodes[0].children[0].textContent;
-				}
-			    var url = options.restUrl + '/ugc/get_ugc/' + idUgc + '.' + options.outputType;;
-				var data = {ticket : options.ticket, tenant : options.tenant};
-			    $.ajax({
-				    url: url,
-				    data: data,
-				    dataType : options.outputType,
-				    cache: false,
-				    type: 'GET',
-				    success: function(aData, textStatus, jqXHR){
-				    	if (aData.UGC) {
-				    		
-				    		util.updateEllapsedTimeText([aData.UGC]);
-						    util.observableAddUGC.apply(appendTo, [aData.UGC]);
-						    util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, appendTo), [options]);
-				    	}
-				    	if (removeForm) {
-				    		formContent.remove();
-				    	} else {
-				    		while (attachments.children().length>0) {
-				    			$attachObj = $(attachments.children()[0]);
-				    			$attachObj.remove();
-				    		}
-				    	}
-				    }
-				});
-				
-   			});
+			
+//			$('#hidden_upload').load(function(e){
+//				var myIFrame = document.getElementById("hidden_upload");
+//				if (myIFrame.contentWindow.document.childNodes[0].childNodes.length == 0) {
+//					alert('Social server response unexpected');
+//					$.error('Social server response unexpected');
+//					return;
+//				}
+//				var newJson= $.parseJSON(myIFrame.contentWindow.document.childNodes[0].textContent);
+//				var idUgc = null;
+//				if (newJson) {
+//					idUgc = newJson.UGC.id;
+//				} else {
+//					idUgc = myIFrame.contentWindow.document.childNodes[0].children[0].textContent;
+//				}
+//			    var url = options.restUrl + '/ugc/get_ugc/' + idUgc + '.' + options.outputType;
+//			    
+//				var data = {ticket : options.ticket, tenant : options.tenant};
+//			    $.ajax({
+//				    url: url,
+//				    data: data,
+//				    dataType : options.outputType,
+//				    cache: false,
+//				    type: 'GET',
+//				    success: function(aData, textStatus, jqXHR){
+//				    	
+//				    	if (aData.UGC) {
+//				    		
+//				    		util.updateEllapsedTimeText([aData.UGC]);
+//						    util.observableAddUGC.apply(appendTo, [aData.UGC]);
+//						    util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, appendTo), [options]);
+//				    	}
+//				    	if (removeForm) {
+//				    		formContent.remove();
+//				    	} else {
+//				    		//$('#hidden_upload').remove();
+//				    		while (attachments.children().length>0) {
+//				    			$attachObj = $(attachments.children()[0]);
+//				    			$attachObj.remove();
+//				    		}
+//				    	}
+//				    }
+//				});
+//				
+//   			});
 			$("#fileuploadForm").submit();
 			return false;
 		},
@@ -433,6 +482,8 @@
 				$attachments = $(' > div.ugc-editor > div.attachments-list',$addUGC);
 				
 			$('> div.fyre-editor-toolbar > div.goog-toolbar > div.goog-inline-block > div.post-reply-btn', $addUGC).click(function (event) {
+				options.container = appendUGCTo;
+				options.attachments = $attachments;
 				util.addTextUGC($body.val(), parentId, options,  appendUGCTo, $attachments,$d, true);
 				
 				return false;
@@ -453,11 +504,7 @@
 	 				$attachments.append(
 	 						fileContent.append(removeFile, " ", fileSpan)
 	 						);
-         			/*$("#attachments-list").append(
-         				fileContent.append(removeFile, " ", fileSpan)
-         				);*/
-         			
-					removeFile.click(function(){
+         			removeFile.click(function(){
 						var parent = $(this.parentElement);
 						parent.remove();
 					});
