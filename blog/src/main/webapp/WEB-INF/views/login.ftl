@@ -11,10 +11,6 @@
 
 <body>
   <div id="content">
-	  <!--div id="header">
-		 <a title="Go to Crafter CMS" href="http://craftercms.org" class="logo"></a> 
-	  </div-->
-
 	  <div id="header">
 	    <a class="logo" href="http://craftercms.org" title="Go to Crafter CMS"></a> 
 	    <h1 class="mainTitle">Blogs</h1>
@@ -25,16 +21,16 @@
 				Sign in
 			<strong></strong>
 			</h2>
-			<form class="login-form" action="j_spring_security_check" method="post" accept-charset="UTF-8">
+			<form class="login-form" action="crafter-security-login" method="post" accept-charset="UTF-8">
 				
 				    	<p>
 						<label for="j_username">Username:</label>
-						<input id="j_username" name="j_username" size="20" maxlength="50" type="text"/>
+						<input id="username" name="username" size="20" maxlength="50" type="text"/>
 						</p>
 						
 						<p>
 						<label for="j_password">Password:</label>
-						<input id="j_password" name="j_password" size="20" maxlength="50" type="password"/>
+						<input id="password" name="password" size="20" maxlength="50" type="password"/>
 						</p>
 						<#if RequestParameters.logout??>
 							<!--p class="logout-success">You have been successfully logged out.</p-->

@@ -18,11 +18,13 @@ package org.craftercms.blog.services;
 
 import org.craftercms.blog.model.BlogListForm;
 import org.craftercms.profile.impl.ProfileRestClientImpl;
-import org.craftercms.crafterprofile.user.UserProfile;
+import org.craftercms.security.api.RequestContext;
+import org.craftercms.security.api.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.craftercms.blog.util.BlogsUtil;
 
 @Service
 public class BlogService {
@@ -37,14 +39,15 @@ public class BlogService {
 	private ActionService actionService;
 	
 	public BlogListForm getBlogListForm() {
-		
+		RequestContext context = RequestContext.getCurrent();
+		UserProfile user = context.getAuthenticationToken().getProfile();
 		BlogListForm blogListForm = new BlogListForm();
 		blogListForm.setTenant(this.appTenantName);
-		blogListForm.setTicket(getTicket());
+		blogListForm.setTicket(getTicket(user, context));
 		blogListForm.setTarget(this.appBlogName);
 		blogListForm.setActions(actionService.getActions(this.appBlogName));
-		Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if (!isAnonymousUser()) {
+		
+		if (!isAnonymousUser(user)) {
 			blogListForm.setAuthenticate(true);
 		}
 		return blogListForm;
@@ -60,20 +63,22 @@ public class BlogService {
         this.appTenantName = appTenantName;
     }
 	
-	private String getTicket() {
-		Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if (user == null || user instanceof String) {
-			return "";
-		} else {
-			UserProfile profile = (UserProfile)user;
-			return profile.getTicket();
-		}
+	private String getTicket(UserProfile user, RequestContext context) {
+		String ticket = "";
+		
+		if (user != null) {
+			String value = context.getAuthenticationToken().getTicket();
+			if (value != null) {
+				ticket = value;
+			}
+		} 
+		return ticket;
 	}
-	private boolean isAnonymousUser() {
-		Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if (user == null || (user instanceof String)) {
+	private boolean isAnonymousUser(UserProfile u) {
+		
+		if (u != null && u.getUserName().equalsIgnoreCase(BlogsUtil.ANONYMOUS)) {
 			return true;
-		}
+		} 
 		return false;
 	}
 }

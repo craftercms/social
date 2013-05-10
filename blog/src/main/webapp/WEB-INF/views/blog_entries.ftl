@@ -24,7 +24,7 @@
 	<div id="header">
     <a class="logo" href="http://craftercms.org" title="Go to Crafter CMS"></a> 
     <ul class="page-actions">
-      <li><a href="../logout" value="Logout" id="logout" name="logout">Sign out</a></li>
+      <li><a href="../crafter-security-logout" value="Logout" id="logout" name="logout">Sign out</a></li>
     </ul>
    
   </div>

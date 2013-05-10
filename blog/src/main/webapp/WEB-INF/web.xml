@@ -8,20 +8,31 @@
     <display-name>Blog Console</display-name>
     
     <filter>
-	        <filter-name>springSecurityFilterChain</filter-name>
-	        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
+        <filter-name>crafter.requestContextBindingFilter</filter-name>
+        <filter-class>org.craftercms.security.servlet.filters.RequestContextBindingFilter</filter-class>
+    </filter>
+    
+    <filter>
+        <filter-name>crafter.securityFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    
+    <filter-mapping>
+    	<filter-name>crafter.requestContextBindingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
 	
 	<filter-mapping>
-	        <filter-name>springSecurityFilterChain</filter-name>
-	        <url-pattern>/*</url-pattern>
-	</filter-mapping>
+      <filter-name>crafter.securityFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
 	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			/WEB-INF/classes/applicationContext.xml
-			/WEB-INF/classes/spring-security.xml
+			/WEB-INF/classes/security-context.xml
 		</param-value>
 	</context-param>
 	

@@ -25,6 +25,7 @@ import org.craftercms.blog.model.BlogListForm;
 import org.craftercms.blog.services.BlogService;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.RestException;
+import org.craftercms.security.api.RequestContext;
 
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,9 @@ public class BlogController {
 			HttpServletRequest request) throws Exception{
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("blog_entries");
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		
+		RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
 		
 	}
@@ -64,7 +67,8 @@ public class BlogController {
 		ModelAndView mav = new ModelAndView();
 
 		mav.setViewName(viewPublishedEntries);
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
 		
 	}
@@ -73,7 +77,8 @@ public class BlogController {
 	public ModelAndView getPublishedEntries(Model model, @RequestParam(required=false) String message) throws Exception{
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("index");
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
 		
 	}

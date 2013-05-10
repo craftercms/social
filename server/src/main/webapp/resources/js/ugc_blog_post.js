@@ -399,6 +399,14 @@
 				signout[0].style.display = "block";
 				signin[0].style.display = "none";
 				console[0].style.display = "block";
+				
+				util.checkCreatePermissions(options, function(result) {
+					if (!result) {
+						console[0].style.display = "none";
+					} 
+				});
+				
+				util.assignPermissions('CREATE',$('> div > ul.page-actions > li > a.blogconsole', container), data.UGC.id, options);
 			} else {
 				signout[0].style.display = "none";
 				signin[0].style.display = "block";
@@ -633,6 +641,24 @@
 				}
 			});
 			
+		},
+		
+		checkCreatePermissions: function( options, callback ) {
+			var url = options.restUrl + '/permission/create.' + options.outputType ; 
+			var data = {ticket : options.ticket, tenant : options.tenant};
+			
+			$.ajax({
+			    url: url,
+			    data: data,
+			    dataType : options.outputType,
+			    contentTypeString:"application/json;charset=UTF-8",
+			    cache: false,
+			    async: false,
+			    type: 'GET',
+			    success: function(aData, textStatus, jqXHR){
+			    	callback(aData.boolean);
+			    }
+			});
 		},
 		
 		getPermissions: function( action, ugcId, options, callback ) {

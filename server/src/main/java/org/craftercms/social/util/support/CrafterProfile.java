@@ -24,6 +24,7 @@ import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,18 +83,54 @@ public class CrafterProfile {
 	}
 	
 	public boolean validateUserToken(String ticket) {
-		return client.isTicketValid(getAppToken(), ticket);
+		try {
+			return client.isTicketValid(getAppToken(), ticket);
+		} catch(AppAuthenticationException e) {
+			try {
+				synchronized (lock) {
+					init();
+				}
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return client.isTicketValid(appToken, ticket);
+		}
 	}
 
 	public Profile getUserInformation(String ticket) {
-		return client.getProfileByTicketWithAttributes(getAppToken(), ticket, Arrays.asList(new String[]{}));
+		try {
+			return client.getProfileByTicketWithAttributes(getAppToken(), ticket, Arrays.asList(new String[]{}));
+		} catch(AppAuthenticationException e) {
+			try {
+				synchronized (lock) {
+					init();
+				}
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return client.getProfileByTicketWithAttributes(getAppToken(), ticket, Arrays.asList(new String[]{}));
+		}
 	}
 
 	public List<Profile> getProfilesByIds(List<String> profileIds) {
 		if (profileIds == null || profileIds.size() == 0) {
 			return null;
 		}
-		return client.getProfiles(getAppToken(), profileIds);
+		List<Profile> list =  null;
+		try {
+			list =  client.getProfiles(getAppToken(), profileIds);
+		} catch(AppAuthenticationException e) {
+			try {
+				synchronized (lock) {
+					init();
+				}
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			list =  client.getProfiles(appToken, profileIds);
+		}
+		
+		return list;
 	}
 
 
@@ -107,9 +144,20 @@ public class CrafterProfile {
 		if (profileId == null || profileId.equals("")) {
 			return  ProfileConstants.ANONYMOUS;
 		}
-		Profile profile = client.getProfile(getAppToken(), profileId);
 		
-		return profile;
+		try {
+			return client.getProfile(getAppToken(), profileId);
+		} catch(AppAuthenticationException e) {
+			try {
+				synchronized (lock) {
+					init();
+				}
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return client.getProfile(getAppToken(), profileId);
+		}
+		
 	}
 
     /**
@@ -119,7 +167,18 @@ public class CrafterProfile {
      * @return
      */
     public Tenant getTenant(String tenantName) {
-        return client.getTenantByName(getAppToken(), tenantName);
+    	try {
+	        return client.getTenantByName(getAppToken(), tenantName);
+	    } catch(AppAuthenticationException e) {
+			try {
+				synchronized (lock) {
+					init();
+				}
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return client.getTenantByName(getAppToken(), tenantName);
+		}
     }
 	
 	public void resetAppToken() {
@@ -129,10 +188,9 @@ public class CrafterProfile {
 	public Profile authenticateAnonymous() {
 		String token = null;
 		
-		//Tenant tenant = null;
 		try {
 			token = client.getAppToken(appUsername, appPassword);
-			//tenant = client.getTenantByName(token, this.crafterProfileAppTenantName);
+		
 			String ticket = client.getTicket(token, ANONYMOUS_USER, ANONYMOUS_PASSWORD,crafterProfileAppTenantName);
 		} catch (Exception e) {
 			log.error("could not get ticket for anonymous", e);

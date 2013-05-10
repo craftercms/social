@@ -33,7 +33,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -213,6 +212,7 @@ public class UGCRestController {
 
 	private String getProfileId(){
 		return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
 	}
 	
 	@ExceptionHandler(PermissionDeniedException.class)
