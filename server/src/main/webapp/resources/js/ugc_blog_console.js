@@ -152,84 +152,114 @@
 				container.html($.render( data, 'ugcListTmpl')).link(data);
 				container.options = options;
 				util.unbindConsoleEvents(container);
-
-				container.on( "click", "#newEntry", function(event) {
-					util.checkCreatePermissions(options, function(result) {
-						if (result) {
-							options = container.options;
-							var data = {};
-							data.textContent = {"title": "","content":""};
-							data.id = "";
-							util.renderUGCBlogEntryPublishing(options, container, data);
-						} else {
-							alert("User don't have permissions to CREATE content");
-						}
-					});
+				$saveButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.save > a.saveEntry', container);
+				$editButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.edit > a.editEntry', container);
+				$updateButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.update > a.updateEntry', container);
+				$deleteButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.delete > a.deleteEntry', container);
+				
+				$saveParent = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.save', container);
+				$editParent = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.edit', container);
+				$updateParent = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.update', container);
+				$deleteParent = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.delete', container);     
+				
+				util.checkCreatePermissions(options, function(result) {
+					options.isCreated = result;
+					if (!result) {
+						newButton = $('#newEntry', container); 
+						newButton[0].style.display = "none";
+					}
 				});
 				
-				container.on( "click", "#deleteEntry", function(event) {
-					var selected = $(":checkbox:checked");
-					if (selected.length<=0) {
-						return;
-					}
-					var ugcId = selected[0];
-					util.getPermissions("DELETE", ugcId.value, options, function(result){
-						if(result){
-							
-							var currentCheckbox;
-							var ugcIds = "";
-							for (i=0;i<selected.length;i++) {
-								currentCheckbox = selected[i];
-								if (ugcIds =="")
-									ugcIds = currentCheckbox.value;	
-							
-								else
-									ugcIds = ugcIds + ","+currentCheckbox.value;	
-
-							}
-						
-							var url = options.restUrl + '/ugc/delete.' + options.outputType + "?ugcIds=" + ugcIds; 
-							var data = {ticket : options.ticket, 'tenant' : options.tenant};
-							$.ajax({
-							    url: url,
-							    data: data,
-							    dataType : options.outputType,
-							    cache: false,
-							    type: 'POST',
-							    success: function(aData, textStatus, jqXHR){
-							    	util.loadRenderEntries(options, container,true);
-							    }
-							});
-							
-						}else{
-							alert("User don't have permissions to DELETE content");
-						}
-					});
+				container.on( "click", "#newEntry", function(event) {
+					$saveParent[0].style.display = "block";
+					$editParent[0].style.display = "none";
+					$updateParent[0].style.display = "none";
+					$deleteParent[0].style.display = "none";
+					
+					options = container.options;
+					var data = {};
+					data.textContent = {"title": "","content":""};
+					data.id = "";
+					util.renderUGCBlogEntryPublishing(options, container, data,true);
 				});
 				
 				container.on( "click", "#detailEntryBtn", function(event) {
 					ugcId = event.target.name;
-					util.getPermissions("UPDATE", ugcId, options, function(result){
-						if(result){
-							var data = {};
-							options = container.options;
-							
-							for(i = 0; i < options.data.hierarchyList.list.length; i++) {
-								currentUGC = options.data.hierarchyList.list[i];
-								if (currentUGC.id == ugcId) {
-									data = currentUGC;
-									break;
-								}
-							}
-							util.renderUGCBlogEntryPublishing(options, container, data);
-						}else{
-							alert("User don't have permissions to update the content");
+
+					$saveParent[0].style.display = "none";
+					$editParent[0].style.display = "block";
+					$updateParent[0].style.display = "none";
+					$deleteParent[0].style.display = "block";   
+					
+
+					var data = {};
+					options = container.options;
+					
+					for(i = 0; i < options.data.hierarchyList.list.length; i++) {
+						currentUGC = options.data.hierarchyList.list[i];
+						if (currentUGC.id == ugcId) {
+							data = currentUGC;
+							break;
 						}
+					}    
+					
+					
+					util.getPermissions("DELETE", data.id, options, function(result){
+					  if(!result) {
+						 $deleteParent[0].style.display = "none";
+					  } 
+					}); 
+					util.getPermissions("UPDATE", data.id, options, function(result){
+					  if(!result) {
+						 $editParent[0].style.display = "none";
+					  } 
 					});
+					util.renderUGCBlogEntryPublishing(options, container, data, false);
 					
 				});
 
-				$saveButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.save > a.saveEntry', container);
+				$editButton.click(function (event) {   
+					$titleInput = $('> div.addUGCBlogPublish > div.box > p > input.blog-title', container);
+					util.enableEditors(true, $titleInput[0]);     
+					$editParent[0].style.display = "none";
+					$updateParent[0].style.display = "block";
+					});   
+					
+                $updateButton.click(function (event) {
+						container.bloglist = this.bloglist;
+						container.publishDiv = this.publishDiv;
+						var contentData = tinyMCE.get('textContentField').getContent();
+						var $title = $('> div.ugc-list > div.box > p > input.blog-title', container);
+
+						if(contentData==null || contentData == "" || $title.val()==null || $title.val()=="") {
+							var $errorDiv = $('> div.ugc-list > div.box > div.errormsg', container);						
+							$errorDiv[0].textContent = "*Title and Content are required values";
+							$errorDiv[0].style.display = "block";
+							return;
+						}
+
+						var isNew = false;
+						ugcId = $saveButton[0].name;
+						util.addNewEntry(contentData, "", $title.val(), "", options,  container, false, ugcId);	
+						return false;
+
+					});  
+					
+			   $deleteButton.click(function (event) {
+					var url = options.restUrl + '/ugc/delete.' + options.outputType + "?ugcIds=" + ugcId; 
+					var data = {ticket : options.ticket, 'tenant' : options.tenant};
+					$.ajax({
+					    url: url,
+					    data: data,
+					    dataType : options.outputType,
+					    cache: false,
+					    type: 'POST',
+					    success: function(aData, textStatus, jqXHR){
+					    	util.loadRenderEntries(options, container,true);
+					    }
+					});
+
+				});	
 
 				$saveButton.click(function (event) {
 					container.bloglist = this.bloglist;
@@ -273,9 +303,32 @@
 				("#deleteEntry",container).data('events').click.length>0) {
 				("#deleteEntry",container).unbind("click")
 			}
+			$saveButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.save > a.saveEntry', container);
+			if ($saveButton.data('events') && $saveButton.data('events').click &&
+					$saveButton.data('events').click.length>0) {
+				$saveButton.unbind("click");
+			}
+			$editButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.edit > a.editEntry', container);
+			if ($editButton.data('events') && $editButton.data('events').click &&
+					$editButton.data('events').click.length>0) {
+				$editButton.unbind("click");
+			}
+			$updateButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.update > a.updateEntry', container);
+			if ($updateButton.data('events') && $updateButton.data('events').click &&
+					$updateButton.data('events').click.length>0) {
+				$updateButton.unbind("click");
+			}
+			
+			$deleteButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.delete > a.deleteEntry', container);
+			if ($deleteButton.data('events') && $deleteButton.data('events').click &&
+					$deleteButton.data('events').click.length>0) {
+				$deleteButton.unbind("click");
+			}
+			
+			
 		},
 
-		renderUGCBlogEntryPublishing : function (options, container, data) {
+		renderUGCBlogEntryPublishing : function (options, container, data, isNew) {
 			if (options.templatesLoaded) {
 				$bloglist = $('> div.bloglist', container),
 				$titleInput = $('> div.addUGCBlogPublish > div.box > p > input.blog-title', container);
@@ -301,7 +354,9 @@
 				tinyMCE.init({
 					oninit : function(e) {
 						tinyMCE.activeEditor.setContent(data.textContent.content);
-						$titleInput[0].value = data.textContent.title;
+						$titleInput[0].value = data.textContent.title;  
+    					util.enableEditors(isNew, $titleInput[0]);
+						
 					},
 					mode : "exact",
 					elements : "textContentField",
@@ -318,12 +373,12 @@
 				    theme_advanced_resizing : true,
 				    plugins : 'autoresize',
 	  				autoresize_min_height: "500px",
-	  				autoresize_max_height: "500px",
-				    width: "100%",
+	  				autoresize_max_height: "500px",  
+					width: "100%",
 					height: "450px"
 					
-				});
-				
+				});  
+
 				container.on( "click", "#close", function(event) {
 					$bloglist[0].style.display = "block";
 					$publishDiv[0].style.display = "none";
@@ -332,6 +387,18 @@
 
 			} else {
 				setTimeout(function() {util.renderUGCBlogEntryPublishing(options, container);} , 200);
+			}
+		},  
+		
+		enableEditors: function(enable, title) {
+		   	if (!enable) {             
+				 $titleInput[0].readOnly=true;      
+				 $titleInput[0].disabled=true; 
+				 tinyMCE.activeEditor.getBody().setAttribute('contenteditable', false);
+			} else {
+				$titleInput[0].readOnly=false; 
+				$titleInput[0].disabled=false;  
+				tinyMCE.activeEditor.getBody().setAttribute('contenteditable', true);
 			}
 		},
 

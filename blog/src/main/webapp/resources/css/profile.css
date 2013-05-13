@@ -340,7 +340,7 @@ legend {
  }
 
 .box {
-	border: 1px solid #dcdcdd;
+	/*border: 1px solid #dcdcdd;*/
 	background: #fff url('../image/box-bg.png') 0 bottom repeat-x;
 	border-radius: 4px;
 	min-height: 120px;
@@ -351,7 +351,7 @@ legend {
 	margin-top: 35px;
 	min-height: 500px;
 	padding: 10px;
-	position: relative;
+	/*position: relative;*/
 	top:15px;
 }
 

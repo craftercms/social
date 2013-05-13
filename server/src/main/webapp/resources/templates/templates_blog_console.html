@@ -7,15 +7,13 @@
           <ul class="main-nav clearfix">
             <li><span class="top-title">Blogs > Entries</span></li>
             <li><a href="#" id="newEntry" name="newEntry">New Entry</a></li>
-			<li><a href="#" id="deleteEntry" name="deleteEntry">Delete Entry</a></li>
-            <li><a href="../entries_published" value="viewBlog" id="viewBlog" name="viewBlow">View Blog</a></li>
+			<li><a href="../entries_published" value="viewBlog" id="viewBlog" name="viewBlow">View Blog</a></li>
           </ul>
         </nav>
       </div>
    </div>
   <table id="mytable" class="blogg-posttable">
     <colgroup>
-        <col style="width: 40px;">
         <col>
         <col style="width: 6em;">
         <col style="width: 8em;">
@@ -31,7 +29,10 @@
           <nav>
             <ul class="main-nav clearfix">
                 <li><span class="top-title">Blogs > New Entry</span></li>
-                <li class="save"><a href="#" class="saveEntry" id="saveEntry" name="{{=id}}">Save</a></li>
+                 <li class="save"><a href="#" class="saveEntry" name="{{=id}}" id="{{=id}}">Save</a></li>
+				<li class="edit"><a href="#" class="editEntry" name="{{=id}}" id="{{=id}}">Edit</a></li>
+				<li class="update"><a href="#" class="updateEntry" name="{{=id}}" id="{{=id}}">Update</a></li>
+				<li class="delete"><a href="#" class="deleteEntry" name="{{=id}}" id="{{=id}}">Delete</a></li>	
                 <li class="close"><a href="#" class="closeEntry" id="close" name="close">Close</a></li>
               </ul>
               
@@ -42,7 +43,7 @@
       <div class="errormsg" style="display:none"></div>
       <p>
         <label id="titleLabel" for="title">Title:</label> 
-        <input type="text" id="titleEntry" name="titleEntry" class="blog-title" placeholder="Entry Title" style="width:270px" value=""/>
+        <input type="text" id="titleEntry" name="titleEntry" class="blog-title" placeholder="Entry Title" style="width:270px;height: 20px;" value=""/>
       </p>
         <div id="editableContent" name="editableContent">
            <textarea id="textContentField" name="textContentField"></textarea> 
@@ -55,7 +56,6 @@
 
 <script id="ugcTmpl" type="text/x-jquery-tmpl">
    <tr class="trclass">
-        <td class="blogg-posttable"><input type=checkbox name="item" id="item" value="{{=id}}" unchecked></td>
         <td class="blogg-posttable"><a id="detailEntryBtn" href="#" name="{{=id}}">{{=textContent.title}}</a></td>
         <td class="blogg-posttable"><a href="#" name="{{=profile.userName}}">{{=profile.userName}}</a></td>
         <td class="blogg-posttable">

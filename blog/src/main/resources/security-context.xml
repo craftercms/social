@@ -16,7 +16,7 @@ xmlns:security="http://www.springframework.org/schema/security"
     	<beans:entry key="/resources/**" value="permitAll()" />
     	<beans:entry key="/api/2/cache/clear_all" value="permitAll()" />
     	<beans:entry key="/login**" value="permitAll()" />
-    	<beans:entry key="/index**" value="permitAll()"/> -->
+    	<beans:entry key="/index**" value="permitAll()"/>
     	<beans:entry key="/blog-console/blog_entries" value="isAuthenticated()"/>
     	<beans:entry key="/blog-console/*" value="isAuthenticated()"/>
     	<beans:entry key="/index*" value="permitAll()"/>
