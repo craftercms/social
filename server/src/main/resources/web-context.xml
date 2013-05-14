@@ -70,6 +70,7 @@
 							</beans:constructor-arg>
 						</beans:bean>
 					</beans:property>
+					<beans:property name="extractValueFromSingleKeyModel" value="true" />
 				</beans:bean>
 				<beans:bean
 					class="org.springframework.web.servlet.view.xml.MarshallingView">

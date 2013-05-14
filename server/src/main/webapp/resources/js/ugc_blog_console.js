@@ -138,13 +138,13 @@
 	var util = {
 		renderUGCBlogConsole : function (data, options, container) {
 			if (options.templatesLoaded) {
-				for (i = 0; i<data.hierarchyList.list.length;i++) {
-					var content = data.hierarchyList.list[i].textContent;
+				for (i = 0; i<data.list.length;i++) {
+					var content = data.list[i].textContent;
 					if (typeof content=="string" && content.substr(0,1) == '{') {
 						jsonObj = $.parseJSON(content);
-						data.hierarchyList.list[i].textContent = jsonObj;	
+						data.list[i].textContent = jsonObj;	
 					}	
-					data.hierarchyList.list[i].msgs = util.countChildren(data.hierarchyList.list[i]);
+					data.list[i].msgs = util.countChildren(data.list[i]);
 					
 				}
 				data.username = options.username;
@@ -195,8 +195,8 @@
 					var data = {};
 					options = container.options;
 					
-					for(i = 0; i < options.data.hierarchyList.list.length; i++) {
-						currentUGC = options.data.hierarchyList.list[i];
+					for(i = 0; i < options.data.list.length; i++) {
+						currentUGC = options.data.list[i];
 						if (currentUGC.id == ugcId) {
 							data = currentUGC;
 							break;
@@ -287,7 +287,7 @@
 					
 				});
 
-				util.scheduleTimeUpdates(options, data.hierarchyList.list);
+				util.scheduleTimeUpdates(options, data.list);
 			} else {
 				setTimeout(function() {util.renderUGCBlogConsole(data, options, container);} , 200);
 			}
@@ -430,7 +430,7 @@
 									appendTo.bloglist[0].style.display = "block";
 								if (appendTo.publishDiv!=null && appendTo.publishDiv!=undefined)
 									appendTo.publishDiv[0].style.display = "none";
-						    	if (aData.UGC) {
+						    	if (aData) {
 						    		util.loadRenderEntries(options,appendTo,true);
 						    	}
 						    	
@@ -484,7 +484,7 @@
 
 		manageRenderBlogConsole : function(aData, options, container) {
 			container.empty();
-	    	util.updateEllapsedTimeText(aData.hierarchyList.list);
+	    	util.updateEllapsedTimeText(aData.list);
 	    	options.aData = aData;
 	    	aData.settings=options;
 	    	util.renderUGCBlogConsole(aData, options, container);
@@ -507,10 +507,10 @@
 						    cache: false,
 						    type: 'POST',
 						    success: function(aData, textStatus, jqXHR){
-						    	if (aData.UGC) {
-						    		util.updateEllapsedTimeText([aData.UGC]);
-						    		util.observableAddUGC.apply(appendTo, [aData.UGC]);
-						    		util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, appendTo), [options]);
+						    	if (aData) {
+						    		util.updateEllapsedTimeText([aData]);
+						    		util.observableAddUGC.apply(appendTo, [aData]);
+						    		util.wireUpUGC.apply( $('#ugc-message-'+aData.id, appendTo), [options]);
 						    	}
 						
 						    }
@@ -573,8 +573,8 @@
 				    cache: false,
 				    type: 'POST',
 				    success: function(aData, textStatus, jqXHR){
-				    	if (aData.UGC) {
-				    		util.observableUpdateUGCProps.apply(ugcDiv, [aData.UGC]);
+				    	if (aData) {
+				    		util.observableUpdateUGCProps.apply(ugcDiv, [aData]);
 				    	}
 				    }
 				});
@@ -592,8 +592,8 @@
 				    cache: false,
 				    type: 'POST',
 				    success: function(aData, textStatus, jqXHR){
-				    	if (aData.UGC) {
-				    		util.observableUpdateUGCProps.apply(ugcDiv, [aData.UGC]);
+				    	if (aData) {
+				    		util.observableUpdateUGCProps.apply(ugcDiv, [aData]);
 				    	}
 				    }
 				});
@@ -613,7 +613,7 @@
 			    async: false,
 			    type: 'GET',
 			    success: function(aData, textStatus, jqXHR){
-			    	callback(aData.boolean);
+			    	callback(aData);
 			    }
 			});
 		},
@@ -631,7 +631,7 @@
 			    async: false,
 			    type: 'GET',
 			    success: function(aData, textStatus, jqXHR){
-			    	callback(aData.boolean);
+			    	callback(aData);
 			    }
 			});
 		},

@@ -8,7 +8,7 @@
 	 	</ul>
 	</div>
 <div class="ugc-list yui3-cssbase">
-	{{each hierarchyList.list tmpl="ugcTmpl"}}
+	{{each list tmpl="ugcTmpl"}}
 </div>
 </script>
 
@@ -46,20 +46,20 @@
 				<a class="logo" href="entries_published" title="Go to Crafter Blog"></a> 
 			</div>
 				<h1 class="h1">
-						{{=UGC.textContent.title}}
+						{{=textContent.title}}
 				</h1>
 				<p class="info">
 					By
-					<strong>{{=UGC.profile.userName}} </strong>
+					<strong>{{=profile.userName}} </strong>
 						posted    
-					   <span class="time" data-getfrom="$ctx.formattedDate([UGC.dateAdded])"/>
+					   <span class="time" data-getfrom="$ctx.formattedDate([dateAdded])"/>
 				</p>
 		</header>
 		<div id="page" class="container">
 			<div id="body">
 				<div class="copy post-body">
 					<p>
-						{{=UGC.textContent.content!}}
+						{{=textContent.content!}}
 					</p>
 				</div>
 			</div>
@@ -91,7 +91,7 @@
 					</div>
 					<div class="ugc-comment-stream">
 						<div class="ugc-stream-content">
-							{{each UGC.children tmpl="ugcComentTmpl"}}
+							{{each children tmpl="ugcComentTmpl"}}
 						</div>
 					</div>
 

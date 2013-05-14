@@ -121,7 +121,7 @@
 					    type: 'GET',
 					    success: function(aData, textStatus, jqXHR){
 					    	$this.empty();
-					    	util.updateEllapsedTimeText(aData.hierarchyList.list);
+					    	util.updateEllapsedTimeText(aData.list);
 					    	aData.settings=options;
 					    	util.renderUGCBlogPost(aData, options, $this);
 					    }
@@ -148,12 +148,12 @@
 	var util = {
 		renderUGCBlogPost : function (data, options, container) {
 			if (options.templatesLoaded) {
-				for (i = 0; i<data.hierarchyList.list.length;i++) {
-					var content = data.hierarchyList.list[i].textContent;
+				for (i = 0; i<data.list.length;i++) {
+					var content = data.list[i].textContent;
 					if (content.substr(0,1) == '{') {
 						jsonObj = $.parseJSON(content);
 						
-						data.hierarchyList.list[i].textContent = jsonObj;	
+						data.list[i].textContent = jsonObj;	
 					} 
 				}
 				try {
@@ -181,7 +181,7 @@
 						    success: function(aData, textStatus, jqXHR){
 						    	container.empty();
 						    	$("body").attr("class", "perm");
-						    	util.updateEllapsedTimeText(aData.UGC.children);
+						    	util.updateEllapsedTimeText(aData.children);
 						    	aData.settings=options;
 						    	util.renderUGCBlogPostDetail(aData, options, container);
 						    }
@@ -190,7 +190,7 @@
 						
 				});
 
-				util.scheduleTimeUpdates(options, data.hierarchyList.list);
+				util.scheduleTimeUpdates(options, data.list);
 			} else {
 				setTimeout(function() {util.renderUGCBlogPost(data, options, container);} , 200);
 			}
@@ -198,10 +198,10 @@
 
 		renderUGCBlogPostDetail : function (data, options, container) {
 			if (options.templatesLoaded) {
-				var content = data.UGC.textContent;
+				var content = data.textContent;
 				if (content.substr(0,1) == '{') {
 					jsonObj = $.parseJSON(content);
-					data.UGC.textContent = jsonObj;
+					data.textContent = jsonObj;
 				} 
 				try {
 					container.html($.render( data, 'ugcDetailTmpl')).link(data);
@@ -218,7 +218,7 @@
 						
 				});
 				
-				util.assignPermissions('CREATE',$(' > div > div.ugc-width-medium  > form > div.ugc-widget > div.ugc-editor', container), data.UGC.id, options);
+				util.assignPermissions('CREATE',$(' > div > div.ugc-width-medium  > form > div.ugc-widget > div.ugc-editor', container), data.id, options);
 				
 				//var $postAttachmentButton = $(' > div > form > div.ugc-width-medium > div.ugc-widget > div.ugc-editor > div.fyre-editor-toolbar > div.goog-toolbar > div.fyre-attachment-button > div.post-attach-btn',container);
 				var $form = $(' > div > div.ugc-width-medium > form',container);
@@ -269,14 +269,14 @@
 				$('#hidden_upload').load(function(e){
 					var myIFrame = document.getElementById("hidden_upload");
 					if (myIFrame.contentWindow.document.childNodes[0].childNodes.length == 0) {
-						alert('Social server response unexpected');
-						$.error('Social server response unexpected');
+						console.error('Social server response unexpected');
+						window.location = "login"; 
 						return;
 					}
 					var newJson= $.parseJSON(myIFrame.contentWindow.document.childNodes[0].textContent);
 					var idUgc = null;
 					if (newJson) {
-						idUgc = newJson.UGC.id;
+						idUgc = newJson.id;
 					} else {
 						idUgc = myIFrame.contentWindow.document.childNodes[0].children[0].textContent;
 					}
@@ -291,11 +291,11 @@
 					    type: 'GET',
 					    success: function(aData, textStatus, jqXHR){
 					    	
-					    	if (aData.UGC) {
+					    	if (aData) {
 					    		
-					    		util.updateEllapsedTimeText([aData.UGC]);
-							    util.observableAddUGC.apply(options.container, [aData.UGC]);
-							    util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, options.container), [options]);
+					    		util.updateEllapsedTimeText([aData]);
+							    util.observableAddUGC.apply(options.container, [aData]);
+							    util.wireUpUGC.apply( $('#ugc-message-'+aData.id, options.container), [options]);
 					    	}
 					    	//removeExtraInputs();
 					    	while (options.attachments.children().length>0) {
@@ -316,7 +316,7 @@
 					
 	   			});
 				
-				util.scheduleTimeUpdates(options, data.UGC.children);
+				util.scheduleTimeUpdates(options, data.children);
 				
 			} else {
 				setTimeout(function() {util.renderUGCBlogPostDetail(data, options, container);} , 200);
@@ -341,10 +341,10 @@
 						    cache: false,
 						    type: 'POST',
 						    success: function(aData, textStatus, jqXHR){
-						    	if (aData.UGC) {
-						    		util.updateEllapsedTimeText([aData.UGC]);
-						    		util.observableAddUGC.apply(appendTo, [aData.UGC]);
-						    		util.wireUpUGC.apply( $('#ugc-message-'+aData.UGC.id, appendTo), [options]);
+						    	if (aData) {
+						    		util.updateEllapsedTimeText([aData]);
+						    		util.observableAddUGC.apply(appendTo, [aData]);
+						    		util.wireUpUGC.apply( $('#ugc-message-'+aData.id, appendTo), [options]);
 						    	}
 						    	if (container !=null && removeContainer) {
 						    		container.remove();
@@ -395,6 +395,9 @@
 			signin = $('> div > ul.page-actions > li > a.signin', container);
 			signout = $('> div > ul.page-actions > li > a.signout', container);
 			console = $('> div > ul.page-actions > li > a.blogconsole', container);
+//			signin = $('> div > nav.nav > ul > li > a.signin', container);
+//			signout = $('> div > nav.nav > ul > li > a.signout', container);
+//			console = $('> div > nav.nav > ul > li > a.blogconsole', container);
 			if (options.isAuthenticate) {
 				signout[0].style.display = "block";
 				signin[0].style.display = "none";
@@ -406,7 +409,7 @@
 					} 
 				});
 				
-				util.assignPermissions('CREATE',$('> div > ul.page-actions > li > a.blogconsole', container), data.UGC.id, options);
+				util.assignPermissions('CREATE',$('> div > ul.page-actions > li > a.blogconsole', container), data.id, options);
 			} else {
 				signout[0].style.display = "none";
 				signin[0].style.display = "block";
@@ -513,8 +516,8 @@
 				    cache: false,
 				    type: 'POST',
 				    success: function(aData, textStatus, jqXHR){
-				    	if (aData.UGC) {
-				    		util.observableUpdateUGCProps.apply(ugcDiv, [aData.UGC]);
+				    	if (aData) {
+				    		util.observableUpdateUGCProps.apply(ugcDiv, [aData]);
 				    	}
 				    }
 				});
@@ -532,8 +535,8 @@
 				    cache: false,
 				    type: 'POST',
 				    success: function(aData, textStatus, jqXHR){
-				    	if (aData.UGC) {
-				    		util.observableUpdateUGCProps.apply(ugcDiv, [aData.UGC]);
+				    	if (aData) {
+				    		util.observableUpdateUGCProps.apply(ugcDiv, [aData]);
 				    	}
 				    }
 				});
@@ -555,8 +558,8 @@
 		
 		observableAddUGC : function (data) {
 			var old = $.view((this.length)?this[0]:this).data,
-				children = $.observable(old.children?old.children:old.UGC.children);
-				//children = $.observable(old.UGC.children?old.UGC.children:old.hierarchyList.list);
+				children = $.observable(old.children?old.children:old.children);
+
 			children.insert( 0, data );
 
 		},
@@ -656,7 +659,7 @@
 			    async: false,
 			    type: 'GET',
 			    success: function(aData, textStatus, jqXHR){
-			    	callback(aData.boolean);
+			    	callback(aData);
 			    }
 			});
 		},
@@ -674,7 +677,7 @@
 			    async: false,
 			    type: 'GET',
 			    success: function(aData, textStatus, jqXHR){
-			    	callback(aData.boolean);
+			    	callback(aData);
 			    }
 			});
 		}

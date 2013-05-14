@@ -62,6 +62,10 @@ public class BlogService {
     public void setAppTenantName(String appTenantName) {
         this.appTenantName = appTenantName;
     }
+    
+    public String getTenant() {
+    	return appTenantName;
+    }
 	
 	private String getTicket(UserProfile user, RequestContext context) {
 		String ticket = "";

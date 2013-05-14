@@ -46,7 +46,7 @@ public class BlogController {
 	@Autowired
 	private BlogService blogService;
 	
-	private static final String CONSOLE_URI = "blog_console";
+	private static final String CONSOLE_URI = "blog-console";
 	
 	@RequestMapping(value = {"/blog-console/blog_entries","/blog-console/*","blog-console/*","/blog-console","/blog_entries","blog_entries"})
 	public ModelAndView getBlogs(Model model, @RequestParam(required=false) String message,
@@ -61,15 +61,14 @@ public class BlogController {
 	}
 	
 	@RequestMapping(value = {"blog-console/entries_published","entries_published","/index"}, method = RequestMethod.GET)
-	public ModelAndView getEntriesPublished(Model model, @RequestParam(required=false) String message,
+	public String getEntriesPublished(Model model, @RequestParam(required=false) String message,
 			HttpServletRequest request) throws Exception{
-		String viewPublishedEntries = getPublishedEntriesView(request.getRequestURI());
-		ModelAndView mav = new ModelAndView();
 
-		mav.setViewName(viewPublishedEntries);
-		RequestContext context = RequestContext.getCurrent();
-        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
-        return mav;
+		if (isPublishedEntriesView(request.getRequestURI())) {
+			return "entries_published";
+		} else {
+			return "redirect:/entries_published";
+		}
 		
 	}
 	
@@ -102,10 +101,19 @@ public class BlogController {
 	private String getPublishedEntriesView(String requestURI) {
 		String view = "entries_published";
 		if (requestURI.contains(CONSOLE_URI)) {
-			view = "../entries_published";
+			view = "/entries_published";
 		}
 		
 		return view;
+	}
+	
+	private boolean isPublishedEntriesView(String requestURI) {
+		boolean isView = true;
+		if (requestURI.contains(CONSOLE_URI)) {
+			isView = false;
+		}
+		
+		return isView;
 	}
 	
 	private String getBlogEntriesView(String requestURI) {
