@@ -12,8 +12,6 @@ xmlns:security="http://www.springframework.org/schema/security"
 	
 	<beans:import resource="classpath:crafter/security/security-context.xml"/>
 	
-	
-	
 	<util:map id="crafter.urlRestrictions">
     	<beans:entry key="/resources/**" value="permitAll()" />
     	<beans:entry key="/api/2/cache/clear_all" value="permitAll()" />
@@ -24,12 +22,15 @@ xmlns:security="http://www.springframework.org/schema/security"
     	<beans:entry key="/index*" value="permitAll()"/>
     </util:map>
     
-    
     <beans:bean id="blogService" class="org.craftercms.blog.services.BlogService">
         <beans:property name="crafterSocialAppBlogName" value="${crafter.social.app.blog.name}"/>
         <beans:property name="appTenantName" value="${crafter.profile.app.tenant.name}"/>
     </beans:bean>
     <beans:bean id="crafterSocialRestClientImpl" class="org.craftercms.blog.services.impl.CrafterSocialRestClientImpl">
+    	<beans:property name="port" value="${social.port}"/>
+		<beans:property name="host" value="${social.host}"/>
+		<beans:property name="scheme" value="${social.scheme}"/>
+		<beans:property name="socialAppPath" value="${social.socialAppPath}"/>
         
     </beans:bean>
     

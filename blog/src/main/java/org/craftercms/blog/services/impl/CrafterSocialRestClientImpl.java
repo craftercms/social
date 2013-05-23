@@ -69,30 +69,7 @@ public class CrafterSocialRestClientImpl implements CrafterSocialClient {
 			if (response.getStatusLine().getStatusCode() == 200) {
 				hasCreatPermissions = (Boolean) objectMapper.readValue(entity.getContent(),
 						Boolean.class);
-				
-				
-//				Object test = (String) objectMapper.readValue(entity.getContent(),
-//						Object.class);
-				
-				/*objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-				objectMapper.configure(DeserializationConfig.Feature.UNWRAP_ROOT_VALUE, false);
-				Message m = (Message) objectMapper.readValue(entity.getContent(),
-						Message.class);
-				hasCreatPermissions = m.isBoolean();
-				System.out.println("****** " +hasCreatPermissions);*/
-				
-				
-//				BufferedReader br = new BufferedReader(
-//                        new InputStreamReader((response.getEntity().getContent())));
-//				String output;
-//				System.out.println("Output from Server .... \n");
-//				while ((output = br.readLine()) != null) {
-//					//System.out.println("****** " +output);
-//					if (output.endsWith("true}")) {
-//						hasCreatPermissions = true;
-//						break;
-//					}
-//				}
+
  
 			}
 		} catch (URISyntaxException e) {
@@ -125,6 +102,38 @@ public class CrafterSocialRestClientImpl implements CrafterSocialClient {
 	  public void setBoolean(boolean success) {
 	    dataset.put("boolean", String.valueOf(success));
 	  }
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getScheme() {
+		return scheme;
+	}
+
+	public void setScheme(String scheme) {
+		this.scheme = scheme;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getSocialAppPath() {
+		return socialAppPath;
+	}
+
+	public void setSocialAppPath(String socialAppPath) {
+		this.socialAppPath = socialAppPath;
 	}
 
 }

@@ -13,7 +13,10 @@
                 alert('Requested page not found.');
             } else if (jqXHR.status == 500) {
                 alert('Internal Server Error.');
-            } else if (exception === 'parsererror') {
+            } else if (jqXHR.status == 400) {
+                jqXHR.status = -1;
+                console.error('Invalid ticket. Sign in again: ' + jqXHR.statusText);
+             } else if (exception === 'parsererror') {
                 alert('Requested JSON parse failed.');
             } else if (exception === 'timeout') {
                 alert('Time out error.');
