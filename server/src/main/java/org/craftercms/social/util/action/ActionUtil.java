@@ -17,6 +17,7 @@
 package org.craftercms.social.util.action;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +28,7 @@ public class ActionUtil {
 	
 	public static final String[] ACTIONS = {"read","update","create","delete", "act_on", "moderate"};
 	
-	private static ArrayList<String> READ_ROLES = new ArrayList<String>(){
+	private static final List<String> READ_ROLES = new ArrayList<String>(){
 		{
 			add(ActionConstants.ANONYMOUS); 
 			add(ActionConstants.SOCIAL_USER);
@@ -36,7 +37,7 @@ public class ActionUtil {
             add(ActionConstants.OWNER);
 		}
 	};
-	private static ArrayList<String> CREATE_ROLES = new ArrayList<String>(){
+	private static final List<String> CREATE_ROLES = new ArrayList<String>(){
 		{
 			add(ActionConstants.SOCIAL_USER);
 			add(ActionConstants.SOCIAL_ADMIN);
@@ -44,20 +45,20 @@ public class ActionUtil {
             add(ActionConstants.OWNER);
 		}
 	};
-	private static ArrayList<String> UPDATE_ROLES = new ArrayList<String>(){
+	private static final List<String> UPDATE_ROLES = new ArrayList<String>(){
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
 			add(ActionConstants.SOCIAL_AUTHOR);
             add(ActionConstants.OWNER);
 		}
 	};
-	private static ArrayList<String> DELETE_ROLES = new ArrayList<String>(){
+	private static final List<String> DELETE_ROLES = new ArrayList<String>(){
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
 			add(ActionConstants.SOCIAL_AUTHOR);
 		}
 	};
-    private static ArrayList<String> ACT_ON_ROLES = new ArrayList<String>(){
+    private static final List<String> ACT_ON_ROLES = new ArrayList<String>(){
         {
             add(ActionConstants.SOCIAL_ADMIN);
             add(ActionConstants.SOCIAL_AUTHOR);
@@ -65,38 +66,38 @@ public class ActionUtil {
             add(ActionConstants.OWNER);
         }
     };
-    private static ArrayList<String> MODERATE_ROLES = new ArrayList<String>(){
+    private static final List<String> MODERATE_ROLES = new ArrayList<String>(){
         {
             add(ActionConstants.SOCIAL_ADMIN);
             add(ActionConstants.SOCIAL_MODERATOR);
         }
     };
 	
-	private static final Action updateAction = new Action(ActionEnum.UPDATE.toString(), UPDATE_ROLES);
-	private static final Action createAction = new Action(ActionEnum.CREATE.toString(), CREATE_ROLES);
-	private static final Action deleteAction = new Action(ActionEnum.DELETE.toString(), DELETE_ROLES);
-	private static final Action readAction = new Action(ActionEnum.READ.toString(), READ_ROLES);
-    private static final Action actOnAction = new Action(ActionEnum.ACT_ON.toString(), ACT_ON_ROLES);
-    private static final Action moderateAction = new Action(ActionEnum.MODERATE.toString(), MODERATE_ROLES);
+	private static final Action UPDATE_ACTION = new Action(ActionEnum.UPDATE.toString(), UPDATE_ROLES);
+	private static final Action CREATE_ACTION = new Action(ActionEnum.CREATE.toString(), CREATE_ROLES);
+	private static final Action DELETE_ACTION = new Action(ActionEnum.DELETE.toString(), DELETE_ROLES);
+	private static final Action READ_ACTION = new Action(ActionEnum.READ.toString(), READ_ROLES);
+    private static final Action ACT_ON_ACTION = new Action(ActionEnum.ACT_ON.toString(), ACT_ON_ROLES);
+    private static final Action MODERATE_ACTION = new Action(ActionEnum.MODERATE.toString(), MODERATE_ROLES);
 	
-	private static ArrayList<Action> DEFAULT_ACTION = new ArrayList<Action>(){
+	private static final List<Action> DEFAULT_ACTION = new ArrayList<Action>(){
 		{
-			add(updateAction);
-			add(createAction);
-			add(deleteAction);
-			add(readAction);
-            add(actOnAction);
-            add(moderateAction);
+			add(UPDATE_ACTION);
+			add(CREATE_ACTION);
+			add(DELETE_ACTION);
+			add(READ_ACTION);
+            add(ACT_ON_ACTION);
+            add(MODERATE_ACTION);
 		}
 	};
 	
 	
-	public static ArrayList<Action> getDefaultActions() {
+	public static final List<Action> getDefaultActions() {
 		return DEFAULT_ACTION;
 	}
 
-   public static ArrayList<Action> getActions(HttpServletRequest request) {
-		ArrayList<Action> list = new ArrayList<Action>();
+   public static List<Action> getActions(HttpServletRequest request) {
+		List<Action> list = new ArrayList<Action>();
 		String[] roles;
 		Action action;
 		Map params = request.getParameterMap();

@@ -23,10 +23,7 @@ public class FlagModeration implements ModerationFilter {
 
 	@Override
 	public boolean needModeration(UGC ugc) {
-		if(ugc.getFlagCount()>=0)
-			return false;
-		else
-			return true;
+		return !(ugc.getFlagCount() >= 0);
 	}
 	
 	@Override

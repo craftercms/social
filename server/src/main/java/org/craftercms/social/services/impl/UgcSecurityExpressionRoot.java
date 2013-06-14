@@ -34,124 +34,136 @@ import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.support.CrafterProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 
-
-public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot { 
+public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 
 	private static final String ADMIN = "ADMIN";
 	private static final String AUDITOR = "AUDITOR";
 
-	private final Logger log = LoggerFactory.getLogger(UgcPermissionExpressionHandler.class);
+	private final Logger log = LoggerFactory
+			.getLogger(UgcPermissionExpressionHandler.class);
 
-	private Set<String> userRoles;
-	
 	private PermissionService permissionService;
-	
+
 	private UGCService ugcService;
-	
+
 	private HttpServletResponse response;
-	
+
 	private TenantService tenantService;
 	
+	private static final String APPLICATION_JSON = "application/json";
+	private static final String CONTENT_TYPE = "Content-Type";
+
+	@Autowired
 	private CrafterProfile crafterProfileService;
-	
+
 	public UgcSecurityExpressionRoot(Authentication a, FilterInvocation fi) {
 		super(a, fi);
 		response = fi.getResponse();
-        
-    }
-	
+
+	}
+
 	public boolean hasCreatePermission() {
 		Map params = request.getParameterMap();
 		String[] target = (String[]) params.get("target");
-		String[] parentId = (String[])params.get("parentId");
+		String[] parentId = (String[]) params.get("parentId");
 		UGC parent = null;
-		if (target != null && target.length ==1 && (parentId == null || parentId.length==0)) {
-			String tenantName = null;
-			String[] tenant = (String[])params.get("tenant");
-			if (tenant!=null && tenant.length>0) {
-				tenantName = tenant[0];
-			}
-			List<String> createRoles = this.tenantService.getRootCreateRoles(tenant[0]);
+		if (target != null && target.length == 1
+				&& (parentId == null || parentId.length == 0)) {
+			String[] tenant = (String[]) params.get("tenant");
+			List<String> createRoles = this.tenantService
+					.getRootCreateRoles(tenant[0]);
 			ArrayList<Action> actions = new ArrayList<Action>();
-			Action createAction = new Action(ActionEnum.CREATE.toString(),createRoles);
+			Action createAction = new Action(ActionEnum.CREATE.toString(),
+					createRoles);
 			actions.add(createAction);
 			parent = new UGC();
 			parent.setActions(actions);
-			
+
 		} else {
 			parent = this.ugcService.findById(new ObjectId(parentId[0]));
 		}
-		if (!permissionService.allowed(ActionEnum.CREATE, parent, getProfileId())) {
+		if (!permissionService.allowed(ActionEnum.CREATE, parent,
+				getProfileId())) {
 			log.error("Create UGC permission not granted", parent);
-			response.setHeader("Content-Type", "application/json");
-	        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
-			
+			response.setHeader(CONTENT_TYPE, APPLICATION_JSON);
+			// Permission not granted
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
 			return false;
-		} 
+		}
 		return true;
 	}
-	
+
 	public boolean hasUpdatePermission() {
 		Map params = request.getParameterMap();
-		String[] ugcId = (String[])params.get("ugcId");
-		if (ugcId == null && ugcId.length == 0) return false;
-		if (!permissionService.allowed(ActionEnum.UPDATE, new ObjectId(ugcId[0]), getProfileId())) {
+		String[] ugcId = (String[]) params.get("ugcId");
+		if (ugcId == null || ugcId.length == 0) {
+			return false;
+		}
+		if (!permissionService.allowed(ActionEnum.UPDATE,
+				new ObjectId(ugcId[0]), getProfileId())) {
 			log.error("UPDATE UGC permission not granted", ugcId);
-			response.setHeader("Content-Type", "application/json");
-	        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
-
-	        return false;
-		} 
+			response.setHeader(CONTENT_TYPE, APPLICATION_JSON);
+			// Permission not granted
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
+			return false;
+		}
 		return true;
 	}
-	
+
 	public boolean hasModeratorPermission() {
-		Map params = request.getParameterMap();
-		
 		// READ permissions are checked using Query method
-		if (request.getMethod().toLowerCase().equals("get")) return true; 
-
+		if (request.getMethod().toLowerCase().equals("get")) {
+			return true;
+		}
 		String ugcId = getUgcIdFromModerationUri();
-		if (ugcId == null && ugcId.length() == 0) return true;
-		if (!permissionService.allowed(ActionEnum.MODERATE, new ObjectId(ugcId), getProfileId())) {
+		if (ugcId == null || ugcId.length() == 0) {
+			return true;
+		}
+		if (!permissionService.allowed(ActionEnum.MODERATE,
+				new ObjectId(ugcId), getProfileId())) {
 			log.error("MODERATOR permission not granted", ugcId);
-			response.setHeader("Content-Type", "application/json");
-	        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
-
-	        return false;
-		} 
+			response.setHeader(CONTENT_TYPE, APPLICATION_JSON);
+			// Permission not granted
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
+			return false;
+		}
 		return true;
 	}
 
-    public boolean hasActOnPermission() {
-        Map params = request.getParameterMap();
+	public boolean hasActOnPermission() {
+		String ugcId = getUgcIdFromActOnUri();
+		if (ugcId == null || ugcId.length() == 0) {
+			return true;
+		}
+		if (!permissionService.allowed(ActionEnum.ACT_ON, new ObjectId(ugcId),
+				getProfileId())) {
+			log.error("ACT_ON permission not granted", ugcId);
+			response.setHeader(CONTENT_TYPE, APPLICATION_JSON);
+			// Permission not granted
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
+			return false;
+		}
+		return true;
+	}
 
-        String ugcId = getUgcIdFromActOnUri();
-        if (ugcId == null && ugcId.length() == 0) return true;
-        if (!permissionService.allowed(ActionEnum.ACT_ON, new ObjectId(ugcId), getProfileId())) {
-            log.error("ACT_ON permission not granted", ugcId);
-            response.setHeader("Content-Type", "application/json");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
-
-            return false;
-        }
-        return true;
-    }
-    
-    public boolean hasAdminRole() {
-    	boolean isAdmin = false;
-    	String id = getProfileId();
-    	Profile profile = this.crafterProfileService.getProfile(id);
-    	if (profile==null) return false;
-    	List<String> roles = profile.getRoles();
-    	if (roles==null) return false;
-    	
-		for(String role:roles) {
+	public boolean hasAdminRole() {
+		boolean isAdmin = false;
+		String id = getProfileId();
+		Profile profile = this.crafterProfileService.getProfile(id);
+		if (profile == null) {
+			return false;
+		}
+		List<String> roles = profile.getRoles();
+		if (roles == null) {
+			return false;
+		}
+		for (String role : roles) {
 			if (role.toUpperCase().endsWith(ADMIN)) {
 				isAdmin = true;
 				break;
@@ -159,16 +171,19 @@ public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 		}
 		return isAdmin;
 	}
-    
-    public boolean hasAuditorRole() {
-    	boolean isAudit = false;
-    	String id = getProfileId();
-    	Profile profile = this.crafterProfileService.getProfile(id);
-    	if (profile==null) return false;
-    	List<String> roles = profile.getRoles();
-    	if (roles==null) return false;
-    	
-		for(String role:roles) {
+
+	public boolean hasAuditorRole() {
+		boolean isAudit = false;
+		String id = getProfileId();
+		Profile profile = this.crafterProfileService.getProfile(id);
+		if (profile == null) {
+			return false;
+		}
+		List<String> roles = profile.getRoles();
+		if (roles == null) {
+			return false;
+		}
+		for (String role : roles) {
 			if (role.toUpperCase().endsWith(AUDITOR)) {
 				isAudit = true;
 				break;
@@ -177,8 +192,9 @@ public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 		return isAudit;
 	}
 
-	private String getProfileId(){
-		return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	private String getProfileId() {
+		return (String) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
 	}
 
 	public PermissionService getPermissionService() {
@@ -201,17 +217,20 @@ public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 		this.tenantService = tenantService;
 	}
 
-    private String getUgcIdFromActOnUri() {
-          String ugcId = request.getRequestURI().replaceAll(".*api/2/ugc/[^\\/]*/([^\\/\\.]*).*", "$1");
-          if (ugcId.equals(request.getRequestURI())) {
-        	  return null;
-          } 
-          return ugcId;
-    }
+	private String getUgcIdFromActOnUri() {
+		String ugcId = request.getRequestURI().replaceAll(
+				".*api/2/ugc/[^\\/]*/([^\\/\\.]*).*", "$1");
+		if (ugcId.equals(request.getRequestURI())) {
+			return null;
+		}
+		return ugcId;
+	}
 
 	private String getUgcIdFromModerationUri() {
 		String interceptedUri = "moderation/";
-		String endPath = request.getRequestURI().substring(request.getRequestURI().indexOf("moderation/") + interceptedUri.length());
+		String endPath = request.getRequestURI().substring(
+				request.getRequestURI().indexOf("moderation/")
+						+ interceptedUri.length());
 		if (endPath.contains("/status")) {
 			return endPath.substring(0, endPath.indexOf("/status"));
 		}

@@ -41,7 +41,7 @@ public class HierarchyList<T> implements Serializable {
 	private int extraCount = 0;
 
 	@XmlElement
-	private ArrayList<T> list = new ArrayList<T>();
+	private List<T> list = new ArrayList<T>();
 
 	public HierarchyList() {
 	}
@@ -157,7 +157,7 @@ public class HierarchyList<T> implements Serializable {
 	}
 
 	@XmlElement(name="list")
-	public ArrayList<T> getList() {
+	public List<T> getList() {
 		return list;
 	}
 

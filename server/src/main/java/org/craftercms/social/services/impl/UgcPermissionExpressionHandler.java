@@ -16,7 +16,6 @@
  */
 package org.craftercms.social.services.impl;
 
-
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCService;
@@ -29,32 +28,36 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 import org.springframework.stereotype.Component;
 
-@Component(value="ugcPermissionExpressionHandler")
-public class UgcPermissionExpressionHandler extends DefaultWebSecurityExpressionHandler { 
+@Component(value = "ugcPermissionExpressionHandler")
+public class UgcPermissionExpressionHandler extends
+		DefaultWebSecurityExpressionHandler {
 	@Autowired
 	private PermissionService permissionService;
 	@Autowired
-	private UGCService ugcService; 
-	
+	private UGCService ugcService;
+
 	@Autowired
 	private TenantService tenantService;
-	
+
 	@Autowired
 	private CrafterProfile crafterProfileService;
-	
+
 	public UgcPermissionExpressionHandler() {
 		super();
 	}
-	 
+
 	protected SecurityExpressionRoot createSecurityExpressionRoot(
-            Authentication authentication, FilterInvocation fi) {
-		 WebSecurityExpressionRoot expressionRoot = new UgcSecurityExpressionRoot(authentication, fi);
-		 ((UgcSecurityExpressionRoot)expressionRoot).setPermissionService(permissionService);
-		 ((UgcSecurityExpressionRoot)expressionRoot).setUgcService(ugcService);
-		 ((UgcSecurityExpressionRoot)expressionRoot).setTenantService(tenantService);
-		 ((UgcSecurityExpressionRoot)expressionRoot).setCrafterProfileService(crafterProfileService);
-		 return expressionRoot;
+			Authentication authentication, FilterInvocation fi) {
+		WebSecurityExpressionRoot expressionRoot = new UgcSecurityExpressionRoot(
+				authentication, fi);
+		((UgcSecurityExpressionRoot) expressionRoot)
+				.setPermissionService(permissionService);
+		((UgcSecurityExpressionRoot) expressionRoot).setUgcService(ugcService);
+		((UgcSecurityExpressionRoot) expressionRoot)
+				.setTenantService(tenantService);
+		((UgcSecurityExpressionRoot) expressionRoot)
+				.setCrafterProfileService(crafterProfileService);
+		return expressionRoot;
 	}
-	
- 
+
 }

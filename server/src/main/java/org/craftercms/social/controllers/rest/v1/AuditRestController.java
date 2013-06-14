@@ -40,10 +40,11 @@ public class AuditRestController {
 	@RequestMapping(value = "/{ugcId}", method = RequestMethod.GET)
 	@ModelAttribute
 	public List<UGCAudit> getUGCAudit(@PathVariable String ugcId,@RequestParam(required=false,defaultValue="") String profileId){
-		if(profileId.isEmpty())
+		if(profileId.isEmpty()) {
 			return auditServices.findUGCAudits(new ObjectId(ugcId));
-		else
+		} else {
 			return auditServices.findUGCAudits(new ObjectId(ugcId),profileId);
+		}
 	}
 	
 	@RequestMapping(value = "/{ugcId}/{action}", method = RequestMethod.GET)

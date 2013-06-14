@@ -34,10 +34,9 @@ public class TenantRepositoryImpl implements TenantRepositoryCustom {
 	@Override
 	public void setRoles(String tenantName, List<String> roles) {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("id").is(tenantName));
+		query.addCriteria(Criteria.where("tenantName").is(tenantName));
 		Update update = new Update();
 		update.set("roles", roles);
-
 		mongoTemplate.updateFirst(query, update, Tenant.class);
 	}
 

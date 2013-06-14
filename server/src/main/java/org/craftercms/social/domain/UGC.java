@@ -43,7 +43,7 @@ public class UGC implements Hierarchical<UGC> {
 		UNMODERATED, PENDING, APPROVED, REJECTED
 	}
 	
-	public static String[] ModerationStatusString = {
+	public static final String[] ModerationStatusString = {
 		"UNMODERATED", "PENDING", "APPROVED", "REJECTED"
 	};
 
@@ -54,7 +54,7 @@ public class UGC implements Hierarchical<UGC> {
 	private String textContent;
 	private List<AttachmentModel> attachmentModels;
 	private ObjectId[] attachmentId;
-	private ArrayList<Action> actions;
+	private List<Action> actions;
 
     private String createdBy;
     private String lastModifiedBy;
@@ -76,7 +76,6 @@ public class UGC implements Hierarchical<UGC> {
 	private int extraChildCount;
 	@Transient
 	private transient Profile profile = null;
-	//private transient Profile profile = ProfileConstants.ANONYMOUS;
 	
 	@XmlElement(name="attributes")
 	@XStreamAlias("attributes")
@@ -92,7 +91,11 @@ public class UGC implements Hierarchical<UGC> {
 		super();
 		this.parentId = parentId;
 		this.textContent = textContent;
-		this.attachmentId = attachmentId;
+		if (attachmentId == null) {
+			this.attachmentId = null;
+		} else {
+			this.attachmentId = attachmentId.clone();
+		}
 		this.profileId = profileId;
         this.tenant = tenant;
 		this.targetId = targetId;
@@ -170,7 +173,11 @@ public class UGC implements Hierarchical<UGC> {
 	}
 
 	public void setAttachmentId(ObjectId[] attachmentId) {
-		this.attachmentId = attachmentId;
+		if (attachmentId==null) {
+			this.attachmentId = null;
+		} else {
+			this.attachmentId = attachmentId.clone();
+		}
 	}
 
 	public ModerationStatus getModerationStatus() {
@@ -265,11 +272,11 @@ public class UGC implements Hierarchical<UGC> {
 		this.attachmentModels = attachmentModels;
 	}
 
-	public ArrayList<Action> getActions() {
+	public List<Action> getActions() {
 		return actions;
 	}
 
-	public void setActions(ArrayList<Action> actions) {
+	public void setActions(List<Action> actions) {
 		this.actions = actions;
 	}
 

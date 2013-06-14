@@ -44,7 +44,7 @@ public class Action {
 		return roles;
 	}
 
-	public void setRoles(ArrayList<String> roles) {
+	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}
 

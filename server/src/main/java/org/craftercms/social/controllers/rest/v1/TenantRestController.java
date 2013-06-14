@@ -46,8 +46,7 @@ public class TenantRestController {
 			@RequestParam String tenant, 
 			@RequestParam String[] roles,
             HttpServletResponse response) {
-
-        return tenantService.setTenant(tenant,
+		return tenantService.setTenant(tenant,
                 (roles != null ? Arrays.asList(roles) : null));
 	}
 	
@@ -57,7 +56,6 @@ public class TenantRestController {
 			@RequestParam String tenant, 
 			@RequestParam String[] roles,
             HttpServletResponse response) {
-
         tenantService.setTenantRoles(tenant,
                 (roles != null ? Arrays.asList(roles) : null));
 	}
@@ -67,7 +65,6 @@ public class TenantRestController {
 	public void deleteTenant(HttpServletRequest request, 
 			@RequestParam String tenant, 
 			HttpServletResponse response) {
-
         tenantService.deleteTenant(tenant);
 	}
 	
@@ -76,7 +73,6 @@ public class TenantRestController {
 	public Tenant getTenant(HttpServletRequest request, 
 			@RequestParam String tenant, 
 			HttpServletResponse response) {
-
         return tenantService.getTenantByName(tenant);
 	}
 	
