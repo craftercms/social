@@ -30,6 +30,8 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	
+	private static final String ID = "_id";
 
 	@Override
 	public List<UGC> findTenantAndTargetIdAndParentIsNull(String tenant, String target,
@@ -56,9 +58,9 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
         }
 
 		if (sortChronological) {
-			query.sort().on("_id", Order.DESCENDING);
+			query.sort().on(ID, Order.DESCENDING);
 		} else {
-			query.sort().on("_id", Order.ASCENDING);
+			query.sort().on(ID, Order.ASCENDING);
 		}
 		
 		return mongoTemplate.find(query, UGC.class);

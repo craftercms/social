@@ -19,12 +19,12 @@ package org.craftercms.social.util;
 import java.util.List;
 
 public interface Hierarchical<T> {
-	public Object getId();
-	public Object getParentId();
-	public void addChild(T child);
-	public List<T> getChildren();
-	public int getChildCount();
-	public void incExtraChildCount();
-	public void incExtraChildCountBy(int count);
-	public int getExtraChildCount();
+	Object getId();
+	Object getParentId();
+	void addChild(T child);
+	List<T> getChildren();
+	int getChildCount();
+	void incExtraChildCount();
+	void incExtraChildCountBy(int count);
+	int getExtraChildCount();
 }

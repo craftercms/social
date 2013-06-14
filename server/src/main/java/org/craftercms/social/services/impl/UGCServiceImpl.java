@@ -73,7 +73,7 @@ public class UGCServiceImpl implements UGCService {
     private PermissionService permissionService;
 
     @Autowired
-    CrafterProfile crafterProfileService;
+    private CrafterProfile crafterProfileService;
 
     @Override
     public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant) {
@@ -136,10 +136,11 @@ public class UGCServiceImpl implements UGCService {
             try {
                 for (int i = 0; i < files.length; i++) {
                     currentId = getAttachedId(files[i], ugc);
-                    if (currentId == null)
+                    if (currentId == null) {
                         attachments[i] = supportDataAccess.saveFile(files[i]);
-                    else
+                    } else {
                         attachments[i] = currentId;
+                    }
                 }
             } catch (IOException ex) {
                 log.error("Unable to save the attachemnts ", ex);
@@ -180,16 +181,13 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC newUgc(UGC ugc, MultipartFile[] files, ArrayList<Action> actions, String tenant, String profileId)
+    public UGC newUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId)
             throws PermissionDeniedException {
-
-        actions = resolveUGCActions(ugc, actions);
-
-        ugc.setModerationStatus(ModerationStatus.UNMODERATED);
+    	List<Action> resolveActions = resolveUGCActions(ugc, actions);
+    	ugc.setModerationStatus(ModerationStatus.UNMODERATED);
         checkForModeration(ugc);
-
         ugc.setAttachmentId(saveUGCAttachments(files));
-        ugc.setActions(actions);
+        ugc.setActions(resolveActions);
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         //Audit call
         auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
@@ -199,7 +197,7 @@ public class UGCServiceImpl implements UGCService {
 
 
     @Override
-    public UGC newChildUgc(UGC ugc, MultipartFile[] files, ArrayList<Action> actions, String tenant, String profileId)
+    public UGC newChildUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId)
             throws PermissionDeniedException {
         if (!existsUGC(ugc.getParentId())) {
             log.error("Parent for {} does not exist", ugc);
@@ -210,7 +208,6 @@ public class UGCServiceImpl implements UGCService {
         ugc.setModerationStatus(ModerationStatus.UNMODERATED);
         checkForModeration(ugc);
         ugc.setAttachmentId(saveUGCAttachments(files));
-        //ugc.setActions(actions);
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         //Audit call
         auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
@@ -421,7 +418,9 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public UGC findById(ObjectId ugcId) {
         UGC ugc = repository.findOne(ugcId);
-        if (ugc == null) return null;
+        if (ugc == null) {
+        	return null;
+        }
         ugc.setAttachments(getAttachmentModel(ugc.getAttachmentId()));
         return populateUGCWithProfile(ugc);
     }
@@ -432,7 +431,9 @@ public class UGCServiceImpl implements UGCService {
     	Profile p = crafterProfileService.getProfile(profileId);
     	Query q = this.permissionService.getQuery(ActionEnum.READ, p);	
     	UGC ugc = repository.findUGC(ugcId, q);
-    	if (ugc == null) return null;
+    	if (ugc == null) {
+    		return null;
+    	}
         ugc.setAttachments(getAttachmentModel(ugc.getAttachmentId()));
         ugc = populateUGCWithProfile(ugc);
         
@@ -442,22 +443,22 @@ public class UGCServiceImpl implements UGCService {
 
     public UGC initUGCAndChildren(UGC ugc, Profile p) {
         ugc.setAttachments(getAttachmentModel(ugc.getAttachmentId()));
-        ugc = populateUGCWithProfile(ugc);
+        UGC populatedUgc = populateUGCWithProfile(ugc);
         
     	Query q = this.permissionService.getQuery(ActionEnum.READ, p);
-        List<UGC> children = repository.findByParentIdWithReadPermission(ugc.getId(), q);
+        List<UGC> children = repository.findByParentIdWithReadPermission(populatedUgc.getId(), q);
         for (UGC ugcChild: children) {
             ugcChild = initUGCAndChildren(ugcChild, p);
         }
-        ugc.getChildren().addAll(children);
-        return ugc;
+        populatedUgc.getChildren().addAll(children);
+        return populatedUgc;
 
     }
 
     private List<UGC> populateUGCListWithProfiles(List<UGC> ugcList) {
         Map<String, List<UGC>> profileIdUGCMap = new HashMap<String, List<UGC>>();
 
-        if (ugcList != null || ugcList.size() > 0) {
+        if (ugcList != null && ugcList.size() > 0) {
 
             for (UGC ugc : ugcList) {
                 // TODO: get the profile info from a cache if already cached and set on the UGC without adding to the map
@@ -479,9 +480,11 @@ public class UGCServiceImpl implements UGCService {
             if (profileList != null) {
                 for (Profile profile : profileList) {
                     List<UGC> subUGCList = profileIdUGCMap.get(profile.getId());
-                    for (UGC ugc : subUGCList) {
-
-                        ugc.setProfile(profile);
+                    if (subUGCList != null) {
+	                    for (UGC ugc : subUGCList) {
+	
+	                        ugc.setProfile(profile);
+	                    }
                     }
                 }
             }
@@ -519,64 +522,65 @@ public class UGCServiceImpl implements UGCService {
      * @param actions from request
      * @return
      */
-    private ArrayList<Action> resolveUGCActions(UGC ugc,
-                                                ArrayList<Action> actions) {
-
-        if (actions == null || actions.size() ==0) {
+    private List<Action> resolveUGCActions(UGC ugc,
+                                                List<Action> actions) {
+    	if (actions == null || actions.size() ==0) {
             // if there is a parent, get the parent's actions & set in there
-            UGC parentUgc = this.findById(ugc.getParentId());
+        	return resolveUGCActionsEmpty(ugc);
+            
+        } 
+        // resolve what actions need to be added from the parent if any
+        // if there is no parent, take them from the default actions
+        List<Action> actionsToAdd = new ArrayList<Action>();
+        List<String> actionsMissing = new ArrayList<String>();
+        for (String action : ActionUtil.ACTIONS) {
+            actionsMissing.add(action);
+        }
+
+        for (Action action : actions) {
+            int aIndex = actionsMissing.indexOf(action.getName());
+            if (aIndex != -1) {
+                actionsMissing.remove(aIndex);
+            }
+        }
+
+        if (actionsMissing.size() > 0) {
+
+            // get parent actions
+            UGC parentUgc = null;
+            if (ugc.getParentId() != null) {
+                parentUgc = this.findById(ugc.getParentId());
+            }
+
+            List<Action> actionsToMerge = null;
             if (parentUgc != null) {
-                actions = parentUgc.getActions();
-            }   else {
-                // otherwise use the defaults
-                actions = ActionUtil.getDefaultActions();
-            }
-        } else {
-
-            // resolve what actions need to be added from the parent if any
-            // if there is no parent, take them from the default actions
-            ArrayList<Action> actionsToAdd = new ArrayList<Action>();
-            ArrayList<String> actionsMissing = new ArrayList<String>();
-            for (String action : ActionUtil.ACTIONS) {
-                actionsMissing.add(action);
+                actionsToMerge = parentUgc.getActions();
+            } else {
+                actionsToMerge = ActionUtil.getDefaultActions();
             }
 
-            for (Action action : actions) {
-                int aIndex = actionsMissing.indexOf(action.getName());
-                if (aIndex != -1) {
-                    actionsMissing.remove(aIndex);
+            for (Action action : actionsToMerge) {
+                if (actionsMissing.contains(action.getName())) {
+                    actionsToAdd.add(action);
                 }
             }
-
-            if (actionsMissing.size() > 0) {
-
-                // get parent actions
-                UGC parentUgc = null;
-                if (ugc.getParentId() != null) {
-                    parentUgc = this.findById(ugc.getParentId());
-                }
-
-                ArrayList<Action> actionsToMerge = null;
-                if (parentUgc != null) {
-                    actionsToMerge = parentUgc.getActions();
-                } else {
-                    actionsToMerge = ActionUtil.getDefaultActions();
-                }
-
-                for (Action action : actionsToMerge) {
-                    if (actionsMissing.contains(action.getName())) {
-                        actionsToAdd.add(action);
-                    }
-                }
-                // sets default actions if any missing
-                actions.addAll(actionsToAdd);
-            }
-
+            // sets default actions if any missing
+            actions.addAll(actionsToAdd);
         }
         return actions;
     }
     
-    private List<UGC> findUGCs(String[] moderationStatus, final String tenant,String target, String profileId, boolean sortChronological) {
+    private List<Action> resolveUGCActionsEmpty(UGC ugc) {
+    	UGC parentUgc = this.findById(ugc.getParentId());
+        if (parentUgc != null) {
+        	return parentUgc.getActions();
+        }   else {
+            // otherwise use the defaults
+        	return ActionUtil.getDefaultActions();
+        }
+	}
+
+	private List<UGC> findUGCs(String[] moderationStatus, final String tenant,String target, String profileId, boolean sortChronological) {
     	Profile p = crafterProfileService.getProfile(profileId);
         String[] roles = null;
         if (p.getRoles() != null) {

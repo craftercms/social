@@ -16,7 +16,6 @@
  */
 package org.craftercms.social.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +43,7 @@ public interface UGCService {
 	 *            The Status to search for
 	 * @return A list of UGC with the given status or a empty list
 	 */
-	public List<UGC> findByModerationStatus(ModerationStatus moderationStatus, String tenant);
+	List<UGC> findByModerationStatus(ModerationStatus moderationStatus, String tenant);
 
 	/**
 	 * Updates the UGC
@@ -55,7 +54,7 @@ public interface UGCService {
 	 *            new {@link ModerationStatus}
 	 * @return The Updated UGC
 	 */
-	public UGC updateModerationStatus(ObjectId uGCId, ModerationStatus newStatus, String tenant, String profileId)
+	UGC updateModerationStatus(ObjectId uGCId, ModerationStatus newStatus, String tenant, String profileId)
             throws PermissionDeniedException;
 
 	/**
@@ -66,7 +65,7 @@ public interface UGCService {
 	 * @param attachments 
 	 * @return the saved {@link UGC}
 	 */
-	public UGC newUgc(UGC ugc, MultipartFile[] attachments, ArrayList<Action> actions,
+	UGC newUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions,
                    String tenant, String profileId) throws PermissionDeniedException;
 
 	/**
@@ -79,7 +78,7 @@ public interface UGCService {
 	 * @throws DataIntegrityViolationException
 	 *             if the Parent UGC does not exist
 	 */
-	public UGC newChildUgc(UGC ugc, MultipartFile[] attachments, ArrayList<Action> actions,
+	UGC newChildUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions,
                        String tenant, String profileId) throws PermissionDeniedException;
 
 	/**
@@ -89,7 +88,7 @@ public interface UGCService {
 	 *            I of the UGC
 	 * @return True if exist , False otherwise
 	 */
-	public boolean existsUGC(ObjectId id);
+	boolean existsUGC(ObjectId id);
 
 	/**
 	 * Gets the Attachment for that UGC
@@ -98,46 +97,46 @@ public interface UGCService {
 	 * @throws DataRetrievalFailureException if the Ugc does not exist or if the attachment does not 
 	 *         exist either
 	 */
-	public Attachment getAttachment(ObjectId attachmentId);
+	Attachment getAttachment(ObjectId attachmentId);
 
-	public UGC likeUGC(ObjectId objectId, String tenant, String profileId);
+	UGC likeUGC(ObjectId objectId, String tenant, String profileId);
 
-	public UGC dislikeUGC(ObjectId objectId, String tenant, String profileId);
+	UGC dislikeUGC(ObjectId objectId, String tenant, String profileId);
 	
-	public UGC flagUGC(ObjectId objectId, String reason, String tenant, String profileId);
+	UGC flagUGC(ObjectId objectId, String reason, String tenant, String profileId);
 
-	public List<String> getTargets();
+	List<String> getTargets();
 
-	public List<UGC> findByModerationStatusAndTargetId(
+	List<UGC> findByModerationStatusAndTargetId(
 			ModerationStatus valueOf, String tenant, String target);
 
-	public List<String> findTargetsForModerationStatus(ModerationStatus valueOf, String tenant);
+	List<String> findTargetsForModerationStatus(ModerationStatus valueOf, String tenant);
 
-	public List<UGC> findByTarget(String tenant, String target);
+	List<UGC> findByTarget(String tenant, String target);
 
-	public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, boolean sortChronological);
+	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, boolean sortChronological);
 	
-	public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, boolean sortChronological);
+	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, boolean sortChronological);
 
-	public int getTenantTargetCount(String tenant, String target);
+	int getTenantTargetCount(String tenant, String target);
 
-	public UGC threadTree(UGC last);
+	UGC threadTree(UGC last);
 	
-	public UGC findById(ObjectId ugcId);
+	UGC findById(ObjectId ugcId);
 	
-	public void setAttributes(ObjectId ugcId, Map<String, Object> attributeMap, String tenant, String profileId);
+	void setAttributes(ObjectId ugcId, Map<String, Object> attributeMap, String tenant, String profileId);
 
-	public List<UGC> findByProfileAction(String profileId, AuditAction action);
+	List<UGC> findByProfileAction(String profileId, AuditAction action);
 
 	void streamAttachment(ObjectId attachmentId, HttpServletResponse response);
 
 	UGC findUGCAndChildren(ObjectId ugcId);
 
-	public UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
+	UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
 			String textContent, MultipartFile[] attachments) throws PermissionDeniedException;
 
-	public void deleteUgc(ObjectId objectId, String tenant, String profileId) throws PermissionDeniedException;
+	void deleteUgc(ObjectId objectId, String tenant, String profileId) throws PermissionDeniedException;
 	
-	public void deleteUgc(List<String> ugcIds, String tenant, String profileId) throws PermissionDeniedException;
+	void deleteUgc(List<String> ugcIds, String tenant, String profileId) throws PermissionDeniedException;
 	
 }

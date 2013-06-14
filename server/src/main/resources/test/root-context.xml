@@ -15,8 +15,7 @@
 	<bean id="socialSettings" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 	    <property name="locations">
 	        <list>
-	            <value>classpath:crafter/social/system.properties</value>
-	            <value>classpath:crafter/social/extension/system.properties</value>
+	            <value>classpath:test/system.properties</value>
 	        </list>
 	    </property>
 	    <property name="ignoreResourceNotFound" value="true"/>
@@ -25,8 +24,7 @@
 	<bean id="validationMsgs" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 	    <property name="locations">
 	        <list>
-	            <value>classpath:crafter/social/ValidationMessages.properties</value>
-	            <value>classpath:crafter/social/extension/ValidationMessages.properties</value>
+	            <value>classpath:test/ValidationMessages.properties</value>
 	        </list>
 	    </property>
 	    <property name="ignoreResourceNotFound" value="true"/>
@@ -36,22 +34,18 @@
 	        <property name="ignoreUnresolvablePlaceholders" value="true"/>
 			<property name="locations">
             <list>
-                  <value>classpath:crafter/social/mongo.properties</value>
-                  <value>classpath*:crafter/social/extension/mongo.properties</value>
-                  <value>classpath:crafter/social/profile.properties</value>
-	            <value>classpath*:crafter/social/extension/profile.properties</value>
+                  <value>classpath:test/mongo.properties</value>
+                  <value>classpath:test/profile.properties</value>
             </list>
         </property>
     </bean>
-    
-    <bean id="crafterProfileService" class="org.craftercms.social.util.support.impl.CrafterProfileImpl"/>
-	
 	<bean id="crafterProfile" class="org.craftercms.profile.impl.ProfileRestClientImpl">
 		<property name="port" value="${profile.port}"/>
 		<property name="host" value="${profile.host}"/>
 		<property name="scheme" value="${profile.scheme}"/>
 		<property name="profileAppPath" value="${profile.profileAppPath}"/>
 	</bean>
+	<bean id="crafterProfileService" class="org.craftercms.social.util.support.impl.CrafterProfileTest"/>
 	
 	<context:component-scan
 		base-package="org.craftercms.social.dao, org.craftercms.social.services,org.craftercms.social.util.support" />
@@ -59,6 +53,11 @@
 
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- <property name="maxUploadSize" value="104857600" /> --> <!-- the maximum file size in bytes: 100 MB -->
+	</bean>
+	
+	<bean id="ugcService"
+		class="org.craftercms.social.services.impl.UGCServiceImpl">
 		<!-- <property name="maxUploadSize" value="104857600" /> --> <!-- the maximum file size in bytes: 100 MB -->
 	</bean>
 	

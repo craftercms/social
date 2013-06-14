@@ -22,6 +22,9 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 public class HierarchyGenerator {
+	
+	private HierarchyGenerator() {
+	}
 
 	public static <T extends Hierarchical<T>> HierarchyList<T> generateHierarchy(List<T> objList, ObjectId parentId, int rootCount, int childCount) {
 		HierarchyList<T> hierarchy = new HierarchyList<T>();

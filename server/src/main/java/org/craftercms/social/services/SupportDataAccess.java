@@ -30,13 +30,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface SupportDataAccess {
 
-	public List<?> mapReduce(Class<?> entity, String mapFunction,
+	List<?> mapReduce(Class<?> entity, String mapFunction,
 			String reduceFunction, ResultParser parser);
 
-	public List<?> mapReduceWithQuery(Class<?> entity, String query,
+	List<?> mapReduceWithQuery(Class<?> entity, String query,
 			String mapFunction, String reduceFunction, ResultParser parser);
 
-	public <T> List<T> distinct(Class<?> entity, String key, Class<T> resultClass);
+	<T> List<T> distinct(Class<?> entity, String key, Class<T> resultClass);
 
 	/**
 	 * Saves a Object Into a GridFS
@@ -47,9 +47,9 @@ public interface SupportDataAccess {
 	 * @throws IOException
 	 *             If a error ocurrs while reading the file
 	 */
-	public ObjectId saveFile(MultipartFile file) throws IOException;
+	ObjectId saveFile(MultipartFile file) throws IOException;
 
-	public Attachment getAttachment(ObjectId attachmentId);
+	Attachment getAttachment(ObjectId attachmentId);
 
 	void streamAttachment(ObjectId attachmentId, HttpServletResponse response);
 

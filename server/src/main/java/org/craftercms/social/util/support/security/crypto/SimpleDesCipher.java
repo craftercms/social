@@ -24,7 +24,7 @@ import java.security.spec.InvalidKeySpecException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
+
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -32,19 +32,22 @@ import javax.crypto.spec.DESedeKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SimpleDesCipher {
 	
 	private SecretKey skey;
 	private Cipher cipher;
+	private final transient Logger log = LoggerFactory.getLogger(SimpleDesCipher.class);
 
 	public SimpleDesCipher(String base64Key) {
-		KeyGenerator kgen = null;
 		try {
 			cipher = Cipher.getInstance("DESede");
 		} catch (NoSuchAlgorithmException e1) {
-			e1.printStackTrace();
+			log.error(e1.getMessage(),e1);
 		} catch (NoSuchPaddingException e) {
-			e.printStackTrace();
+			log.error(e.getMessage(),e);
 		}
 
 		byte[] raw = Base64.decodeBase64(base64Key);
@@ -56,11 +59,11 @@ public class SimpleDesCipher {
 			SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("DESede");
 		    skey = keyfactory.generateSecret(keyspec);
 		} catch (InvalidKeyException e) {
-			e.printStackTrace();
+			log.error(e.getMessage(),e);
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			log.error(e.getMessage(),e);
 		} catch (InvalidKeySpecException e) {
-			e.printStackTrace();
+			log.error(e.getMessage(),e);
 		}
 	}
 

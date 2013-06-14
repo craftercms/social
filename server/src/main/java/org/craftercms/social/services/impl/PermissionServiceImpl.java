@@ -42,18 +42,23 @@ public class PermissionServiceImpl implements PermissionService {
 	@Autowired
 	private UGCService ugcService;
 	
-	
 	@Autowired
-	CrafterProfile crafterProfileService;
+	private CrafterProfile crafterProfileService;
 	
 	public static final String SUPER_ADMIN = "SUPERADMIN";
 
 	@Override
 	public boolean allowed(ActionEnum action, UGC ugc, Profile profile) {
-		if (ugc.getActions() == null) return false;
-		if (isSuperAdmin(profile.getRoles())) return true;
+		if (ugc.getActions() == null) { 
+			return false;
+		}
+		
+		if (isSuperAdmin(profile.getRoles())) { 
+			return true;
+		}
 		
 		List<Action> actions = ugc.getActions();
+		
 		for (Action a: actions) {
 			if (a.getName().equalsIgnoreCase(action.name().toLowerCase())) {
 				return checkActionPermission(a, ugc, profile);
@@ -78,7 +83,6 @@ public class PermissionServiceImpl implements PermissionService {
 		if (p.getRoles() != null) {
 			roles = p.getRoles().toArray(new String[p.getRoles().size()]);
 		}
-		
 		Query query = new Query();
 		if (isSuperAdmin(roles)) {
 			query.addCriteria(Criteria.where("actions.name").is(action.toString().toLowerCase()));
@@ -98,12 +102,13 @@ public class PermissionServiceImpl implements PermissionService {
 				break;
 			}
 		}
-		
 		return isSuperAdmin;
 	}
 	
 	private boolean isSuperAdmin(String[] roles) {
-		if (roles == null) return false;
+		if (roles == null) {
+			return false;
+		}
 		return isSuperAdmin(Arrays.asList(roles));
 	}
 
@@ -121,7 +126,6 @@ public class PermissionServiceImpl implements PermissionService {
 			}
 		}
 		return grantedList;
-		
 	}
 	
 	private boolean checkActionPermission(Action a, UGC ugc, Profile p) {
@@ -130,7 +134,9 @@ public class PermissionServiceImpl implements PermissionService {
 		boolean found = false;
 		for(String roleAllowed: rolesAllowed) {
 			if (roleAllowed.equalsIgnoreCase(ActionConstants.OWNER) && ugc.getProfileId() != null && p.getId()!=null  //OWNER
-					&& ugc.getProfileId().equalsIgnoreCase(p.getId())) return true;
+					&& ugc.getProfileId().equalsIgnoreCase(p.getId())) {
+				return true;
+			}
 			if (isInProfileRoles(roleAllowed, rolesProfile)) {
 				found = true;
 				break;
@@ -141,9 +147,12 @@ public class PermissionServiceImpl implements PermissionService {
 
 	private boolean isInProfileRoles(String roleAllowed,
 			List<String> rolesProfile) {
-		roleAllowed = roleAllowed.toUpperCase();
-		if (roleAllowed.equalsIgnoreCase(ActionConstants.ANONYMOUS)) return true;
-		if (rolesProfile == null) return false;
+		if (roleAllowed.equalsIgnoreCase(ActionConstants.ANONYMOUS)) {
+			return true;
+		}
+		if (rolesProfile == null) {
+			return false;
+		}
 		boolean isInProfile = false;
 		for (String roleProfile: rolesProfile) {
 			if (roleProfile.equalsIgnoreCase(roleAllowed)) {
@@ -166,7 +175,4 @@ public class PermissionServiceImpl implements PermissionService {
 		}
 		return found;
 	}
-
-	
-
 }

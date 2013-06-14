@@ -46,7 +46,7 @@ public class MethodCacheInterceptor implements MethodInterceptor, InitializingBe
 	/**
 	 * Checks if required attributes are provided.
 	 */
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		Assert.notNull(cache,
 				"A cache is required. Use setCache(Cache) to provide one.");
 	}
@@ -55,7 +55,7 @@ public class MethodCacheInterceptor implements MethodInterceptor, InitializingBe
 	 * main method caches method result if method is configured for caching
 	 * method results must be serializable
 	 */
-	public Object invoke(MethodInvocation invocation) throws Throwable {
+	public Object invoke(MethodInvocation invocation) throws Exception {
 		String targetName = invocation.getThis().getClass().getName();
 		String methodName = invocation.getMethod().getName();
 		Object[] arguments = invocation.getArguments();
@@ -67,7 +67,11 @@ public class MethodCacheInterceptor implements MethodInterceptor, InitializingBe
 		if (element == null) {
 			// call target/sub-interceptor
 			logger.debug("calling intercepted method");
-			result = invocation.proceed();
+			try {
+				result = invocation.proceed();
+			} catch(Throwable t) {
+				throw new Exception(t.getMessage(), t);
+			}
 
 			// cache method result
 			logger.debug("caching result");

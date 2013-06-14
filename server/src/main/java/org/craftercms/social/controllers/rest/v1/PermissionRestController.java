@@ -44,10 +44,7 @@ public class PermissionRestController {
 			.getLogger(PermissionRestController.class);
 
 	@Autowired
-	CrafterProfile crafterProfileService;
-
-	@Autowired
-	PermissionService permissionService;
+	private PermissionService permissionService;
 	
 	@Autowired
 	private TenantService tenantService;
@@ -58,7 +55,7 @@ public class PermissionRestController {
 			@PathVariable String action) {
 		log.debug(String.format("Is allowed id=%s action=%s", ugcId, action));
 		try {
-			return permissionService.allowed(ActionEnum.valueOf(action),
+			return permissionService.allowed(ActionEnum.valueOf(action.toUpperCase()),
 					new ObjectId(ugcId), getProfileId());
 		} catch (Exception e) {
 			return false;
@@ -70,14 +67,12 @@ public class PermissionRestController {
 	public boolean isCreateAllowed(@RequestParam String tenant) {
 		log.debug(String.format("Is allowed create ugc ", tenant));
 		try {
-
 			List<String> createRoles = this.tenantService.getRootCreateRoles(tenant);
 			ArrayList<Action> actions = new ArrayList<Action>();
 			Action createAction = new Action(ActionEnum.CREATE.toString(),createRoles);
 			actions.add(createAction);
 			UGC newUgc = new UGC();
 			newUgc.setActions(actions);
-			
 			return permissionService.allowed(ActionEnum.CREATE, newUgc, getProfileId());
 		} catch (Exception e) {
 			return false;

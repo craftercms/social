@@ -58,7 +58,6 @@ public class UGCRestController {
             @RequestParam final String tenant,
             @RequestParam final String target,
 			final HttpServletResponse response) throws IOException {
-
         log.debug("Get Request for UGC with status %s", moderationStatus);
 		return ugcService.findByModerationStatusAndTargetId(ModerationStatus
 				.valueOf(moderationStatus.toUpperCase()), tenant, target);
@@ -70,7 +69,6 @@ public class UGCRestController {
 			@PathVariable final String moderationStatus,
             @RequestParam final String tenant,
 			final HttpServletResponse response) throws IOException {
-
         log.debug("Get Request for UGC with status %s", moderationStatus);
 		return ugcService.findByModerationStatus(ModerationStatus
 				.valueOf(moderationStatus.toUpperCase()), tenant);
@@ -84,7 +82,6 @@ public class UGCRestController {
 			@RequestParam(required=false,defaultValue="0")int page,
 			@RequestParam(required=false,defaultValue="0")int pageSize,
 			@RequestParam(required=false,defaultValue="true")boolean sortChronological){
-
         if(page>=0 && pageSize>0){
 			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page,pageSize, sortChronological),null,rootCount,childCount);
 		}else{
@@ -96,18 +93,16 @@ public class UGCRestController {
 	@ModelAttribute
 	public int getCount(@RequestParam final String tenant,
                         @RequestParam final String target){
-
-        return ugcService.getTenantTargetCount(tenant, target);
+		return ugcService.getTenantTargetCount(tenant, target);
 	}
 	
-	@RequestMapping(value = "/moderation/{UGCId}/status", method = RequestMethod.POST)
+	@RequestMapping(value = "/moderation/{ugcId}/status", method = RequestMethod.POST)
 	@ModelAttribute
-	public UGC updateModerationStatus(@PathVariable final String UGCId,
+	public UGC updateModerationStatus(@PathVariable final String ugcId,
 			@RequestParam final String moderationStatus,
             @RequestParam final String tenant,
 			final HttpServletResponse response) throws IOException, PermissionDeniedException {
-
-        UGC u = ugcService.updateModerationStatus(new ObjectId(UGCId),
+        UGC u = ugcService.updateModerationStatus(new ObjectId(ugcId),
 				ModerationStatus.valueOf(moderationStatus.toUpperCase()), tenant, getProfileId());
 		return u;
 	}
@@ -115,7 +110,6 @@ public class UGCRestController {
 	@RequestMapping(value = "/get_ugc/{ugcId}", method = RequestMethod.GET)
 	public UGC findByUGCId(@PathVariable String ugcId,
 				HttpServletResponse response) throws IOException {		
-
         return ugcService.findUGCAndChildren(new ObjectId(ugcId));
 	}
 	
@@ -128,23 +122,19 @@ public class UGCRestController {
 			@RequestParam(required = false) String textContent,
 			@RequestParam(required = false) MultipartFile[] attachments,
 			HttpServletRequest request) throws PermissionDeniedException{
-
-        /** Pre validations **/
+		/** Pre validations **/
 		if (target == null && parentId == null) {
 			throw new IllegalArgumentException(
 					"Target or Parent Id Must a valid not empty String");
 		}
-
-		UGC ugc = null;
 		if (target != null && parentId == null) {
-			ugc = ugcService.newUgc(new UGC(textContent, getProfileId(), tenant, target, parseAttibutes(request)), attachments,
+			return ugcService.newUgc(new UGC(textContent, getProfileId(), tenant, target, parseAttibutes(request)), attachments,
                             ActionUtil.getActions(request), tenant, getProfileId());
 		} else {
-			ugc = ugcService
+			return ugcService
 					.newChildUgc(new UGC(textContent, getProfileId(), tenant, target, new ObjectId(parentId), parseAttibutes(request)), attachments,
                             ActionUtil.getActions(request), tenant, getProfileId());
 		}
-		return ugc;
 	}
 	
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
@@ -156,7 +146,6 @@ public class UGCRestController {
             @RequestParam(required = false) String parentId,
 			@RequestParam(required = false)String textContent,
 			@RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException{
-
         return ugcService.updateUgc(new ObjectId(ugcId), tenant, target, getProfileId(),
                 parentId==null?null:new ObjectId(parentId), textContent, attachments);
 	}
@@ -166,7 +155,6 @@ public class UGCRestController {
 	public void deleteUGC(HttpServletRequest request, 
 			@PathVariable final String ugcId,
             @RequestParam(required = true) final String tenant) throws PermissionDeniedException{
-
         ugcService.deleteUgc(new ObjectId(ugcId), tenant, getProfileId());
 	}
 	
@@ -175,7 +163,6 @@ public class UGCRestController {
 	public void deleteUGC(HttpServletRequest request, 
 			@RequestParam List<String> ugcIds,
             @RequestParam(required = true) String tenant) throws PermissionDeniedException{
-
         ugcService.deleteUgc(ugcIds, tenant, getProfileId());
 	}
 	
@@ -198,7 +185,6 @@ public class UGCRestController {
 	@ModelAttribute
 	public UGC dislikeUGC(@PathVariable() String ugcId,
               @RequestParam final String tenant) {
-		
 		return ugcService.dislikeUGC(new ObjectId(ugcId), tenant, getProfileId());
 	}
 
@@ -212,7 +198,6 @@ public class UGCRestController {
 
 	private String getProfileId(){
 		return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
 	}
 	
 	@ExceptionHandler(PermissionDeniedException.class)
@@ -225,7 +210,6 @@ public class UGCRestController {
 	private Map<String, Object> parseAttibutes(HttpServletRequest request) {
 		Map<String, Object> attributeMap = new HashMap<String, Object>();
 		Map<String, Object> paramMap = request.getParameterMap();
-
 		for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
 			if (!ugcFieldSet.contains(entry.getKey())) {
 				String[] values = (String[]) entry.getValue();
@@ -236,7 +220,6 @@ public class UGCRestController {
 				}
 			}
 		}
-
 		return (attributeMap.size() > 0) ? attributeMap : null;
 	}
 }

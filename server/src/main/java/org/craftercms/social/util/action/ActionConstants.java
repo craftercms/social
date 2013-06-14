@@ -24,5 +24,8 @@ public class ActionConstants {
 	public static final String SOCIAL_AUTHOR = "SOCIAL_AUTHOR";
 	public static final String OWNER = "OWNER";
     public static final String SOCIAL_MODERATOR = "SOCIAL_MODERATOR";
+    
+    private ActionConstants() {
+    }
 
 }

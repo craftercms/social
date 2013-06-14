@@ -79,8 +79,9 @@ public class CrafterProfileFilter extends GenericFilterBean {
 
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
-    @Autowired
-    private MultipartResolver multipartResolver;
+    
+    private static final String ERROR_ENCRYPTED_TOKEN = "Error creating encrypted token";
+    private static final String ERROR_DESCYPTING_TOKEN = "Error decrypting token";
 
     /* index of properties in cookie */
     private static final int TOKEN = 0;
@@ -173,7 +174,7 @@ public class CrafterProfileFilter extends GenericFilterBean {
         } catch (ParseException e) {
             String error = "Error parsing date: '" + profileValues[DATE] + "' ";
             log.error(error + e);
-            throw new org.craftercms.social.exceptions.AuthenticationException(error);
+            throw new org.craftercms.social.exceptions.AuthenticationException(error, e);
         }
 
         // if expired, we need to get refresh the user profile
@@ -295,14 +296,14 @@ public class CrafterProfileFilter extends GenericFilterBean {
                     .append(UUID.randomUUID().toString()).toString().getBytes()) ;
 
         } catch (InvalidKeyException e) {
-            log.error("Error creating encrypted token", e);
-            throw new org.craftercms.social.exceptions.AuthenticationException("Error creating encrypted token");
+            log.error(ERROR_ENCRYPTED_TOKEN, e);
+            throw new org.craftercms.social.exceptions.AuthenticationException(ERROR_ENCRYPTED_TOKEN, e);
         } catch (IllegalBlockSizeException e) {
-            log.error("Error creating encrypted token", e);
-            throw new org.craftercms.social.exceptions.AuthenticationException("Error creating encrypted token");
+            log.error(ERROR_ENCRYPTED_TOKEN, e);
+            throw new org.craftercms.social.exceptions.AuthenticationException(ERROR_ENCRYPTED_TOKEN, e);
         } catch (BadPaddingException e) {
-            log.error("Error creating encrypted token", e);
-            throw new org.craftercms.social.exceptions.AuthenticationException("Error creating encrypted token");
+            log.error(ERROR_ENCRYPTED_TOKEN, e);
+            throw new org.craftercms.social.exceptions.AuthenticationException(ERROR_ENCRYPTED_TOKEN, e);
         }
 
         return new String(Base64.encodeBase64(encrypted));
@@ -351,14 +352,14 @@ public class CrafterProfileFilter extends GenericFilterBean {
         try {
             decrypted = new String(cipher.decrypt(Base64.decodeBase64(encryptedToken)));
         } catch (InvalidKeyException e) {
-            log.error("Error decrypting token", e);
-            throw new org.craftercms.social.exceptions.AuthenticationException("Error decrypting token");
+            log.error(ERROR_DESCYPTING_TOKEN, e);
+            throw new org.craftercms.social.exceptions.AuthenticationException(ERROR_DESCYPTING_TOKEN, e);
         } catch (IllegalBlockSizeException e) {
-            log.error("Error decrypting token", e);
-            throw new org.craftercms.social.exceptions.AuthenticationException("Error decrypting token");
+            log.error(ERROR_DESCYPTING_TOKEN, e);
+            throw new org.craftercms.social.exceptions.AuthenticationException(ERROR_DESCYPTING_TOKEN, e);
         } catch (BadPaddingException e) {
-            log.error("Error decrypting token", e);
-            throw new org.craftercms.social.exceptions.AuthenticationException("Error decrypting token");
+            log.error(ERROR_DESCYPTING_TOKEN, e);
+            throw new org.craftercms.social.exceptions.AuthenticationException(ERROR_DESCYPTING_TOKEN, e);
         }
 
         return decrypted.split("[|]");
