@@ -17,7 +17,7 @@
 package org.craftercms.social.services.impl;
 
 import org.bson.types.ObjectId;
-import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.UGC;

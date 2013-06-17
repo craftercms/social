@@ -24,7 +24,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
-import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.PermissionService;

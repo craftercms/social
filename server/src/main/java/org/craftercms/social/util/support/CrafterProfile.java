@@ -18,8 +18,8 @@ package org.craftercms.social.util.support;
 
 import java.util.List;
 
-import org.craftercms.profile.domain.Profile;
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Tenant;
 
 public interface CrafterProfile {
 	Profile authenticateAnonymous();

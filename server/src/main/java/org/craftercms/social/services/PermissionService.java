@@ -19,7 +19,7 @@ package org.craftercms.social.services;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.util.action.ActionEnum;
 import org.springframework.data.mongodb.core.query.Query;

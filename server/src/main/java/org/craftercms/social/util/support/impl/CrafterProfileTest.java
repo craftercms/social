@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.craftercms.profile.domain.Attribute;
-import org.craftercms.profile.domain.Profile;
-import org.craftercms.profile.domain.Schema;
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.impl.domain.Attribute;
+import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Schema;
+import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
