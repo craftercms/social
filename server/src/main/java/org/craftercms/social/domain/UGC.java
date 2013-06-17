@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.constants.ProfileConstants;
-import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.util.Hierarchical;
 import org.craftercms.social.util.serialization.StringObjectMapConverter;
 import org.springframework.data.annotation.Transient;

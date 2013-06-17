@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.constants.ProfileConstants;
-import org.craftercms.profile.domain.Profile;
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.social.util.support.CrafterProfile;

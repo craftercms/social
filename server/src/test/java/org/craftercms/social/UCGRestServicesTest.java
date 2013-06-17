@@ -63,8 +63,8 @@ import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 
 import org.craftercms.profile.api.ProfileClient;
-import org.craftercms.profile.domain.Profile;
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.UserAuthenticationFailedException;
 import org.craftercms.profile.impl.ProfileRestClientImpl;

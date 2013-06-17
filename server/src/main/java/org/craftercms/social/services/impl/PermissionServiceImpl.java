@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.constants.ProfileConstants;
-import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.PermissionService;
