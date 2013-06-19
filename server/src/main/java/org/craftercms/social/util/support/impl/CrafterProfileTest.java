@@ -12,6 +12,7 @@ import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.impl.domain.Schema;
 import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
+import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.util.action.ActionConstants;
@@ -136,10 +137,7 @@ public class CrafterProfileTest implements CrafterProfile {
 	 * @return
 	 */
 	public Profile getProfile(String profileId) {
-		if (((String) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal()).equalsIgnoreCase("anonymousUser")) {
-			initSecurity();
-		}
+		
 		return createAdminUser();
 
 	}

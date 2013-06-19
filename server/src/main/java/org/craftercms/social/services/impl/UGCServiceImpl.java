@@ -16,8 +16,18 @@
  */
 package org.craftercms.social.services.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.UGC;
@@ -41,18 +51,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.*;
 
 @Component
 public class UGCServiceImpl implements UGCService {
@@ -78,7 +79,7 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant) {
         log.debug("Looking for Users with status %s and tenant %s", moderationStatus, tenant);
-        String profileId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
     	 return findUGCs(new String[] {
     			 moderationStatus.toString() },tenant,null,profileId,true);
     }
@@ -313,7 +314,7 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public List<UGC> findByModerationStatusAndTargetId(ModerationStatus moderationStatus, String tenant, String target) {
-    	String profileId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
     	 return findUGCs(new String[] {
     			 moderationStatus.toString() },tenant,target,profileId,true);
     }
@@ -328,7 +329,7 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public List<UGC> findByTarget(String tenant, String target) {
-    	String profileId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
         
         return findUGCs(null,tenant,target,profileId,true);
     }
@@ -341,7 +342,7 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public int getTenantTargetCount(String tenant, String target) {
-    	String profileId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
     	Profile p = crafterProfileService.getProfile(profileId);
     	Query q = this.permissionService.getQuery(ActionEnum.READ, p);
     	return repository.findTenantAndTargetIdAndParentIsNull(tenant, target, q).size();
@@ -427,7 +428,7 @@ public class UGCServiceImpl implements UGCService {
     
         @Override
     public UGC findUGCAndChildren(ObjectId ugcId) {
-    	String profileId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
     	Profile p = crafterProfileService.getProfile(profileId);
     	Query q = this.permissionService.getQuery(ActionEnum.READ, p);	
     	UGC ugc = repository.findUGC(ugcId, q);
