@@ -19,12 +19,15 @@ package org.craftercms.social.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.security.api.RequestContext;
+import org.craftercms.security.api.UserProfile;
+import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.PermissionService;
@@ -35,18 +38,14 @@ import org.craftercms.social.util.support.CrafterProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.FilterInvocation;
-import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 
-public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
-
+public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot { 
+	
 	private static final String ADMIN = "ADMIN";
 	private static final String AUDITOR = "AUDITOR";
 
 	private final Logger log = LoggerFactory
-			.getLogger(UgcPermissionExpressionHandler.class);
+			.getLogger(UgcSecurityExpressionRoot.class);
 
 	private PermissionService permissionService;
 
@@ -62,14 +61,12 @@ public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 	@Autowired
 	private CrafterProfile crafterProfileService;
 
-	public UgcSecurityExpressionRoot(Authentication a, FilterInvocation fi) {
-		super(a, fi);
-		response = fi.getResponse();
-
+	public UgcSecurityExpressionRoot(UserProfile profile) {
+		super(profile);
 	}
 
 	public boolean hasCreatePermission() {
-		Map params = request.getParameterMap();
+		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
 		String[] target = (String[]) params.get("target");
 		String[] parentId = (String[]) params.get("parentId");
 		UGC parent = null;
@@ -92,7 +89,6 @@ public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 				getProfileId())) {
 			log.error("Create UGC permission not granted", parent);
 			response.setHeader(CONTENT_TYPE, APPLICATION_JSON);
-			// Permission not granted
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
 			return false;
 		}
@@ -100,7 +96,7 @@ public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 	}
 
 	public boolean hasUpdatePermission() {
-		Map params = request.getParameterMap();
+		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
 		String[] ugcId = (String[]) params.get("ugcId");
 		if (ugcId == null || ugcId.length == 0) {
 			return false;
@@ -118,7 +114,7 @@ public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 
 	public boolean hasModeratorPermission() {
 		// READ permissions are checked using Query method
-		if (request.getMethod().toLowerCase().equals("get")) {
+		if (RequestContext.getCurrent().getRequest().getMethod().toLowerCase().equals("get")) {
 			return true;
 		}
 		String ugcId = getUgcIdFromModerationUri();
@@ -193,8 +189,7 @@ public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 	}
 
 	private String getProfileId() {
-		return (String) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
+		return RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
 	}
 
 	public PermissionService getPermissionService() {
@@ -218,9 +213,9 @@ public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 	}
 
 	private String getUgcIdFromActOnUri() {
-		String ugcId = request.getRequestURI().replaceAll(
+		String ugcId = RequestContext.getCurrent().getRequest().getRequestURI().replaceAll(
 				".*api/2/ugc/[^\\/]*/([^\\/\\.]*).*", "$1");
-		if (ugcId.equals(request.getRequestURI())) {
+		if (ugcId.equals(RequestContext.getCurrent().getRequest().getRequestURI())) {
 			return null;
 		}
 		return ugcId;
@@ -228,8 +223,8 @@ public class UgcSecurityExpressionRoot extends WebSecurityExpressionRoot {
 
 	private String getUgcIdFromModerationUri() {
 		String interceptedUri = "moderation/";
-		String endPath = request.getRequestURI().substring(
-				request.getRequestURI().indexOf("moderation/")
+		String endPath = RequestContext.getCurrent().getRequest().getRequestURI().substring(
+				RequestContext.getCurrent().getRequest().getRequestURI().indexOf("moderation/")
 						+ interceptedUri.length());
 		if (endPath.contains("/status")) {
 			return endPath.substring(0, endPath.indexOf("/status"));

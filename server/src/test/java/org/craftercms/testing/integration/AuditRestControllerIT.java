@@ -79,6 +79,7 @@ public class AuditRestControllerIT {
 
 	@Test
 	public void getUGCAuditForUserTest() {
+		System.out.println("*** getUGCAuditForUserTest 1");
 		String ugc = expect()
 				.statusCode(201)
 				.body("textContent", equalTo("AuditForUserActions"))
@@ -86,12 +87,15 @@ public class AuditRestControllerIT {
 				.parameters("target", "test", "textContent",
 						"AuditForUserActions", "tenant", "test").when()
 				.post("/api/2/ugc/create.json").asString();
+		System.out.println("*** getUGCAuditForUserTest 2 " + ugc);
 		assertNotNull(ugc);
 		JsonPath jp = new JsonPath(ugc);
 		String id = jp.getString("id");
+		System.out.println("*** getUGCAuditForUserTest 3 " + id);
 		String audit = expect().statusCode(200).given()
 				.parameters("tenant", "test").when()
-				.get("/api/2/audit/profile/anonymousUser.json").asString();
+				.get("/api/2/audit/profile/Anonymous.json").asString();
+		System.out.println("*** getUGCAuditForUserTest 4 " + audit);
 		jp = new JsonPath(audit);
 		Map auditMap = jp.get("find {audit -> audit.ugcId =~ /" + id + "/ }");
 		assertTrue(id.equals(auditMap.get("ugcId")));
@@ -99,6 +103,7 @@ public class AuditRestControllerIT {
 
 	@Test
 	public void getUGCAuditForUserActionsTest() {
+		System.out.println("*** getUGCAuditForUserActionsTest 1");
 		String ugc = expect()
 				.statusCode(201)
 				.body("textContent", equalTo("getUGCAuditForUserActionsTest"))
@@ -106,12 +111,13 @@ public class AuditRestControllerIT {
 				.parameters("target", "test", "textContent",
 						"getUGCAuditForUserActionsTest", "tenant", "test")
 				.when().post("/api/2/ugc/create.json").asString();
+		System.out.println("*** getUGCAuditForUserActionsTest 2 " + ugc);
 		assertNotNull(ugc);
 		JsonPath jp = new JsonPath(ugc);
 		String id = jp.getString("id");
 		String audit = expect().statusCode(200).given()
 				.parameters("tenant", "test").when()
-				.get("/api/2/audit/profile/anonymousUser/create.json")
+				.get("/api/2/audit/profile/Anonymous/create.json")
 				.asString();
 		jp = new JsonPath(audit);
 		Map auditMap = jp.get("find {audit -> audit.ugcId =~ /" + id + "/ }");

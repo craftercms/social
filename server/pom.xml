@@ -114,6 +114,11 @@
 			<version>${org.craftercms.profile.client.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.craftercms</groupId>
+			<artifactId>crafter-security-provider</artifactId>
+			<version>2.2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${org.springframework.version}</version>
@@ -394,6 +399,12 @@
 							<randomPort>false</randomPort>  
 						</configuration>
 					</execution>
+					<execution>
+            			<id>stop</id>
+            			<goals>
+                			<goal>stop</goal>
+            			</goals>
+        			</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -401,8 +412,6 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<configuration>
 					<classesDirectory>${basedir}/target/classes</classesDirectory>
-					<!-- <classesDirectory>${basedir}/target/clover/classes</classesDirectory> -->
-					
 					<webXml>${basedir}/src/test/resources/test-web.xml</webXml>
 					<webDefaultXml>${basedir}/src/test/resources/test-web.xml</webDefaultXml>
 					<overrideWebXml>${basedir}/src/test/resources/test-web.xml</overrideWebXml>
@@ -414,23 +423,13 @@
 					<webAppConfig>
 		            	<contextPath>/crafter-social</contextPath>
 		            </webAppConfig>
-		          	<!-- <webApp>
-		          		<baseResource>${basedir}/src/main/resources</baseResource>
-		          		<baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-					      <resourcesAsCSV>${basedir}/src/main/resources</resourcesAsCSV>
-					    </baseResource>
-		          	</webApp> -->
-					<scanIntervalSeconds>10</scanIntervalSeconds>
+		          	<scanIntervalSeconds>10</scanIntervalSeconds>
 					<stopKey>foo</stopKey>
 					<stopPort>9999</stopPort>
-					<systemProperties>
-					
-				</systemProperties>
 				</configuration>
 				<executions>
 					<execution>
 						<id>start-jetty</id>
-						
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>start</goal>
@@ -442,7 +441,6 @@
 					</execution>
 					<execution>
 						<id>stop-jetty</id>
-						
 						<phase>post-integration-test</phase>
 						<goals>
 							<goal>stop</goal>

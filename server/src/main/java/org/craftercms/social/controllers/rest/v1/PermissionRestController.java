@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.craftercms.social.util.action.ActionEnum;
+import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.TenantService;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.action.ActionEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @Controller
 @RequestMapping("/api/2/permission")
@@ -80,8 +79,7 @@ public class PermissionRestController {
 	}
 
 	private String getProfileId() {
-		return (String) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
+		return RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
 	}
 
 }
