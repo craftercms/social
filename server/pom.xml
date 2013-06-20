@@ -396,7 +396,8 @@
 						</goals>
 						<configuration>
 							<port>29017</port> 
-							<randomPort>false</randomPort>  
+							<randomPort>false</randomPort> 
+							<databaseDirectory>${basedir}/target</databaseDirectory> 
 						</configuration>
 					</execution>
 					<execution>
@@ -479,7 +480,7 @@
                     <execution>
                         <goals>
                             <goal>integration-test</goal>
-                            <goal>verify</goal>
+                            <!-- <goal>verify</goal> -->
                         </goals>
                     </execution>
                 </executions>
@@ -559,17 +560,6 @@
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>${clover.version}</version>
-				<executions>
-					   <execution>
-							<id>main</id>
-							<phase>package</phase>
-							<goals>
-								<goal>instrument</goal>
-								<goal>aggregate</goal>
-								<goal>clover</goal>
-							</goals>
-						</execution>
-				</executions>
 			</plugin>
 			
 		</plugins>
