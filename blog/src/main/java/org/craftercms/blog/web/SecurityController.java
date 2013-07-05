@@ -29,6 +29,7 @@ public class SecurityController {
 	
 	@RequestMapping("/blog-console/login")
 	public ModelAndView loginFromBlogConsole(Model model, @RequestParam(required=false) String message) {
+		System.out.println(" ****** /blog-console/login ");
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("../login");
 		return mav;
@@ -36,6 +37,8 @@ public class SecurityController {
 	
 	@RequestMapping("/login")
 	public String login(Model model, @RequestParam(required=false) String message) {
+		
+		System.out.println(" /login ");
 		return "login";
 	}
 	

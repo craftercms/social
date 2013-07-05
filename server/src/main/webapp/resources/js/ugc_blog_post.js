@@ -192,7 +192,6 @@
 					}
 						
 				});
-
 				util.scheduleTimeUpdates(options, data.list);
 			} else {
 				setTimeout(function() {util.renderUGCBlogPost(data, options, container);} , 200);
