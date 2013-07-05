@@ -1,3 +1,8 @@
+var msgPhantom = "Si se pudo";
+function testJS() {
+	return msgPhantom;
+}
+
 (function( $ ) {
 	$.ajaxSetup({
         error: function(jqXHR, exception) {
@@ -181,6 +186,7 @@
 					data.textContent = {"title": "","content":""};
 					data.id = "";
 					util.renderUGCBlogEntryPublishing(options, container, data,true);
+					
 				});
 				
 				container.on( "click", "#detailEntryBtn", function(event) {

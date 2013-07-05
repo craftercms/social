@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>Crafter Blog</title>
+<title>Crafter Social Blog</title>
 <link href="../resources/image/favicon.ico" rel="Shortcut Icon">
 <script type="text/javascript" src="/crafter-social/resources/js/jquery-1.7.1.js"></script>
 		<script type="text/javascript" src="/crafter-social/resources/js/jquery.form.js"></script>

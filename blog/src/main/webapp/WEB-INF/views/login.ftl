@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>Login</title>
+	<title>Crafter Social Blog - Login</title>
 	<link href="resources/image/favicon.ico" rel="Shortcut Icon">
 	<link rel="stylesheet" href="resources/css/profile.css">
 </head>
@@ -43,7 +43,7 @@
 					    </#if>
 						<p>
 						<label for=""></label>
-						<button class="btn btn-info" type="submit">Sign in</button>
+						<button id="login" name="login" class="btn btn-info" type="submit">Sign in</button>
 						</p>
 					
 

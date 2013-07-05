@@ -39,7 +39,6 @@ public class ActionUtil {
 	};
 	private static final List<String> CREATE_ROLES = new ArrayList<String>(){
 		{
-			add(ActionConstants.SOCIAL_USER);
 			add(ActionConstants.SOCIAL_ADMIN);
 			add(ActionConstants.SOCIAL_AUTHOR);
             add(ActionConstants.OWNER);
@@ -48,14 +47,12 @@ public class ActionUtil {
 	private static final List<String> UPDATE_ROLES = new ArrayList<String>(){
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
-			add(ActionConstants.SOCIAL_AUTHOR);
-            add(ActionConstants.OWNER);
+			add(ActionConstants.OWNER);
 		}
 	};
 	private static final List<String> DELETE_ROLES = new ArrayList<String>(){
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
-			add(ActionConstants.SOCIAL_AUTHOR);
 		}
 	};
     private static final List<String> ACT_ON_ROLES = new ArrayList<String>(){
