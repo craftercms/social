@@ -89,7 +89,7 @@
 									<beans:value>java.util.List</beans:value>
 									<beans:value>java.lang.Number</beans:value>
 									<beans:value>java.lang.Boolean</beans:value>
-									<beans:value>org.craftercms.profile.domain.Profile</beans:value>
+									<beans:value>org.craftercms.profile.impl.domain.Profile</beans:value>
 									
 									<beans:value>org.craftercms.social.util.Hierarchical</beans:value>
 									<beans:value>org.craftercms.social.util.HierarchyList</beans:value>
