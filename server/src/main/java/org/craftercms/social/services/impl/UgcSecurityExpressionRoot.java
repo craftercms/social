@@ -16,6 +16,7 @@
  */
 package org.craftercms.social.services.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +52,6 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 
 	private UGCService ugcService;
 
-	private HttpServletResponse response;
-
 	private TenantService tenantService;
 	
 	private static final String APPLICATION_JSON = "application/json";
@@ -85,11 +84,15 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		} else {
 			parent = this.ugcService.findById(new ObjectId(parentId[0]));
 		}
-		if (!permissionService.allowed(ActionEnum.CREATE, parent,
-				getProfileId())) {
-			log.error("Create UGC permission not granted", parent);
-			response.setHeader(CONTENT_TYPE, APPLICATION_JSON);
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
+		try {
+			if (!permissionService.allowed(ActionEnum.CREATE, parent,
+					getProfileId())) {
+				log.error("Create UGC permission not granted", parent);
+				return false;
+			}
+		} catch(Exception e1) {
+			log.error("Error when was checking for permissions: " + e1.getMessage(), parent);
+			
 			return false;
 		}
 		return true;
@@ -101,12 +104,15 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		if (ugcId == null || ugcId.length == 0) {
 			return false;
 		}
-		if (!permissionService.allowed(ActionEnum.UPDATE,
-				new ObjectId(ugcId[0]), getProfileId())) {
-			log.error("UPDATE UGC permission not granted", ugcId);
-			response.setHeader(CONTENT_TYPE, APPLICATION_JSON);
-			// Permission not granted
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
+		try {
+			if (!permissionService.allowed(ActionEnum.UPDATE,
+					new ObjectId(ugcId[0]), getProfileId())) {
+				log.error("UPDATE UGC permission not granted", ugcId);
+				return false;
+			}
+		} catch(Exception e1) {
+			log.error("Error when was checking for permissions: " + e1.getMessage(), ugcId);
+			
 			return false;
 		}
 		return true;
@@ -121,12 +127,15 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		if (ugcId == null || ugcId.length() == 0) {
 			return true;
 		}
-		if (!permissionService.allowed(ActionEnum.MODERATE,
-				new ObjectId(ugcId), getProfileId())) {
-			log.error("MODERATOR permission not granted", ugcId);
-			response.setHeader(CONTENT_TYPE, APPLICATION_JSON);
-			// Permission not granted
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
+		try {
+			if (!permissionService.allowed(ActionEnum.MODERATE,
+					new ObjectId(ugcId), getProfileId())) {
+				log.error("MODERATOR permission not granted", ugcId);
+				return false;
+			}
+		} catch(Exception e1) {
+			log.error("Error when was checking for permissions: " + e1.getMessage(), ugcId);
+			
 			return false;
 		}
 		return true;
@@ -137,12 +146,15 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		if (ugcId == null || ugcId.length() == 0) {
 			return true;
 		}
-		if (!permissionService.allowed(ActionEnum.ACT_ON, new ObjectId(ugcId),
-				getProfileId())) {
-			log.error("ACT_ON permission not granted", ugcId);
-			response.setHeader(CONTENT_TYPE, APPLICATION_JSON);
-			// Permission not granted
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
+		try {
+			if (!permissionService.allowed(ActionEnum.ACT_ON, new ObjectId(ugcId),
+					getProfileId())) {
+				log.error("ACT_ON permission not granted", ugcId);
+				return false;
+			}
+		} catch(Exception e1) {
+			log.error("Error when was checking for permissions: " + e1.getMessage(), ugcId);
+			
 			return false;
 		}
 		return true;
@@ -151,7 +163,14 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 	public boolean hasAdminRole() {
 		boolean isAdmin = false;
 		String id = getProfileId();
-		Profile profile = this.crafterProfileService.getProfile(id);
+		Profile profile = null;
+		try {
+			profile = this.crafterProfileService.getProfile(id);
+		} catch(Exception e1) {
+			log.error("Error when was getting profile: " + e1.getMessage(), id);
+			
+			return false;
+		}
 		if (profile == null) {
 			return false;
 		}
@@ -171,7 +190,14 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 	public boolean hasAuditorRole() {
 		boolean isAudit = false;
 		String id = getProfileId();
-		Profile profile = this.crafterProfileService.getProfile(id);
+		Profile profile = null;
+		try {
+			profile = this.crafterProfileService.getProfile(id);
+		} catch(Exception e1) {
+			log.error("Error when was getting profile: " + e1.getMessage(), id);
+			
+			return false;
+		}
 		if (profile == null) {
 			return false;
 		}
@@ -234,6 +260,14 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 
 	public void setCrafterProfileService(CrafterProfile crafterProfileService) {
 		this.crafterProfileService = crafterProfileService;
+	}
+	
+	private void setForbiddenResponse() {
+		//try {
+			//response.sendError(HttpServletResponse.SC_FORBIDDEN);
+		//} catch(IOException e) {
+		//	log.error("IOError when was seeting FORBIDDEN ERROR: " + e.getMessage());
+		//}
 	}
 
 }

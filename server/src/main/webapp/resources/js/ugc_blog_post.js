@@ -10,7 +10,9 @@
                console.error('Invalid ticket. Sign in again: ' + jqXHR.statusText);
                window.location = "login";
             }  else if (jqXHR.status == 404) {
-                alert('Requested page not found.');
+            	jqXHR.status = -1; //permission not available
+                console.error('Invalid ticket. Sign in again: ' + jqXHR.statusText);
+                window.location = "login";
             } else if (jqXHR.status == 500) {
                 alert('Internal Server Error.');
             } else if (jqXHR.status == 400) {
@@ -161,7 +163,8 @@
 				}
 				try {
 					container.html($.render( data, 'ugcListTmpl')).link(data);
-					util.wireAuths(container, options);
+					//util.wireAuths(container, options);
+					util.wireAuths($('> div > ul.page-actions', container),options);
 				} catch(e) {
 
 					console.error('There was an error loading the template: ' + e);
@@ -207,6 +210,8 @@
 				} 
 				try {
 					container.html($.render( data, 'ugcDetailTmpl')).link(data);
+					//util.wireAuths(container, options);
+					util.wireAuths($('> header > div > ul.page-actions', container), options);
 				} catch(e) {
 					console.error('There was an error loading the template: ' + e);
 				}
@@ -226,6 +231,7 @@
 				var $form = $(' > div > div.ugc-width-medium > form',container);
 
 				$(' > div > div.ugc-width-medium > form > div.ugc-widget > div.ugc-editor > div.fyre-editor-toolbar > div.goog-toolbar > div.fyre-attachment-button > div.post-attach-btn', container).click(function (event) {
+					//<input type="file" multiple accept='image/*|audio/*|video/*' > //http://stackoverflow.com/questions/1561847/html-how-to-limit-file-upload-to-be-only-images
 					var parentFileContent = $('<div></div>');
 					var newFileContent = $('<div style="display:none;"></div>');
 					var inputFile = document.createElement("input");
@@ -233,13 +239,28 @@
 		 			inputFile.name = "attachments";
 		 			inputFile.id = "attachments";
 		 			inputFile.onchange = function(e) {
+
 		 				var fileContent = $(this.parentElement.parentElement);
 		 				var fileName = this.value.replace("C:\\fakepath\\","");
 		 				removeFile = $('<a class="MultiFile-remove" href="#">x</a>'), 
-		 				fileSpan = $('<span class="MultiFile-title" title="'+fileName+'" id="'+fileName+' name="'+fileName+'">'+fileName+'</span>');
-	         			$("#attachments-list").append(
-	         				fileContent.append(removeFile, " ", fileSpan)
-	         				);
+
+		 				file2 = e.originalTarget.files[0];
+		 				if (file2.type.startsWith("image")) {
+	        				oFReader = new FileReader();
+	        				oFReader.readAsDataURL(file2);
+	        				oFReader.onload = function (oFREvent) {
+					            imagePreview = $('<img style="max-height:100px;max-width:100px" class="image-preview" src="'+oFREvent.target.result+'"></img>');
+					            $("#attachments-list").append(
+			         				fileContent.append(removeFile, " ", imagePreview));
+					        };
+					    } else {
+							fileSpan = $('<span class="MultiFile-title" title="'+fileName+'" id="'+fileName+' name="'+fileName+'">'+fileName+'</span>');
+
+		 				
+		         			$("#attachments-list").append(
+		         				fileContent.append(removeFile, " ", fileSpan)
+		         				);
+		         		}
 	         			
 						removeFile.click(function(){
 							var parent = $(this.parentElement);
@@ -260,7 +281,7 @@
 
 				container.on( "click", "#post-comment", function(event) {
 					var body = $("#textContentField").val();
-					$("#textContentField")[0].value = "";
+					//$("#textContentField")[0].value = "";
 					options.container = $ugcDiv;
 					options.attachments = $("#attachments-list");
 					options.removeParent = false;
@@ -269,6 +290,7 @@
 				});
 				
 				$('#hidden_upload').load(function(e){
+					$("#textContentField")[0].value = "";
 					var myIFrame = document.getElementById("hidden_upload");
 					if (myIFrame.contentWindow.document.childNodes[0].childNodes.length == 0) {
 						console.error('Social server response unexpected');
@@ -343,6 +365,7 @@
 						    cache: false,
 						    type: 'POST',
 						    success: function(aData, textStatus, jqXHR){
+						    	$("#textContentField")[0].value = "";
 						    	if (aData) {
 						    		util.updateEllapsedTimeText([aData]);
 						    		util.observableAddUGC.apply(appendTo, [aData]);
@@ -394,24 +417,29 @@
 		},
 
 		wireAuths :  function(container, options) {
-			signin = $('> div > ul.page-actions > li > a.signin', container);
-			signout = $('> div > ul.page-actions > li > a.signout', container);
-			console = $('> div > ul.page-actions > li > a.blogconsole', container);
-//			signin = $('> div > nav.nav > ul > li > a.signin', container);
-//			signout = $('> div > nav.nav > ul > li > a.signout', container);
-//			console = $('> div > nav.nav > ul > li > a.blogconsole', container);
+			signin = $('> li > a.signin', container);
+			signout = $('> li > a.signout', container);
+			console = $('> li > a.blogconsole', container);
+
 			if (options.isAuthenticate) {
 				signout[0].style.display = "block";
 				signin[0].style.display = "none";
 				console[0].style.display = "block";
 				
-				util.checkCreatePermissions(options, function(result) {
+				util.isValidTicket(function(result) {
 					if (!result) {
+						signout[0].style.display = "none";
+						signin[0].style.display = "block";
 						console[0].style.display = "none";
-					} 
-				});
-				
-				util.assignPermissions('CREATE',$('> div > ul.page-actions > li > a.blogconsole', container), data.id, options);
+					} else {
+						util.checkCreatePermissions(options, function(result) {
+								if (!result) {
+									console[0].style.display = "none";
+								} 
+						});
+						util.assignPermissions('CREATE',$('> div > ul.page-actions > li > a.blogconsole', container), data.id, options);
+					}
+					});
 			} else {
 				signout[0].style.display = "none";
 				signin[0].style.display = "block";
@@ -531,19 +559,37 @@
 				var url = options.restUrl + '/ugc/dislike/'+ ugcId + '.' + options.outputType; 
 				
 				$.ajax({
-				    url: url,
+					url: url,
+					dataType : options.outputType,
+					data:{ticket : options.ticket, tenant : options.tenant},
+					cache: false,
+					type: 'POST',
+					success: function(aData, textStatus, jqXHR){
+						if (aData) {
+							util.observableUpdateUGCProps.apply(ugcDiv, [aData]);
+						}
+					}
+				});
+			}
+		},
+		
+		isValidTicket: function (callback) {
+			if ( options ) {
+				$.ajax({
+				    url: "is_authenticated.json",
 				    dataType : options.outputType,
-				    data:{ticket : options.ticket, tenant : options.tenant},
+				    data:{},
 				    cache: false,
-				    type: 'POST',
+				    type: 'GET',
 				    success: function(aData, textStatus, jqXHR){
 				    	if (aData) {
-				    		util.observableUpdateUGCProps.apply(ugcDiv, [aData]);
+				    		callback(aData);
 				    	}
 				    }
 				});
 			}
 		},
+		
 				
 		observableUpdateUGCProps : function (data) {
 			var oOld = $.observable($.view((this.length)?this[0]:this).data);

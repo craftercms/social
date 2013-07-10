@@ -5338,7 +5338,10 @@ h4 {
     width: 47px;
 }
 .ugc img {
-    border: medium none;
+    /*border: medium none;*/
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    max-height: 350px;
+    max-width: 350px;
 }
 
 .ugc .ugc-stream-sort {

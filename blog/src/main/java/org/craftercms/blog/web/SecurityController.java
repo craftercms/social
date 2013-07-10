@@ -16,16 +16,25 @@
  */
 package org.craftercms.blog.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.craftercms.security.api.RequestContext;
+import org.craftercms.security.api.UserProfile;
 
 import org.springframework.web.servlet.ModelAndView;
 
 
 @Controller
 public class SecurityController {
+	
+	private final Logger log = LoggerFactory
+			.getLogger(SecurityController.class);
 	
 	@RequestMapping("/blog-console/login")
 	public ModelAndView loginFromBlogConsole(Model model, @RequestParam(required=false) String message) {
@@ -45,6 +54,21 @@ public class SecurityController {
 	@RequestMapping("/logout")
 	public String logout() {
 		return "redirect:/logout";
+	}
+	
+	@RequestMapping(value = "/is_authenticated", method = RequestMethod.GET)
+	@ModelAttribute
+	public boolean isAuthenticated(@RequestParam String ticket) {
+		log.debug(String.format("Is allowed create ugc ", ticket));
+		try {
+			String id = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
+			if (id == null || id.equalsIgnoreCase("anonymous")) {
+				return false;
+			}
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 }

@@ -30,6 +30,7 @@ import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.AttachmentModel;
+import org.craftercms.social.domain.AttachmentsList;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit;
@@ -90,7 +91,7 @@ public class UGCServiceImpl implements UGCService {
         UGC ugc = null;
         if (existsUGC(ugcId)) {
             ugc = repository.findOne(ugcId);
-            ugc.setAttachments(getAttachmentModel(ugc.getAttachmentId()));
+            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             ugc.setTargetId(targetId);
             ugc.setParentId(parentId);
             ugc.setTextContent(textContent);
@@ -154,16 +155,8 @@ public class UGCServiceImpl implements UGCService {
     }
 
     private ObjectId getAttachedId(MultipartFile file, UGC ugc) {
-        ObjectId attachmentId = null;
+        return ugc.getAttachmentsList().findObjectId(file);
 
-        for (AttachmentModel model: ugc.getAttachmentModels()) {
-            if (model.getFilename().equals(file.getName())) {
-                attachmentId = new ObjectId(model.getAttachmentId());
-                break;
-            }
-        }
-
-        return attachmentId;
     }
 
 
@@ -190,6 +183,7 @@ public class UGCServiceImpl implements UGCService {
         ugc.setAttachmentId(saveUGCAttachments(files));
         ugc.setActions(resolveActions);
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
+        ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
         auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
         return ugcWithProfile;
@@ -210,6 +204,7 @@ public class UGCServiceImpl implements UGCService {
         checkForModeration(ugc);
         ugc.setAttachmentId(saveUGCAttachments(files));
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
+        ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
         auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
         return ugcWithProfile;
@@ -262,9 +257,15 @@ public class UGCServiceImpl implements UGCService {
                 ugc.setLikeCount(ugc.getLikeCount() + 1);
                 auditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
                 checkForModeration(ugc);
+                if (!userCan(AuditAction.DISLIKE, ugc, profileId)) {
+                	ugc.setOffenceCount(ugc.getOffenceCount() - 1);
+                	removeAuditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
+                }
                 return populateUGCWithProfile(save(ugc));
             } else {
-                return null;
+            	ugc.setLikeCount(ugc.getLikeCount() - 1);
+            	removeAuditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
+            	return populateUGCWithProfile(save(ugc));
             }
         } else {
             log.debug("UGC Id {} does not exist", ugcId);
@@ -285,9 +286,16 @@ public class UGCServiceImpl implements UGCService {
                 ugc.setOffenceCount(ugc.getOffenceCount() + 1);
                 auditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
                 checkForModeration(ugc);
+                if (!userCan(AuditAction.LIKE, ugc, profileId)) {
+                	ugc.setLikeCount(ugc.getLikeCount() - 1);
+                	removeAuditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
+                }
                 return populateUGCWithProfile(save(ugc));
             } else {
-                return null;
+                //return null;
+            	ugc.setOffenceCount(ugc.getOffenceCount() - 1);
+            	removeAuditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
+            	return populateUGCWithProfile(save(ugc));
             }
         } else {
             log.debug("UGC Id {} does not exist", ugcId);
@@ -373,6 +381,11 @@ public class UGCServiceImpl implements UGCService {
     private void auditUGC(ObjectId ugcId, AuditAction auditAction, String tenant, String profileId, String reason) {
         auditRepository.save(new UGCAudit(ugcId, tenant, profileId, auditAction, reason));
     }
+    
+    private void removeAuditUGC(ObjectId ugcId, AuditAction auditAction, String tenant, String profileId, String reason) {
+        UGCAudit audit = auditRepository.findByProfileIdAndUgcIdAndAction(profileId, ugcId, auditAction);
+    	auditRepository.delete(audit);
+    }
 
     @Override
     public UGC threadTree(UGC last) {
@@ -422,7 +435,7 @@ public class UGCServiceImpl implements UGCService {
         if (ugc == null) {
         	return null;
         }
-        ugc.setAttachments(getAttachmentModel(ugc.getAttachmentId()));
+        ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         return populateUGCWithProfile(ugc);
     }
     
@@ -435,7 +448,7 @@ public class UGCServiceImpl implements UGCService {
     	if (ugc == null) {
     		return null;
     	}
-        ugc.setAttachments(getAttachmentModel(ugc.getAttachmentId()));
+        ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         ugc = populateUGCWithProfile(ugc);
         
         return initUGCAndChildren(ugc, p);
@@ -443,7 +456,7 @@ public class UGCServiceImpl implements UGCService {
     }
 
     public UGC initUGCAndChildren(UGC ugc, Profile p) {
-        ugc.setAttachments(getAttachmentModel(ugc.getAttachmentId()));
+        ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         UGC populatedUgc = populateUGCWithProfile(ugc);
         
     	Query q = this.permissionService.getQuery(ActionEnum.READ, p);
@@ -471,7 +484,7 @@ public class UGCServiceImpl implements UGCService {
                 }
                 subUGCList.add(ugc);
                 if (ugc.getAttachmentId()!=null) {
-                    ugc.setAttachments(getAttachmentModel(ugc.getAttachmentId()));
+                    ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
                 }
             }
 
@@ -501,17 +514,14 @@ public class UGCServiceImpl implements UGCService {
         return ugc;
     }
 
-    private List<AttachmentModel> getAttachmentModel(ObjectId[] attachmentsId) {
-        List<AttachmentModel> data = null;
+    private AttachmentsList getAttachmentsList(ObjectId[] attachmentsId, String tenant) {
+    	AttachmentsList data = new AttachmentsList();
         Attachment attachment;
         AttachmentModel a;
-        if (attachmentsId.length > 0) {
-            data = new ArrayList<AttachmentModel>();
-        }
         for (ObjectId id: attachmentsId) {
             attachment = supportDataAccess.getAttachment(id);
-            a = new AttachmentModel(attachment.getFilename(),id);
-            data.add(a);
+            a = new AttachmentModel(attachment.getFilename(),id,attachment.getContentType(), tenant);
+            data.addAttachmentModel(a);
         }
         return data;
     }
