@@ -77,7 +77,7 @@ public class PermissionRestController {
 			return false;
 		}
 	}
-
+	
 	private String getProfileId() {
 		return RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
 	}

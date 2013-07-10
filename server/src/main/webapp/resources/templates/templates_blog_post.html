@@ -43,7 +43,12 @@
    
 		<header class="header">
 			<div id="header">
-				<a class="logo" href="entries_published" title="Go to Crafter Blog"></a> 
+				<a class="logo" href="entries_published" title="Go to Crafter Blog"></a>
+				<ul class="page-actions">
+	 				<li><a href="crafter-security-logout" value="Sign Out" id="signout" name="signout" class="signout">Sign-Out</a></li>
+	 				<li><a href="login" value="Sign In" id="signin" name="signin" class="signin">Sign-In</a></li>
+	 				<li><a href="blog-console/blog_entries" value="Blog Console" id="blogconsole" name="blogconsole" class="blogconsole">Blog Console</a></li>
+	 			</ul> 
 			</div>
 				<h1 class="h1">
 						{{=textContent.title}}
@@ -115,7 +120,13 @@
 					<p class="commenting" data-getfrom="[textContent]"></p>
 				</div>
 				<div class="attachment-list">
-					{{each attachmentModels tmpl="ugcTmplAttachments"}}
+					{{each attachmentsList.regularAttach tmpl="ugcTmplAttachments"}}
+				</div>
+				<div class="attachment-list">
+					{{each attachmentsList.imageAttach tmpl="ugcTmplImageAttachments"}}
+				</div>
+				<div class="attachment-list">
+					{{each attachmentsList.videoAttach tmpl="ugcTmplVideoAttachments"}}
 				</div>
 				<div class="ugc-comment-raw-html">
 				</div>
@@ -180,6 +191,20 @@
 <script id="ugcTmplAttachments" type="text/x-jquery-tmpl">
 	<div class="attachment-line" id="{{=filename}}">
 		<a class="attachment-link" id="attachmentOneBtn" href="#" name="{{=attachmentId}}">{{=filename}}</a>	
+	</div>
+</script>
+<script id="ugcTmplImageAttachments" type="text/x-jquery-tmpl">
+	<div class="attachment-line" id="{{=filename}}">
+		<!--a class="attachment-link" id="attachmentOneBtn" href="{{=url}}" name="{{=attachmentId}}">{{=filename}}</a-->
+		<img src="{{=url}}"/>	
+	</div>
+</script>
+<script id="ugcTmplVideoAttachments" type="text/x-jquery-tmpl">
+	<div class="attachment-line" id="{{=filename}}">
+		<video id="{{=filename}}" class="video-js vjs-default-skin" controls width="300" height="300"
+    		  data-setup="{}">
+    		<source src="{{=url}}" type="{{=contentType}}">
+    	</video>	
 	</div>
 </script>
 

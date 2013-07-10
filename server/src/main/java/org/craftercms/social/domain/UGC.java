@@ -52,7 +52,7 @@ public class UGC implements Hierarchical<UGC> {
 	private ObjectId id;
 	private ObjectId parentId;
 	private String textContent;
-	private List<AttachmentModel> attachmentModels;
+	private AttachmentsList attachmentsList;
 	private ObjectId[] attachmentId;
 	private List<Action> actions;
 
@@ -264,14 +264,6 @@ public class UGC implements Hierarchical<UGC> {
 				attachmentId.length, moderationStatus, timesModerated, likeCount, offenceCount, profileId, targetId);
 	}
 
-	public List<AttachmentModel> getAttachmentModels() {
-		return attachmentModels;
-	}
-
-	public void setAttachments(List<AttachmentModel> attachmentModels) {
-		this.attachmentModels = attachmentModels;
-	}
-
 	public List<Action> getActions() {
 		return actions;
 	}
@@ -327,4 +319,12 @@ public class UGC implements Hierarchical<UGC> {
     public void setTenant(String tenant) {
         this.tenant = tenant;
     }
+
+	public AttachmentsList getAttachmentsList() {
+		return attachmentsList;
+	}
+
+	public void setAttachmentsList(AttachmentsList attachmentsList) {
+		this.attachmentsList = attachmentsList;
+	}
 }

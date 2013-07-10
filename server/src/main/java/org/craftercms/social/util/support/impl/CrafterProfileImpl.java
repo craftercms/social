@@ -127,7 +127,7 @@ public class CrafterProfileImpl implements CrafterProfile {
 	 * @return
 	 */
 	public Profile getProfile(String profileId) {
-		if (profileId == null || profileId.equals("")) {
+		if (profileId == null || profileId.equals("") || profileId.equalsIgnoreCase("anonymous")) {
 			return ProfileConstants.ANONYMOUS;
 		}
 
