@@ -463,10 +463,12 @@
 					</excludes>
                 </configuration>
             </plugin>
+
 			<plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <testFailureIgnore>false</testFailureIgnore>
                     <includes>
                         <include>
@@ -486,6 +488,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+
             
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
