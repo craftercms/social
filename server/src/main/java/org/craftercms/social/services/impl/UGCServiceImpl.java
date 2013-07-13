@@ -41,6 +41,7 @@ import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.SupportDataAccess;
+import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
@@ -76,6 +77,9 @@ public class UGCServiceImpl implements UGCService {
 
     @Autowired
     private CrafterProfile crafterProfileService;
+    
+    @Autowired
+	private TenantService tenantService;
 
     @Override
     public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant) {
@@ -244,7 +248,9 @@ public class UGCServiceImpl implements UGCService {
     }
 
     private void checkForModeration(UGC ugc) {
-        if (moderationDecisionManager.needModeration(ugc) && ugc.getModerationStatus() != ModerationStatus.APPROVED) {
+    	if (moderationDecisionManager.rejected(ugc) && ugc.getModerationStatus() != ModerationStatus.APPROVED) {
+            ugc.setModerationStatus(ModerationStatus.REJECTED);
+        } else if (moderationDecisionManager.needModeration(ugc) && ugc.getModerationStatus() != ModerationStatus.APPROVED) {
             ugc.setModerationStatus(ModerationStatus.PENDING);
         }
     }
@@ -344,11 +350,30 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, boolean sortChronological) {
-    	return findUGCs(new String[] {
-				ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString() },tenant,target,profileId,sortChronological);
+    	return findUGCs(getModerationFilter(tenant, profileId),tenant,target,profileId,sortChronological);
     }
 
-    @Override
+    
+    private String[] getModerationFilter(String tenantName, String profileId) {
+    	Profile p = crafterProfileService.getProfile(profileId);
+    	List<String> moderatorRoles = tenantService.getRootModeratorRoles(tenantName);
+    	ArrayList<Action> actions = new ArrayList<Action>();
+		Action moderatorAction = new Action(ActionEnum.MODERATE.toString(),moderatorRoles);
+		actions.add(moderatorAction);
+		UGC newUgc = new UGC();
+		newUgc.setActions(actions);
+		if (permissionService.allowed(ActionEnum.MODERATE, newUgc, p)) {
+			return new String[] {
+					ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(),
+					ModerationStatus.PENDING.toString(), ModerationStatus.REJECTED.toString()};
+		} else {
+			return new String[] {
+					ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString() };
+		}
+    	
+	}
+
+	@Override
     public int getTenantTargetCount(String tenant, String target) {
     	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
     	Profile p = crafterProfileService.getProfile(profileId);
@@ -440,29 +465,30 @@ public class UGCServiceImpl implements UGCService {
     }
     
         @Override
-    public UGC findUGCAndChildren(ObjectId ugcId) {
-    	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
+    public UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId) {
+    	//String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
     	Profile p = crafterProfileService.getProfile(profileId);
     	Query q = this.permissionService.getQuery(ActionEnum.READ, p);	
-    	UGC ugc = repository.findUGC(ugcId, q);
+    	String[] moderationStatus = getModerationFilter(tenant, profileId);
+    	UGC ugc = repository.findUGC(ugcId, q, moderationStatus);
     	if (ugc == null) {
     		return null;
     	}
         ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         ugc = populateUGCWithProfile(ugc);
         
-        return initUGCAndChildren(ugc, p);
+        return initUGCAndChildren(ugc, p, moderationStatus);
 
     }
 
-    public UGC initUGCAndChildren(UGC ugc, Profile p) {
+    public UGC initUGCAndChildren(UGC ugc, Profile p, String[] moderationStatus) {
         ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         UGC populatedUgc = populateUGCWithProfile(ugc);
         
     	Query q = this.permissionService.getQuery(ActionEnum.READ, p);
-        List<UGC> children = repository.findByParentIdWithReadPermission(populatedUgc.getId(), q);
+        List<UGC> children = repository.findByParentIdWithReadPermission(populatedUgc.getId(), q, moderationStatus);
         for (UGC ugcChild: children) {
-            ugcChild = initUGCAndChildren(ugcChild, p);
+            ugcChild = initUGCAndChildren(ugcChild, p, moderationStatus);
         }
         populatedUgc.getChildren().addAll(children);
         return populatedUgc;

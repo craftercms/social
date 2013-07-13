@@ -58,8 +58,8 @@ public class SecurityController {
 	
 	@RequestMapping(value = "/is_authenticated", method = RequestMethod.GET)
 	@ModelAttribute
-	public boolean isAuthenticated(@RequestParam String ticket) {
-		log.debug(String.format("Is allowed create ugc ", ticket));
+	public boolean isAuthenticated() {
+		log.debug(String.format("Is allowed create ugc "));
 		try {
 			String id = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
 			if (id == null || id.equalsIgnoreCase("anonymous")) {

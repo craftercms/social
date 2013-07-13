@@ -37,6 +37,9 @@ public class TenantServiceImpl implements TenantService {
 
 	@Value("#{socialSettings['create.roles']}")
 	private String createRoles;
+	
+	@Value("#{socialSettings['moderator.roles']}")
+	private String moderatorRoles;
 
 	@Override
 	public List<String> getRootCreateRoles(String tenantName) {
@@ -53,7 +56,24 @@ public class TenantServiceImpl implements TenantService {
 			return tenant.getRoles();
 		}
 	}
-
+	
+	@Override
+	public List<String> getRootModeratorRoles(String tenantName) {
+		Tenant tenant = this.tenantRepository
+				.findTenantByTenantName(tenantName);
+		if (tenant == null || tenant.getRoles() == null) {
+			ArrayList<String> roles = new ArrayList<String>();
+			String[] creates = this.moderatorRoles.split(",");
+			for (String role : creates) {
+				roles.add(role.trim());
+			}
+			return roles;
+		} else {
+			//TODO: get moderator tenant
+			return tenant.getRoles();
+		}
+	}
+	
 	@Override
 	public Tenant setTenant(String tenantName, List<String> roles) {
 		Tenant tenant = new Tenant();

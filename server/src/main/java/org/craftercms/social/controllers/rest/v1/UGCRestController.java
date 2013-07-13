@@ -121,8 +121,9 @@ public class UGCRestController {
 	
 	@RequestMapping(value = "/get_ugc/{ugcId}", method = RequestMethod.GET)
 	public UGC findByUGCId(@PathVariable String ugcId,
+				@RequestParam final String tenant,
 				HttpServletResponse response) throws IOException {		
-        return ugcService.findUGCAndChildren(new ObjectId(ugcId));
+        return ugcService.findUGCAndChildren(new ObjectId(ugcId), tenant, getProfileId());
 	}
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)

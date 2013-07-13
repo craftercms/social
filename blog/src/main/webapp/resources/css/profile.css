@@ -1,4 +1,123 @@
 
+.post-moderation-state > div.APPROVED
+{
+display:none;
+}
+
+.post-moderation-state > div.UNMODERATED
+{
+display:none;
+}
+
+.ugc-article-actions > a.UNMODERATED
+{
+display:none;
+}
+
+.ugc-article-actions > a.APPROVED
+{
+    display:none;
+}
+
+.ugc-article-actions > p > a.PENDING {
+    text-decoration: none;
+}
+
+.ugc-article-actions > p > a.REJECTED {
+    text-decoration: none;
+}
+
+.ugc-article-actions {
+    float: right;
+    margin-bottom: 10px;
+    /*width: 620px;*/
+    padding: 0 15px 5px;
+    background-color: #F5F7EC;
+
+}
+
+.article-moderation-status {
+    font-size: 80%;
+    list-style: none outside none;
+    /*position: absolute;*/
+    right: 380px;
+    top: 30px;
+}
+
+.article-moderation-status > li {
+    float: left;
+    padding: 0 9px;
+    color: #E33C09 !important;
+    line-height: 15px !important;
+}
+
+.article-moderation-status > li > a {
+    float: left;
+    padding: 0 9px;
+    color: #E33C09 !important;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.article-moderation-status > li > a.REJECTED {
+    display:none;
+}
+
+/*div.APPROVED
+{
+display:none;
+}
+
+div.UNMODERATED
+{
+display:none;
+}*/
+
+.post-moderation-state > div.APPROVED
+{
+display:none;
+}
+
+.post-moderation-state > div.UNMODERATED
+{
+display:none;
+}
+
+.ugc-article-actions > a.UNMODERATED
+{
+display:none;
+}
+
+.ugc-article-actions > a.APPROVED
+{
+    display:none;
+}
+
+.ugc-article-actions > p > a.PENDING {
+    text-decoration: none;
+}
+
+.ugc-article-actions > p > a.REJECTED {
+    text-decoration: none;
+}
+
+.ugc-article-actions {
+    float: right;
+    margin-bottom: 10px;
+    /*width: 620px;*/
+    padding: 0 15px 5px;
+    background-color: #F5F7EC;
+
+}
+
+.PENDING {
+    background: #F7F8EC;
+}
+
+.REJECTED {
+    background:#F7F8EC;
+}
+
 span.blogg-image-tooltip {
     display: inline-block;
     overflow: hidden;

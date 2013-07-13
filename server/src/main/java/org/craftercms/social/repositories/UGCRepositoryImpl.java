@@ -67,8 +67,11 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	}
 
 	@Override
-	public UGC findUGC(ObjectId id, Query query) {
+	public UGC findUGC(ObjectId id, Query query, String[] moderationStatusArr) {
 		query.addCriteria(Criteria.where("id").is(id));
+		if (moderationStatusArr !=null) {
+        	query.addCriteria(Criteria.where("moderationStatus").in(moderationStatusArr));
+        }
 		
 		List<UGC> list = mongoTemplate.find(query, UGC.class);
 		if (list!=null && list.size()>0) { 
@@ -97,9 +100,11 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	}
 	
 	@Override
-	public List<UGC> findByParentIdWithReadPermission(ObjectId parentId, Query query) {
+	public List<UGC> findByParentIdWithReadPermission(ObjectId parentId, Query query, String[] moderationStatus) {
 		query.addCriteria(Criteria.where("parentId").is(parentId));
-		
+		if (moderationStatus !=null) {
+        	query.addCriteria(Criteria.where("moderationStatus").in(moderationStatus));
+        }
 		return mongoTemplate.find(query, UGC.class);
 	}
 	
