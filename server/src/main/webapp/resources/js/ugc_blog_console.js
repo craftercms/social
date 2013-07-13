@@ -1,8 +1,3 @@
-var msgPhantom = "Si se pudo";
-function testJS() {
-	return msgPhantom;
-}
-
 (function( $ ) {
 	$.ajaxSetup({
         error: function(jqXHR, exception) {
@@ -16,7 +11,10 @@ function testJS() {
                 console.error('Invalid ticket. Sign in again: ' + jqXHR.statusText);
                 window.location = "../login";
             }  else if (jqXHR.status == 404) {
-                alert('Requested page not found.');
+                //alert('Requested page not found.');
+                jqXHR.status = -1; //permission not available
+                console.error('Invalid ticket. Sign in again: ' + jqXHR.statusText);
+                window.location = "../login";
             } else if (jqXHR.status == 500) {
                 alert('Internal Server Error.');
             } else if (exception === 'parsererror') {
@@ -293,6 +291,98 @@ function testJS() {
 					
 				});
 
+				container.on( "click", "#approveModerationStatus", function(event) {
+					options = container.options;
+					if ( options ) {
+						
+						var url = options.restUrl + '/ugc/moderation/'+ event.target.name+ "/status." +options.outputType; 
+						var data = {'ticket' : options.ticket, 'tenant' : options.tenant, 'moderationStatus' : 'APPROVED'};
+						$.ajax({
+						    url: url,
+						    data: data,
+						    dataType : options.outputType,
+						    contentTypeString:"application/json;charset=UTF-8",
+						    cache: false,
+						    type: 'POST',
+						    success: function(aData, textStatus, jqXHR){
+
+						    	entryPost = $("#entry-" + aData.id);
+						    	entryPost.removeClass("REJECTED");
+						    	entryPost.removeClass("PENDING");
+
+						    	currentTd = $("> td.entry-title",entryPost);
+						    	currentTd.removeClass("REJECTED");
+						    	currentTd.removeClass("PENDING");
+						    	currentTd = $("> td.entry-username",entryPost);
+						    	currentTd.removeClass("REJECTED");
+						    	currentTd.removeClass("PENDING");
+						    	currentTd = $("> td.entry-msgs",entryPost);
+						    	currentTd.removeClass("REJECTED");
+						    	currentTd.removeClass("PENDING");
+						    	currentTd = $("> td.entry-moderation",entryPost);
+						    	currentTd.removeClass("REJECTED");
+						    	currentTd.removeClass("PENDING");
+
+						    	artitleActions = $(" > div.post-moderation-state > div.ugc-article-actions",currentTd);
+						    	artitleActions.removeClass("REJECTED");
+						    	artitleActions.removeClass("PENDING");
+						    	artitleActions.addClass("APPROVED");
+
+						    	rejectLink = $(" > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > a.reject-link",currentTd)
+						    	rejectLink.removeClass("REJECTED");
+						    	rejectLink.removeClass("PENDING");
+						    	rejectLink.addClass("APPROVED");
+						    }
+						});
+					}
+						
+				});
+				container.on( "click", "#rejectModerationStatus", function(event) {
+					options = container.options;
+					if ( options ) {
+						
+						var url = options.restUrl + '/ugc/moderation/'+ event.target.name+ "/status." +options.outputType; 
+						var data = {'ticket' : options.ticket, 'tenant' : options.tenant, 'moderationStatus' : 'REJECTED'};
+						$.ajax({
+						    url: url,
+						    data: data,
+						    dataType : options.outputType,
+						    contentTypeString:"application/json;charset=UTF-8",
+						    cache: false,
+						    type: 'POST',
+						    success: function(aData, textStatus, jqXHR){
+						    	//alert("test");
+						    	entryPost = $("#entry-" + aData.id);
+						    	
+						    	currentTd = $("> td.entry-title",entryPost);
+						    	currentTd.addClass("REJECTED");
+						    	currentTd.removeClass("PENDING");
+						    	
+						    	currentTd = $("> td.entry-username",entryPost);
+						    	currentTd.addClass("REJECTED");
+						    	currentTd.removeClass("PENDING");
+						    	
+						    	currentTd = $("> td.entry-msgs",entryPost);
+						    	currentTd.addClass("REJECTED");
+						    	currentTd.removeClass("PENDING");
+						    	
+						    	currentTd = $("> td.entry-moderation",entryPost);
+						    	currentTd.addClass("REJECTED");
+						    	currentTd.removeClass("PENDING");
+						    	
+						    	rejectLink = $(" > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > a.reject-link",currentTd)
+						    	rejectLink.addClass("REJECTED");
+						    	rejectLink.removeClass("PENDING");
+						    	
+						    	strongStatus = $(" > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > strong.moderation-message",currentTd);
+						    	strongStatus[0].textContent = "Moderation Status: " + aData.moderationStatus;
+
+						    }
+						});
+					}
+						
+				});
+
 				util.scheduleTimeUpdates(options, data.list);
 			} else {
 				setTimeout(function() {util.renderUGCBlogConsole(data, options, container);} , 200);
@@ -330,7 +420,7 @@ function testJS() {
 					$deleteButton.data('events').click.length>0) {
 				$deleteButton.unbind("click");
 			}
-			
+			container.unbind();
 			
 		},
 

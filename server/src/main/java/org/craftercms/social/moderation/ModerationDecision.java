@@ -19,7 +19,7 @@ package org.craftercms.social.moderation;
 import org.craftercms.social.domain.UGC;
 
 public interface ModerationDecision {
-
+	
 	/**
 	 * Makes the decision if a {@link UGC} have to been moderate
 	 * based on {@link ModerationFilter#needModeration(UGC)} result
@@ -27,6 +27,9 @@ public interface ModerationDecision {
 	 * @param ugc UGC to test
 	 * @return True if at least one {@link ModerationFilter#needModeration(UGC)} returns true; 
 	 */
-	public abstract boolean needModeration(final UGC ugc);
+	boolean needModeration(final UGC ugc);
 
+	boolean rejected(UGC ugc);
+	
+	void setMaxFlagsBeforeRejecting(int maxFlags);
 }

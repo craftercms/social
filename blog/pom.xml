@@ -309,18 +309,18 @@
 					</connectors>
 					<webAppConfig>
 						<contextPath>/crafter-social-blog-demo</contextPath>
-						<extraClasspath>${basedir}/config/</extraClasspath>
+						<extraClasspath>${basedir}/src/test/resources/</extraClasspath>
 					</webAppConfig>
 					<contextHandlers>
 						<contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
 							<war>../server/target/crafter-social.war</war>
 							<contextPath>/crafter-social</contextPath>
-							<extraClasspath>${basedir}/config/</extraClasspath>
+							<extraClasspath>${basedir}/src/test/resources/</extraClasspath>
 						</contextHandler>
 						<contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
 							<war>../../profile/server/target/crafter-profile.war</war>
 							<contextPath>/crafter-profile</contextPath>
-							<extraClasspath>${basedir}/config/</extraClasspath>
+							<extraClasspath>${basedir}/src/test/resources/</extraClasspath>
 						</contextHandler>
 					</contextHandlers>
 					<scanIntervalSeconds>10</scanIntervalSeconds>

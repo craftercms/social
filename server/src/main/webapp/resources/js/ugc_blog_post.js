@@ -116,7 +116,7 @@
 
 				if ( options ) {
 					var url = options.restUrl + '/ugc/target.' + options.outputType; 
-					var data = {ticket : options.ticket, 'target' : options.target, 'tenant' : options.tenant};
+					var data = {'ticket' : options.ticket, 'target' : options.target, 'tenant' : options.tenant};
 					$.ajax({
 					    url: url,
 					    data: data,
@@ -153,6 +153,7 @@
 	var util = {
 		renderUGCBlogPost : function (data, options, container) {
 			if (options.templatesLoaded) {
+				util.unbindBlogPostEvents(container);
 				for (i = 0; i<data.list.length;i++) {
 					var content = data.list[i].textContent;
 					if (content.substr(0,1) == '{') {
@@ -164,7 +165,7 @@
 				try {
 					container.html($.render( data, 'ugcListTmpl')).link(data);
 					//util.wireAuths(container, options);
-					util.wireAuths($('> div > ul.page-actions', container),options);
+					util.wireAuths($('> div > ul.page-actions', container),options, data.id);
 				} catch(e) {
 
 					console.error('There was an error loading the template: ' + e);
@@ -176,7 +177,7 @@
 					if ( options ) {
 						options.parentId = event.target.name;
 						var url = options.restUrl + '/ugc/get_ugc/' + event.target.name+ "." +options.outputType; 
-						var data = {ticket : options.ticket, 'tenant' : options.tenant, 'ticket' : options.ticket};
+						var data = {'ticket' : options.ticket, 'tenant' : options.tenant, 'ticket' : options.ticket};
 						$.ajax({
 						    url: url,
 						    data: data,
@@ -195,14 +196,80 @@
 					}
 						
 				});
+				container.on( "click", "#approveModerationStatus", function(event) {
+					options = container.options;
+					if ( options ) {
+						
+						var url = options.restUrl + '/ugc/moderation/'+ event.target.name+ "/status." +options.outputType; 
+						var data = {'ticket' : options.ticket, 'tenant' : options.tenant, 'moderationStatus' : 'APPROVED'};
+						$.ajax({
+						    url: url,
+						    data: data,
+						    dataType : options.outputType,
+						    contentTypeString:"application/json;charset=UTF-8",
+						    cache: false,
+						    type: 'POST',
+						    success: function(aData, textStatus, jqXHR){
+						    	articlePosted = $("#post-" + aData.id);
+						    	articlePosted.removeClass("REJECTED");
+						    	articlePosted.removeClass("PENDING");
+						    	//artitleActions = $("> div.post-moderation-state > div.ugc-article-actions",articlePosted);
+						    	artitleActions = $("> header.post-header > div.top > div.headline > div.post-moderation-state > div.ugc-article-actions",articlePosted);
+						    	artitleActions.removeClass("REJECTED");
+						    	artitleActions.removeClass("PENDING");
+						    	artitleActions.addClass("APPROVED");
+						    }
+						});
+					}
+						
+				});
+				container.on( "click", "#rejectModerationStatus", function(event) {
+					options = container.options;
+					if ( options ) {
+						
+						var url = options.restUrl + '/ugc/moderation/'+ event.target.name+ "/status." +options.outputType; 
+						var data = {'ticket' : options.ticket, 'tenant' : options.tenant, 'moderationStatus' : 'REJECTED'};
+						$.ajax({
+						    url: url,
+						    data: data,
+						    dataType : options.outputType,
+						    contentTypeString:"application/json;charset=UTF-8",
+						    cache: false,
+						    type: 'POST',
+						    success: function(aData, textStatus, jqXHR){
+						    	//alert("test");
+						    	articlePosted = $("#post-" + aData.id);
+						    	articlePosted.removeClass("PENDING");
+						    	articlePosted.addClass("REJECTED");
+						    	
+						    	artitleActions = $("> header.post-header > div.top > div.headline > div.post-moderation-state > div.ugc-article-actions",articlePosted);
+						    	artitleActions.removeClass("PENDING");
+						    	artitleActions.addClass("REJECTED");
+						    	rejectLink = $("> header.post-header > div.top > div.headline > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > a.reject-link",articlePosted);
+						    	
+						    	rejectLink.removeClass("PENDING");
+						    	rejectLink.addClass("REJECTED");
+						    	strongStatus = $("> header.post-header > div.top > div.headline > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > strong.moderation-message",articlePosted);
+						    	
+						    	strongStatus[0].textContent = "Moderation Status: " + aData.moderationStatus;
+						    }
+						});
+					}
+						
+				});
 				util.scheduleTimeUpdates(options, data.list);
 			} else {
 				setTimeout(function() {util.renderUGCBlogPost(data, options, container);} , 200);
 			}
 		},
 
+		unbindBlogPostEvents: function(container) {
+			container.unbind();
+		},
+
 		renderUGCBlogPostDetail : function (data, options, container) {
 			if (options.templatesLoaded) {
+				util.unbindBlogPostEvents(container);
 				var content = data.textContent;
 				if (content.substr(0,1) == '{') {
 					jsonObj = $.parseJSON(content);
@@ -210,8 +277,7 @@
 				} 
 				try {
 					container.html($.render( data, 'ugcDetailTmpl')).link(data);
-					//util.wireAuths(container, options);
-					util.wireAuths($('> header > div > ul.page-actions', container), options);
+					util.wireAuths($('> header > div > ul.page-actions', container), options, data.id);
 				} catch(e) {
 					console.error('There was an error loading the template: ' + e);
 				}
@@ -224,14 +290,83 @@
 					location.href = url;
 						
 				});
+				// LIKE DISLIKE FLAG - > content
+				container.on( "click", "div.footer-article > div.unitExt > a.like", function(event) {
+					util.likeUGC(options.parentId, options, $ugcDiv);
+				});
+				
+				container.on( "click", "div.footer-article > div.unitExt > a.flag", function(event) {
+					util.flagUGC(options.parentId, options, $ugcDiv);
+				});
+				
+				container.on( "click", "div.footer-article > div.unitExt > a.flagmoderation", function(event) {
+					util.flagModerationUGC(options.parentId, options, $ugcDiv);
+				});
+				//moderationActions = $("div.article-detail > div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions",container);
+				container.on( "click", "div.article-detail > div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > a.approve-link", function(event) {
+					//util.flagUGC(options.parentId, options, $ugcDiv);
+					var url = options.restUrl + '/ugc/moderation/'+ event.target.name+ "/status." +options.outputType; 
+					var data = {'ticket' : options.ticket, 'tenant' : options.tenant, 'moderationStatus' : 'APPROVED'};
+					$.ajax({
+					    url: url,
+					    data: data,
+					    dataType : options.outputType,
+					    contentTypeString:"application/json;charset=UTF-8",
+					    cache: false,
+					    type: 'POST',
+					    success: function(aData, textStatus, jqXHR){
+					    	if (aData) {
+						    	util.observableUpdateUGCProps.apply($ugcDiv, [aData]);
+						    	articleDetailPosted = $("#article-detail");
+						    	articleDetailPosted.removeClass("REJECTED");
+						    	articleDetailPosted.removeClass("PENDING");
+
+						    	artitleActions = $(" > div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions",articleDetailPosted);
+								artitleActions.removeClass("REJECTED");
+						    	artitleActions.removeClass("PENDING");
+						    	artitleActions.addClass("APPROVED");
+						    }
+					    }
+					});
+				});
+				
+				container.on( "click", "div.article-detail > div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > a.reject-link", function(event) {
+					var url = options.restUrl + '/ugc/moderation/'+ event.target.name+ "/status." +options.outputType; 
+					var data = {'ticket' : options.ticket, 'tenant' : options.tenant, 'moderationStatus' : 'REJECTED'};
+						$.ajax({
+						    url: url,
+						    data: data,
+						    dataType : options.outputType,
+						    contentTypeString:"application/json;charset=UTF-8",
+						    cache: false,
+						    type: 'POST',
+						    success: function(aData, textStatus, jqXHR){
+						    	if (aData) {
+									flaggedContent = $("#article-detail");
+							    	flaggedContent.removeClass("PENDING");
+									flaggedContent.addClass(aData.moderationStatus);	
+
+									actionContainer = $(" > div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions",flaggedContent);
+									actionContainer.removeClass("PENDING");
+									actionContainer.addClass(aData.moderationStatus);
+									
+									rejectLink = $("> ul.article-moderation-status > li > a.reject-link",actionContainer);
+									rejectLink.removeClass("PENDING");
+									rejectLink.addClass(aData.moderationStatus);
+
+									strongStatus = $("> ul.article-moderation-status > li > strong.moderation-message",actionContainer);
+									strongStatus[0].textContent = "Moderation Status: " + aData.moderationStatus;
+								}
+							}
+					});
+				});
+				util.assignPermissions('ACT_ON',$('div.footer-article > div.unitExt > a.like', container), options.parentId, options);
+				util.assignPermissions('ACT_ON',$('div.footer-article > div.unitExt > a.flag', container), options.parentId, options);
+				util.assignPermissions('ACT_ON',$('div.footer-article > div.unitExt > a.flagmoderation', container), options.parentId, options);
 				
 				util.assignPermissions('CREATE',$(' > div > div.ugc-width-medium  > form > div.ugc-widget > div.ugc-editor', container), data.id, options);
-				
-				//var $postAttachmentButton = $(' > div > form > div.ugc-width-medium > div.ugc-widget > div.ugc-editor > div.fyre-editor-toolbar > div.goog-toolbar > div.fyre-attachment-button > div.post-attach-btn',container);
 				var $form = $(' > div > div.ugc-width-medium > form',container);
-
 				$(' > div > div.ugc-width-medium > form > div.ugc-widget > div.ugc-editor > div.fyre-editor-toolbar > div.goog-toolbar > div.fyre-attachment-button > div.post-attach-btn', container).click(function (event) {
-					//<input type="file" multiple accept='image/*|audio/*|video/*' > //http://stackoverflow.com/questions/1561847/html-how-to-limit-file-upload-to-be-only-images
 					var parentFileContent = $('<div></div>');
 					var newFileContent = $('<div style="display:none;"></div>');
 					var inputFile = document.createElement("input");
@@ -242,10 +377,11 @@
 
 		 				var fileContent = $(this.parentElement.parentElement);
 		 				var fileName = this.value.replace("C:\\fakepath\\","");
-		 				removeFile = $('<a class="MultiFile-remove" href="#">x</a>'), 
+		 				removeFile = $('<a class="MultiFile-remove">x</a>'), 
 
 		 				file2 = e.originalTarget.files[0];
 		 				if (file2.type.startsWith("image")) {
+		 					parentFileContent.addClass("attach-image-box");
 	        				oFReader = new FileReader();
 	        				oFReader.readAsDataURL(file2);
 	        				oFReader.onload = function (oFREvent) {
@@ -253,7 +389,13 @@
 					            $("#attachments-list").append(
 			         				fileContent.append(removeFile, " ", imagePreview));
 					        };
-					    } else {
+					    } else if (file2.type.startsWith("video")) {
+					    	parentFileContent.addClass("video-image-box");
+    					     fileSpan = $('<span class="MultiFile-title" title="'+fileName+'" id="'+fileName+' name="'+fileName+'">'+fileName+'</span>');
+					     $("#attachments-list").append(
+		         				fileContent.append(removeFile, " ", fileSpan)
+		         				);
+					    }else {
 							fileSpan = $('<span class="MultiFile-title" title="'+fileName+'" id="'+fileName+' name="'+fileName+'">'+fileName+'</span>');
 
 		 				
@@ -288,7 +430,7 @@
 					util.addTextUGC(body, container.options.parentId, options,  $ugcDiv,$("#attachments-list"),$form, false);
 						
 				});
-				
+
 				$('#hidden_upload').load(function(e){
 					$("#textContentField")[0].value = "";
 					var myIFrame = document.getElementById("hidden_upload");
@@ -306,7 +448,7 @@
 					}
 				    var url = options.restUrl + '/ugc/get_ugc/' + idUgc + '.' + options.outputType;
 				    
-					var data = {ticket : options.ticket, tenant : options.tenant};
+					var data = {'ticket' : options.ticket, tenant : options.tenant};
 				    $.ajax({
 					    url: url,
 					    data: data,
@@ -354,7 +496,7 @@
 						
 						var dataTextContent = body;
 						var url = options.restUrl + '/ugc/create' + '.' + options.outputType + util.getActionsParams(options.actions);
-						var data = {'target' : options.target, 'textContent' : dataTextContent, ticket : options.ticket, 'tenant' : options.tenant};
+						var data = {'target' : options.target, 'textContent' : dataTextContent, 'ticket' : options.ticket, 'tenant' : options.tenant};
 						 if(parentId){
 							 data.parentId=parentId;
 						 }
@@ -384,6 +526,8 @@
 				}
 			}
 		},
+
+
 		
 		createHiddenInput :function(inputId, inputValue) {
 			var inputField = document.createElement("input");
@@ -416,35 +560,61 @@
 			return false;
 		},
 
-		wireAuths :  function(container, options) {
+		wireAuths :  function(container, options, id) {
 			signin = $('> li > a.signin', container);
 			signout = $('> li > a.signout', container);
 			console = $('> li > a.blogconsole', container);
-
+			signinDisplay = "";
+			signoutDisplay = "";
+			consoleDisplay = "";
 			if (options.isAuthenticate) {
-				signout[0].style.display = "block";
-				signin[0].style.display = "none";
-				console[0].style.display = "block";
+				signoutDisplay = "block";
+				signinDisplay = "none";
+				consoleDisplay = "block";
 				
-				util.isValidTicket(function(result) {
+				util.isValidTicket(options,function(result) {
 					if (!result) {
-						signout[0].style.display = "none";
-						signin[0].style.display = "block";
-						console[0].style.display = "none";
+						signoutDisplay = "none";
+						signinDisplay = "block";
+						consoleDisplay = "none";
 					} else {
 						util.checkCreatePermissions(options, function(result) {
 								if (!result) {
-									console[0].style.display = "none";
+									consoleDisplay = "none";
 								} 
 						});
-						util.assignPermissions('CREATE',$('> div > ul.page-actions > li > a.blogconsole', container), data.id, options);
 					}
+					signout[0].style.display = signoutDisplay;
+					signin[0].style.display = signinDisplay;
+					console[0].style.display = consoleDisplay;
 					});
 			} else {
 				signout[0].style.display = "none";
 				signin[0].style.display = "block";
 				console[0].style.display = "none";
 			}
+			
+		},
+		
+		wireUpArticleDetailActions : function (options, container, ugcDiv) {
+			$like = $("div.footer-article > div.unitExt > a.like");
+			$dislike = $("div.footer-article > div.unitExt > a.flag");
+			$flag = $("div.footer-article > div.unitExt > a.flagmoderation");
+
+			container.on( "click", $like, function(event) {
+				util.likeUGC(options.parentId, options, ugcDiv);
+			});
+			util.assignPermissions('ACT_ON',$like, options.parentId, options);
+
+			container.on( "click", $dislike, function(event) {
+				util.flagUGC(options.parentId, options, ugcDiv);
+			});
+			util.assignPermissions('ACT_ON',$dislike, options.parentId, options);
+
+			container.on( "click", $flag, function(event) {
+				util.flagModerationUGC(options.parentId, options, ugcDiv);
+			});
+			util.assignPermissions('ACT_ON',$flag, options.parentId, options);
 		},
 		
 		wireUpUGC : function (options) {
@@ -453,9 +623,13 @@
 			thisId = this.id ? this.id : this[0].id;
 			var $this = $(this),
 			    $actions = $(' div.ugc-comment-wrapper > footer.ugc-comment-footer > div.ugc-listen-actions-' + thisId.substring(12),$this),
+			    $actionsModerations = $('> div.ugc-comment-wrapper > header.ugc-comment-head > div.post-moderation-state > div.ugc-article-actions',$this),
 				$like = $('> a.like', $actions),
 				$reply = $('> a.reply', $actions),
+				$approve = $('> ul.article-moderation-status > li > a.approve-link', $actionsModerations),
+				$reject = $('> ul.article-moderation-status > li > a.reject-link', $actionsModerations),
 				$flag = $('> a.flag', $actions);
+				$flagmoderation = $('> a.flagmoderation', $actions);
 			
 			$like.click(function (event) {
 				util.likeUGC($this.attr('ugc-id'), options, $this);
@@ -473,6 +647,18 @@
 				util.flagUGC($this.attr('ugc-id'), options, $this);
 			});
 			util.assignPermissions('ACT_ON',$flag, $this.attr('ugc-id'), options);
+			
+			$flagmoderation.click(function (event) {
+				util.flagModerationUGC($this.attr('ugc-id'), options, $this);
+			});
+			util.assignPermissions('ACT_ON',$flagmoderation, $this.attr('ugc-id'), options);
+
+			$approve.click(function (event) {
+				util.approveUGC($this.attr('ugc-id'), options, $this);
+			});
+			$reject.click(function (event) {
+				util.rejectUGC($this.attr('ugc-id'), options, $this);
+			});
 		},
 
 		showTextUGCDialog : function (parentId, options, appendTo, appendUGCTo) {
@@ -510,10 +696,21 @@
 	 				var fileContent = $(this.parentElement.parentElement);
 	 				var fileName = this.value.replace("C:\\fakepath\\","");
 	 				removeFile = $('<a class="MultiFile-remove" href="#">x</a>'), 
-	 				fileSpan = $('<span class="MultiFile-title" title="'+fileName+'" id="'+fileName+' name="'+fileName+'">'+fileName+'</span>');
-	 				$attachments.append(
-	 						fileContent.append(removeFile, " ", fileSpan)
-	 						);
+	 				file2 = e.originalTarget.files[0];
+	 				if (file2.type.startsWith("image")) {
+	        				oFReader = new FileReader();
+	        				oFReader.readAsDataURL(file2);
+	        				oFReader.onload = function (oFREvent) {
+					            imagePreview = $('<img style="max-height:100px;max-width:100px" class="image-preview" src="'+oFREvent.target.result+'"></img>');
+					            $attachments.append(
+			         				fileContent.append(removeFile, " ", imagePreview));
+					        };
+					} else {
+		 				fileSpan = $('<span class="MultiFile-title" title="'+fileName+'" id="'+fileName+' name="'+fileName+'">'+fileName+'</span>');
+		 				$attachments.append(
+		 						fileContent.append(removeFile, " ", fileSpan)
+		 						);
+		 			}
          			removeFile.click(function(){
 						var parent = $(this.parentElement);
 						parent.remove();
@@ -542,7 +739,7 @@
 				$.ajax({
 				    url: url,
 				    dataType : options.outputType,
-				    data:{ticket : options.ticket, tenant : options.tenant},
+				    data:{'ticket' : options.ticket, 'tenant' : options.tenant},
 				    cache: false,
 				    type: 'POST',
 				    success: function(aData, textStatus, jqXHR){
@@ -561,7 +758,7 @@
 				$.ajax({
 					url: url,
 					dataType : options.outputType,
-					data:{ticket : options.ticket, tenant : options.tenant},
+					data:{'ticket' : options.ticket, 'tenant' : options.tenant},
 					cache: false,
 					type: 'POST',
 					success: function(aData, textStatus, jqXHR){
@@ -572,21 +769,166 @@
 				});
 			}
 		},
-		
-		isValidTicket: function (callback) {
+
+		approveUGC : function (ugcId, options, ugcDiv) {
 			if ( options ) {
+				
+				var url = options.restUrl + '/ugc/moderation/'+ ugcId+ "/status." +options.outputType; 
+				var data = {'ticket' : options.ticket, 'tenant' : options.tenant, 'moderationStatus' : 'APPROVED'};
 				$.ajax({
-				    url: "is_authenticated.json",
+				    url: url,
+				    data: data,
 				    dataType : options.outputType,
-				    data:{},
+				    contentTypeString:"application/json;charset=UTF-8",
+				    cache: false,
+				    type: 'POST',
+				    success: function(aData, textStatus, jqXHR){
+				    	if (aData) {
+					    	//util.observableUpdateUGCProps.apply(ugcDiv, [aData]);
+					    	articlePosted = $("#ugc-message-"+aData.id);
+					    	commentWrapper = $(" > div.ugc-comment-wrapper", articlePosted);
+					    	commentWrapper.removeClass("REJECTED");
+					    	commentWrapper.removeClass("PENDING");
+
+					    	artitleActions = $("> div.ugc-comment-wrapper > header.ugc-comment-head > div.post-moderation-state > div.ugc-article-actions",articlePosted);
+							artitleActions.removeClass("REJECTED");
+					    	artitleActions.removeClass("PENDING");
+					    	artitleActions.addClass("APPROVED");
+					    }
+				    }
+				});
+			}
+		},
+
+		rejectUGC : function (ugcId, options, ugcDiv) {
+			if ( options ) {
+				
+				var url = options.restUrl + '/ugc/moderation/'+ ugcId+ "/status." +options.outputType; 
+				var data = {'ticket' : options.ticket, 'tenant' : options.tenant, 'moderationStatus' : 'REJECTED'};
+				$.ajax({
+				    url: url,
+				    data: data,
+				    dataType : options.outputType,
+				    contentTypeString:"application/json;charset=UTF-8",
+				    cache: false,
+				    type: 'POST',
+				    success: function(aData, textStatus, jqXHR){
+				    	if (aData) {
+					    	//util.observableUpdateUGCProps.apply(ugcDiv, [aData]);
+					    	flaggedContent = $("#ugc-message-"+aData.id);
+					    	commentWrapper = $(" > div.ugc-comment-wrapper", flaggedContent);
+					    	commentWrapper.removeClass("PENDING");
+					    	commentWrapper.addClass(aData.moderationStatus);
+
+							actionContainer = $("> div.ugc-comment-wrapper > header.ugc-comment-head > div.post-moderation-state > div.ugc-article-actions",flaggedContent);
+							actionContainer.removeClass("PENDING");
+							actionContainer.addClass(aData.moderationStatus);
+							
+							rejectLink = $("> ul.article-moderation-status > li > a.reject-link",actionContainer);
+							rejectLink.removeClass("PENDING");
+							rejectLink.addClass(aData.moderationStatus);
+
+							strongStatus = $("> ul.article-moderation-status > li > strong.moderation-message",actionContainer);
+							strongStatus[0].textContent = "Moderation Status: " + aData.moderationStatus;
+						}
+				    }
+				});
+			}
+		},
+		
+		flagModerationUGC : function (ugcId, options, ugcDiv) {
+			if ( options ) {
+				
+				util.displayDialogReason(options, function(result,reason) {
+					if (result) {
+						var url = options.restUrl + '/ugc/flag/'+ ugcId + '.' + options.outputType; 
+						
+						$.ajax({
+							url: url,
+							dataType : options.outputType,
+							data:{'ticket' : options.ticket, 'tenant' : options.tenant, reason: reason},
+							cache: false,
+							type: 'POST',
+							success: function(aData, textStatus, jqXHR){
+								if (aData) {
+									util.observableUpdateUGCProps.apply(ugcDiv, [aData]);
+									util.assignPermissions('MODERATE',$("#ugc-message-"+aData.id), aData.id, options);
+									if (aData.id === options.parentId) {
+										postContainer = $("#article-detail");
+										postContainer.removeClass("UNMODERATED");
+										postContainer.removeClass("APPROVED");
+										postContainer.addClass(aData.moderationStatus);
+										actionModeration = $(" > div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions",postContainer);
+										actionModeration.removeClass("UNMODERATED");
+										actionModeration.removeClass("APPROVED");
+										actionModeration.addClass(aData.moderationStatus);	
+										rejectLink = $(" > div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > a.reject-link",postContainer);
+										rejectLink.removeClass("UNMODERATED");
+										rejectLink.removeClass("APPROVED");
+										rejectLink.addClass(aData.moderationStatus);
+									} else {
+										flaggedContent = $("#ugc-message-"+aData.id);
+										actionContainer = $("> div.ugc-comment-wrapper > header.ugc-comment-head > div.post-moderation-state > div.ugc-article-actions",flaggedContent);
+										actionContainer.removeClass("UNMODERATED");
+										actionContainer.removeClass("APPROVED");	
+										actionContainer.addClass(aData.moderationStatus);
+
+										commentWrapper = $(" > div.ugc-comment-wrapper", flaggedContent);
+				    					commentWrapper.removeClass("UNMODERATED");
+				    					commentWrapper.removeClass("APPROVED");
+				    					commentWrapper.addClass(aData.moderationStatus);
+										rejectLink = $("> ul.article-moderation-status > li > a.reject-link",actionContainer);
+										rejectLink.removeClass("UNMODERATED");
+										rejectLink.removeClass("APPROVED");
+										rejectLink.addClass(aData.moderationStatus);
+
+									}
+	
+								}
+							}
+						});
+					}
+				});
+			}
+		},
+		
+		isValidTicket: function (options, callback) {
+			if ( options ) {
+				var url = options.restUrl + '/auth/is_valid_ticket' + '.' + options.outputType;
+				$.ajax({
+				    url: url,
+				    dataType : options.outputType,
+				    data:{tenant:options.tenant,ticket:options.ticket},
 				    cache: false,
 				    type: 'GET',
 				    success: function(aData, textStatus, jqXHR){
-				    	if (aData) {
-				    		callback(aData);
-				    	}
+				    	callback(aData);
 				    }
 				});
+			}
+		},
+		displayDialogReason: function (options, callback) {
+			if ( options ) {
+				$("#reason").clearFields();
+				$('#reasonAccept').click(function() {
+					var reason = $("#reason").val();
+					if (reason!="") {
+						$("#dialog").dialog("close");
+			    		callback(true, reason);
+			    	}
+				});
+				$("#dialog").dialog({
+					autoOpen: false,
+                    closeOnEscape: true,
+                    resizable: false,
+                    draggable: false,
+                    modal: true,
+                    overlay: { backgroundColor: "# 000", opacity: 0.5 },
+                    top: 20,
+                    show: 'fade',
+                    hide: 'fade'
+					});
+				$("#dialog").dialog("open");
 			}
 		},
 		
@@ -696,7 +1038,7 @@
 		
 		checkCreatePermissions: function( options, callback ) {
 			var url = options.restUrl + '/permission/create.' + options.outputType ; 
-			var data = {ticket : options.ticket, tenant : options.tenant};
+			var data = {'ticket' : options.ticket, 'tenant' : options.tenant};
 			
 			$.ajax({
 			    url: url,
@@ -714,7 +1056,7 @@
 		
 		getPermissions: function( action, ugcId, options, callback ) {
 			var url = options.restUrl + '/permission/' + ugcId + '/' + action + ".json"; 
-			var data = {ticket : options.ticket, tenant : options.tenant};
+			var data = {'ticket' : options.ticket, 'tenant' : options.tenant};
 			
 			$.ajax({
 			    url: url,

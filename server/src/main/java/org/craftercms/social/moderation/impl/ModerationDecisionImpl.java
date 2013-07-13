@@ -34,6 +34,8 @@ import org.craftercms.social.moderation.ModerationFilter;
 public class ModerationDecisionImpl implements ModerationDecision {
 
 	private List<ModerationFilter> filters;
+	
+	private int maxFlagsBeforeRejecting = 10;
 		
 	public ModerationDecisionImpl(List<ModerationFilter> filters) {
 		super();
@@ -53,6 +55,16 @@ public class ModerationDecisionImpl implements ModerationDecision {
 			}
 		}
 		return needsModeration;
+	}
+
+	@Override
+	public boolean rejected(UGC ugc) {
+		return ugc.getFlagCount() >= maxFlagsBeforeRejecting;
+	}
+	
+	@Override
+	public void setMaxFlagsBeforeRejecting(int maxFlags) {
+		maxFlagsBeforeRejecting = maxFlags;
 	}
 
 }

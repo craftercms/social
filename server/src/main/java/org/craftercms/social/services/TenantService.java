@@ -31,6 +31,7 @@ public interface TenantService {
 	Tenant getTenantByName(String tenantName);
 	void deleteTenant(String tenantName);
 	void setTenantRoles(String tenantName, List<String> roles);
+	List<String> getRootModeratorRoles(String tenantName);
 	
 
 }

@@ -130,7 +130,7 @@ public interface UGCService {
 
 	void streamAttachment(ObjectId attachmentId, HttpServletResponse response);
 
-	UGC findUGCAndChildren(ObjectId ugcId);
+	UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId);
 
 	UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
 			String textContent, MultipartFile[] attachments) throws PermissionDeniedException;
