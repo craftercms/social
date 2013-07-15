@@ -18,6 +18,7 @@
         <col>
         <col style="width: 6em;">
         <col style="width: 8em;">
+        <col style="width: 15em;">
     </colgroup>
     <tbody style="">
       {{each list tmpl="ugcTmpl"}}
@@ -56,16 +57,33 @@
 </script>
 
 <script id="ugcTmpl" type="text/x-jquery-tmpl">
-   <tr class="trclass">
-        <td class="blogg-posttable"><a id="detailEntryBtn" href="#" name="{{=id}}">{{=textContent.title}}</a></td>
-        <td class="blogg-posttable"><a href="#" name="{{=profile.userName}}">{{=profile.userName}}</a></td>
-        <td class="blogg-posttable">
+   <tr class="trclass {{=moderationStatus}} entry-{{=id}}" id="entry-{{=id}}">
+        <td class="blogg-posttable {{=moderationStatus}} entry-title"><a id="detailEntryBtn" href="#" name="{{=id}}">{{=textContent.title}}</a></td>
+        <td class="blogg-posttable {{=moderationStatus}} entry-username"><a href="#" name="{{=profile.userName}}">{{=profile.userName}}</a></td>
+        <td class="blogg-posttable {{=moderationStatus}} entry-msgs">
           <nav>
             <ul style="width: 50px; position: relative; display: table-cell;">
               <li style="margin-right:0px">{{=msgs-0 undef 0}}</li>
               <span class="blogg-image-tooltip"></span>
               </ul>
           </nav>
+        </td>
+        <td class="blogg-posttable {{=moderationStatus}} entry-moderation">
+            <div class="post-moderation-state">
+                <div class="ugc-article-actions {{=moderationStatus}}">
+                  <ul class="article-moderation-status">
+                    <li>
+                      <strong class="moderation-message">Moderation Status: {{=moderationStatus}}  </strong>
+                    </li>
+                    <li>
+                      <a name="{{=id}}" id="approveModerationStatus" class="approve-link">Approve</a>
+                    </li> 
+                    <li>
+                      <a name="{{=id}}" id="rejectModerationStatus" class="reject-link {{=moderationStatus}}">Reject</a>
+                    </li> 
+                  </ul>
+                </div>
+          </div>
         </td>
    </tr>
 </script>

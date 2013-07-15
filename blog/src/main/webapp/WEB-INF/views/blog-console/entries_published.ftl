@@ -6,6 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title>Crafter Social Blog</title>
 <link href="../resources/image/favicon.ico" rel="Shortcut Icon">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
 <script type="text/javascript" src="/crafter-social/resources/js/jquery-1.7.1.js"></script>
 		<script type="text/javascript" src="/crafter-social/resources/js/jquery.form.js"></script>
 		<script type="text/javascript" src="/crafter-social/resources/js/date.format.js"></script>
@@ -13,6 +14,7 @@
 		<script type="text/javascript" src="/crafter-social/resources/js/jquery.observable.js"></script>
 		<script type="text/javascript" src="/crafter-social/resources/js/jquery.views.js"></script>
 		<script type="text/javascript" src="/crafter-social/resources/js/ugc_blog_post.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 		<link rel="stylesheet" href="/crafter-social/resources/css/style.css" type="text/css" media="screen"/>
 
 </head>

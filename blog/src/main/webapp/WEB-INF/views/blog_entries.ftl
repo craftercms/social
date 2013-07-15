@@ -17,12 +17,11 @@
 <script type="text/javascript" src="/crafter-social/resources/js/ugc_blog_console.js"></script>
 <script type="text/javascript" src="/crafter-social/resources/js/tiny_mce.js"></script>
 
-
 </head>
 <body>
 <div id="content">
 	<div id="header">
-    <a class="logo" href="http://craftercms.org" title="Go to Crafter CMS"></a> 
+    <a class="logo" href="blog_entries" title="Go to Crafter CMS"></a> 
     <ul class="page-actions">
       <li><a href="../crafter-security-logout" value="Logout" id="logout" name="logout">Sign out</a></li>
     </ul>

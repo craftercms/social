@@ -2,9 +2,9 @@
 	<div id="header">
 		<a class="logo" title="Go to Crafter Blog" href="entries_published"></a>
 		<ul class="page-actions">
-	 		<li><a href="crafter-security-logout" value="Sign Out" id="signout" name="signout" class="signout">Sign-Out</a></li>
-	 		<li><a href="login" value="Sign In" id="signin" name="signin" class="signin">Sign-In</a></li>
-	 		<li><a href="blog-console/blog_entries" value="Blog Console" id="blogconsole" name="blogconsole" class="blogconsole">Blog Console</a></li>
+	 		<li><a href="crafter-security-logout" value="Sign Out" id="signout" name="signout" class="signout" style="display:none">Sign-Out</a></li>
+	 		<li><a href="login" value="Sign In" id="signin" name="signin" class="signin" style="display:none">Sign-In</a></li>
+	 		<li><a href="blog-console/blog_entries" value="Blog Console" id="blogconsole" name="blogconsole" class="blogconsole" style="display:none">Blog Console</a></li>
 	 	</ul>
 	</div>
 <div class="ugc-list yui3-cssbase">
@@ -13,13 +13,28 @@
 </script>
 
 <script id="ugcTmpl" type="text/x-jquery-tmpl">
-<article role="article" class="post   post-ready" id="post-{{=id}}">
+<article role="article" class="post   post-ready {{=moderationStatus}}" id="post-{{=id}}">
 	<header class="post-header">
 		<div class="top">
 			<div class="headline">
 				<h2 class="h2">
 					<a id="detailPostBtn" href="#" name="{{=id}}" class="{{=textContent.title}}">{{=textContent.title}}</a>
 				</h2>
+				<div class="post-moderation-state">
+					<div class="ugc-article-actions {{=moderationStatus}}">
+						<ul class="article-moderation-status">
+							<li>
+								<strong class="moderation-message">Moderation Status: {{=moderationStatus}}  </strong>
+							</li>
+							<li>
+								<a name="{{=id}}" id="approveModerationStatus" href="#" class="">Approve</a>
+							</li>	
+							<li>
+								<a name="{{=id}}" id="rejectModerationStatus" href="#" class="reject-link {{=moderationStatus}}">Reject</a>
+							</li>	
+						</ul>
+					</div>
+				</div>
 			</div>
 			<p class="info">
 					By
@@ -35,7 +50,7 @@
 				{{=textContent.content!}}
 			</p>
 		</div>
-	<div>
+	</div>
 </article>
 </script>
 
@@ -45,38 +60,70 @@
 			<div id="header">
 				<a class="logo" href="entries_published" title="Go to Crafter Blog"></a>
 				<ul class="page-actions">
-	 				<li><a href="crafter-security-logout" value="Sign Out" id="signout" name="signout" class="signout">Sign-Out</a></li>
-	 				<li><a href="login" value="Sign In" id="signin" name="signin" class="signin">Sign-In</a></li>
-	 				<li><a href="blog-console/blog_entries" value="Blog Console" id="blogconsole" name="blogconsole" class="blogconsole">Blog Console</a></li>
+	 				<li><a href="crafter-security-logout" value="Sign Out" id="signout" name="signout" class="signout" style="display:none">Sign-Out</a></li>
+	 				<li><a href="login" value="Sign In" id="signin" name="signin" class="signin" style="display:none">Sign-In</a></li>
+	 				<li><a href="blog-console/blog_entries" value="Blog Console" id="blogconsole" name="blogconsole" class="blogconsole" style="display:none">Blog Console</a></li>
 	 			</ul> 
 			</div>
-				<h1 class="h1">
-						{{=textContent.title}}
-				</h1>
-				<p class="info">
-					By
-					<strong>{{=profile.userName}} </strong>
-						posted    
-					   <span class="time" data-getfrom="$ctx.formattedDate([dateAdded])"/>
-				</p>
 		</header>
-		<div id="page" class="container">
-			<div id="body">
-				<div class="copy post-body">
-					<p>
-						{{=textContent.content!}}
+		<div id="article-detail" class="article-detail {{=moderationStatus}}">
+			<div id="title-header" class="title-header">
+			        <div class="article-detail-title">
+						<h1 class="h1">
+								{{=textContent.title}}
+						</h1>
+						<div class="post-moderation-state">
+							<div class="ugc-article-actions {{=moderationStatus}}">
+								<ul class="article-moderation-status">
+									<li>
+										<strong class="moderation-message">Moderation Status: {{=moderationStatus}}  </strong>
+									</li>
+									<li>
+										<a name="{{=id}}" id="approveDetailModerationStatus" class="approve-link">Approve</a>
+									</li>	
+									<li>
+										<a name="{{=id}}" id="rejectDetailModerationStatus" class="reject-link {{=moderationStatus}}">Reject</a>
+									</li>	
+								</ul>
+							</div>
+						</div>
+					</div>
+					<p class="info">
+						By
+						<strong>{{=profile.userName}} </strong>
+							posted    
+						   <span class="time" data-getfrom="$ctx.formattedDate([dateAdded])"/>
 					</p>
+			</div>		
+			<div id="page" class="container">
+				<div id="body">
+					<div class="copy post-body">
+						<p>
+							{{=textContent.content!}}
+						</p>
+					</div>
+					<div class="footer-article">
+						<div class="unitExt size1of2 actions ugc-listen-actions-{{=id}} ugc-comment-actions">
+							<a class="like unitExt ugc-share-link thumbs-sprites thumbs-up like-{{=id}}" data-getfrom="[likeCount]"></a>
+							<a class="flag unitExt ugc-share-link thumbs-sprites thumbs-down" data-getfrom="[offenceCount]"></a>
+							<a class="flagmoderation flagmoderation-image flag-extras unitExt" data-getfrom="[flagCount]"></a>
+						</div>
+					</div>
+					<div id="dialog" title="Flag Reason" style="display:none;">
+	  					<textarea id="reason" style="height:90px;width:190px;"></textarea>	
+	  					<button id="reasonAccept">Accept</button>
+	 				</div>
 				</div>
 			</div>
-		</div>
+			</div>
 		<div id="comments">
 			<div id="lf_comment_stream" class="ugc-width-medium ugc">
 				<form id="fileuploadForm" action="/crafter-social/api/2/ugc/create.json" method="POST" enctype="multipart/form-data" target="hidden_upload">
 				<IFRAME id='hidden_upload' name='hidden_upload' src='' style='width:0;height:0;border:0px solid #fff'></IFRAME>
 				<div class="ugc-widget">
 					<div class="ugc-editor">
-						<textarea id="textContentField" name="textContentField" style="resize:none;width:99%"></textarea>
-						<div id="attachments-list" class="attachments-list"></div>
+							<textarea id="textContentField" name="textContentField" style="resize:none;width:99%"></textarea>
+							<div id="attachments-list" class="attachments-list"></div>
 						<div class="fyre-editor-toolbar">
 							<div class="goog-toolbar goog-toolbar-horizontal" style="-moz-user-select: none;" role="toolbar" 
 								aria-activedescendant="">
@@ -88,7 +135,6 @@
 								<div class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
 									<div class="goog-inline-block fyre-button-right-outer-box" id="post-comment">
 									<div class="goog-inline-block fyre-button-right-inner-box">Post comment</div>
-									
 								</div>
 							</div>
 							</div>
@@ -110,11 +156,29 @@
 	<div>
 	<article class="ugc-comment-article ugc-comment-source-5" id="ugc-message-{{=id}}" ugc-id="{{=id}}" user-id="{{=profileId}}">
 		
-	    <div class="ugc-comment-wrapper">
+	    <div class="ugc-comment-wrapper  {{=moderationStatus}}">
 			<div class="ugc-comment-user">
 				<img class="ugc-user-avatar" src="/crafter-social/resources/imgs/avatar-50x50.png">
 			</div>
-			<header class="ugc-comment-head" data-getfrom="[profile.userName]"></header>
+			<!--header class="ugc-comment-head" data-getfrom="[profile.userName]"-->
+			<header class="ugc-comment-head">
+				<div>{{=profile.userName}}</div>
+				<div class="post-moderation-state">
+					<div class="ugc-article-actions {{=moderationStatus}}">
+						<ul class="article-moderation-status">
+							<li>
+								<strong class="moderation-message">Moderation Status: {{=moderationStatus}}  </strong>
+							</li>
+							<li>
+								<a name="{{=id}}" id="approveCommentModerationStatus" class="approve-link">Approve</a>
+							</li>	
+							<li>
+								<a name="{{=id}}" id="rejectCommentModerationStatus" class="reject-link {{=moderationStatus}}">Reject</a>
+							</li>	
+						</ul>
+					</div>
+				</div>
+			</header>
 			<section class="ugc-comment-body">
 				<div class="ugc-comment">
 					<p class="commenting" data-getfrom="[textContent]"></p>
@@ -139,9 +203,9 @@
 				<time class="ugc-comment-date"><span  data-getfrom="[ellapsedTime]"/></time>
 				<div class="unitExt size1of2 actions ugc-listen-actions-{{=id}} ugc-comment-actions">
 					<a class="reply unitExt ugc-comment-reply">Reply</a>
+					<a class="flagmoderation flagmoderation-image flag-extras unitExt" data-getfrom="[flagCount]"></a>
 					<a class="flag unitExt ugc-share-link thumbs-sprites thumbs-down" data-getfrom="[offenceCount]"></a>
 					<a class="like unitExt ugc-share-link thumbs-sprites thumbs-up like-{{=id}}" data-getfrom="[likeCount]"></a>
-					
 				</div>
 	      		
 			</footer>

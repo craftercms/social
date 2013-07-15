@@ -35,4 +35,5 @@ public interface ModerationFilter {
 	 * @return the name of the Filter
 	 */
 	public String getName();
+	
 }

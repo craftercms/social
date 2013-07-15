@@ -34,11 +34,11 @@ public interface UGCRepositoryCustom {
 	List<UGC> findTenantAndTargetIdAndParentIsNull(String tenant,
 			String target, Query query);
 	
-	UGC findUGC(ObjectId id, Query q);
+	UGC findUGC(ObjectId id, Query q, String[] moderationStatusArr);
 
 	List<UGC> findByTenantTargetPaging(String tenant, String target,
 			int page, int pageSize, boolean sortChronological, Query query);
 	
-	List<UGC> findByParentIdWithReadPermission(ObjectId parentId, Query query);
+	List<UGC> findByParentIdWithReadPermission(ObjectId parentId, Query query, String[] moderationStatus);
 
 }
