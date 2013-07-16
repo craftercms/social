@@ -155,7 +155,19 @@
 				container.html($.render( data, 'ugcListTmpl')).link(data);
 				container.options = options;
 				util.unbindConsoleEvents(container);
-				util.checkModerationPendings(container,options);
+				util.checkModerationPendings(container,options, function(result, id, container) {
+					if (!result) {
+						$trData = $("#entry-" +id, container);
+						$title = $("> td.entry-title", $trData);
+						$username = $("> td.entry-username", $trData);
+						$msgs = $("> td.entry-msgs", $trData);
+						$moderation = $("> td.entry-moderation", $trData);
+						$username.removeClass("PENDING");
+						$title.removeClass("PENDING");
+						$moderation.removeClass("PENDING");
+						$msgs.removeClass("PENDING");
+					}
+				});
 				$saveButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.save > a.saveEntry', container);
 				$editButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.edit > a.editEntry', container);
 				$updateButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.update > a.updateEntry', container);
@@ -813,17 +825,18 @@
 			}
 			return count;
 		},
-		checkModerationPendings: function(container, options) {
+		checkModerationPendings: function(container, options, callback) {
         	var listPendings = $('div.post-moderation-state > div.PENDING',container);
         	for (var i = 0;i < listPendings.length; i++) {
-        		util.hideModerationWithNotPermissions(listPendings[i],listPendings[i].id, options);
+        		util.hideModerationWithNotPermissions(listPendings[i],listPendings[i].id, options, callback, container);
         		
         	}
         },
-        hideModerationWithNotPermissions: function (domObj, ugcId, options) {
+        hideModerationWithNotPermissions: function (domObj, ugcId, options, callback, container) {
             util.getPermissions("MODERATE", ugcId, options, function (result) {
                 if (!result) {
                 	domObj.classList.add("notAllowed")
+                	callback(result, ugcId, container);
                 }
             });
         }
