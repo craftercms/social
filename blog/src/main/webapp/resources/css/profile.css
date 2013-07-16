@@ -1,4 +1,6 @@
-
+.notAllowed{
+    display: none;
+}
 .post-moderation-state > div.APPROVED
 {
 display:none;

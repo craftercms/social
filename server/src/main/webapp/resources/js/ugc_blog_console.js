@@ -155,6 +155,7 @@
 				container.html($.render( data, 'ugcListTmpl')).link(data);
 				container.options = options;
 				util.unbindConsoleEvents(container);
+				util.checkModerationPendings(container,options);
 				$saveButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.save > a.saveEntry', container);
 				$editButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.edit > a.editEntry', container);
 				$updateButton = $('> div.addUGCBlogPublish > div.top > div.pad > nav > ul.main-nav > li.update > a.updateEntry', container);
@@ -811,8 +812,21 @@
 				}
 			}
 			return count;
-		}
-
+		},
+		checkModerationPendings: function(container, options) {
+        	var listPendings = $('div.post-moderation-state > div.PENDING',container);
+        	for (var i = 0;i < listPendings.length; i++) {
+        		util.hideModerationWithNotPermissions(listPendings[i],listPendings[i].id, options);
+        		
+        	}
+        },
+        hideModerationWithNotPermissions: function (domObj, ugcId, options) {
+            util.getPermissions("MODERATE", ugcId, options, function (result) {
+                if (!result) {
+                	domObj.classList.add("notAllowed")
+                }
+            });
+        }
 	};
 
 	$.fn.ugc_blog_console = function(method) {

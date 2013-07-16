@@ -21,7 +21,7 @@
 					<a id="detailPostBtn" href="#" name="{{=id}}" class="{{=textContent.title}}">{{=textContent.title}}</a>
 				</h2>
 				<div class="post-moderation-state">
-					<div class="ugc-article-actions {{=moderationStatus}}">
+					<div class="ugc-article-actions {{=moderationStatus}}" id="{{=id}}">
 						<ul class="article-moderation-status">
 							<li>
 								<strong class="moderation-message">Moderation Status: {{=moderationStatus}}  </strong>
@@ -73,7 +73,7 @@
 								{{=textContent.title}}
 						</h1>
 						<div class="post-moderation-state">
-							<div class="ugc-article-actions {{=moderationStatus}}">
+							<div class="ugc-article-actions {{=moderationStatus}}" id="{{=id}}">
 								<ul class="article-moderation-status">
 									<li>
 										<strong class="moderation-message">Moderation Status: {{=moderationStatus}}  </strong>
@@ -123,22 +123,28 @@
 				<div class="ugc-widget">
 					<div class="ugc-editor">
 							<textarea id="textContentField" name="textContentField" style="resize:none;width:99%"></textarea>
-							<div id="attachments-list" class="attachments-list"></div>
-						<div class="fyre-editor-toolbar">
-							<div class="goog-toolbar goog-toolbar-horizontal" style="-moz-user-select: none;" role="toolbar" 
-								aria-activedescendant="">
-								<div class="fyre-attachment-button goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
-									<div class="goog-inline-block fyre-button-right-outer-box post-attach-btn" id="post-attach-btn">
-									<div class="goog-inline-block fyre-button-right-inner-box">Attach</div>
+							<div class="fyre-editor-toolbar">
+								<div class="goog-toolbar goog-toolbar-horizontal" style="-moz-user-select: none;" role="toolbar" 
+									aria-activedescendant="">
+									<div class="fyre-attachment-button goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
+										<div class="goog-inline-block fyre-button-right-outer-box post-attach-btn" id="post-attach-btn">
+										<div class="goog-inline-block fyre-button-right-inner-box">Attach</div>
+										</div>
+									</div>
+									<div class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
+										<div class="goog-inline-block fyre-button-right-outer-box" id="post-comment">
+										<div class="goog-inline-block fyre-button-right-inner-box">Post comment</div>
 									</div>
 								</div>
-								<div class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
-									<div class="goog-inline-block fyre-button-right-outer-box" id="post-comment">
-									<div class="goog-inline-block fyre-button-right-inner-box">Post comment</div>
 								</div>
 							</div>
+							<div id="attachments-list" class="attachments-list">
+								<div class="comment-thumbs">
+    								<ul class="file-attach-items">
+									</ul>
+                                </div>
 							</div>
-						</div>
+						
 					</div>
 					<div class="ugc-comment-stream">
 						<div class="ugc-stream-content">
@@ -163,8 +169,8 @@
 			<!--header class="ugc-comment-head" data-getfrom="[profile.userName]"-->
 			<header class="ugc-comment-head">
 				<div>{{=profile.userName}}</div>
-				<div class="post-moderation-state">
-					<div class="ugc-article-actions {{=moderationStatus}}">
+				<div class="post-moderation-state" id="post-moderation-state">
+					<div class="ugc-article-actions {{=moderationStatus}}" id="{{=id}}">
 						<ul class="article-moderation-status">
 							<li>
 								<strong class="moderation-message">Moderation Status: {{=moderationStatus}}  </strong>
@@ -183,11 +189,15 @@
 				<div class="ugc-comment">
 					<p class="commenting" data-getfrom="[textContent]"></p>
 				</div>
-				<div class="attachment-list">
+				<div class="comment-thumbs attachment-list">
+					<ul>
 					{{each attachmentsList.regularAttach tmpl="ugcTmplAttachments"}}
+					</ul>
 				</div>
-				<div class="attachment-list">
+				<div class="comment-thumbs attachment-list">
+    				<ul>
 					{{each attachmentsList.imageAttach tmpl="ugcTmplImageAttachments"}}
+					</ul>
 				</div>
 				<div class="attachment-list">
 					{{each attachmentsList.videoAttach tmpl="ugcTmplVideoAttachments"}}
@@ -220,48 +230,56 @@
 	
 		<div class="line add-ugc">
 				<div class="unit size1of1 ugc-width-temp ugc-editor">
-					<textarea id="reply-comment"></textarea>
-					<div id="attachments-list" class="attachments-list"></div>
-				</div>
-				<div class="fyre-editor-toolbar">
-					<div class="goog-toolbar goog-toolbar-horizontal" style="-moz-user-select: none;" role="toolbar" 
-						aria-activedescendant="">
-						<div 
-						class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":c">
-							<div class="goog-inline-block fyre-button-right-outer-box cancel-btn" id="cancel-btn">
-								<div class="goog-inline-block fyre-button-right-inner-box">Cancel</div>
+					<textarea id="reply-comment" autofocus="true"></textarea>
+					<div class="fyre-editor-toolbar">
+						<div class="goog-toolbar goog-toolbar-horizontal" style="-moz-user-select: none;" role="toolbar" 
+							aria-activedescendant="">
+							<div 
+							class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":c">
+								<div class="goog-inline-block fyre-button-right-outer-box cancel-btn" id="cancel-btn">
+									<div class="goog-inline-block fyre-button-right-inner-box">Cancel</div>
+								</div>
 							</div>
-						</div>
-						<div 
-						class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
-							<div class="goog-inline-block fyre-button-right-outer-box post-attach-btn" id="post-attach-btn">
-								<div class="goog-inline-block fyre-button-right-inner-box">Attach</div>
+							<div 
+							class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
+								<div class="goog-inline-block fyre-button-right-outer-box post-attach-btn" id="post-attach-btn">
+									<div class="goog-inline-block fyre-button-right-inner-box">Attach</div>
+								</div>
 							</div>
-						</div>
-						<div 
-						class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
-							<div class="goog-inline-block fyre-button-right-outer-box post-reply-btn" id="post-reply-btn">
-								<div class="goog-inline-block fyre-button-right-inner-box">Post reply</div>
+							<div 
+							class="goog-inline-block fyre-button-right fyre-post-button fyre-post-button-enabled fyre-post-button-new" title="" role="button" style="-moz-user-select: none;" id=":b">
+								<div class="goog-inline-block fyre-button-right-outer-box post-reply-btn" id="post-reply-btn">
+									<div class="goog-inline-block fyre-button-right-inner-box">Post reply</div>
+								</div>
 							</div>
+							
 						</div>
-						
+					</div>
+					<div id="attachments-list" class="attachments-list">
+						<div class="comment-thumbs">
+							<ul class="file-attach-items">
+							</ul>
+                        </div>
 					</div>
 				</div>
-				
-					
 		</div>
 	
 </script>
 <script id="ugcTmplAttachments" type="text/x-jquery-tmpl">
 	<div class="attachment-line" id="{{=filename}}">
-		<a class="attachment-link" id="attachmentOneBtn" href="#" name="{{=attachmentId}}">{{=filename}}</a>	
+		<li class="attachment-line">
+			<div id="{{=filename}}" class="media">
+	                <a href="{{=url}}"><img src="{{=url}}" alt="{{=filename}}" /></a>
+	        </div>	
+	    </li>    
 	</div>
 </script>
 <script id="ugcTmplImageAttachments" type="text/x-jquery-tmpl">
-	<div class="attachment-line" id="{{=filename}}">
-		<!--a class="attachment-link" id="attachmentOneBtn" href="{{=url}}" name="{{=attachmentId}}">{{=filename}}</a-->
-		<img src="{{=url}}"/>	
-	</div>
+	<li class="attachment-line">
+    	<div id="{{=filename}}" class="media">
+                <a href="{{=url}}"><img src="{{=url}}" alt="post thumbnail" /></a>
+        </div>
+    </li>
 </script>
 <script id="ugcTmplVideoAttachments" type="text/x-jquery-tmpl">
 	<div class="attachment-line" id="{{=filename}}">
