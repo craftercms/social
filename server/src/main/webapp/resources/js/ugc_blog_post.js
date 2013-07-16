@@ -156,7 +156,13 @@
                     console.error('There was an error loading the template: ' + e);
                 }
                 container.options = options;
-                util.checkModerationPendings(container, options);
+                util.checkModerationPendings(container, options, function(result, id, container) {
+                	if (!result) {
+                		$parentArticle = $("#post-"+id,container);
+                		$parentArticle.removeClass("REJECTED");
+                		$parentArticle.removeClass("PENDING");
+                	}
+                });
                 container
                     .on(
                         "click",
@@ -303,6 +309,8 @@
             if (options.templatesLoaded) {
                 util.unbindBlogPostEvents(container);
                 container[0].style.display = "none";
+                //$loadingMsg= $("<p id='loadingMsg'>Loading...</p>");
+                //container.append($loadingMsg);
 
                 var content = data.textContent;
                 if (content.substr(0, 1) == '{') {
@@ -466,7 +474,7 @@
                                 var fileName = this.value.replace(
                                     "C:\\fakepath\\", "");
                                 var removeFile = $('<a class="MultiFile-remove">x</a>'),
-                                    file2 = e.originalTarget.files[0];
+                                file2 = e.originalTarget.files[0];
 
                                 function getTemplate(src, fileNameTest) {
                                     return [
@@ -483,9 +491,16 @@
                                 oFReader = new FileReader();
                                 oFReader.readAsDataURL(file2);
                                 oFReader.onload = function (oFREvent) {
-                                    $elem = $(getTemplate(
-                                        oFREvent.target.result,
-                                        fileName));
+
+                                	if (file2.type.startsWith("video")) {
+                                		$elem = $(getTemplate(
+	                                        "/crafter-social/resources/imgs/flechevideo.jpg",
+	                                        fileName));
+                                	} else {
+	                                    $elem = $(getTemplate(
+	                                        oFREvent.target.result,
+	                                        fileName));
+                                	}
                                     $elem.find('a.remove').click(
                                         function () {
                                             $(this).parents(
@@ -512,8 +527,21 @@
                 // $('div.post-moderation-state', $ugcDiv).each(function () {
                 //     util.wireUpUGC.apply(this, [options]);
                 // });	
-				util.checkModerationPendings(container, options);
-
+				util.checkModerationPendings(container, options,function(result, id, container) {
+                	if (!result) {
+                		$parentArticle = $("#ugc-message-"+id,container);
+                		if ($parentArticle!=null && $parentArticle!=undefined && $parentArticle.length > 0) {
+                			$child = $("> div.ugc-comment-wrapper",$parentArticle);
+	                		$child.removeClass("REJECTED");
+	                		$child.removeClass("PENDING");
+	                	} else {
+	                		$parentArticle = $("#article-detail",container);
+	                		$parentArticle.removeClass("REJECTED");
+	                		$parentArticle.removeClass("PENDING");
+	                	}
+                	}
+                });
+				//$loadingMsg.remove(loadingMsg);
                 container[0].style.display = "block";
                 container.on("click", "#post-comment", function (event) {
                     var body = $("#textContentField").val();
@@ -820,7 +848,16 @@
                             oFReader = new FileReader();
                             oFReader.readAsDataURL(file2);
                             oFReader.onload = function (oFREvent) {
-                                $elem = $(getTemplate(oFREvent.target.result, fileName));
+                                //$elem = $(getTemplate(oFREvent.target.result, fileName));
+                                if (file2.type.startsWith("video")) {
+                            		$elem = $(getTemplate(
+                                        "/crafter-social/resources/imgs/flechevideo.jpg",
+                                        fileName));
+                            	} else {
+                                    $elem = $(getTemplate(
+                                        oFREvent.target.result,
+                                        fileName));
+                            	}
                                 $elem.find('a.remove').click(function () {
                                     $(this).parents('li:first').remove();
                                 });
@@ -1047,75 +1084,83 @@
 
                             if (aData.id === options.parentId) {
                                 var postContainer = $("#article-detail");
-                                postContainer
-                                    .removeClass("UNMODERATED");
-                                postContainer
-                                    .removeClass("APPROVED");
-                                postContainer
-                                    .addClass(aData.moderationStatus);
+                                
                                 var actionModeration = $(
                                     " > div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions",
                                     postContainer);
-                                util.hideModerationWithNotPermissions(actionModeration[0],aData.id,options);
-                                actionModeration
-                                    .removeClass("UNMODERATED");
-                                actionModeration
-                                    .removeClass("APPROVED");
-                                actionModeration
-                                    .addClass(aData.moderationStatus);
-                                var rejectLink = $(
-                                    " > div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > a.reject-link",
-                                    postContainer);
-                                rejectLink
-                                    .removeClass("UNMODERATED");
-                                rejectLink
-                                    .removeClass("APPROVED");
-                                rejectLink
-                                    .addClass(aData.moderationStatus);
+                                util.hideModerationWithNotPermissions(actionModeration[0],aData.id,options, function(result, idParam, containerParam) {
+                                	if (result) {
+                                		postContainer
+		                                    .removeClass("UNMODERATED");
+		                                postContainer
+		                                    .removeClass("APPROVED");
+		                                postContainer
+		                                    .addClass(aData.moderationStatus);	
 
-                                var strongStatus = $(
-                                            "> div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > strong.moderation-message",
-                                            postContainer);
-                                strongStatus[0].textContent = "Moderation Status: " + aData.moderationStatus;
+		                                actionModeration.removeClass("UNMODERATED");
+		                                actionModeration.removeClass("APPROVED");
+		                                actionModeration.addClass(aData.moderationStatus);
+		                                var rejectLink = $(
+		                                    " > div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > a.reject-link",
+		                                    postContainer);
+		                                rejectLink
+		                                    .removeClass("UNMODERATED");
+		                                rejectLink
+		                                    .removeClass("APPROVED");
+		                                rejectLink
+		                                    .addClass(aData.moderationStatus);
+
+		                                var strongStatus = $(
+		                                            "> div.title-header > div.article-detail-title > div.post-moderation-state > div.ugc-article-actions > ul.article-moderation-status > li > strong.moderation-message",
+		                                            postContainer);
+		                                strongStatus[0].textContent = "Moderation Status: " + aData.moderationStatus;
+                                	}
+
+                                },null);
+                                
 
                             } else {
                                 var flaggedContent = $("#ugc-message-" + aData.id);
                                 var actionContainer = $(
                                     "> div.ugc-comment-wrapper > header.ugc-comment-head > div.post-moderation-state > div.ugc-article-actions",
                                     flaggedContent);
-                                util.hideModerationWithNotPermissions(actionContainer[0],aData.id,options);
-                                actionContainer
-                                    .removeClass("UNMODERATED");
-                                actionContainer
-                                    .removeClass("APPROVED");
-                                actionContainer
-                                    .addClass(aData.moderationStatus);
-                                var commentWrapper = $(
-                                    " > div.ugc-comment-wrapper",
-                                    flaggedContent);
-                                commentWrapper
-                                    .removeClass("UNMODERATED");
-                                commentWrapper
-                                    .removeClass("APPROVED");
-                                commentWrapper
-                                    .addClass(aData.moderationStatus);
-                                var rejectLink = $(
-                                    "> ul.article-moderation-status > li > a.reject-link",
-                                    actionContainer);
-                                rejectLink
-                                    .removeClass("UNMODERATED");
-                                rejectLink
-                                    .removeClass("APPROVED");
-                                rejectLink
-                                    .addClass(aData.moderationStatus);
+                                util.hideModerationWithNotPermissions(actionContainer[0],aData.id,options, function(result,idParam, containerParam) {
+                                	if (result) {
+		                                actionContainer
+		                                    .removeClass("UNMODERATED");
+		                                actionContainer
+		                                    .removeClass("APPROVED");
+		                                actionContainer
+		                                    .addClass(aData.moderationStatus);
+		                                var commentWrapper = $(
+		                                    " > div.ugc-comment-wrapper",
+		                                    flaggedContent);
+		                                commentWrapper
+		                                    .removeClass("UNMODERATED");
+		                                commentWrapper
+		                                    .removeClass("APPROVED");
+		                                commentWrapper
+		                                    .addClass(aData.moderationStatus);
+		                                var rejectLink = $(
+		                                    "> ul.article-moderation-status > li > a.reject-link",
+		                                    actionContainer);
+		                                rejectLink
+		                                    .removeClass("UNMODERATED");
+		                                rejectLink
+		                                    .removeClass("APPROVED");
+		                                rejectLink
+		                                    .addClass(aData.moderationStatus);
 
-                                var strongStatus = $("> ul.article-moderation-status > li > strong.moderation-message",
-                                            actionContainer);
-                                strongStatus[0].textContent = "Moderation Status: " + aData.moderationStatus;    
+		                                var strongStatus = $("> ul.article-moderation-status > li > strong.moderation-message",
+		                                            actionContainer);
+		                                strongStatus[0].textContent = "Moderation Status: " + aData.moderationStatus;    
+                                	}
+                                }, null);
+                                
 
                             }
                         } else {
-                        	alert("User had already flagged this content ");
+                        	alert("You have already flagged this content");
                         }
                     }
                 });
@@ -1233,17 +1278,21 @@
                 }
             });
         },
-        checkModerationPendings: function(container, options) {
+        checkModerationPendings: function(container, options, callback) {
         	var listPendings = $('div.post-moderation-state > div.PENDING',container);
         	for (var i = 0;i < listPendings.length; i++) {
-        		util.hideModerationWithNotPermissions(listPendings[i],listPendings[i].id, options);
+        		util.hideModerationWithNotPermissions(listPendings[i],listPendings[i].id, options, callback,container);
         		
         	}
         },
-        hideModerationWithNotPermissions: function (domObj, ugcId, options) {
+        hideModerationWithNotPermissions: function (domObj, ugcId, options, callback,container) {
             util.getPermissions("MODERATE", ugcId, options, function (result) {
                 if (!result) {
-                	domObj.classList.add("notAllowed")
+                	domObj.classList.add("notAllowed");
+                	callback(result,ugcId, container);
+                
+                } else {
+                	callback(result,ugcId, container);
                 }
             });
         },
