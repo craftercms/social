@@ -1,3 +1,59 @@
+    .comment-thumbs {
+
+    }
+    .comment-thumbs ul {
+        margin-left: 0;
+        list-style: none;
+    }
+    .comment-thumbs ul li {
+        display: inline-block;
+        *display: inline;
+        padding: 3px;
+        *zoom: 1;
+        border: 1px solid #999;
+        border-radius: 5px;
+        margin-right: 5px;
+    }
+    .comment-thumbs .media {
+        position: relative;
+    }
+    .comment-thumbs .media img {
+        height: 100px;
+    }
+    .comment-thumbs .remove {
+        position: absolute;
+        top: 0px;
+        right: 5px;
+        text-decoration: none;
+    }
+
+    .comment-thumbs .remove {
+        float: right;
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 1em;
+        color: #000000;
+        text-shadow: 0 1px 0 #ffffff;
+        opacity: 0.2;
+        filter: alpha(opacity=20);
+    }
+
+    .comment-thumbs .remove:hover,
+    .comment-thumbs .remove:focus {
+        color: #000000;
+        text-decoration: none;
+        cursor: pointer;
+        opacity: 0.4;
+        filter: alpha(opacity=40);
+    }
+
+    .comment-thumbs button.remove {
+        padding: 0;
+        cursor: pointer;
+        background: transparent;
+        border: 0;
+        -webkit-appearance: none;
+    }
 
 .MultiFile-title {
     font-size: 9px;
@@ -12,10 +68,10 @@
     height:120px; 
     background-image:url('../imgs/flechevideo.jpg');
 }
-.attachment-line{
+/*.attachment-line{
     padding:8px;
     margin:8px;
-}
+}*/
 
 .attach-image-box {
     max-height: 120px;
@@ -89,10 +145,13 @@ display:none;
 .ugc-article-actions {
     float: right;
     margin-bottom: 10px;
-    /*width: 620px;*/
     padding: 0 15px 5px;
     background-color: #F5F7EC;
 
+}
+
+.post-moderation-state .PENDING-no-moderate-permission {
+    display: none;
 }
 
 article, aside, details, figcaption, figure, footer, header, hgroup, nav, section, summary {
@@ -5053,8 +5112,8 @@ ul.tab-nav {
 }
 
 .footer-article {
-	float:right;
-	padding:10px 10px 10px;
+    float:right;
+    padding:10px 10px 10px;
 }
 
 .PENDING {
@@ -6373,9 +6432,9 @@ div.editable {
     background-position: 0 -20px;
 }
 #header a.blog-crafter {
-	background: url("../imgs/craftercms-blogs.png")
-		no-repeat scroll 0 0 transparent;
-	display: block;
+    background: url("../imgs/craftercms-blogs.png")
+        no-repeat scroll 0 0 transparent;
+    display: block;
     font-size: 0;
     height: 250px;
     position: relative;
@@ -6405,7 +6464,7 @@ display:none;
 }
 
 .attachments-list {
-	float:left;
+    float:left;
     padding: 10px;
 }
 

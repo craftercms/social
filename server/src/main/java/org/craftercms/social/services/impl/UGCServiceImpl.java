@@ -368,7 +368,7 @@ public class UGCServiceImpl implements UGCService {
 					ModerationStatus.PENDING.toString(), ModerationStatus.REJECTED.toString()};
 		} else {
 			return new String[] {
-					ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString() };
+					ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(), ModerationStatus.PENDING.toString() };
 		}
     	
 	}
