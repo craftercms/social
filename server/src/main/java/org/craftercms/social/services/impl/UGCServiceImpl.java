@@ -513,9 +513,13 @@ public class UGCServiceImpl implements UGCService {
                     ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
                 }
             }
-
-            List<Profile> profileList = crafterProfileService.getProfilesByIds(Arrays.asList(profileIdUGCMap.keySet().toArray(
-                    new String[profileIdUGCMap.size()])));
+            List<String> profileIds = Arrays.asList(profileIdUGCMap.keySet().toArray(
+                    new String[profileIdUGCMap.size()]));
+            List<Profile> profileList = crafterProfileService.getProfilesByIds(profileIds);
+            
+            if (profileIds.size() > profileList.size()) {
+            	fillProfilesWithEmptyProfiles(profileList, profileIds);
+            }
 
             if (profileList != null) {
                 for (Profile profile : profileList) {
@@ -629,6 +633,23 @@ public class UGCServiceImpl implements UGCService {
     	 List<UGC> grantedList = repository.findUGCs(tenant, target, moderationStatus, roles, sortChronological, q);
     	 return populateUGCListWithProfiles(grantedList);
     }
+	
+	private void fillProfilesWithEmptyProfiles(List<Profile> profileList,
+			List<String> profileIds) {
+		Map<String, Profile> dataProfile = new HashMap<String,Profile>();
+		Profile empty;
+		for (Profile p:profileList) {
+			dataProfile.put(p.getId(), p);
+		}
+		for (String id: profileIds) {
+			if (dataProfile.get(id) == null) {
+				empty = new Profile();
+				empty.setId(id);
+				profileList.add(empty);
+			}
+		}
+		
+	}
 
 
 }
