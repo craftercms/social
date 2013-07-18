@@ -46,8 +46,6 @@ public class SecurityController {
 	
 	@RequestMapping("/login")
 	public String login(Model model, @RequestParam(required=false) String message) {
-		
-		System.out.println(" /login ");
 		return "login";
 	}
 	
@@ -56,19 +54,4 @@ public class SecurityController {
 		return "redirect:/logout";
 	}
 	
-	@RequestMapping(value = "/is_authenticated", method = RequestMethod.GET)
-	@ModelAttribute
-	public boolean isAuthenticated() {
-		log.debug(String.format("Is allowed create ugc "));
-		try {
-			String id = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
-			if (id == null || id.equalsIgnoreCase("anonymous")) {
-				return false;
-			}
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
 }

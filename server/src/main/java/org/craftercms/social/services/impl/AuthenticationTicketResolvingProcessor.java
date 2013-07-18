@@ -27,7 +27,7 @@ public class AuthenticationTicketResolvingProcessor extends AuthenticationTokenR
             	UserProfile profile = authenticationService.getProfile(ticket);
               if (profile != null) {
                   token.setProfile(profile);
-
+                  token.setTicket(ticket);
                   if (logger.isDebugEnabled()) {
                       logger.debug("Caching authentication token " + token);
                   }

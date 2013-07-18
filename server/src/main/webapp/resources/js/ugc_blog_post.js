@@ -140,6 +140,7 @@
         renderUGCBlogPost: function (data, options, container) {
             if (options.templatesLoaded) {
                 util.unbindBlogPostEvents(container);
+                container[0].style.display = "none";
                 for (i = 0; i < data.list.length; i++) {
                     var content = data.list[i].textContent;
                     if (content.substr(0, 1) == '{') {
@@ -149,7 +150,6 @@
                 }
                 try {
                     container.html($.render(data, 'ugcListTmpl')).link(data);
-                    // util.wireAuths(container, options);
                     util.wireAuths($('> div > ul.page-actions', container),
                         options, data.id);
                 } catch (e) {
@@ -163,6 +163,7 @@
                 		$parentArticle.removeClass("PENDING");
                 	}
                 });
+                container[0].style.display = "block";
                 container
                     .on(
                         "click",
