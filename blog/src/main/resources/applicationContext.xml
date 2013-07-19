@@ -22,10 +22,10 @@
 	    <property name="ignoreUnresolvablePlaceholders" value="true"/>
 		<property name="locations">
            	<list>
-                 <value>classpath:blogs/profile.properties</value>
-                 <value>classpath*:blogs/extension/profile.properties</value>
-                 <value>classpath:blogs/blogs.properties</value>
-                 <value>classpath*:blogs/extension/blogs.properties</value>
+                <value>classpath:crafter/blog/profile.properties</value>
+                <value>classpath*:crafter/blog/extension/profile.properties</value>
+                <value>classpath:crafter/blog/blogs.properties</value>
+                <value>classpath*:crafter/blog/extension/blogs.properties</value>
            	</list>
        	</property>
     </bean>
