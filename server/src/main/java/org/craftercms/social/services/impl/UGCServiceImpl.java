@@ -466,7 +466,7 @@ public class UGCServiceImpl implements UGCService {
     
         @Override
     public UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId) {
-    	//String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
+
     	Profile p = crafterProfileService.getProfile(profileId);
     	Query q = this.permissionService.getQuery(ActionEnum.READ, p);	
     	String[] moderationStatus = getModerationFilter(tenant, profileId);
@@ -486,7 +486,7 @@ public class UGCServiceImpl implements UGCService {
         UGC populatedUgc = populateUGCWithProfile(ugc);
         
     	Query q = this.permissionService.getQuery(ActionEnum.READ, p);
-        List<UGC> children = repository.findByParentIdWithReadPermission(populatedUgc.getId(), q, moderationStatus);
+        List<UGC> children = repository.findByParentIdWithReadPermission(populatedUgc.getId(), q, moderationStatus, true);
         for (UGC ugcChild: children) {
             ugcChild = initUGCAndChildren(ugcChild, p, moderationStatus);
         }
