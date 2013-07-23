@@ -38,7 +38,6 @@
 	</scm>
 	<modules>
 		<module>server</module>
-		<module>admin</module>
-		<module>blog</module>
+		<!--module>admin</module--> <!--REMOVE IT for current release -->
 	</modules>
 </project>
