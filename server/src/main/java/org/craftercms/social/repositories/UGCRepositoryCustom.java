@@ -39,6 +39,6 @@ public interface UGCRepositoryCustom {
 	List<UGC> findByTenantTargetPaging(String tenant, String target,
 			int page, int pageSize, boolean sortChronological, Query query);
 	
-	List<UGC> findByParentIdWithReadPermission(ObjectId parentId, Query query, String[] moderationStatus);
+	List<UGC> findByParentIdWithReadPermission(ObjectId parentId, Query query, String[] moderationStatus, boolean sortChronological);
 
 }
