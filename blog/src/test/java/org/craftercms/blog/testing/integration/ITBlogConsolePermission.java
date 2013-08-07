@@ -19,7 +19,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 
-public class BlogConsolePermissionTest extends IntegrationTestingBase {
+public class ITBlogConsolePermission extends IntegrationTestingBase {
 
 	private String childUgcId;
 
@@ -32,12 +32,22 @@ public class BlogConsolePermissionTest extends IntegrationTestingBase {
 		WebDriver driver = getDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.get(baseUrl + WEB_APP_URL);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		driver.findElement(By.id("signin")).click();
 		driver.findElement(By.id("username")).clear();
 		driver.findElement(By.id("username")).sendKeys("author");
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys("author");
 		driver.findElement(By.id("login")).click();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		WebElement t = driver.findElement(By.id("blogconsole"));
 		t.click();
 		(new WebDriverWait(driver, 30)).until(ExpectedConditions
@@ -54,7 +64,7 @@ public class BlogConsolePermissionTest extends IntegrationTestingBase {
 		driver.findElement(By.className("editEntry")).click();
 		JavascriptExecutor exec = (JavascriptExecutor) driver;
 		try {
-			exec.executeScript("var _tmp = tinymce.get('textContentField'); _tmp.setContent('HOLA MUNDO!'); _tmp.save();");
+			exec.executeScript("var _tmp = tinymce.get('textContentField'); _tmp.setContent('Hello World!'); _tmp.save();");
 		} catch (Exception e) {
 			System.out.println(" EROR " + e.getMessage());
 		}
@@ -78,7 +88,7 @@ public class BlogConsolePermissionTest extends IntegrationTestingBase {
 			System.out.println(" WAITING ERROR");
 		}
 		String text = driver.findElement(By.name(authorUgcId))
-				.getAttribute("innerText");
+				.getAttribute("innerHTML");
 		assertEquals(newTitle, text);
 	}
 
@@ -97,6 +107,11 @@ public class BlogConsolePermissionTest extends IntegrationTestingBase {
 		driver.findElement(By.id("login")).click();
 		WebElement t = driver.findElement(By.id("blogconsole"));
 		assertNotNull(t);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 
 		String display = t.getCssValue("display");
 		boolean isNotDisplay = false;
@@ -155,18 +170,33 @@ public class BlogConsolePermissionTest extends IntegrationTestingBase {
 		WebDriver driver = getDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.get(baseUrl + WEB_APP_URL);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		driver.findElement(By.id("signin")).click();
 		driver.findElement(By.id("username")).clear();
 		driver.findElement(By.id("username")).sendKeys("author");
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys("author");
 		driver.findElement(By.id("login")).click();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		WebElement t = driver.findElement(By.id("blogconsole"));
 		t.click();
 		(new WebDriverWait(driver, 30)).until(ExpectedConditions
 				.presenceOfElementLocated(By.cssSelector("#mytable")));
 		// CHANGED
 		driver.findElement(By.name(this.currentUGCId)).click();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		(new WebDriverWait(driver, 30)).until(ExpectedConditions
 				.presenceOfElementLocated(By
 						.cssSelector("#textContentField_ifr")));
@@ -194,7 +224,7 @@ public class BlogConsolePermissionTest extends IntegrationTestingBase {
 					"craftercms");
 
 			RestAssured.basePath = "/crafter-social";
-			String newContent = "{\"title\":\"NEW_ENTRY_AUTHOR\",\"image\":\"\",\"content\":\"<p>HOLA MUNDO AUTHOR!</p>\"}";
+			String newContent = "{\"title\":\"NEW_ENTRY_AUTHOR\",\"image\":\"\",\"content\":\"<p>Hello World AUTHOR!</p>\"}";
 			String ugc = expect()
 					.statusCode(201)
 					.given()
