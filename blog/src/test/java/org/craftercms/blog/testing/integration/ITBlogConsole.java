@@ -16,7 +16,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class BlogConsoleTest extends IntegrationTestingBase {
+public class ITBlogConsole extends IntegrationTestingBase {
 	
 	@Test
 	public void testDeleteEntry() {
@@ -74,13 +74,22 @@ public class BlogConsoleTest extends IntegrationTestingBase {
 		WebDriver driver = getDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.get(baseUrl + WEB_APP_URL);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		driver.findElement(By.id("signin")).click();
 		driver.findElement(By.id("username")).clear();
 		driver.findElement(By.id("username")).sendKeys("admin");
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys("admin");
 		driver.findElement(By.id("login")).click();
-		
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		WebElement t = driver.findElement(By.id("blogconsole"));
 		t.click();
 		(new WebDriverWait(driver, 30))
@@ -94,7 +103,7 @@ public class BlogConsoleTest extends IntegrationTestingBase {
 		driver.findElement(By.className("editEntry")).click();
 		JavascriptExecutor exec = (JavascriptExecutor) driver;
 		try {
-			exec.executeScript("var _tmp = tinymce.get('textContentField'); _tmp.setContent('HOLA MUNDO!'); _tmp.save();");
+			exec.executeScript("var _tmp = tinymce.get('textContentField'); _tmp.setContent('Hello World!'); _tmp.save();");
 		} catch (Exception e) {
 			System.out.println(" EROR " + e.getMessage());
 		}
@@ -118,7 +127,7 @@ public class BlogConsoleTest extends IntegrationTestingBase {
 		} catch (InterruptedException e) {
 			System.out.println(" WAITING ERROR");
 		}
-		String text = driver.findElement(By.name(this.currentUGCId)).getAttribute("innerText");
+		String text = driver.findElement(By.name(this.currentUGCId)).getAttribute("innerHTML");
 		assertEquals(newTitle, text);
 	}
 
@@ -143,7 +152,7 @@ public class BlogConsoleTest extends IntegrationTestingBase {
 						.cssSelector("#textContentField_ifr")));
 		JavascriptExecutor exec = (JavascriptExecutor) driver;
 		try {
-			exec.executeScript("var _tmp = tinymce.get('textContentField'); _tmp.setContent('HOLA MUNDO!'); _tmp.save();");
+			exec.executeScript("var _tmp = tinymce.get('textContentField'); _tmp.setContent('Hello World!'); _tmp.save();");
 		} catch (Exception e) {
 			System.out.println(" EROR " + e.getMessage());
 		}
@@ -156,7 +165,7 @@ public class BlogConsoleTest extends IntegrationTestingBase {
 		driver.findElement(By.id("titleEntry")).clear();
 		driver.findElement(By.id("titleEntry")).sendKeys("test");
 		WebElement textContent = driver.findElement(By.id("textContentField"));
-		assertEquals("<p>HOLA MUNDO!</p>", textContent.getAttribute("value"));
+		assertEquals("<p>Hello World!</p>", textContent.getAttribute("value"));
 		driver.findElement(By.id("saveEntry")).click();
 		(new WebDriverWait(driver, 30))
 		.until(ExpectedConditions.presenceOfElementLocated(By

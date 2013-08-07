@@ -1,0 +1,27 @@
+<project name="Clover Report" default="current">
+    <!-- Initialize Clover -->
+    <clover-setup initString="${cloverdb}"/>
+    <target name="historical">
+        <!-- Empty as we're not interested in historical reports right now -->
+    </target>
+    <target name="current">
+        <clover-report>
+            <current outfile="target/clover.xml" title="${title}">
+                <format type="xml"/>
+                <!-- Declare naming convention in order to have test classes listed on the "Test" tab in HTML report -->
+                <testsources dir="src/test">
+                    <!-- Use Maven-Failsafe-Plugin naming convention -->
+                    <include name="**/IT*.java"/>
+                    <include name="**/*IT.java"/>
+                    <include name="**/*ITCase.java"/>
+                    <!-- Use Maven-Surefire-Pugin naming convention -->
+                    <include name="**/Test*.java"/>
+                    <include name="**/*Test.java"/>
+                    <include name="**/*TestCase.java"/>
+                </testsources>
+                <!-- Tell Clover to get test results directory as defined in pom.xml. They will be listed on "Results" tab -->
+                <testresults dir="${project.build.directory}/surefire-reports" includes="TEST-*.xml"/>
+            </current>
+        </clover-report>
+    </target>
+</project>

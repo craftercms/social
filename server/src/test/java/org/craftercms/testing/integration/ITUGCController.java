@@ -31,7 +31,7 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 import static org.hamcrest.Matchers.equalTo;
 
-public class UGCControllerIT {
+public class ITUGCController {
 
 	@Before
 	public void setup() {
@@ -55,132 +55,120 @@ public class UGCControllerIT {
 
 	@Test
 	public void testUpdateUgc() throws Exception {
-		expect().statusCode(201)
-				.body("textContent", equalTo("CONTENT"))
+		String ugc = expect()
+				.statusCode(201)
+				.body("textContent", equalTo("ContentUpdate"))
 				.given()
-				.parameters("target", "test", "textContent", "CONTENT",
-						"tenant", "test").when().post("/api/2/ugc/create.json");
-		String targets = given().parameters("target", "test", "tenant", "test")
-				.when().get("/api/2/ugc/target.json").asString();
-		JsonPath jp = new JsonPath(targets);
-		jp.setRoot("list");
-		Map ugcMap = jp.get("find {ugc -> ugc.textContent =~ /CONTENT/ }");
-		String id = (String) ugcMap.get("id");
+				.parameters("target", "test", "textContent", "ContentUpdate", "tenant",
+						"test").when().post("/api/2/ugc/create.json")
+				.asString();
+		assertNotNull(ugc);
+		JsonPath jp = new JsonPath(ugc);
+		String id = jp.getString("id");
+		
 		expect().statusCode(200)
 				.body("textContent", equalTo("CONTENT Update"))
 				.given()
 				.parameters("ugcId", id, "target", "test", "textContent",
 						"CONTENT Update", "tenant", "test").when()
 				.post("/api/2/ugc/update.json");
+
 	}
 
 	@Test
 	public void testDeleteUgc() throws Exception {
-		expect().statusCode(201)
+		String ugc = expect().statusCode(201)
 				.body("textContent", equalTo("MY CONTENT"))
 				.given()
 				.parameters("target", "test", "textContent", "MY CONTENT",
-						"tenant", "test").when().post("/api/2/ugc/create.json");
-		String targets = given().parameters("target", "test", "tenant", "test")
-				.when().get("/api/2/ugc/target.json").asString();
-		JsonPath jp = new JsonPath(targets);
-		jp.setRoot("list");
-		Map ugcMap = jp.get("find {ugc -> ugc.textContent =~ /MY CONTENT/ }");
-		String id = (String) ugcMap.get("id");
+						"tenant", "test").when().post("/api/2/ugc/create.json").asString();
+		assertNotNull(ugc);
+		JsonPath jp = new JsonPath(ugc);
+		String id = jp.getString("id");
+
 		expect().statusCode(200).given().parameters("tenant", "test").when()
 				.post("/api/2/ugc/delete/" + id + ".json");
 	}
 
 	@Test
 	public void testDislikeUgc() throws Exception {
-		expect().statusCode(201)
+		System.out.println(" testDislikeUgc" );
+		String ugc = expect().statusCode(201)
 				.body("textContent", equalTo("DISLIKE CONTENT"))
 				.given()
 				.parameters("target", "test", "textContent", "DISLIKE CONTENT",
-						"tenant", "test").when().post("/api/2/ugc/create.json");
-		String targets = given().parameters("target", "test", "tenant", "test")
-				.when().get("/api/2/ugc/target.json").asString();
-		JsonPath jp = new JsonPath(targets);
-		jp.setRoot("list");
-		Map ugcMap = jp
-				.get("find {ugc -> ugc.textContent =~ /DISLIKE CONTENT/ }");
-		String id = (String) ugcMap.get("id");
-		expect().statusCode(200).given().parameters("tenant", "test").when()
-				.post("/api/2/ugc/dislike/" + id + ".json");
-		targets = given().parameters("target", "test", "tenant", "test").when()
-				.get("/api/2/ugc/target.json").asString();
-		jp = new JsonPath(targets);
-		jp.setRoot("list");
-		ugcMap = jp.get("find {ugc -> ugc.textContent =~ /DISLIKE CONTENT/ }");
-		assertTrue(((Integer) ugcMap.get("offenceCount")) > 0);
+						"tenant", "test").when().post("/api/2/ugc/create.json").asString();
+		System.out.println(" testDislikeUgc ugc" + ugc);
+		assertNotNull(ugc);
+		JsonPath jp = new JsonPath(ugc);
+		String id = jp.getString("id");
+		System.out.println(" testDislikeUgc id" + id);
+		ugc = expect().statusCode(200).given().parameters("tenant", "test").when()
+				.post("/api/2/ugc/dislike/" + id + ".json").asString();
+		jp = new JsonPath(ugc);
+		System.out.println(" testDislikeUgc offence" + jp.getString("offenceCount"));
+		assertTrue(Integer.parseInt(jp.getString("offenceCount")) > 0);
 	}
-
+//
 	@Test
 	public void testLikeUgc() throws Exception {
-		expect().statusCode(201)
+		String ugc = expect().statusCode(201)
 				.body("textContent", equalTo("LIKE CONTENT"))
 				.given()
 				.parameters("target", "test", "textContent", "LIKE CONTENT",
-						"tenant", "test").when().post("/api/2/ugc/create.json");
-		String targets = given().parameters("target", "test", "tenant", "test")
-				.when().get("/api/2/ugc/target.json").asString();
-		JsonPath jp = new JsonPath(targets);
-		jp.setRoot("list");
-		Map ugcMap = jp.get("find {ugc -> ugc.textContent =~ /LIKE CONTENT/ }");
-		String id = (String) ugcMap.get("id");
-		expect().statusCode(200).given().parameters("tenant", "test").when()
-				.post("/api/2/ugc/like/" + id + ".json");
-		targets = given().parameters("target", "test", "tenant", "test").when()
-				.get("/api/2/ugc/target.json").asString();
-		jp = new JsonPath(targets);
-		jp.setRoot("list");
-		ugcMap = jp.get("find {ugc -> ugc.textContent =~ /LIKE CONTENT/ }");
-		assertTrue(((Integer) ugcMap.get("likeCount")) > 0);
+						"tenant", "test").when().post("/api/2/ugc/create.json").asString();
+		assertNotNull(ugc);
+		JsonPath jp = new JsonPath(ugc);
+		String id = jp.getString("id");
+		ugc = expect().statusCode(200).given().parameters("tenant", "test").when()
+				.post("/api/2/ugc/like/" + id + ".json").asString();
+		jp = new JsonPath(ugc);
+//		targets = given().parameters("target", "test", "tenant", "test").when()
+//				.get("/api/2/ugc/target.json").asString();
+//		jp = new JsonPath(targets);
+//		jp.setRoot("list");
+//		ugcMap = jp.get("find {ugc -> ugc.textContent =~ /LIKE CONTENT/ }");
+		assertTrue(Integer.parseInt(jp.getString("likeCount")) > 0);
 	}
-
+//
 	@Test
 	public void testFlagUgc() throws Exception {
-		expect().statusCode(201)
+		String ugc = expect().statusCode(201)
 				.body("textContent", equalTo("FLAG CONTENT"))
 				.given()
 				.parameters("target", "test", "textContent", "FLAG CONTENT",
-						"tenant", "test").when().post("/api/2/ugc/create.json");
-		String targets = given().parameters("target", "test", "tenant", "test")
-				.when().get("/api/2/ugc/target.json").asString();
-		JsonPath jp = new JsonPath(targets);
-		jp.setRoot("list");
-		Map ugcMap = jp.get("find {ugc -> ugc.textContent =~ /FLAG CONTENT/ }");
-		String id = (String) ugcMap.get("id");
-		expect().statusCode(200).given()
+						"tenant", "test").when().post("/api/2/ugc/create.json").asString();
+		
+		assertNotNull(ugc);
+		JsonPath jp = new JsonPath(ugc);
+		String id = jp.getString("id");
+		ugc = expect().statusCode(200).given()
 				.parameters("tenant", "test", "reason", "test").when()
-				.post("/api/2/ugc/flag/" + id + ".json");
-		targets = given()
-				.parameters("target", "test", "target", "test", "tenant",
-						"test").when().get("/api/2/ugc/target.json").asString();
-		jp = new JsonPath(targets);
-		jp.setRoot("list");
-		ugcMap = jp.get("find {ugc -> ugc.textContent =~ /FLAG CONTENT/ }");
-		assertTrue(((Integer) ugcMap.get("flagCount")) > 0);
+				.post("/api/2/ugc/flag/" + id + ".json").asString();
+		jp = new JsonPath(ugc);
+		assertTrue(Integer.parseInt(jp.getString("flagCount")) > 0);
 	}
 
 	@Test
 	public void testFindByUGCId() throws Exception {
-		expect().statusCode(201)
+		System.out.println(" testFindByUGCId ");
+		String ugc = expect().statusCode(201)
 				.body("textContent", equalTo("FIND BY ID"))
 				.given()
 				.parameters("target", "test", "textContent", "FIND BY ID",
-						"tenant", "test").when().post("/api/2/ugc/create.json");
-		String targets = given().parameters("target", "test", "tenant", "test")
-				.when().get("/api/2/ugc/target.json").asString();
-		JsonPath jp = new JsonPath(targets);
-		jp.setRoot("list");
-		Map ugcMap = jp.get("find {ugc -> ugc.textContent =~ /FIND BY ID/ }");
-		String id = (String) ugcMap.get("id");
-		String ugc = given()
+						"tenant", "test").when().post("/api/2/ugc/create.json").asString();
+		System.out.println(" testFindByUGCId ugc " + ugc);
+		assertNotNull(ugc);
+		JsonPath jp = new JsonPath(ugc);
+		String id = jp.getString("id");
+		System.out.println(" testFindByUGCId id " + id);
+		ugc = given()
 				.parameters("target", "test", "target", "test", "tenant",
 						"test").when()
 				.get("/api/2/ugc/get_ugc/" + id + ".json").asString();
+		System.out.println(" testFindByUGCId found ugc " + ugc);
 		jp = new JsonPath(ugc);
+		System.out.println(" testFindByUGCId found textContent " + jp.getString("textContent"));
 		assertTrue(jp.getString("textContent").equalsIgnoreCase("FIND BY ID"));
 	}
 
@@ -200,7 +188,7 @@ public class UGCControllerIT {
 		String status = (String) ugcMap.get("moderationStatus");
 		assertTrue(status.equals("UNMODERATED"));
 	}
-
+//
 	@Test
 	public void testModerationStatusTarget() throws Exception {
 		expect().statusCode(201)
@@ -240,7 +228,7 @@ public class UGCControllerIT {
 		status = jp.getString("moderationStatus");
 		assertTrue(status.equals("APPROVED"));
 	}
-
+//
 	@Test
 	public void testCountTenantTarget() throws Exception {
 		String ugc = expect()

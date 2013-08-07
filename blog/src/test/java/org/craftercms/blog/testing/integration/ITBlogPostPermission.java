@@ -16,7 +16,7 @@ import org.openqa.selenium.WebElement;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 
-public class BlogPostPermissionTest extends IntegrationTestingBase {
+public class ITBlogPostPermission extends IntegrationTestingBase {
 	
 	private String childUgcId;
 	
@@ -33,6 +33,11 @@ public class BlogPostPermissionTest extends IntegrationTestingBase {
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.get(baseUrl + WEB_APP_URL);
 		driver.findElement(By.name(this.currentUGCId)).click();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		boolean found = false;
 		try {
 			WebElement reply = driver.findElement(By.className("like"));
@@ -60,6 +65,11 @@ public class BlogPostPermissionTest extends IntegrationTestingBase {
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.get(baseUrl + WEB_APP_URL);
 		driver.findElement(By.name(this.currentUGCId)).click();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		boolean found = false;
 		try {
 			WebElement reply = driver.findElement(By.className("flag"));
@@ -82,11 +92,16 @@ public class BlogPostPermissionTest extends IntegrationTestingBase {
 	
 	@Test
 	public void testAnonymousCantReply() {
-		System.out.println(" Integration Test testAnonymousCantReply  ");
+		System.out.println(" Integration Test testAnonymousCantReply  1 " + currentUGCId);
 		WebDriver driver = getDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.get(baseUrl + WEB_APP_URL);
 		driver.findElement(By.name(this.currentUGCId)).click();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		boolean found = false;
 		try {
 			WebElement reply = driver.findElement(By.className("reply"));
@@ -113,6 +128,11 @@ public class BlogPostPermissionTest extends IntegrationTestingBase {
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.get(baseUrl + WEB_APP_URL);
 		driver.findElement(By.name(this.currentUGCId)).click();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
 		boolean found = false;
 		try {
 			WebElement webUgcEditor = driver.findElement(By.className("ugc-editor"));
@@ -134,7 +154,7 @@ public class BlogPostPermissionTest extends IntegrationTestingBase {
 	
 	private String myNewCommentPost(String ticket, String tenant) {
 		RestAssured.basePath = "/crafter-social";
-		String newContent = "{\"title\":\"NEW_ENTRY\",\"image\":\"\",\"content\":\"<p>HOLA MUNDO!</p>\"}";
+		String newContent = "Hello World!";
 		String ugc = expect()
 				.statusCode(201)
 				.given()
@@ -149,6 +169,42 @@ public class BlogPostPermissionTest extends IntegrationTestingBase {
 		JsonPath jp = new JsonPath(ugc);
 		String childUgcId = jp.getString("id");
 		return childUgcId;
+	}
+	
+	protected String createNewPost(String ticket, String tenant) {
+		System.out.println(" Integration Test createNewPost child  ");
+		RestAssured.basePath = "/crafter-social";
+		
+		String newContent = "{\"title\":\"NEW_ENTRY\",\"image\":\"\",\"content\":\"<p>Hello World!</p>\"}";
+		String ugc = expect()
+				.statusCode(201)
+				.given()
+				.parameters("ticket", ticket, 
+						"target", tenant, 
+						"textContent", newContent,
+						"tenant", tenant).
+						when().
+						post("/api/2/ugc/create.json")
+				.asString();
+		
+		JsonPath jp = new JsonPath(ugc);
+		currentUGCId = jp.getString("id");
+		
+		
+		newContent = "Testing comment";
+		ugc = expect()
+				.statusCode(201)
+				.given()
+				.parameters("ticket", ticket, 
+						"target", tenant, 
+						"textContent", newContent,
+						"parentId",currentUGCId,
+						"tenant", tenant).
+						when().
+						post("/api/2/ugc/create.json")
+				.asString();
+		
+		return currentUGCId;
 	}
 
 }
