@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -52,33 +53,6 @@ public class IntegrationTestingBase {
 		// sConfig.load(new FileReader(CONFIG_FILE));
 		sConfig.load(IntegrationTestingBase.class.getClassLoader().getResourceAsStream(
 				CONFIG_FILE));
-
-		// Prepare capabilities
-		sCaps = new DesiredCapabilities();
-		sCaps.setJavascriptEnabled(true);
-		sCaps.setCapability("takesScreenshot", false);
-
-		// Fetch configuration parameters
-		// "phantomjs_exec_path"
-		if (sConfig.getProperty("craftercms.test.phantomjs.executable.path") != null) {
-			System.out.println(" ** signInTest  NOT NULL " + sConfig.getProperty("craftercms.test.phantomjs.executable.path"));
-			sCaps.setCapability(
-					PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
-					sConfig.getProperty("craftercms.test.phantomjs.executable.path"));
-		} else {
-			throw new IOException(String.format("Property '%s' not set!",
-					PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY));
-		}
-		// "phantomjs_driver_path"
-		if (sConfig.getProperty("craftercms.test.phantomjs.driver.path") != null) {
-			System.out.println("Test will use an external GhostDriver " + sConfig.getProperty("craftercms.test.phantomjs.driver.path"));
-			sCaps.setCapability(
-					PhantomJSDriverService.PHANTOMJS_GHOSTDRIVER_PATH_PROPERTY,
-					sConfig.getProperty("craftercms.test.phantomjs.driver.path"));
-		} else {
-			System.out.println("Test will use PhantomJS internal GhostDriver");
-		}
-		System.out.println(" ** signInTest  before URL " + sConfig.getProperty("craftercms.test.base.url"));
 		baseUrl = sConfig.getProperty("craftercms.test.base.url");
 		int port = Integer.parseInt(sConfig.getProperty("craftercms.test.port"));
 		RestAssured.port = port;
@@ -86,7 +60,7 @@ public class IntegrationTestingBase {
 		client.setPort(port);
 		try {
 			appToken = client.getAppToken("craftersocial", "craftersocial");
-			ticket = client.getTicket(appToken, "admin", "admin", "craftercms");
+			//ticket = client.getTicket(appToken, "admin", "admin", "craftercms");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -95,12 +69,13 @@ public class IntegrationTestingBase {
 
 	@Before
 	public void prepareDriver() throws Exception {
-		mDriver = new PhantomJSDriver(sCaps);
+		ticket = client.getTicket(appToken, "admin", "admin", "craftercms");
+		mDriver = new FirefoxDriver();
 		try {
 			createNewPost(ticket, "craftercms");
-			System.out.println(" PROFILE DATA ticket " + ticket + " currentUGCID " + currentUGCId);
 		} catch (Exception e) {
 			// TODO: handle exception
+			System.out.println(" NEW POST ERROR " + e.getMessage());
 		}
 	}
 
@@ -122,6 +97,14 @@ public class IntegrationTestingBase {
 
 	@After
 	public void quitDriver() {
+		try {
+			WebElement signout = mDriver.findElement(By.id("signout"));
+			if (signout != null) {
+				signout.click();
+			}
+		} catch (Exception e) {
+			
+		}
 		if (mAutoQuitDriver && mDriver != null) {
 			mDriver.quit();
 			mDriver = null;
@@ -129,21 +112,19 @@ public class IntegrationTestingBase {
 	}
 	
 	protected void loginAsAdmin(WebDriver driver) {
-		System.out.println(" ** loginAsAdmin 1 " + driver.getTitle());
 		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Social Blog - Login"));
 		WebElement inputUsername = driver.findElement(By.id("username")); 
 		WebElement inputPass = driver.findElement(By.id("password")); 
 		WebElement loginButton = driver.findElement(By.id("login")); 
 		inputUsername.sendKeys("admin");
 		inputPass.sendKeys("admin");
-		System.out.println(" ** loginAsAdmin 2 " + driver.getTitle());
 		loginButton.click();
 	}
 	
 	protected String createNewPost(String ticket, String tenant) {
 		RestAssured.basePath = "/crafter-social";
 		
-		String newContent = "{\"title\":\"NEW_ENTRY\",\"image\":\"\",\"content\":\"<p>HOLA MUNDO!</p>\"}";
+		String newContent = "{\"title\":\"NEW_ENTRY\",\"image\":\"\",\"content\":\"<p>Hello World!</p>\"}";
 		String ugc = expect()
 				.statusCode(201)
 				.given()

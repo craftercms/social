@@ -32,7 +32,7 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 import static org.hamcrest.Matchers.equalTo;
 
-public class PermissionRestControllerIT {
+public class ITPermissionRestController {
 
 	@Before
 	public void init() {
