@@ -94,24 +94,6 @@ public class PermissionServiceImpl implements PermissionService {
 		return query;
 	}
 	
-	private boolean isSuperAdmin(List<String> roles) {
-		boolean isSuperAdmin = false;
-		for(String role: roles) {
-			if (role.equalsIgnoreCase(SUPER_ADMIN)) {
-				isSuperAdmin = true;
-				break;
-			}
-		}
-		return isSuperAdmin;
-	}
-	
-	private boolean isSuperAdmin(String[] roles) {
-		if (roles == null) {
-			return false;
-		}
-		return isSuperAdmin(Arrays.asList(roles));
-	}
-
 	public List<UGC> checkGrantedPermission(ActionEnum action, List<UGC> list, String profileId) {
 		List<UGC> grantedList = new ArrayList<UGC>();
 		UGC checkUGCPermissions;
@@ -174,5 +156,23 @@ public class PermissionServiceImpl implements PermissionService {
 			}
 		}
 		return found;
+	}
+	
+	private boolean isSuperAdmin(List<String> roles) {
+		boolean isSuperAdmin = false;
+		for(String role: roles) {
+			if (role.equalsIgnoreCase(SUPER_ADMIN)) {
+				isSuperAdmin = true;
+				break;
+			}
+		}
+		return isSuperAdmin;
+	}
+	
+	private boolean isSuperAdmin(String[] roles) {
+		if (roles == null) {
+			return false;
+		}
+		return isSuperAdmin(Arrays.asList(roles));
 	}
 }

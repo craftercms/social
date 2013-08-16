@@ -120,8 +120,6 @@ public interface UGCService {
 
 	int getTenantTargetCount(String tenant, String target);
 
-	UGC threadTree(UGC last);
-	
 	UGC findById(ObjectId ugcId);
 	
 	void setAttributes(ObjectId ugcId, Map<String, Object> attributeMap, String tenant, String profileId);

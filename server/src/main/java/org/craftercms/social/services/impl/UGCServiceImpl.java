@@ -414,18 +414,6 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC threadTree(UGC last) {
-        // TODO Find A better way
-        if (last.getParentId() == null) {
-            return last;
-        } else {
-            UGC parent = repository.findOne(last.getParentId());
-            parent.addChild(last);
-            return threadTree(parent);
-        }
-    }
-
-    @Override
     public void setAttributes(ObjectId ugcId, Map<String, Object> attributeMap, String tenant, String profileId) {
         if (attributeMap != null) {
             UGC ugc = findById(ugcId);
@@ -450,7 +438,7 @@ public class UGCServiceImpl implements UGCService {
         List<UGCAudit> lst = auditRepository.findByProfileIdAndAction(profileId, action);
         List<ObjectId> ugcs=new ArrayList<ObjectId>();
         for (UGCAudit audit : lst) {
-            ugcs.add(audit.getUgcId());
+        	ugcs.add(audit.getUgcId());
         }
         return repository.findByIds((ObjectId[])ugcs.toArray());
     }
@@ -548,10 +536,12 @@ public class UGCServiceImpl implements UGCService {
     	AttachmentsList data = new AttachmentsList();
         Attachment attachment;
         AttachmentModel a;
-        for (ObjectId id: attachmentsId) {
-            attachment = supportDataAccess.getAttachment(id);
-            a = new AttachmentModel(attachment.getFilename(),id,attachment.getContentType(), tenant);
-            data.addAttachmentModel(a);
+        if (attachmentsId != null) {
+	        for (ObjectId id: attachmentsId) {
+	            attachment = supportDataAccess.getAttachment(id);
+	            a = new AttachmentModel(attachment.getFilename(),id,attachment.getContentType(), tenant);
+	            data.addAttachmentModel(a);
+	        }
         }
         return data;
     }
