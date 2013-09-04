@@ -25,7 +25,7 @@ import static junit.framework.Assert.assertNotNull;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 
-public class TenantRestControllerIT {
+public class ITTenantRestController {
 
 	@Before
 	public void setup() {

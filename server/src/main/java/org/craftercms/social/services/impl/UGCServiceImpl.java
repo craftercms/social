@@ -286,16 +286,17 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC dislikeUGC(ObjectId ugcId, String tenant, String profileId) {
-        if (existsUGC(ugcId)) {
+    	if (existsUGC(ugcId)) {
             UGC ugc = repository.findOne(ugcId);
             if (userCan(AuditAction.DISLIKE, ugc, profileId)) {
-                ugc.setOffenceCount(ugc.getOffenceCount() + 1);
+            	ugc.setOffenceCount(ugc.getOffenceCount() + 1);
                 auditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
                 checkForModeration(ugc);
                 if (!userCan(AuditAction.LIKE, ugc, profileId)) {
                 	ugc.setLikeCount(ugc.getLikeCount() - 1);
                 	removeAuditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
                 }
+                
                 return populateUGCWithProfile(save(ugc));
             } else {
                 //return null;
@@ -304,7 +305,7 @@ public class UGCServiceImpl implements UGCService {
             	return populateUGCWithProfile(save(ugc));
             }
         } else {
-            log.debug("UGC Id {} does not exist", ugcId);
+        	log.debug("UGC Id {} does not exist", ugcId);
             throw new DataIntegrityViolationException("UGC does not exist");
         }
     }
@@ -358,7 +359,7 @@ public class UGCServiceImpl implements UGCService {
     	Profile p = crafterProfileService.getProfile(profileId);
     	List<String> moderatorRoles = tenantService.getRootModeratorRoles(tenantName);
     	ArrayList<Action> actions = new ArrayList<Action>();
-		Action moderatorAction = new Action(ActionEnum.MODERATE.toString(),moderatorRoles);
+    	Action moderatorAction = new Action(ActionEnum.MODERATE.toString(),moderatorRoles);
 		actions.add(moderatorAction);
 		UGC newUgc = new UGC();
 		newUgc.setActions(actions);
@@ -413,18 +414,6 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC threadTree(UGC last) {
-        // TODO Find A better way
-        if (last.getParentId() == null) {
-            return last;
-        } else {
-            UGC parent = repository.findOne(last.getParentId());
-            parent.addChild(last);
-            return threadTree(parent);
-        }
-    }
-
-    @Override
     public void setAttributes(ObjectId ugcId, Map<String, Object> attributeMap, String tenant, String profileId) {
         if (attributeMap != null) {
             UGC ugc = findById(ugcId);
@@ -449,7 +438,7 @@ public class UGCServiceImpl implements UGCService {
         List<UGCAudit> lst = auditRepository.findByProfileIdAndAction(profileId, action);
         List<ObjectId> ugcs=new ArrayList<ObjectId>();
         for (UGCAudit audit : lst) {
-            ugcs.add(audit.getUgcId());
+        	ugcs.add(audit.getUgcId());
         }
         return repository.findByIds((ObjectId[])ugcs.toArray());
     }
@@ -466,7 +455,6 @@ public class UGCServiceImpl implements UGCService {
     
         @Override
     public UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId) {
-
     	Profile p = crafterProfileService.getProfile(profileId);
     	Query q = this.permissionService.getQuery(ActionEnum.READ, p);	
     	String[] moderationStatus = getModerationFilter(tenant, profileId);
@@ -540,7 +528,7 @@ public class UGCServiceImpl implements UGCService {
     }
 
     private UGC populateUGCWithProfile(UGC ugc) {
-        ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
+    	ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
         return ugc;
     }
 
@@ -548,10 +536,12 @@ public class UGCServiceImpl implements UGCService {
     	AttachmentsList data = new AttachmentsList();
         Attachment attachment;
         AttachmentModel a;
-        for (ObjectId id: attachmentsId) {
-            attachment = supportDataAccess.getAttachment(id);
-            a = new AttachmentModel(attachment.getFilename(),id,attachment.getContentType(), tenant);
-            data.addAttachmentModel(a);
+        if (attachmentsId != null) {
+	        for (ObjectId id: attachmentsId) {
+	            attachment = supportDataAccess.getAttachment(id);
+	            a = new AttachmentModel(attachment.getFilename(),id,attachment.getContentType(), tenant);
+	            data.addAttachmentModel(a);
+	        }
         }
         return data;
     }

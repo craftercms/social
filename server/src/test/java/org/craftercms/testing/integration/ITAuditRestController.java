@@ -29,7 +29,7 @@ import org.junit.Test;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 
-public class AuditRestControllerIT {
+public class ITAuditRestController {
 
 	@Before
 	public void setup() {
