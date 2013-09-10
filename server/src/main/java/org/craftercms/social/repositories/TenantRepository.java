@@ -21,7 +21,5 @@ import org.craftercms.social.domain.Tenant;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface TenantRepository extends MongoRepository<Tenant,ObjectId>, TenantRepositoryCustom {
-	
 	Tenant findTenantByTenantName(String tenantName);
-
 }

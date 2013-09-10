@@ -29,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class CrafterProfileTest implements CrafterProfile {
 
 	protected static final String TENANT_TEST = "craftercms";
+	protected static final String TENANT_TEST_EMAIL = "craftercms@email.com";
 	protected static final String TARGET_TEST = "craftercms";
 	protected static final String ADMIN_USER = "admin";
 	protected static final String ADMIN_PASS = "admin";
@@ -183,7 +184,7 @@ public class CrafterProfileTest implements CrafterProfile {
 		List<String> roles = new ArrayList<String>();
 		roles.add("SOCIAL_USER");
 		return new Profile(BASIC_ID, BASIC_USER, BASIC_PASS, true, new Date(),
-				new Date(), attributes, roles, TENANT_TEST);
+				new Date(), attributes, roles, TENANT_TEST, TENANT_TEST_EMAIL);
 
 	}
 
@@ -194,7 +195,7 @@ public class CrafterProfileTest implements CrafterProfile {
 		List<String> roles = new ArrayList<String>();
 		roles.add("SOCIAL_ADMIN");
 		return new Profile(ADMIN_ID, ADMIN_USER, ADMIN_PASS, true, new Date(),
-				new Date(), attributes, roles, TENANT_TEST);
+				new Date(), attributes, roles, TENANT_TEST,TENANT_TEST_EMAIL);
 	}
 
 	protected UGC createBasicUGC(Profile p) {

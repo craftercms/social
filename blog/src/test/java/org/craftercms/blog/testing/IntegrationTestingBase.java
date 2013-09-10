@@ -4,6 +4,8 @@ import static com.jayway.restassured.RestAssured.expect;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.craftercms.profile.impl.ProfileRestClientImpl;
@@ -17,6 +19,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,6 +145,44 @@ public class IntegrationTestingBase {
 		return currentUGCId;
 	}
 	
+	protected void waitForElement(WebDriver driver, long sec, String name, boolean isId) {
+
+        //List<WebElement> testel = getElements(driver, name, isId);
+
+        //int i = 0;
+        
+        //while ((testel == null || testel.size() == 0) && i < 20) {
+            try {
+            	if (isId) {
+            		(new WebDriverWait(driver, sec)).until(ExpectedConditions.presenceOfElementLocated(By
+    	                    .id(name)));
+            	} else {
+	                (new WebDriverWait(driver, sec)).until(ExpectedConditions.presenceOfElementLocated(By
+	                    .className(name)));
+            	}
+            } catch (Exception e) {
+            }
+           // testel = getElements(driver, name, isId);
+           // i ++;
+//        }
+    }
+	
+	
+	private List<WebElement> getElements(WebDriver driver, String name, boolean isId) {
+		List<WebElement> elements = null;
+		try {
+			if (isId) {
+				WebElement element = driver.findElement(By.id(name));
+				if (element != null) {
+					elements =  new ArrayList<WebElement>();
+					elements.add(element);
+				}
+	        } else {
+	        	elements = driver.findElements(By.className(name));
+	        }
+		} catch(Exception e){}
+		return elements;
+	}
 	
 	
 	

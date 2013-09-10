@@ -22,9 +22,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.Tenant;
 
 public interface TenantService {
+	
+	static final String MODERATE = "moderate";
+	static final String CREATE = "create";
 	
 	List<String> getRootCreateRoles(String tenantName);
 	Tenant setTenant(String tenantName,List<String> roles);
@@ -32,6 +36,9 @@ public interface TenantService {
 	void deleteTenant(String tenantName);
 	void setTenantRoles(String tenantName, List<String> roles);
 	List<String> getRootModeratorRoles(String tenantName);
+	void setTenantActions(String tenant, List<Action> actions);
+	List<String> getActionCreateRoles(String tenantName);
+	List<String> getModeratorRoles(String tenantName);
 	
 
 }
