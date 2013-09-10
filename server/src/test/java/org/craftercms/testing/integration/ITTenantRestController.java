@@ -17,6 +17,11 @@
 package org.craftercms.testing.integration;
 
 import static com.jayway.restassured.RestAssured.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.craftercms.social.domain.Action;
 import org.junit.Before;
 import org.junit.Test;
 import static junit.framework.Assert.assertTrue;
@@ -45,6 +50,7 @@ public class ITTenantRestController {
 
 	@Test
 	public void setTenantRolesTest() {
+		List<Action> actions = getActions();
 		String tenant = expect()
 				.given()
 				.parameters("roles", "SOCIAL_USER", "tenant",
@@ -65,6 +71,39 @@ public class ITTenantRestController {
 		String role = jp.getString("roles[0]");
 		assertNotNull(role);
 		assertTrue(role.equalsIgnoreCase("SOCIAL_ADMIN"));
+	}
+	
+	@Test
+	public void setTenantActionRolesTest() {
+		String tenant = expect().given()
+				.parameters( 
+						"roles", "SOCIAL_USER", "tenant", "testingtenantactionroles")
+				.when().post("/api/2/tenant/set_tenant.json").asString();
+		JsonPath jp = new JsonPath(tenant);
+		
+		String id = jp.getString("id");
+		assertNotNull(id);
+		
+		expect()
+				.given()
+				.parameters(
+						"action_create", "SOCIAL_ADMIN",
+						"action_moderate", "SOCIAL_MODERATOR",
+						"tenant","testingtenantactionroles").when()
+				.post("/api/2/tenant/set_tenant_actions.json").asString();
+		jp = new JsonPath(tenant);
+		id = jp.getString("id");
+		assertNotNull(id);
+		
+		tenant = expect().statusCode(200).given()
+				.parameters(
+						"tenant", "testingtenantactionroles").when()
+				.get("/api/2/tenant/get_tenant.json").asString();
+		System.out.println(tenant);
+		jp = new JsonPath(tenant);
+		String action = jp.getString("actions[0].name");
+		assertNotNull(action);
+		assertTrue(action.equals("create") || action.equals("moderate"));
 	}
 
 	@Test
@@ -98,5 +137,45 @@ public class ITTenantRestController {
 				.parameters("tenant", "deletetenant").when()
 				.get("/api/2/tenant/get_tenant.json").asString();
 		assertTrue(tenant == null || tenant.equals(""));
+	}
+	
+	private List<Action> getActions() {
+		// TODO Auto-generated method stub
+		List<Action> actions = new ArrayList<Action>();
+		List<String> roles = new ArrayList<String>();
+		roles.add("SOCIAL_ADMIN");
+		roles.add("SOCIAL_AUTHOR");
+		Action a = new Action();
+		a.setName("create");
+		a.setRoles(roles);
+		actions.add(a);
+		roles = new ArrayList<String>();
+		roles.add("SOCIAL_ADMIN");
+		roles.add("SOCIAL_MODERATOR");
+		a = new Action();
+		a.setName("moderate");
+		a.setRoles(roles);
+		return actions;
+	}
+	
+	private String getActionsParams(List<Action> actions) {
+		String actionsParams = "";
+		
+		String actionName = "";
+		String param = "";
+		for (Action currentAction: actions) {
+			
+			actionName = currentAction.getName().toLowerCase();
+			for (String role: currentAction.getRoles()) {
+				param = "action_" + actionName + "=" + role;
+				if (actionsParams == "") {
+					actionsParams = "?" + param;
+				} else {
+					actionsParams = actionsParams + "&" + param;
+				}
+			}
+		}
+		return actionsParams;
+
 	}
 }

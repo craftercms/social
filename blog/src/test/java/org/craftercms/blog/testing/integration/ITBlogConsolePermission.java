@@ -68,12 +68,19 @@ public class ITBlogConsolePermission extends IntegrationTestingBase {
 		} catch (Exception e) {
 			System.out.println(" EROR " + e.getMessage());
 		}
-		new WebDriverWait(driver, 60).until(new ExpectedCondition<Boolean>() {
-			public Boolean apply(WebDriver d) {
-				return !d.findElement(By.cssSelector("#textContentField"))
-						.getAttribute("value").isEmpty();
-			}
-		});
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			System.out.println(" WAITING ERROR");
+		}
+		try {
+			new WebDriverWait(driver, 60).until(new ExpectedCondition<Boolean>() {
+				public Boolean apply(WebDriver d) {
+					return !d.findElement(By.cssSelector("#textContentField"))
+							.getAttribute("value").isEmpty();
+				}
+			});
+		} catch (Exception e) {}
 		String newTitle = "Updated";
 		driver.findElement(By.id("titleEntry")).clear();
 		driver.findElement(By.id("titleEntry")).sendKeys(newTitle);
