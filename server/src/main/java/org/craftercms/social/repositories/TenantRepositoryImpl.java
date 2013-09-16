@@ -19,6 +19,7 @@ package org.craftercms.social.repositories;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.Tenant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -37,6 +38,16 @@ public class TenantRepositoryImpl implements TenantRepositoryCustom {
 		query.addCriteria(Criteria.where("tenantName").is(tenantName));
 		Update update = new Update();
 		update.set("roles", roles);
+		mongoTemplate.updateFirst(query, update, Tenant.class);
+	}
+	
+	@Override
+	public void setActions(String tenantName, List<Action> actions) {
+		   
+		Query query = new Query();
+		query.addCriteria(Criteria.where("tenantName").is(tenantName));
+		Update update = new Update();
+		update.set("actions", actions);
 		mongoTemplate.updateFirst(query, update, Tenant.class);
 	}
 

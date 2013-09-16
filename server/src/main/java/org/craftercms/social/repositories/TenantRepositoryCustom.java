@@ -20,9 +20,12 @@ package org.craftercms.social.repositories;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.craftercms.social.domain.Action;
 
 public interface TenantRepositoryCustom {
 	
 		void setRoles(String tenantName, List<String> roles);
+
+		void setActions(String tenantName, List<Action> actions);
 
 }

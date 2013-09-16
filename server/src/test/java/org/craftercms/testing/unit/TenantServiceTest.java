@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.Tenant;
