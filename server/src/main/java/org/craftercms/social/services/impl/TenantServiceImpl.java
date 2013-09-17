@@ -16,21 +16,22 @@
  */
 package org.craftercms.social.services.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
+import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.Tenant;
 import org.craftercms.social.repositories.TenantRepository;
 import org.craftercms.social.services.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TenantServiceImpl implements TenantService {
+	
+	
 
 	@Autowired
 	private TenantRepository tenantRepository;
@@ -55,6 +56,68 @@ public class TenantServiceImpl implements TenantService {
 		} else {
 			return tenant.getRoles();
 		}
+	}
+	
+	@Override
+	public List<String> getActionCreateRoles(String tenantName) {
+//		Tenant tenant = this.tenantRepository
+//				.findTenantByTenantName(tenantName);
+//		List<String> roles = new ArrayList<String>();
+//		if (tenant == null || tenant.getActionRoles() == null) {
+//			String[] creates = this.createRoles.split(",");
+//			for (String role : roles) {
+//				roles.add(role.trim());
+//			}
+//		} else {
+//			for (Action action: tenant.getActionRoles()) {
+//				if (action.equals("create")) {
+//					roles.addAll(action.getRoles());
+//					break;
+//				}
+//				
+//			}
+//		}
+//		return roles;
+		return getActionRoles(CREATE, tenantName,createRoles);
+	}
+	
+	@Override
+	public List<String> getModeratorRoles(String tenantName) {
+//		Tenant tenant = this.tenantRepository
+//				.findTenantByTenantName(tenantName);
+//		if (tenant == null || tenant.getRoles() == null) {
+//			ArrayList<String> roles = new ArrayList<String>();
+//			String[] creates = this.moderatorRoles.split(",");
+//			for (String role : creates) {
+//				roles.add(role.trim());
+//			}
+//			return roles;
+//		} else {
+//			//TODO: get moderator tenant
+//			return tenant.getRoles();
+//		}
+		return getActionRoles(MODERATE, tenantName,moderatorRoles);
+	}
+	
+	private List<String> getActionRoles(String actionToFind, String tenantName, String defaultValue) {
+		Tenant tenant = this.tenantRepository
+				.findTenantByTenantName(tenantName);
+		List<String> roles = new ArrayList<String>();
+		if (tenant == null || tenant.getActions() == null) {
+			String[] creates = defaultValue.split(",");
+			for (String role : roles) {
+				roles.add(role.trim());
+			}
+		} else {
+			for (Action action: tenant.getActions()) {
+				if (action.equals(actionToFind)) {
+					roles.addAll(action.getRoles());
+					break;
+				}
+				
+			}
+		}
+		return roles;
 	}
 	
 	@Override
@@ -102,5 +165,11 @@ public class TenantServiceImpl implements TenantService {
 		if (t != null) {
 			this.tenantRepository.delete(t);
 		}
+	}
+
+	@Override
+	public void setTenantActions(String tenant, List<Action> actions) {
+		this.tenantRepository.setActions(tenant, actions);
+		
 	}
 }

@@ -47,6 +47,7 @@ public class PermissionServiceTest {
 	
 	private static final String UGC_ID = 	 "520278180364146bdbd42d1f";
 	private static final String PROFILE_ID = "5202b88203643ac2849709bc";
+	private static final String EMAIL = "craftercms@email.com";
 	
 	private UGC currentUGC;
 	private Profile currentProfile;
@@ -131,7 +132,7 @@ public class PermissionServiceTest {
 
 	private Profile getProfile() {
 		Map<String,Object> attributes = new HashMap<String, Object>();
-		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes);
+		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes, EMAIL);
 		List<String> roles = new ArrayList<String>(){
 			{
 			

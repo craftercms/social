@@ -46,6 +46,10 @@ import org.springframework.data.mongodb.core.query.Query;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( { RequestContext.class})
 public class UGCServiceTest {
+//	@Test //TODO: DISABLING test to make the build up
+//	public void test() {
+//		
+//	}
 	
 	@Mock
 	private PermissionService permissionService;
@@ -345,7 +349,7 @@ public class UGCServiceTest {
 
 	private Profile getProfile() {
 		Map<String,Object> attributes = new HashMap<String, Object>();
-		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes);
+		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes,"");
 		return p;
 	}
 	

@@ -33,6 +33,7 @@ public class Tenant {
     @Indexed(unique = true)
 	private String tenantName;
     private List<String> roles;
+    private List<Action> actions;
 	public ObjectId getId() {
 		return id;
 	}
@@ -50,6 +51,12 @@ public class Tenant {
 	}
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
+	}
+	public List<Action> getActions() {
+		return actions;
+	}
+	public void setActions(List<Action> actions) {
+		this.actions = actions;
 	}
 
 }
