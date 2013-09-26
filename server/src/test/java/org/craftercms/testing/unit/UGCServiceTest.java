@@ -349,7 +349,7 @@ public class UGCServiceTest {
 
 	private Profile getProfile() {
 		Map<String,Object> attributes = new HashMap<String, Object>();
-		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes,"");
+		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes,"", true);
 		return p;
 	}
 	

@@ -22,6 +22,7 @@ public class AttachmentsList {
 		{
 			add("video/webm");
 			add("video/ogg");
+			add("video/mp4");
 		}
 	};
 
