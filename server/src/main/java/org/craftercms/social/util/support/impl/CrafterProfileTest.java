@@ -184,7 +184,7 @@ public class CrafterProfileTest implements CrafterProfile {
 		List<String> roles = new ArrayList<String>();
 		roles.add("SOCIAL_USER");
 		return new Profile(BASIC_ID, BASIC_USER, BASIC_PASS, true, new Date(),
-				new Date(), attributes, roles, TENANT_TEST, TENANT_TEST_EMAIL);
+				new Date(), attributes, roles, TENANT_TEST, TENANT_TEST_EMAIL, true);
 
 	}
 
@@ -195,7 +195,7 @@ public class CrafterProfileTest implements CrafterProfile {
 		List<String> roles = new ArrayList<String>();
 		roles.add("SOCIAL_ADMIN");
 		return new Profile(ADMIN_ID, ADMIN_USER, ADMIN_PASS, true, new Date(),
-				new Date(), attributes, roles, TENANT_TEST,TENANT_TEST_EMAIL);
+				new Date(), attributes, roles, TENANT_TEST,TENANT_TEST_EMAIL, true);
 	}
 
 	protected UGC createBasicUGC(Profile p) {
