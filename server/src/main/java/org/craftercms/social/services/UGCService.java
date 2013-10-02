@@ -66,7 +66,7 @@ public interface UGCService {
 	 * @return the saved {@link UGC}
 	 */
 	UGC newUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions,
-                   String tenant, String profileId) throws PermissionDeniedException;
+                   String tenant, String profileId, boolean isAnonymous) throws PermissionDeniedException;
 
 	/**
 	 * Creates a new child {@link UGC}
@@ -79,7 +79,7 @@ public interface UGCService {
 	 *             if the Parent UGC does not exist
 	 */
 	UGC newChildUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions,
-                       String tenant, String profileId) throws PermissionDeniedException;
+                       String tenant, String profileId, boolean isAnonymous) throws PermissionDeniedException;
 
 	/**
 	 * Checks if a UGC Exists

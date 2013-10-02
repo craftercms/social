@@ -70,6 +70,7 @@ public class UGC implements Hierarchical<UGC> {
 	private String profileId;
     private String tenant;
 	private String targetId;
+	private boolean anonymousFlag;
 	@Transient
 	private transient List<UGC> children;
 	@Transient
@@ -326,5 +327,13 @@ public class UGC implements Hierarchical<UGC> {
 
 	public void setAttachmentsList(AttachmentsList attachmentsList) {
 		this.attachmentsList = attachmentsList;
+	}
+
+	public boolean isAnonymousFlag() {
+		return anonymousFlag;
+	}
+
+	public void setAnonymousFlag(boolean isAnonymous) {
+		this.anonymousFlag = isAnonymous;
 	}
 }

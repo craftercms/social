@@ -58,7 +58,7 @@ public class UGCRestController {
 	@Autowired
 	private transient UGCService ugcService;
 	
-	private static final List<String> ugcFieldList = Arrays.asList(new String[] { "parentId", "textContent", "attachmentId",
+	private static final List<String> ugcFieldList = Arrays.asList(new String[] { "parentId", "textContent", "attachmentId","anonymousFlag",
 			"moderationStatus", "profileId", "tenant", "target", "ticket", "attachments", "action_read", "action_create", "action_update",
 			"action_delete", "action_act_on", "action_moderate"});
 	private static final Set<String> ugcFieldSet = new HashSet<String>(ugcFieldList);
@@ -134,7 +134,11 @@ public class UGCRestController {
 			@RequestParam(required = false) String parentId,
 			@RequestParam(required = false) String textContent,
 			@RequestParam(required = false) MultipartFile[] attachments,
+			@RequestParam(required = false) Boolean anonymousFlag,
 			HttpServletRequest request) throws PermissionDeniedException{
+		if (anonymousFlag == null) {
+			anonymousFlag = false;
+		}
 		/** Pre validations **/
 		if (target == null && parentId == null) {
 			throw new IllegalArgumentException(
@@ -142,11 +146,11 @@ public class UGCRestController {
 		}
 		if (target != null && parentId == null) {
 			return ugcService.newUgc(new UGC(textContent, getProfileId(), tenant, target, parseAttibutes(request)), attachments,
-                            ActionUtil.getActions(request), tenant, getProfileId());
+                            ActionUtil.getActions(request), tenant, getProfileId(), anonymousFlag);
 		} else {
 			return ugcService
 					.newChildUgc(new UGC(textContent, getProfileId(), tenant, target, new ObjectId(parentId), parseAttibutes(request)), attachments,
-                            ActionUtil.getActions(request), tenant, getProfileId());
+                            ActionUtil.getActions(request), tenant, getProfileId(), anonymousFlag);
 		}
 	}
 	

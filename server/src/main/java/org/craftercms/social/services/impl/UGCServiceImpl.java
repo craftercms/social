@@ -19,6 +19,7 @@ package org.craftercms.social.services.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -179,8 +180,9 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC newUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId)
+    public UGC newUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
             throws PermissionDeniedException {
+    	ugc.setAnonymousFlag(isAnonymousFlag);
     	List<Action> resolveActions = resolveUGCActions(ugc, actions);
     	ugc.setModerationStatus(ModerationStatus.UNMODERATED);
         checkForModeration(ugc);
@@ -196,12 +198,13 @@ public class UGCServiceImpl implements UGCService {
 
 
     @Override
-    public UGC newChildUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId)
+    public UGC newChildUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
             throws PermissionDeniedException {
         if (!existsUGC(ugc.getParentId())) {
             log.error("Parent for {} does not exist", ugc);
             throw new DataIntegrityViolationException("Parent UGC does not exist");
         }
+        ugc.setAnonymousFlag(isAnonymousFlag);
         // resolve and set the actions
         ugc.setActions(resolveUGCActions(ugc, actions));
         ugc.setModerationStatus(ModerationStatus.UNMODERATED);
@@ -485,6 +488,7 @@ public class UGCServiceImpl implements UGCService {
 
     private List<UGC> populateUGCListWithProfiles(List<UGC> ugcList) {
         Map<String, List<UGC>> profileIdUGCMap = new HashMap<String, List<UGC>>();
+        List<UGC> anonymousUgc = new ArrayList<UGC>();
 
         if (ugcList != null && ugcList.size() > 0) {
 
@@ -494,9 +498,15 @@ public class UGCServiceImpl implements UGCService {
                 List<UGC> subUGCList = profileIdUGCMap.get(ugc.getProfileId());
                 if (subUGCList == null) {
                     subUGCList = new ArrayList<UGC>();
-                    profileIdUGCMap.put(ugc.getProfileId(), subUGCList);
+                    if (isProfileSetable(ugc)) {
+                    	profileIdUGCMap.put(ugc.getProfileId(), subUGCList);
+                    } 
                 }
-                subUGCList.add(ugc);
+                if (isProfileSetable(ugc)) {
+                	subUGCList.add(ugc);
+                } else {
+                	anonymousUgc.add(ugc);
+                }
                 if (ugc.getAttachmentId()!=null) {
                     ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
                 }
@@ -520,6 +530,7 @@ public class UGCServiceImpl implements UGCService {
                     }
                 }
             }
+            fillUgcWithAnonymousUser(anonymousUgc);
         }
 
 
@@ -528,7 +539,13 @@ public class UGCServiceImpl implements UGCService {
     }
 
     private UGC populateUGCWithProfile(UGC ugc) {
-    	ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
+    	if (isProfileSetable(ugc)) {
+    		ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
+    	} else {
+    		Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null,null,null, null, true);
+    		ugc.setProfile(anonymousProfile);
+    		ugc.setProfileId(null);
+    	}
         return ugc;
     }
 
@@ -640,6 +657,28 @@ public class UGCServiceImpl implements UGCService {
 		}
 		
 	}
+	
+	private void fillUgcWithAnonymousUser(List<UGC> anonymousUsers) {
+		Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null,null,null, null, true);
+		for (UGC currentUGC: anonymousUsers) {
+			currentUGC.setProfile(anonymousProfile);
+			currentUGC.setProfileId(null);
+		}
+	}
+
+    private boolean isProfileSetable(UGC ugc) {
+    	boolean isSeteable = true;
+    	if (ugc.isAnonymousFlag()) {
+    		if (this.permissionService.excludeProfileInfo(ugc, ActionEnum.MODERATE,
+    				RequestContext.getCurrent().getAuthenticationToken().getProfile().getRoles())) {
+    			isSeteable = false;
+    		}
+    		
+    	}
+    	return isSeteable;
+    	
+        
+    }
 
 
 }

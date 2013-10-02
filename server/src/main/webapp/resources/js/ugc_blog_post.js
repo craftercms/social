@@ -597,6 +597,8 @@
                                                 $(
                                                     '#ugc-message-' + aData.id,
                                                     options.container), [options]);
+
+                                        util.addVideoPlugin($('#ugc-message-' + aData.id, options.container));
                                     }
                                     
                                     while (options.attachments
@@ -626,6 +628,7 @@
                                 }
                             });
                         });
+                util.addVideoPlugin(container);
                 util.scheduleTimeUpdates(options, data.children);
             } else {
                 setTimeout(function () {
@@ -1278,6 +1281,23 @@
                     callback(aData);
                 }
             });
+        },
+        addVideoPlugin: function(container) {
+        	var list = $(".attachment-video-js",container);
+            var i = 0;
+            var cVideo;
+            var currentDiv;
+            while (list.size() > i) {
+                currentDiv = list[i];
+                if (currentDiv !== null) {
+                    cVideo = currentDiv.children[0];
+                    if (cVideo !== null) {
+                       videojs(cVideo.id, {}, function(){
+                      }); 
+                    }
+                }
+                i ++;
+            }
         },
         checkModerationPendings: function(container, options, callback) {
         	var listPendings = $('div.post-moderation-state > div.PENDING',container);

@@ -109,6 +109,36 @@ public class PermissionServiceImpl implements PermissionService {
 		}
 		return grantedList;
 	}
+
+    @Override
+    public boolean excludeProfileInfo(UGC ugc, ActionEnum actionName, List<String> roles) {
+    	boolean exclude = true;
+         List<Action> actions = ugc.getActions();
+         Action action = new Action();
+         action.setName(actionName.toString());
+         if (actions != null && !actions.isEmpty()) {
+        	 for (Action current: actions) {
+        		 if (current.equals(action) && !excludeProfileInfo(current, roles)) {
+    				 exclude = false;
+    				 break;
+        		 }
+        	 }
+         }
+         return exclude;
+    }
+    
+    private boolean excludeProfileInfo(Action currentAction, List<String> roles) {
+    	boolean exclude = true;
+    	if (roles == null) {
+    		return exclude;
+    	}
+		 for (String r: roles) {
+			 if (currentAction.getRoles().contains(r)) {
+				 return false;
+			 }
+		 }
+    	return exclude;
+    }
 	
 	private boolean checkActionPermission(Action a, UGC ugc, Profile p) {
 		List<String> rolesAllowed = a.getRoles();
@@ -127,7 +157,7 @@ public class PermissionServiceImpl implements PermissionService {
 		return found;
 	}
 
-	private boolean isInProfileRoles(String roleAllowed,
+   private boolean isInProfileRoles(String roleAllowed,
 			List<String> rolesProfile) {
 		if (roleAllowed.equalsIgnoreCase(ActionConstants.ANONYMOUS)) {
 			return true;

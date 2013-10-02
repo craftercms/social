@@ -48,4 +48,27 @@ public class Action {
 		this.roles = roles;
 	}
 
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        final Action action = (Action)object;
+
+        if (name != null? !name.equals(action.name): action.name != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (name != null? name.hashCode(): 0);
+        return result;
+    }
 }

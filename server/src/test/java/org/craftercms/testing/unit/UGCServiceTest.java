@@ -255,7 +255,7 @@ public class UGCServiceTest {
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		UGC u  = null;
 		try {
-			u = ugcServiceImpl.newUgc(currentUGC, null, ActionUtil.getDefaultActions(), "test", PROFILE_ID);
+			u = ugcServiceImpl.newUgc(currentUGC, null, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
 		} catch (PermissionDeniedException pde) {
 			fail(pde.getMessage());
 		}
@@ -271,7 +271,7 @@ public class UGCServiceTest {
 		UGC u  = null;
 		try {
 			currentUGC.setParentId(new ObjectId(ROOT_ID));
-			u = ugcServiceImpl.newChildUgc(currentUGC, null, ActionUtil.getDefaultActions(), "test", PROFILE_ID);
+			u = ugcServiceImpl.newChildUgc(currentUGC, null, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
 		} catch (PermissionDeniedException pde) {
 			fail(pde.getMessage());
 		}
