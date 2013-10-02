@@ -1,10 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
-	<title>Content Moderation</title>
+	<title>MODERATION DASHBOARD</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	
-	<link rel="stylesheet" type="text/css" href="resources/js/libs/yui/fonts/fonts-min.css">
+	<link href="resources/img/favicon.ico" rel="Shortcut Icon">
+	<link rel="stylesheet" type="text/css" href="resources/css/style.css">
+	<!--link rel="stylesheet" type="text/css" href="resources/js/libs/yui/fonts/fonts-min.css">
 	<link rel="stylesheet" type="text/css" href="resources/js/libs/yui/resize/assets/skins/sam/resize.css">
 	<link rel="stylesheet" type="text/css" href="resources/js/libs/yui/layout/assets/skins/sam/layout.css">
 	<link rel="stylesheet" type="text/css" href="resources/js/libs/yui/button/assets/skins/sam/button.css">
@@ -32,10 +33,11 @@
 	<script type="text/javascript" src="resources/js/common.js"></script>	
 	<script type="text/javascript" src="js/crafter.social.config.js"></script>
 	<script type="text/javascript" src="resources/js/index.js"></script>
-    <script type="text/javascript" src="resources/js/moderation.js"></script>	
+    <script type="text/javascript" src="resources/js/moderation.js"></script-->	
 </head>
  
 <body class="yui-skin-sam">
+<h1>MODERATION DASHBOARD</h1>
 <div id="index-center">
 	<div id="index-list"></div>
 </div>
@@ -43,9 +45,9 @@
 	&nbsp;Crafter CMS
 </div>
 
-<script type="text/javascript">
+<!--script type="text/javascript">
 YAHOO.util.Event.onDOMReady(crafter.social.index.loadLayout);
 YAHOO.util.Event.onDOMReady(crafter.social.index.showModeration);
-</script>
+</script-->
 </body>
 </html>
