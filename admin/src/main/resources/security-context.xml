@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security" xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">       
+	<context:annotation-config />
+	<context:component-scan base-package="org.craftercms.social.admin" />
+	
+	<beans:import resource="classpath:crafter/security/security-context.xml"/>
+	
+	<util:map id="crafter.urlRestrictions">
+    	<beans:entry key="/resources/**" value="permitAll()" />
+    	<beans:entry key="/api/2/cache/clear_all" value="permitAll()" />
+    	<beans:entry key="/login**" value="permitAll()" />
+    	<!-- beans:entry key="/index**" value="permitAll()"/-->
+    	<beans:entry key="/**" value="hasAnyRole({'SOCIAL_MODERATOR'})"/>
+    </util:map>
+    
+    <!-- <beans:bean id="blogService" class="org.craftercms.blog.services.BlogService">
+        <beans:property name="crafterSocialAppBlogName" value="${crafter.social.app.blog.name}"/>
+        <beans:property name="appTenantName" value="${crafter.profile.app.tenant.name}"/>
+    </beans:bean> -->
+    <!-- <beans:bean id="crafterSocialRestClientImpl" class="org.craftercms.blog.services.impl.CrafterSocialRestClientImpl">
+    	<beans:property name="port" value="${social.port}"/>
+		<beans:property name="host" value="${social.host}"/>
+		<beans:property name="scheme" value="${social.scheme}"/>
+		<beans:property name="socialAppPath" value="${social.socialAppPath}"/>
+        
+    </beans:bean>
+    
+    <beans:bean id="crafter.urlAccessRestrictionCheckingProcessor" class="org.craftercms.blog.services.impl.UrlAccessRestrictionCheckingBlogsProcessor">
+        <beans:property name="urlRestrictions" ref="crafter.urlRestrictions"/>
+        <beans:property name="crafterSocialRestClientImpl" ref="crafterSocialRestClientImpl"/>
+        <beans:property name="blogService" ref="blogService"/>
+    </beans:bean> -->
+	
+</beans:beans>

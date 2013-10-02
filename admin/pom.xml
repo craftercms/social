@@ -45,6 +45,7 @@
 		<servlet.api.version>2.5</servlet.api.version>
 		<org.freemarker.version>2.3.19</org.freemarker.version>
 		<org.apache.commons.fileupload.version>1.2.2</org.apache.commons.fileupload.version>
+		<crafter.profile.version>2.2.3-SNAPSHOT</crafter.profile.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -52,6 +53,18 @@
 			<artifactId>junit</artifactId>
 			<version>4.7</version>
 			<scope>test</scope>
+		</dependency>
+		
+		<!-- Crafter -->
+		<dependency>
+			<groupId>org.craftercms</groupId>
+			<artifactId>crafter-profile-client</artifactId>
+			<version>${crafter.profile.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.craftercms</groupId>
+			<artifactId>crafter-security-provider</artifactId>
+			<version>${crafter.profile.version}</version>
 		</dependency>
 
 		<!-- Spring -->
