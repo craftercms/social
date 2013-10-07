@@ -16,29 +16,27 @@
  */
 package org.craftercms.social.repositories;
 
-import java.util.ArrayList;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.mongodb.core.query.Query;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGC;
-import org.craftercms.social.domain.UGC.ModerationStatus;
+import org.craftercms.social.util.action.ActionEnum;
 
 public interface UGCRepositoryCustom {
 	
 	public List<UGC> findUGCs(String tenant, String target,
-			String[] moderationStatusArr,String[] roles, boolean sortChronological, Query query);
+			String[] moderationStatusArr, boolean sortChronological, ActionEnum action);
 
 	List<UGC> findTenantAndTargetIdAndParentIsNull(String tenant,
-			String target, Query query);
+			String target, ActionEnum action);
 	
-	UGC findUGC(ObjectId id, Query q, String[] moderationStatusArr);
+	UGC findUGC(ObjectId id, ActionEnum action, String[] moderationStatusArr);
 
 	List<UGC> findByTenantTargetPaging(String tenant, String target,
-			int page, int pageSize, boolean sortChronological, Query query);
+			int page, int pageSize, boolean sortChronological, ActionEnum action);
 	
-	List<UGC> findByParentIdWithReadPermission(ObjectId parentId, Query query, String[] moderationStatus, boolean sortChronological);
+	List<UGC> findByParentIdWithReadPermission(ObjectId parentId, ActionEnum action, String[] moderationStatus, boolean sortChronological);
+
+	List<UGC> findByTenantAndSort(String tenant, boolean sortChronological, ActionEnum action);
 
 }

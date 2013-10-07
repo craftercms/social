@@ -87,7 +87,7 @@ public class UGCServiceImpl implements UGCService {
         log.debug("Looking for Users with status %s and tenant %s", moderationStatus, tenant);
         String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
     	 return findUGCs(new String[] {
-    			 moderationStatus.toString() },tenant,null,profileId,true);
+    			 moderationStatus.toString() },tenant,null,true);
     }
 
     @Override
@@ -178,6 +178,30 @@ public class UGCServiceImpl implements UGCService {
             throw new DataIntegrityViolationException("Parent UGC does not exist");
         }
     }
+    
+    @Override
+    public List<UGC> updateModerationStatus(List<String> ids, ModerationStatus newStatus, String tenant) {
+    	List<UGC> result = new ArrayList<UGC>();
+    	if (ids == null) {
+    		return result;
+    	}
+    	ObjectId uGCId;
+    	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
+    	for (String id: ids) {
+    		uGCId = new ObjectId(id);
+	        if (existsUGC(uGCId)) {
+	            UGC ugc = repository.findOne(uGCId);
+	            ugc.setModerationStatus(newStatus);
+	            //Audit call
+	            auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
+	            result.add(populateUGCWithProfile(save(ugc)));
+	        } else {
+	            log.error("UGC {} does not exist", uGCId);
+	            //throw new DataIntegrityViolationException("UGC does not exist");
+	        }
+    	}
+        return result;
+    }
 
     @Override
     public UGC newUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
@@ -251,8 +275,8 @@ public class UGCServiceImpl implements UGCService {
     }
 
     private void checkForModeration(UGC ugc) {
-    	if (moderationDecisionManager.rejected(ugc) && ugc.getModerationStatus() != ModerationStatus.APPROVED) {
-            ugc.setModerationStatus(ModerationStatus.REJECTED);
+    	if (moderationDecisionManager.isTrash(ugc) && ugc.getModerationStatus() != ModerationStatus.APPROVED) {
+            ugc.setModerationStatus(ModerationStatus.TRASH);
         } else if (moderationDecisionManager.needModeration(ugc) && ugc.getModerationStatus() != ModerationStatus.APPROVED) {
             ugc.setModerationStatus(ModerationStatus.PENDING);
         }
@@ -302,8 +326,7 @@ public class UGCServiceImpl implements UGCService {
                 
                 return populateUGCWithProfile(save(ugc));
             } else {
-                //return null;
-            	ugc.setOffenceCount(ugc.getOffenceCount() - 1);
+                ugc.setOffenceCount(ugc.getOffenceCount() - 1);
             	removeAuditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
             	return populateUGCWithProfile(save(ugc));
             }
@@ -334,7 +357,7 @@ public class UGCServiceImpl implements UGCService {
     public List<UGC> findByModerationStatusAndTargetId(ModerationStatus moderationStatus, String tenant, String target) {
     	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
     	 return findUGCs(new String[] {
-    			 moderationStatus.toString() },tenant,target,profileId,true);
+    			 moderationStatus.toString() },tenant,target,true);
     }
 
     @SuppressWarnings("unchecked")
@@ -347,14 +370,12 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public List<UGC> findByTarget(String tenant, String target) {
-    	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
-        
-        return findUGCs(null,tenant,target,profileId,true);
+    	return findUGCs(null,tenant,target,true);
     }
 
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, boolean sortChronological) {
-    	return findUGCs(getModerationFilter(tenant, profileId),tenant,target,profileId,sortChronological);
+    	return findUGCs(getModerationFilter(tenant, profileId),tenant,target,sortChronological);
     }
 
     
@@ -369,7 +390,7 @@ public class UGCServiceImpl implements UGCService {
 		if (permissionService.allowed(ActionEnum.MODERATE, newUgc, p)) {
 			return new String[] {
 					ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(),
-					ModerationStatus.PENDING.toString(), ModerationStatus.REJECTED.toString()};
+					ModerationStatus.PENDING.toString(), ModerationStatus.TRASH.toString()};
 		} else {
 			return new String[] {
 					ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(), ModerationStatus.PENDING.toString() };
@@ -379,18 +400,13 @@ public class UGCServiceImpl implements UGCService {
 
 	@Override
     public int getTenantTargetCount(String tenant, String target) {
-    	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
-    	Profile p = crafterProfileService.getProfile(profileId);
-    	Query q = this.permissionService.getQuery(ActionEnum.READ, p);
-    	return repository.findTenantAndTargetIdAndParentIsNull(tenant, target, q).size();
+    	return repository.findTenantAndTargetIdAndParentIsNull(tenant, target, ActionEnum.READ).size();
     	
     }
 
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, boolean sortChronological) { //TODO: target is not being used. Filter is not applied
-    	Profile p = crafterProfileService.getProfile(profileId);
-    	Query q = this.permissionService.getQuery(ActionEnum.READ, p);
-    	List<UGC> list = repository.findByTenantTargetPaging(tenant,target,page,pageSize,sortChronological, q);
+    	List<UGC> list = repository.findByTenantTargetPaging(tenant,target,page,pageSize,sortChronological, ActionEnum.READ);
         return populateUGCListWithProfiles(list);
     }
 
@@ -459,9 +475,8 @@ public class UGCServiceImpl implements UGCService {
         @Override
     public UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId) {
     	Profile p = crafterProfileService.getProfile(profileId);
-    	Query q = this.permissionService.getQuery(ActionEnum.READ, p);	
     	String[] moderationStatus = getModerationFilter(tenant, profileId);
-    	UGC ugc = repository.findUGC(ugcId, q, moderationStatus);
+    	UGC ugc = repository.findUGC(ugcId, ActionEnum.READ, moderationStatus);
     	if (ugc == null) {
     		return null;
     	}
@@ -475,9 +490,7 @@ public class UGCServiceImpl implements UGCService {
     public UGC initUGCAndChildren(UGC ugc, Profile p, String[] moderationStatus) {
         ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         UGC populatedUgc = populateUGCWithProfile(ugc);
-        
-    	Query q = this.permissionService.getQuery(ActionEnum.READ, p);
-        List<UGC> children = repository.findByParentIdWithReadPermission(populatedUgc.getId(), q, moderationStatus, true);
+        List<UGC> children = repository.findByParentIdWithReadPermission(populatedUgc.getId(), ActionEnum.READ, moderationStatus, true);
         for (UGC ugcChild: children) {
             ugcChild = initUGCAndChildren(ugcChild, p, moderationStatus);
         }
@@ -485,6 +498,25 @@ public class UGCServiceImpl implements UGCService {
         return populatedUgc;
 
     }
+    
+    @Override
+	public List<UGC> findUGCsByTenant(String tenantName, int page,
+			int pageSize, boolean sortChronological) {
+    	List<UGC> ugcs = null;
+    	if (page!=-1 && pageSize!=-1) {
+    		ugcs = repository.findByTenantTargetPaging(tenantName, null, page, pageSize, sortChronological, ActionEnum.READ);
+    	} else {
+    		 ugcs = repository.findByTenantAndSort(tenantName, sortChronological, ActionEnum.READ);
+    	}
+    	return populateUGCListWithProfiles(ugcs);
+    	
+	}
+
+	@Override
+	public List<UGC> findUGCsByTenant(String tenantName,
+			boolean sortChronological) {
+		return findUGCsByTenant(tenantName, -1, -1, sortChronological); 
+	}
 
     private List<UGC> populateUGCListWithProfiles(List<UGC> ugcList) {
         Map<String, List<UGC>> profileIdUGCMap = new HashMap<String, List<UGC>>();
@@ -494,7 +526,6 @@ public class UGCServiceImpl implements UGCService {
 
             for (UGC ugc : ugcList) {
                 // TODO: get the profile info from a cache if already cached and set on the UGC without adding to the map
-
                 List<UGC> subUGCList = profileIdUGCMap.get(ugc.getProfileId());
                 if (subUGCList == null) {
                     subUGCList = new ArrayList<UGC>();
@@ -628,16 +659,8 @@ public class UGCServiceImpl implements UGCService {
         }
 	}
 
-	private List<UGC> findUGCs(String[] moderationStatus, final String tenant,String target, String profileId, boolean sortChronological) {
-    	Profile p = crafterProfileService.getProfile(profileId);
-        String[] roles = null;
-        if (p.getRoles() != null) {
-            roles = p.getRoles().toArray(new String[p.getRoles().size()]);
-        }
-    	
-    	Query q = this.permissionService.getQuery(ActionEnum.READ, p);
-    	
-    	 List<UGC> grantedList = repository.findUGCs(tenant, target, moderationStatus, roles, sortChronological, q);
+	private List<UGC> findUGCs(String[] moderationStatus, final String tenant,String target, boolean sortChronological) {
+    	 List<UGC> grantedList = repository.findUGCs(tenant, target, moderationStatus, sortChronological, ActionEnum.READ);
     	 return populateUGCListWithProfiles(grantedList);
     }
 	
@@ -679,6 +702,5 @@ public class UGCServiceImpl implements UGCService {
     	
         
     }
-
 
 }
