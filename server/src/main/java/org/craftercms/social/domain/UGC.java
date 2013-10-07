@@ -40,11 +40,11 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 @XmlRootElement
 public class UGC implements Hierarchical<UGC> {
 	public enum ModerationStatus {
-		UNMODERATED, PENDING, APPROVED, REJECTED
+		UNMODERATED, PENDING, APPROVED, SPAM, TRASH
 	}
 	
 	public static final String[] ModerationStatusString = {
-		"UNMODERATED", "PENDING", "APPROVED", "REJECTED"
+		"UNMODERATED", "PENDING", "APPROVED", "SPAM", "TRASH"
 	};
 
 	public static final String COLLECTION_NAME = null;

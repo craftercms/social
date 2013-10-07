@@ -19,7 +19,10 @@ package org.craftercms.social.repositories;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.services.PermissionService;
+import org.craftercms.social.util.action.ActionEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,10 +35,14 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	private MongoTemplate mongoTemplate;
 	
 	private static final String ID = "_id";
+	
+	@Autowired
+    private PermissionService permissionService;
 
 	@Override
 	public List<UGC> findTenantAndTargetIdAndParentIsNull(String tenant, String target,
-			Query query) {
+			ActionEnum action) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		query.addCriteria(Criteria.where("tenant").is(tenant));
         query.addCriteria(Criteria.where("targetId").is(target));
         query.addCriteria(Criteria.where("parentId").is(null));
@@ -46,7 +53,8 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	
 	@Override
 	public List<UGC> findUGCs(String tenant, String target,
-			String[] moderationStatusArr, String[] roles, boolean sortChronological, Query query) {
+			String[] moderationStatusArr, boolean sortChronological, ActionEnum action) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		if (tenant !=null) {
 			query.addCriteria(Criteria.where("tenant").is(tenant));
 		}
@@ -67,7 +75,8 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	}
 
 	@Override
-	public UGC findUGC(ObjectId id, Query query, String[] moderationStatusArr) {
+	public UGC findUGC(ObjectId id, ActionEnum action, String[] moderationStatusArr) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		query.addCriteria(Criteria.where("id").is(id));
 		if (moderationStatusArr !=null) {
         	query.addCriteria(Criteria.where("moderationStatus").in(moderationStatusArr));
@@ -81,9 +90,14 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	
 	@Override
 	public List<UGC> findByTenantTargetPaging(String tenant, String target,
-			int page, int pageSize, boolean sortChronological, Query query) {
-		query.addCriteria(Criteria.where("tenant").is(tenant));
-		query.addCriteria(Criteria.where("targetId").is(target));
+			int page, int pageSize, boolean sortChronological, ActionEnum action) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		if(tenant!=null) {
+			query.addCriteria(Criteria.where("tenant").is(tenant));
+		}
+		if (target!=null) {
+			query.addCriteria(Criteria.where("targetId").is(target));
+		}
 		int start = getStart(page, pageSize);
 		int end = pageSize;
 		query.skip(start);
@@ -99,7 +113,24 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	}
 	
 	@Override
-	public List<UGC> findByParentIdWithReadPermission(ObjectId parentId, Query query, String[] moderationStatus, boolean sortChronological) {
+	public List<UGC> findByTenantAndSort(String tenant, boolean sortChronological, ActionEnum action) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		if(tenant!=null) {
+			query.addCriteria(Criteria.where("tenant").is(tenant));
+		}
+		
+		if (sortChronological) {
+			query.sort().on("_id", Order.DESCENDING);
+		} else {
+			query.sort().on("_id", Order.ASCENDING);
+		}
+		
+		return mongoTemplate.find(query, UGC.class);
+	}
+	
+	@Override
+	public List<UGC> findByParentIdWithReadPermission(ObjectId parentId, ActionEnum action, String[] moderationStatus, boolean sortChronological) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		query.addCriteria(Criteria.where("parentId").is(parentId));
 		if (moderationStatus !=null) {
         	query.addCriteria(Criteria.where("moderationStatus").in(moderationStatus));

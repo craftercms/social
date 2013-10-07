@@ -20,22 +20,6 @@ xmlns:security="http://www.springframework.org/schema/security"
     	<beans:entry key="/**" value="hasAnyRole({'SOCIAL_MODERATOR'})"/>
     </util:map>
     
-    <!-- <beans:bean id="blogService" class="org.craftercms.blog.services.BlogService">
-        <beans:property name="crafterSocialAppBlogName" value="${crafter.social.app.blog.name}"/>
-        <beans:property name="appTenantName" value="${crafter.profile.app.tenant.name}"/>
-    </beans:bean> -->
-    <!-- <beans:bean id="crafterSocialRestClientImpl" class="org.craftercms.blog.services.impl.CrafterSocialRestClientImpl">
-    	<beans:property name="port" value="${social.port}"/>
-		<beans:property name="host" value="${social.host}"/>
-		<beans:property name="scheme" value="${social.scheme}"/>
-		<beans:property name="socialAppPath" value="${social.socialAppPath}"/>
-        
-    </beans:bean>
     
-    <beans:bean id="crafter.urlAccessRestrictionCheckingProcessor" class="org.craftercms.blog.services.impl.UrlAccessRestrictionCheckingBlogsProcessor">
-        <beans:property name="urlRestrictions" ref="crafter.urlRestrictions"/>
-        <beans:property name="crafterSocialRestClientImpl" ref="crafterSocialRestClientImpl"/>
-        <beans:property name="blogService" ref="blogService"/>
-    </beans:bean> -->
 	
 </beans:beans>

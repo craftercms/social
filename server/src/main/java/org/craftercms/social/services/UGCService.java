@@ -136,5 +136,13 @@ public interface UGCService {
 	void deleteUgc(ObjectId objectId, String tenant, String profileId) throws PermissionDeniedException;
 	
 	void deleteUgc(List<String> ugcIds, String tenant, String profileId) throws PermissionDeniedException;
+
+	List<UGC> findUGCsByTenant(String tenantName, int page, int pageSize,
+			boolean sortChronological);
+
+	List<UGC> findUGCsByTenant(String tenantName, boolean sortChronological);
+
+	List<UGC> updateModerationStatus(List<String> ids, ModerationStatus status,
+			String tenant);
 	
 }

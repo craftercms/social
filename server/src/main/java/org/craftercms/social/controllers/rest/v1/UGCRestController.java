@@ -101,6 +101,21 @@ public class UGCRestController {
 		}
 	}
 	
+	@RequestMapping(value = "/items/{tenantName}", method = RequestMethod.GET)
+	@ModelAttribute
+	public HierarchyList<UGC> getUgcsByTenant(@PathVariable final String tenantName, 
+			@RequestParam(required=false,defaultValue="99")int rootCount,
+			@RequestParam(required=false,defaultValue="99")int childCount,
+			@RequestParam(required=false,defaultValue="0")int page,
+			@RequestParam(required=false,defaultValue="0")int pageSize,
+			@RequestParam(required=false,defaultValue="true")boolean sortChronological){
+        if(page>=0 && pageSize>0){
+			return HierarchyGenerator.generateHierarchy(ugcService.findUGCsByTenant(tenantName, page,pageSize, sortChronological),null,rootCount,childCount);
+		}else{
+			return HierarchyGenerator.generateHierarchy(ugcService.findUGCsByTenant(tenantName, sortChronological), null,rootCount,childCount);
+		}
+	}
+	
 	@RequestMapping(value = "/count", method = RequestMethod.GET)
 	@ModelAttribute
 	public int getCount(@RequestParam final String tenant,
@@ -117,6 +132,16 @@ public class UGCRestController {
         UGC u = ugcService.updateModerationStatus(new ObjectId(ugcId),
 				ModerationStatus.valueOf(moderationStatus.toUpperCase()), tenant, getProfileId());
 		return u;
+	}
+	
+	@RequestMapping(value = "/moderation/update/status", method = RequestMethod.POST)
+	@ModelAttribute
+	public List<UGC> updateModerationStatus(@RequestParam (required = false) List<String> ids,
+			@RequestParam final String moderationStatus,
+            @RequestParam final String tenant,
+			final HttpServletResponse response) throws IOException, PermissionDeniedException {
+        return ugcService.updateModerationStatus(ids,
+				ModerationStatus.valueOf(moderationStatus.toUpperCase()), tenant);
 	}
 	
 	@RequestMapping(value = "/get_ugc/{ugcId}", method = RequestMethod.GET)

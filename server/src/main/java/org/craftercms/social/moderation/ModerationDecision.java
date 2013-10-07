@@ -29,7 +29,7 @@ public interface ModerationDecision {
 	 */
 	boolean needModeration(final UGC ugc);
 
-	boolean rejected(UGC ugc);
+	boolean isTrash(UGC ugc);
 	
-	void setMaxFlagsBeforeRejecting(int maxFlags);
+	void setMaxFlagsBeforeTrash(int maxFlags);
 }

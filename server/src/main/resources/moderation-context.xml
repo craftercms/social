@@ -16,7 +16,7 @@
 				<ref bean="flagModeration" />
 			</list>
 		</constructor-arg>
-		<property name="maxFlagsBeforeRejecting" value="10" />
+		<property name="maxFlagsBeforeTrash" value="10" />
 	</bean>
 
 	<bean id="comunityModeration"
