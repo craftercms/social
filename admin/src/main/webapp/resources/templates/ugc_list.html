@@ -1,0 +1,36 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span2">
+            <nav class="tabbable tabs-left">
+                <ul class="nav nav-tabs">
+                    <li list-ugc>
+                        <a href="#/media">Media</a>
+                    </li>
+                    <li list-ugc class="active">
+                        <a href="#/comments">Comments</a>
+                    </li>
+                    <li list-ugc>
+                        <a href="#/blogs">Blogs</a>
+                    </li>
+                    <li list-ugc>
+                        <a href="#/advertising">Advertising</a>
+                    </li>
+                    <li list-ugc>
+                        <a href="#/coupons">Coupons</a>
+                    </li>
+                    <li list-ugc>
+                        <a href="#/all">All</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <main role="main" class="span10" ng-controller="UgcListCtrl">
+            <ul>
+                <li ng-repeat="ugc in ugcList" id="{{ugc.id}}">
+                    <div ng-bind-html-unsafe="ugc.textContent"></div>
+                    <p>{{ugc.moderationStatus}}</p>
+                </li>
+            </ul>
+        </main>
+    </div>
+</div>
