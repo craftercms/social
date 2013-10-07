@@ -35,7 +35,7 @@ public class ModerationDecisionImpl implements ModerationDecision {
 
 	private List<ModerationFilter> filters;
 	
-	private int maxFlagsBeforeRejecting = 10;
+	private int maxFlagsBeforeTrash = 10;
 		
 	public ModerationDecisionImpl(List<ModerationFilter> filters) {
 		super();
@@ -58,13 +58,13 @@ public class ModerationDecisionImpl implements ModerationDecision {
 	}
 
 	@Override
-	public boolean rejected(UGC ugc) {
-		return ugc.getFlagCount() >= maxFlagsBeforeRejecting;
+	public boolean isTrash(UGC ugc) {
+		return ugc.getFlagCount() >= maxFlagsBeforeTrash;
 	}
 	
 	@Override
-	public void setMaxFlagsBeforeRejecting(int maxFlags) {
-		maxFlagsBeforeRejecting = maxFlags;
+	public void setMaxFlagsBeforeTrash(int maxFlags) {
+		maxFlagsBeforeTrash = maxFlags;
 	}
 
 }

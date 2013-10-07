@@ -85,6 +85,10 @@ public class UGCServiceTest {
 	
 	@Before
 	public void startup() {
+		mockStatic(RequestContext.class);
+		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
+		
+		
 		currentProfile = getProfile();
 		currentUGC = getUGC();
 		ul = new ArrayList<UGC>();
@@ -100,11 +104,16 @@ public class UGCServiceTest {
 		when(crafterProfileService.getProfile(PROFILE_ID)).thenReturn(currentProfile);
 		when(repository.findOne(new ObjectId(VALID_ID))).thenReturn(currentUGC);
 		when(repository.findOne(new ObjectId(ROOT_ID))).thenReturn(currentUGC);
-		when(repository.findUGCs("test", "testing", new String[]{""}, new String[]{""}, true, getQuery())).thenReturn(ul);
-		when(repository.findUGC(Mockito.<ObjectId>any(), Mockito.<Query>any(),Mockito.<String[]>any())).thenReturn(currentUGC);
+		//when(repository.findUGCs("test", "testing", new String[]{""}, new String[]{""}, true, ActionEnum.READ)).thenReturn(ul);
+//		when(repository.findUGCs("","",new String[]{""}, new String[]{""}, true, ActionEnum.READ)).thenReturn(ul);
+		when(repository.findUGCs("","", new String[]{""}, true, ActionEnum.READ)).thenReturn(ul);
+//		when(repository.findUGC(Mockito.<ObjectId>any(), Mockito.<Query>any(),Mockito.<String[]>any())).thenReturn(currentUGC);
+		when(repository.findUGC(new ObjectId(VALID_ID), ActionEnum.READ,new String[]{""})).thenReturn(currentUGC);
 		when(repository.findByIds(Mockito.<ObjectId[]>any())).thenReturn(ul);
-		when(repository.findByTenantTargetPaging("test","testing",1,10,true, getQuery())).thenReturn(ul);
-		when(repository.findTenantAndTargetIdAndParentIsNull(Mockito.<String>any(),Mockito.<String>any(),Mockito.<Query>any())).thenReturn(ul);
+//		when(repository.findByTenantTargetPaging("test","testing",1,10,true, getQuery())).thenReturn(ul);
+		when(repository.findByTenantTargetPaging("test","testing",1,10,true, ActionEnum.READ)).thenReturn(ul);
+//		when(repository.findTenantAndTargetIdAndParentIsNull(Mockito.<String>any(),Mockito.<String>any(),Mockito.<Query>any())).thenReturn(ul);
+		when(repository.findTenantAndTargetIdAndParentIsNull(Mockito.<String>any(),Mockito.<String>any(),Mockito.<ActionEnum>any())).thenReturn(ul);
 		when(repository.save(Mockito.<UGC>any())).thenReturn(currentUGC);
 		when(permissionService.getQuery(ActionEnum.READ, currentProfile)).thenReturn(getQuery());
 		when(permissionService.allowed(Mockito.<ActionEnum>any(), Mockito.<UGC>any(), Mockito.<Profile>any())).thenReturn(true);
@@ -182,7 +191,9 @@ public class UGCServiceTest {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
-		
+		when(repository.findUGC(new ObjectId(VALID_ID), ActionEnum.READ, new String[] {
+			ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(),
+			ModerationStatus.PENDING.toString(), ModerationStatus.TRASH.toString()})).thenReturn(currentUGC);
 		UGC ugc = ugcServiceImpl.findUGCAndChildren(new ObjectId(VALID_ID), "test", PROFILE_ID);
 		assertNotNull(ugc);
 		
