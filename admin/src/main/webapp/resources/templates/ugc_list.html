@@ -1,34 +1,34 @@
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="span2">
-            <nav class="tabbable tabs-left">
+
+        <main role="main" class="span12">
+            <nav>
                 <ul class="nav nav-tabs">
-                    <li list-ugc>
-                        <a href="#/media">Media</a>
+                    <li status data-status="UNMODERATED">
+                        <a href="#/status/unmoderated">Unmoderated</a>
                     </li>
-                    <li list-ugc class="active">
-                        <a href="#/comments">Comments</a>
+                    <li status data-status="APPROVED">
+                        <a href="#/status/approved">Approved</a>
                     </li>
-                    <li list-ugc>
-                        <a href="#/blogs">Blogs</a>
+                    <li status data-status="PENDING">
+                        <a href="#/status/pending">pending</a>
                     </li>
-                    <li list-ugc>
-                        <a href="#/advertising">Advertising</a>
+                    <li status data-status="TRASH">
+                        <a href="#/status/trash">Trash</a>
                     </li>
-                    <li list-ugc>
-                        <a href="#/coupons">Coupons</a>
-                    </li>
-                    <li list-ugc>
-                        <a href="#/all">All</a>
+                    <li status data-status="SPAM">
+                        <a href="#/status/spam">Spam</a>
                     </li>
                 </ul>
             </nav>
-        </div>
-        <main role="main" class="span10" ng-controller="UgcListCtrl">
+
             <ul>
-                <li ng-repeat="ugc in ugcList" id="{{ugc.id}}">
+                <li ng-repeat="ugc in ugcList">
+                    <h2>{{ugc.title}}</h2>
                     <div ng-bind-html-unsafe="ugc.textContent"></div>
                     <p>{{ugc.moderationStatus}}</p>
+
+                    <moderation-action ugcid="{{ugc.id}}" modstatus="{{ugc.moderationStatus}}"></moderation-action>
                 </li>
             </ul>
         </main>

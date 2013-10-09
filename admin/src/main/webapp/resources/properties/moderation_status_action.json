@@ -1,0 +1,22 @@
+[
+    {
+        "moderation": "Unmoderated",
+        "actions": ["Approve", "Spam", "Trash", "Edit"]
+    },
+    {
+        "moderation": "Approved",
+        "actions": ["Spam", "Trash", "Edit"]
+    },
+    {
+        "moderation": "Pending",
+        "actions": ["Approve", "Spam", "Trash", "Edit"]
+    },
+    {
+        "moderation": "Spam",
+        "actions": ["Restore", "Permanently Delete"]
+    },
+    {
+        "moderation": "Trash",
+        "actions": ["Restore", "Permanently Delete"]
+    }
+]
