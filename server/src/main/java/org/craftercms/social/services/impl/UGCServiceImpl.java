@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -83,25 +82,27 @@ public class UGCServiceImpl implements UGCService {
 	private TenantService tenantService;
 
     @Override
-    public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant) {
+    public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant, int page, int pageSize) {
         log.debug("Looking for Users with status %s and tenant %s", moderationStatus, tenant);
         String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
     	 return findUGCs(new String[] {
-    			 moderationStatus.toString() },tenant,null,true);
+    			 moderationStatus.toString() },tenant,null,true, page, pageSize);
     }
 
     @Override
     public UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
-                         String textContent, MultipartFile[] attachments) throws PermissionDeniedException {
+                         String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException {
         UGC ugc = null;
         if (existsUGC(ugcId)) {
             ugc = repository.findOne(ugcId);
-            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             ugc.setTargetId(targetId);
             ugc.setParentId(parentId);
             ugc.setTextContent(textContent);
             ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
+            ugc.setTargetUrl(targetUrl);
+            ugc.setTargetDescription(targetDescription);
             this.repository.save(ugc);
+            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             //Audit call
             auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
         }
@@ -111,14 +112,11 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public void deleteUgc(ObjectId ugcId, String tenant, String profileId) throws PermissionDeniedException{
         if (existsUGC(ugcId)) {
-            if (!permissionService.allowed(ActionEnum.DELETE, ugcId, profileId)) {
-                log.error("Delete UGC permission not granted", ugcId);
-                throw new PermissionDeniedException("Delete UGC action not granted to current user", ActionEnum.DELETE);
-            }
             List<UGC> children = repository.findByParentId(ugcId);
             for (UGC ugcChild: children) {
                 deleteUgc(ugcChild.getId(), tenant, profileId);
             }
+            removeAttachments(ugcId);
             this.repository.delete(ugcId);
             //Audit call
             auditUGC(ugcId, AuditAction.DELETE, tenant, profileId, null);
@@ -354,10 +352,9 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public List<UGC> findByModerationStatusAndTargetId(ModerationStatus moderationStatus, String tenant, String target) {
-    	String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
-    	 return findUGCs(new String[] {
-    			 moderationStatus.toString() },tenant,target,true);
+    public List<UGC> findByModerationStatusAndTargetId(ModerationStatus moderationStatus, String tenant, String target, int page, int pageSize) {
+    	return findUGCs(new String[] {
+    			 moderationStatus.toString() },tenant,target,true, page, pageSize);
     }
 
     @SuppressWarnings("unchecked")
@@ -369,13 +366,13 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public List<UGC> findByTarget(String tenant, String target) {
-    	return findUGCs(null,tenant,target,true);
+    public List<UGC> findByTarget(String tenant, String target, int page, int pageSize) {
+    	return findUGCs(null,tenant,target,true, page, pageSize);
     }
 
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, boolean sortChronological) {
-    	return findUGCs(getModerationFilter(tenant, profileId),tenant,target,sortChronological);
+    	return findUGCs(getModerationFilter(tenant, profileId),tenant,target,sortChronological, -1, -1);
     }
 
     
@@ -497,6 +494,11 @@ public class UGCServiceImpl implements UGCService {
         populatedUgc.getChildren().addAll(children);
         return populatedUgc;
 
+    }
+    
+    @Override
+    public List<UGC> findByParentId(ObjectId id) {
+    	return repository.findByParentId(id);
     }
     
     @Override
@@ -659,8 +661,8 @@ public class UGCServiceImpl implements UGCService {
         }
 	}
 
-	private List<UGC> findUGCs(String[] moderationStatus, final String tenant,String target, boolean sortChronological) {
-    	 List<UGC> grantedList = repository.findUGCs(tenant, target, moderationStatus, sortChronological, ActionEnum.READ);
+	private List<UGC> findUGCs(String[] moderationStatus, final String tenant,String target, boolean sortChronological, int page, int pageSize) {
+		List<UGC> grantedList = repository.findUGCs(tenant, target, moderationStatus, sortChronological, ActionEnum.READ, page, pageSize);
     	 return populateUGCListWithProfiles(grantedList);
     }
 	
@@ -699,8 +701,21 @@ public class UGCServiceImpl implements UGCService {
     		
     	}
     	return isSeteable;
-    	
-        
     }
+    
+    /**
+     * Removes UGC attachments before removing the UGC
+     * 
+     * @param id unique identifier to the UGC that will be removed and their attachments will be removed.
+     */
+    private void removeAttachments(ObjectId id) {
+		UGC ugc = repository.findOne(id); 
+		if (ugc.getAttachmentId() != null && ugc.getAttachmentId().length > 0) {
+			List<ObjectId> attachments = Arrays.asList(ugc.getAttachmentId());
+			for (ObjectId attachmentId: attachments) {
+				this.supportDataAccess.removeAttachment(attachmentId);
+			}
+		}
+	}
 
 }

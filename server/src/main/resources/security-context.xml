@@ -18,6 +18,8 @@
     	<entry key="/api/2/tenant/**" value="hasAdminRole()"/>
     	<entry key="/api/2/ugc/create*" value="hasCreatePermission()"/>
     	<entry key="/api/2/ugc/update*" value="hasUpdatePermission()"/>
+    	<entry key="/api/2/ugc/delete*" value="hasDeletePermissions()"/>
+    	<entry key="/api/2/ugc/delete/**" value="hasDeletePermissions()"/>
     	<entry key="/api/2/audit/**" value="hasAuditorRole()"/>
     	<entry key="/api/2/ugc/moderation/**/status*" value="hasModeratorPermission()"/>
     	<entry key="/api/2/ugc/like/**" value="hasActOnPermission()"/>
