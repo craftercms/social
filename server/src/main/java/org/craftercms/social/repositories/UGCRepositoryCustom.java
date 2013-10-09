@@ -25,7 +25,7 @@ import org.craftercms.social.util.action.ActionEnum;
 public interface UGCRepositoryCustom {
 	
 	public List<UGC> findUGCs(String tenant, String target,
-			String[] moderationStatusArr, boolean sortChronological, ActionEnum action);
+			String[] moderationStatusArr, boolean sortChronological, ActionEnum action, int page, int pageSize);
 
 	List<UGC> findTenantAndTargetIdAndParentIsNull(String tenant,
 			String target, ActionEnum action);

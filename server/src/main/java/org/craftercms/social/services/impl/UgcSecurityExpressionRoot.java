@@ -101,6 +101,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
 		String[] ugcId = (String[]) params.get("ugcId");
 		if (ugcId == null || ugcId.length == 0) {
+			log.error("Parameter ugcId is mandory and has to have a valid value", ugcId);
 			return false;
 		}
 		try {
@@ -144,7 +145,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 	}
 
 	private boolean hasModeratorPermissionUpdateStatusList() {
-		List<String> ids = getUgcIdFromParamList();
+		List<String> ids = getUgcIdFromParamList("ids");
 		for (String ugcId: ids) {
 			if (ugcId == null || ugcId.length() == 0) {
 				return false;
@@ -163,10 +164,64 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		
 		return true;
 	}
+	
+	public boolean hasDeletePermissions() {
+		String ugcId = getUgcIdFromDeleteUri() ;
+		//String ugcId = getUgcIdFromModerationUri();
+		String profileId = getProfileId();
+		boolean result = true;
+		if (ugcId != null && ugcId.length() > 0) {
+			result = hasDeletePermissions(new ObjectId(ugcId), profileId);
+		} else {
+			List<String> ids = getUgcIdFromParamList("ugcIds");
+			result = hasDeletePermissions(ids, profileId);
+		}
+		return result;
+	}
+	
+	private boolean hasDeletePermissions(ObjectId id, String profileId) {
+		if (!permissionService.allowed(ActionEnum.DELETE, id, profileId)) {
+			log.error("Delete permission not granted", id);
+			return false; 
+		 }
+		boolean result = true;
+		List<UGC> children = this.ugcService.findByParentId(id);
+        for (UGC ugcChild: children) {
+        	result = hasDeletePermissions(ugcChild.getId(), profileId);
+        	if (!result) {
+        		break;
+        	}
+        }
+		
+		return result;
+	}
+	
+	private boolean hasDeletePermissions(List<String> ids, String profileId) {
+		if (ids==null || ids.size() == 0) {
+			return false;
+		}
+		boolean result = true;
+		for (String id: ids) {
+			if (id == null || id.length() == 0) {
+				result = false;
+				break;
+			} 
+			try {
+				result = hasDeletePermissions(new ObjectId(id), profileId);
+			} catch(Exception e1) {
+				log.error("Error when was checking for Delete permissions: " + e1.getMessage(), id);
+				result = false;
+			}
+			if (!result) {
+				break;
+			}
+		}
+		return result;
+	}
 
-	private List<String> getUgcIdFromParamList() {
+	private List<String> getUgcIdFromParamList(String idsName) {
 		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
-		String[] ids = (String[]) params.get("ids");
+		String[] ids = (String[]) params.get(idsName);
 		if (ids == null) {
 			return new ArrayList<String>();
 		} else {
@@ -281,6 +336,15 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 	}
 
 	private String getUgcIdFromActOnUri() {
+		String ugcId = RequestContext.getCurrent().getRequest().getRequestURI().replaceAll(
+				".*api/2/ugc/[^\\/]*/([^\\/\\.]*).*", "$1");
+		if (ugcId.equals(RequestContext.getCurrent().getRequest().getRequestURI())) {
+			return null;
+		}
+		return ugcId;
+	}
+	
+	private String getUgcIdFromDeleteUri() {
 		String ugcId = RequestContext.getCurrent().getRequest().getRequestURI().replaceAll(
 				".*api/2/ugc/[^\\/]*/([^\\/\\.]*).*", "$1");
 		if (ugcId.equals(RequestContext.getCurrent().getRequest().getRequestURI())) {
