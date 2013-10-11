@@ -104,15 +104,10 @@ public class UGCServiceTest {
 		when(crafterProfileService.getProfile(PROFILE_ID)).thenReturn(currentProfile);
 		when(repository.findOne(new ObjectId(VALID_ID))).thenReturn(currentUGC);
 		when(repository.findOne(new ObjectId(ROOT_ID))).thenReturn(currentUGC);
-		//when(repository.findUGCs("test", "testing", new String[]{""}, new String[]{""}, true, ActionEnum.READ)).thenReturn(ul);
-//		when(repository.findUGCs("","",new String[]{""}, new String[]{""}, true, ActionEnum.READ)).thenReturn(ul);
-		when(repository.findUGCs("","", new String[]{""}, true, ActionEnum.READ)).thenReturn(ul);
-//		when(repository.findUGC(Mockito.<ObjectId>any(), Mockito.<Query>any(),Mockito.<String[]>any())).thenReturn(currentUGC);
+		when(repository.findUGCs("","", new String[]{""}, true, ActionEnum.READ, 0, 0)).thenReturn(ul);
 		when(repository.findUGC(new ObjectId(VALID_ID), ActionEnum.READ,new String[]{""})).thenReturn(currentUGC);
 		when(repository.findByIds(Mockito.<ObjectId[]>any())).thenReturn(ul);
-//		when(repository.findByTenantTargetPaging("test","testing",1,10,true, getQuery())).thenReturn(ul);
 		when(repository.findByTenantTargetPaging("test","testing",1,10,true, ActionEnum.READ)).thenReturn(ul);
-//		when(repository.findTenantAndTargetIdAndParentIsNull(Mockito.<String>any(),Mockito.<String>any(),Mockito.<Query>any())).thenReturn(ul);
 		when(repository.findTenantAndTargetIdAndParentIsNull(Mockito.<String>any(),Mockito.<String>any(),Mockito.<ActionEnum>any())).thenReturn(ul);
 		when(repository.save(Mockito.<UGC>any())).thenReturn(currentUGC);
 		when(permissionService.getQuery(ActionEnum.READ, currentProfile)).thenReturn(getQuery());
@@ -136,7 +131,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 
-		List<UGC> l = ugcServiceImpl.findByModerationStatus(ModerationStatus.UNMODERATED, "test");
+		List<UGC> l = ugcServiceImpl.findByModerationStatus(ModerationStatus.UNMODERATED, "test", 0, 0);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -147,7 +142,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByModerationStatusAndTargetId(ModerationStatus.UNMODERATED, "test", "testing");
+		List<UGC> l = ugcServiceImpl.findByModerationStatusAndTargetId(ModerationStatus.UNMODERATED, "test", "testing", 0, 0);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -159,7 +154,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByTarget("test", "testing");
+		List<UGC> l = ugcServiceImpl.findByTarget("test", "testing", 0, 0);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -320,7 +315,7 @@ public class UGCServiceTest {
 		attributeMap.put("article", "Content");
 		UGC ugc = null;
 		try {
-			ugc = ugcServiceImpl.updateUgc(currentUGC.getId(), "test", "testing", PROFILE_ID, null, "Content", null);
+			ugc = ugcServiceImpl.updateUgc(currentUGC.getId(), "test", "testing", PROFILE_ID, null, "Content", null, null, null);
 		} catch(PermissionDeniedException pde) {
 			fail(pde.getMessage());
 		}

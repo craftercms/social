@@ -43,7 +43,7 @@ public interface UGCService {
 	 *            The Status to search for
 	 * @return A list of UGC with the given status or a empty list
 	 */
-	List<UGC> findByModerationStatus(ModerationStatus moderationStatus, String tenant);
+	List<UGC> findByModerationStatus(ModerationStatus moderationStatus, String tenant, int page, int pageSize);
 
 	/**
 	 * Updates the UGC
@@ -107,12 +107,11 @@ public interface UGCService {
 
 	List<String> getTargets();
 
-	List<UGC> findByModerationStatusAndTargetId(
-			ModerationStatus valueOf, String tenant, String target);
+	List<UGC> findByModerationStatusAndTargetId(ModerationStatus valueOf, String tenant, String target, int page, int pageSize);
 
 	List<String> findTargetsForModerationStatus(ModerationStatus valueOf, String tenant);
 
-	List<UGC> findByTarget(String tenant, String target);
+	List<UGC> findByTarget(String tenant, String target, int page, int pageSize);
 
 	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, boolean sortChronological);
 	
@@ -131,7 +130,7 @@ public interface UGCService {
 	UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId);
 
 	UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
-			String textContent, MultipartFile[] attachments) throws PermissionDeniedException;
+			String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException;
 
 	void deleteUgc(ObjectId objectId, String tenant, String profileId) throws PermissionDeniedException;
 	
@@ -144,5 +143,7 @@ public interface UGCService {
 
 	List<UGC> updateModerationStatus(List<String> ids, ModerationStatus status,
 			String tenant);
+
+	List<UGC> findByParentId(ObjectId id);
 	
 }
