@@ -1,4 +1,22 @@
-.ugc-list {
-    margin: 0;
-    list-style: none;
+h4 {
+    color: #555;
+}
+
+
+.entries-list li {
+    margin: 0 0 20px;
+    padding: 0 0 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.entries-list-btn {
+    margin: 0 0 0 15px;
+}
+
+.entry-wrapper {
+    padding: 10px;
+    background: #f6f6f6;
+    margin: 0 0 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
 }

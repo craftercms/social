@@ -1,7 +1,7 @@
-<div>
-    <select>
-        <option ng-repeat="action in moderationActions" value="{{action}}">{{action}}</option>
-    </select>
-
-    <button data-ugcId="{{ugcid}}" class="btn">Update</button>
+<div class="btn-group pull-left" data-toggle="buttons-radio">
+    <button  class="btn btn-primary" ng-repeat="action in moderationActions" value="{{action}}
+    ">{{action}}</button>
+</div>
+<div class="pull-left">
+    <button class="btn entries-list-btn">Save</button>
 </div>

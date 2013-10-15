@@ -3,32 +3,18 @@
 
         <main role="main" class="span12">
             <nav>
-                <ul class="nav nav-tabs">
-                    <li status data-status="UNMODERATED">
-                        <a href="#/status/unmoderated">Unmoderated</a>
-                    </li>
-                    <li status data-status="APPROVED">
-                        <a href="#/status/approved">Approved</a>
-                    </li>
-                    <li status data-status="PENDING">
-                        <a href="#/status/pending">pending</a>
-                    </li>
-                    <li status data-status="TRASH">
-                        <a href="#/status/trash">Trash</a>
-                    </li>
-                    <li status data-status="SPAM">
-                        <a href="#/status/spam">Spam</a>
-                    </li>
-                </ul>
+                <moderation-status>
+                </moderation-status>
             </nav>
 
-            <ul>
+            <ul class="unstyled entries-list">
                 <li ng-repeat="ugc in ugcList">
-                    <h2>{{ugc.title}}</h2>
-                    <div ng-bind-html-unsafe="ugc.textContent"></div>
-                    <p>{{ugc.moderationStatus}}</p>
+                    <div class="entry-wrapper">
+                        <h4>{{ugc.title}}</h4>
+                        <div ng-bind-html-unsafe="ugc.textContent"></div>
+                    </div>
 
-                    <moderation-action ugcid="{{ugc.id}}" modstatus="{{ugc.moderationStatus}}"></moderation-action>
+                    <moderation-action class="clearfix" ugcid="{{ugc.id}}" modstatus="{{ugc.moderationStatus}}"></moderation-action>
                 </li>
             </ul>
         </main>
