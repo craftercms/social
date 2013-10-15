@@ -82,11 +82,10 @@ public class UGCServiceImpl implements UGCService {
 	private TenantService tenantService;
 
     @Override
-    public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant, int page, int pageSize) {
+    public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant, int page, int pageSize, String sortField, String sortOrder) {
         log.debug("Looking for Users with status %s and tenant %s", moderationStatus, tenant);
-        String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
-    	 return findUGCs(new String[] {
-    			 moderationStatus.toString() },tenant,null,true, page, pageSize);
+        return findUGCs(new String[] {
+    			 moderationStatus.toString() },tenant,null, page, pageSize, sortField, sortOrder);
     }
 
     @Override
@@ -101,6 +100,7 @@ public class UGCServiceImpl implements UGCService {
             ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
             ugc.setTargetUrl(targetUrl);
             ugc.setTargetDescription(targetDescription);
+            ugc.setLastModifiedDate(new Date());
             this.repository.save(ugc);
             ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             //Audit call
@@ -168,6 +168,7 @@ public class UGCServiceImpl implements UGCService {
         if (existsUGC(uGCId)) {
             UGC ugc = repository.findOne(uGCId);
             ugc.setModerationStatus(newStatus);
+            ugc.setLastModifiedDate(new Date());
             //Audit call
             auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
             return populateUGCWithProfile(save(ugc));
@@ -190,6 +191,7 @@ public class UGCServiceImpl implements UGCService {
 	        if (existsUGC(uGCId)) {
 	            UGC ugc = repository.findOne(uGCId);
 	            ugc.setModerationStatus(newStatus);
+	            ugc.setLastModifiedDate(new Date());
 	            //Audit call
 	            auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
 	            result.add(populateUGCWithProfile(save(ugc)));
@@ -207,7 +209,9 @@ public class UGCServiceImpl implements UGCService {
     	ugc.setAnonymousFlag(isAnonymousFlag);
     	List<Action> resolveActions = resolveUGCActions(ugc, actions);
     	ugc.setModerationStatus(ModerationStatus.UNMODERATED);
-        checkForModeration(ugc);
+    	ugc.setCreatedDate(new Date());
+    	ugc.setLastModifiedDate(new Date());
+    	checkForModeration(ugc);
         ugc.setAttachmentId(saveUGCAttachments(files));
         ugc.setActions(resolveActions);
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
@@ -230,6 +234,8 @@ public class UGCServiceImpl implements UGCService {
         // resolve and set the actions
         ugc.setActions(resolveUGCActions(ugc, actions));
         ugc.setModerationStatus(ModerationStatus.UNMODERATED);
+        ugc.setCreatedDate(new Date());
+    	ugc.setLastModifiedDate(new Date());
         checkForModeration(ugc);
         ugc.setAttachmentId(saveUGCAttachments(files));
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
@@ -321,7 +327,6 @@ public class UGCServiceImpl implements UGCService {
                 	ugc.setLikeCount(ugc.getLikeCount() - 1);
                 	removeAuditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
                 }
-                
                 return populateUGCWithProfile(save(ugc));
             } else {
                 ugc.setOffenceCount(ugc.getOffenceCount() - 1);
@@ -352,9 +357,9 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public List<UGC> findByModerationStatusAndTargetId(ModerationStatus moderationStatus, String tenant, String target, int page, int pageSize) {
+    public List<UGC> findByModerationStatusAndTargetId(ModerationStatus moderationStatus, String tenant, String target, int page, int pageSize, String sortField, String sortOrder) {
     	return findUGCs(new String[] {
-    			 moderationStatus.toString() },tenant,target,true, page, pageSize);
+    			 moderationStatus.toString() },tenant,target, page, pageSize, sortField, sortOrder);
     }
 
     @SuppressWarnings("unchecked")
@@ -366,13 +371,13 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public List<UGC> findByTarget(String tenant, String target, int page, int pageSize) {
-    	return findUGCs(null,tenant,target,true, page, pageSize);
+    public List<UGC> findByTarget(String tenant, String target, int page, int pageSize, String sortField, String sortOrder) {
+    	return findUGCs(null,tenant,target, page, pageSize, sortField, sortOrder);
     }
 
     @Override
-    public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, boolean sortChronological) {
-    	return findUGCs(getModerationFilter(tenant, profileId),tenant,target,sortChronological, -1, -1);
+    public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, String sortField, String sortOrder) {
+    	return findUGCs(getModerationFilter(tenant, profileId),tenant,target,-1, -1, sortField, sortOrder);
     }
 
     
@@ -402,8 +407,8 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, boolean sortChronological) { //TODO: target is not being used. Filter is not applied
-    	List<UGC> list = repository.findByTenantTargetPaging(tenant,target,page,pageSize,sortChronological, ActionEnum.READ);
+    public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, String sortField, String sortOrder) {
+    	List<UGC> list = repository.findByTenantTargetPaging(tenant,target,page,pageSize, ActionEnum.READ, sortField, sortOrder);
         return populateUGCListWithProfiles(list);
     }
 
@@ -441,7 +446,7 @@ public class UGCServiceImpl implements UGCService {
                 } else {
                     existingAttibuteMap.putAll(attributeMap);
                 }
-
+                ugc.setLastModifiedDate(new Date());
                 repository.save(ugc);
                 //Audit call
                 auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
@@ -470,7 +475,7 @@ public class UGCServiceImpl implements UGCService {
     }
     
         @Override
-    public UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId) {
+    public UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId, String sortField, String sortOrder) {
     	Profile p = crafterProfileService.getProfile(profileId);
     	String[] moderationStatus = getModerationFilter(tenant, profileId);
     	UGC ugc = repository.findUGC(ugcId, ActionEnum.READ, moderationStatus);
@@ -480,16 +485,16 @@ public class UGCServiceImpl implements UGCService {
         ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         ugc = populateUGCWithProfile(ugc);
         
-        return initUGCAndChildren(ugc, p, moderationStatus);
+        return initUGCAndChildren(ugc, p, moderationStatus, sortField, sortOrder);
 
     }
 
-    public UGC initUGCAndChildren(UGC ugc, Profile p, String[] moderationStatus) {
+    public UGC initUGCAndChildren(UGC ugc, Profile p, String[] moderationStatus, String sortField, String sortOrder) {
         ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         UGC populatedUgc = populateUGCWithProfile(ugc);
-        List<UGC> children = repository.findByParentIdWithReadPermission(populatedUgc.getId(), ActionEnum.READ, moderationStatus, true);
+        List<UGC> children = repository.findByParentIdWithReadPermission(populatedUgc.getId(), ActionEnum.READ, moderationStatus, sortField, sortOrder);
         for (UGC ugcChild: children) {
-            ugcChild = initUGCAndChildren(ugcChild, p, moderationStatus);
+            ugcChild = initUGCAndChildren(ugcChild, p, moderationStatus, sortField, sortOrder);
         }
         populatedUgc.getChildren().addAll(children);
         return populatedUgc;
@@ -503,12 +508,12 @@ public class UGCServiceImpl implements UGCService {
     
     @Override
 	public List<UGC> findUGCsByTenant(String tenantName, int page,
-			int pageSize, boolean sortChronological) {
+			int pageSize, String sortField, String sortOrder) {
     	List<UGC> ugcs = null;
     	if (page!=-1 && pageSize!=-1) {
-    		ugcs = repository.findByTenantTargetPaging(tenantName, null, page, pageSize, sortChronological, ActionEnum.READ);
+    		ugcs = repository.findByTenantTargetPaging(tenantName, null, page, pageSize, ActionEnum.READ, sortField, sortOrder);
     	} else {
-    		 ugcs = repository.findByTenantAndSort(tenantName, sortChronological, ActionEnum.READ);
+    		 ugcs = repository.findByTenantAndSort(tenantName, ActionEnum.READ, sortField, sortOrder);
     	}
     	return populateUGCListWithProfiles(ugcs);
     	
@@ -516,8 +521,8 @@ public class UGCServiceImpl implements UGCService {
 
 	@Override
 	public List<UGC> findUGCsByTenant(String tenantName,
-			boolean sortChronological) {
-		return findUGCsByTenant(tenantName, -1, -1, sortChronological); 
+			String sortField, String sortOrder) {
+		return findUGCsByTenant(tenantName, -1, -1, sortField, sortOrder); 
 	}
 
     private List<UGC> populateUGCListWithProfiles(List<UGC> ugcList) {
@@ -661,8 +666,9 @@ public class UGCServiceImpl implements UGCService {
         }
 	}
 
-	private List<UGC> findUGCs(String[] moderationStatus, final String tenant,String target, boolean sortChronological, int page, int pageSize) {
-		List<UGC> grantedList = repository.findUGCs(tenant, target, moderationStatus, sortChronological, ActionEnum.READ, page, pageSize);
+	private List<UGC> findUGCs(String[] moderationStatus, final String tenant,String target, int page, int pageSize,
+			String sortField, String sortOrder) {
+		List<UGC> grantedList = repository.findUGCs(tenant, target, moderationStatus, ActionEnum.READ, page, pageSize, sortField, sortOrder);
     	 return populateUGCListWithProfiles(grantedList);
     }
 	
