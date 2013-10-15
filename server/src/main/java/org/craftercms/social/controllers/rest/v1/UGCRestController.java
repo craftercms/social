@@ -71,10 +71,12 @@ public class UGCRestController {
             @RequestParam final String target,
             @RequestParam(required=false,defaultValue="0")int page,
 			@RequestParam(required=false,defaultValue="0")int pageSize,
+			@RequestParam(required=false,defaultValue="createdDate")String sortField,
+			@RequestParam(required=false,defaultValue="DESC") String sortOrder,
 			final HttpServletResponse response) throws IOException {
         log.debug("Get Request for UGC with status %s", moderationStatus);
 		return ugcService.findByModerationStatusAndTargetId(ModerationStatus
-				.valueOf(moderationStatus.toUpperCase()), tenant, target, page, pageSize);
+				.valueOf(moderationStatus.toUpperCase()), tenant, target, page, pageSize, sortField, sortOrder);
 	}
 
 	@RequestMapping(value = "/moderation/{moderationStatus}", method = RequestMethod.GET)
@@ -84,10 +86,12 @@ public class UGCRestController {
             @RequestParam final String tenant,
             @RequestParam(required=false,defaultValue="0")int page,
 			@RequestParam(required=false,defaultValue="0")int pageSize,
+			@RequestParam(required=false,defaultValue="createdDate")String sortField,
+			@RequestParam(required=false,defaultValue="DESC") String sortOrder,
 			final HttpServletResponse response) throws IOException {
         log.debug("Get Request for UGC with status %s", moderationStatus);
 		return ugcService.findByModerationStatus(ModerationStatus
-				.valueOf(moderationStatus.toUpperCase()), tenant,page, pageSize);
+				.valueOf(moderationStatus.toUpperCase()), tenant,page, pageSize, sortField, sortOrder);
 	}
 	
 	@RequestMapping(value = "/target", method = RequestMethod.GET)
@@ -97,11 +101,12 @@ public class UGCRestController {
 			@RequestParam(required=false,defaultValue="99")int childCount,
 			@RequestParam(required=false,defaultValue="0")int page,
 			@RequestParam(required=false,defaultValue="0")int pageSize,
-			@RequestParam(required=false,defaultValue="true")boolean sortChronological){
+			@RequestParam(required=false,defaultValue="createdDate")String sortField,
+			@RequestParam(required=false,defaultValue="DESC") String sortOrder){
         if(page>=0 && pageSize>0){
-			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page,pageSize, sortChronological),null,rootCount,childCount);
+			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page,pageSize, sortField, sortOrder),null,rootCount,childCount);
 		}else{
-			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortChronological),null,rootCount,childCount);
+			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder),null,rootCount,childCount);
 		}
 	}
 	
@@ -110,11 +115,12 @@ public class UGCRestController {
 	public List<UGC> getUgcsByTenant(@PathVariable final String tenantName, 
 			@RequestParam(required=false,defaultValue="0")int page,
 			@RequestParam(required=false,defaultValue="0")int pageSize,
-			@RequestParam(required=false,defaultValue="true")boolean sortChronological){
+			@RequestParam(required=false,defaultValue="createdDate")String sortField,
+			@RequestParam(required=false,defaultValue="DESC") String sortOrder){
         if(page >= 0 && pageSize > 0){
-			return ugcService.findUGCsByTenant(tenantName, page,pageSize, sortChronological);
+			return ugcService.findUGCsByTenant(tenantName, page,pageSize, sortField, sortOrder);
 		}else{
-			return ugcService.findUGCsByTenant(tenantName, sortChronological);
+			return ugcService.findUGCsByTenant(tenantName, sortField, sortOrder);
 		}
 	}
 	
@@ -149,8 +155,10 @@ public class UGCRestController {
 	@RequestMapping(value = "/get_ugc/{ugcId}", method = RequestMethod.GET)
 	public UGC findByUGCId(@PathVariable String ugcId,
 				@RequestParam final String tenant,
+				@RequestParam(required=false,defaultValue="createdDate")String sortField,
+				@RequestParam(required=false,defaultValue="DESC") String sortOrder,
 				HttpServletResponse response) throws IOException {		
-        return ugcService.findUGCAndChildren(new ObjectId(ugcId), tenant, getProfileId());
+        return ugcService.findUGCAndChildren(new ObjectId(ugcId), tenant, getProfileId(), sortField, sortOrder);
 	}
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)

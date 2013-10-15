@@ -73,6 +73,8 @@ public class UGCServiceTest {
 	private static final String ROOT_ID = 	 "520278180364146bdbd42d16";
 	private static final String PROFILE_ID = "5202b88203643ac2849709bc";
 	private static final String ATTACHMENT_ID = "5202b88203643ac2849709ac";
+	private static final String SORT_FIELD = "createdDate";
+	private static final String SORT_ORDER = "DESC";
 	
 	private Profile currentProfile;
 	private UGC currentUGC;
@@ -104,10 +106,10 @@ public class UGCServiceTest {
 		when(crafterProfileService.getProfile(PROFILE_ID)).thenReturn(currentProfile);
 		when(repository.findOne(new ObjectId(VALID_ID))).thenReturn(currentUGC);
 		when(repository.findOne(new ObjectId(ROOT_ID))).thenReturn(currentUGC);
-		when(repository.findUGCs("","", new String[]{""}, true, ActionEnum.READ, 0, 0)).thenReturn(ul);
+		when(repository.findUGCs("","", new String[]{""}, ActionEnum.READ, 0, 0, SORT_FIELD,SORT_ORDER)).thenReturn(ul);
 		when(repository.findUGC(new ObjectId(VALID_ID), ActionEnum.READ,new String[]{""})).thenReturn(currentUGC);
 		when(repository.findByIds(Mockito.<ObjectId[]>any())).thenReturn(ul);
-		when(repository.findByTenantTargetPaging("test","testing",1,10,true, ActionEnum.READ)).thenReturn(ul);
+		when(repository.findByTenantTargetPaging("test","testing",1,10,ActionEnum.READ,SORT_FIELD,SORT_ORDER)).thenReturn(ul);
 		when(repository.findTenantAndTargetIdAndParentIsNull(Mockito.<String>any(),Mockito.<String>any(),Mockito.<ActionEnum>any())).thenReturn(ul);
 		when(repository.save(Mockito.<UGC>any())).thenReturn(currentUGC);
 		when(permissionService.getQuery(ActionEnum.READ, currentProfile)).thenReturn(getQuery());
@@ -131,7 +133,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 
-		List<UGC> l = ugcServiceImpl.findByModerationStatus(ModerationStatus.UNMODERATED, "test", 0, 0);
+		List<UGC> l = ugcServiceImpl.findByModerationStatus(ModerationStatus.UNMODERATED, "test", 0, 0, SORT_FIELD,SORT_ORDER);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -142,7 +144,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByModerationStatusAndTargetId(ModerationStatus.UNMODERATED, "test", "testing", 0, 0);
+		List<UGC> l = ugcServiceImpl.findByModerationStatusAndTargetId(ModerationStatus.UNMODERATED, "test", "testing", 0, 0, SORT_FIELD,SORT_ORDER);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -154,7 +156,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByTarget("test", "testing", 0, 0);
+		List<UGC> l = ugcServiceImpl.findByTarget("test", "testing", 0, 0, SORT_FIELD,SORT_ORDER);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -165,7 +167,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,true);
+		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,SORT_FIELD,SORT_ORDER);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -176,7 +178,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,1,10,true);
+		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,1,10,SORT_FIELD,SORT_ORDER);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -189,7 +191,7 @@ public class UGCServiceTest {
 		when(repository.findUGC(new ObjectId(VALID_ID), ActionEnum.READ, new String[] {
 			ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(),
 			ModerationStatus.PENDING.toString(), ModerationStatus.TRASH.toString()})).thenReturn(currentUGC);
-		UGC ugc = ugcServiceImpl.findUGCAndChildren(new ObjectId(VALID_ID), "test", PROFILE_ID);
+		UGC ugc = ugcServiceImpl.findUGCAndChildren(new ObjectId(VALID_ID), "test", PROFILE_ID, SORT_FIELD,SORT_ORDER);
 		assertNotNull(ugc);
 		
 	}
@@ -199,7 +201,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		UGC ugc = ugcServiceImpl.initUGCAndChildren(currentUGC, currentProfile, new String[]{"UNMODERATED"});
+		UGC ugc = ugcServiceImpl.initUGCAndChildren(currentUGC, currentProfile, new String[]{"UNMODERATED"}, SORT_FIELD,SORT_ORDER);
 		assertNotNull(ugc);
 		
 	}
