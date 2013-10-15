@@ -32,10 +32,5 @@
     <bean id="crafter.urlAccessRestrictionCheckingProcessor" class="org.craftercms.social.services.impl.UrlAccessRestrictionCheckingSocialProcessor">
     	<property name="urlRestrictions" ref="crafter.urlRestrictions"/>
     </bean>
-    
-    <bean id="crafter.authTokenResolvingProcessor" class="org.craftercms.social.services.impl.AuthenticationTicketResolvingProcessor">
-        <property name="authenticationTokenCache" ref="crafter.authenticationTokenCache"/>
-        <property name="authenticationService" ref="crafter.authenticationService"/>
-    </bean>
 
 </beans>
