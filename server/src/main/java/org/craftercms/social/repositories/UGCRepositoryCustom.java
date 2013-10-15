@@ -25,7 +25,8 @@ import org.craftercms.social.util.action.ActionEnum;
 public interface UGCRepositoryCustom {
 	
 	public List<UGC> findUGCs(String tenant, String target,
-			String[] moderationStatusArr, boolean sortChronological, ActionEnum action, int page, int pageSize);
+			String[] moderationStatusArr, ActionEnum action, 
+			int page, int pageSize, String sortField, String sortOrder);
 
 	List<UGC> findTenantAndTargetIdAndParentIsNull(String tenant,
 			String target, ActionEnum action);
@@ -33,10 +34,10 @@ public interface UGCRepositoryCustom {
 	UGC findUGC(ObjectId id, ActionEnum action, String[] moderationStatusArr);
 
 	List<UGC> findByTenantTargetPaging(String tenant, String target,
-			int page, int pageSize, boolean sortChronological, ActionEnum action);
+			int page, int pageSize, ActionEnum action, String sortField, String sortOrder);
 	
-	List<UGC> findByParentIdWithReadPermission(ObjectId parentId, ActionEnum action, String[] moderationStatus, boolean sortChronological);
+	List<UGC> findByParentIdWithReadPermission(ObjectId parentId, ActionEnum action, String[] moderationStatus, String sortField, String sortOrder);
 
-	List<UGC> findByTenantAndSort(String tenant, boolean sortChronological, ActionEnum action);
+	List<UGC> findByTenantAndSort(String tenant, ActionEnum action, String sortField, String sortOrder);
 
 }

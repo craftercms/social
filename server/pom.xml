@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>crafter-social</artifactId>
-	<version>2.2.3-SNAPSHOT</version>
+	<version>2.2.4-SNAPSHOT</version>
 	<name>Crafter Social</name>
 	<description>Crafter Social</description>
 	<url>https://github.com/craftercms/social/tree/master/server</url>
@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.craftercms</groupId>
 		<artifactId>crafter-social-parent</artifactId>
-		<version>2.2.3-SNAPSHOT</version>
+		<version>2.2.4-SNAPSHOT</version>
 	</parent>
 	<organization>
 		<name>CrafterCMS</name>
@@ -63,7 +63,7 @@
 		<org.codehaus.jackson.version>1.9.5</org.codehaus.jackson.version>
 		<com.thoughtworks.xstream.version>1.4.2</com.thoughtworks.xstream.version>
 		<org.mongodb.java-driver.version>2.7.3</org.mongodb.java-driver.version>
-		<org.craftercms.profile.client.version>2.2.3-SNAPSHOT</org.craftercms.profile.client.version>
+		<org.craftercms.profile.client.version>2.2.4-SNAPSHOT</org.craftercms.profile.client.version>
 		<org.apache.httpcomponents.version>4.2.2</org.apache.httpcomponents.version>
 		<clover.version>3.1.8</clover.version>
 		<test.port>8080</test.port>
@@ -116,7 +116,7 @@
 		<dependency>
 			<groupId>org.craftercms</groupId>
 			<artifactId>crafter-security-provider</artifactId>
-			<version>2.2.3-SNAPSHOT</version>
+			<version>2.2.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
