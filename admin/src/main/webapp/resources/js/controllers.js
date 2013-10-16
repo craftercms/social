@@ -19,7 +19,7 @@ angular.module('moderationDashboard.controllers', []).
                     if (conf) {
                         var tmpStatus;
                         if (rp.moderationStatus) {
-                            tmpStatus = rp.moderationStatus;
+                            tmpStatus = rp.moderationStatus.toUpperCase();
                         }
 
                         scope.tenantObj = {
@@ -48,8 +48,11 @@ angular.module('moderationDashboard.controllers', []).
                 });
             };
 
-        getTenant();
-        getModerationList();
+
+        if (scope.tenantObj === undefined){
+            getTenant();
+            getModerationList();
+        }
 
         // get UGCs by moderation status
         scope.$watch('tenantObj', function (newValue) {

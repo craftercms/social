@@ -1,8 +1,9 @@
+/* global */
 h4 {
     color: #555;
 }
 
-
+/* ugc styles */
 .entries-list li {
     margin: 0 0 20px;
     padding: 0 0 20px;
@@ -13,10 +14,35 @@ h4 {
     margin: 0 0 0 15px;
 }
 
+.entries-list input {
+    margin: 0 0 0 10px;
+    padding: 0;
+}
+
+/* comment */
 .entry-wrapper {
     padding: 10px;
     background: #f6f6f6;
     margin: 0 0 10px;
     border-radius: 10px;
     border: 1px solid #ddd;
+}
+
+/* header */
+.heading-wrapper {
+    background: #f4f6f6;
+    margin: 0 0 20px;
+}
+
+.heading-wrapper input {
+    height: 30px;
+    margin: 0 0 0 10px;
+    padding: 0;
+}
+
+.heading-wrapper .title {
+    color: #336699;
+    line-height: 30px;
+    font-size: 14px;
+    font-weight: bold;
 }

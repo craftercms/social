@@ -49,15 +49,16 @@ angular.module('moderationDashboard.directives', []).
                                 tenant: scope.$parent.tenantObj.tenant
                             };
 
-                        http.post(
-                            "/crafter-social/api/2/ugc/moderation/" + queryParams.moderationid + "/status.json?moderationStatus=" + queryParams.moderationstatus + "&tenant=" + queryParams.tenant
-                        ).success(function (data) {
-                                console.log('success');
+                        http({
+                            method: 'POST',
+                            url: "/crafter-social/api/2/ugc/moderation/" + queryParams.moderationid + "/status.json?moderationStatus=" + queryParams.moderationstatus + "&tenant=" + queryParams.tenant,
+                            data: queryParams,
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                        }).success(function (data) {
+                            console.log('success');
                         }).error(function (data) {
-                                console.log("error");
+                            console.log("error");
                         });
-
-
 
                         //api.updateModeration.save(queryParams, function () {
                         //    console.log('saving');
@@ -68,4 +69,13 @@ angular.module('moderationDashboard.directives', []).
                 }
             }
         };
+    }]).
+    directive('userProfile', ['Api', function (api) {
+        return {
+            restrict: "E",
+            templateUrl: "/crafter-social-admin/resources/templates/user_profile.html",
+            link: function (scope, elm, attrs) {
+
+            }
+        }
     }]);

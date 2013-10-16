@@ -7,12 +7,34 @@
                 </moderation-status>
             </nav>
 
+            <div class="heading-wrapper row-fluid">
+                <span class="span1">
+                    <input type="checkbox"/>
+                </span>
+                <span class="span4 title">
+                    Author
+                </span>
+                <span class="span7 title">
+                    Comment
+                </span>
+            </div>
+
             <ul class="unstyled entries-list">
-                <li ng-repeat="ugc in ugcList">
-                    <div class="entry-wrapper">
-                        <h4>{{ugc.title}}</h4>
-                        <div ng-bind-html-unsafe="ugc.textContent"></div>
+                <li ng-repeat="ugc in ugcList" class="row-fluid">
+                    <div class="span1">
+                        <input type="checkbox"/>
                     </div>
+
+                    <div class="span4 user-profile">
+                        <user-profile class="row-fluid"></user-profile>
+                    </div>
+
+                    <article class="span7">
+                        <div class="entry-wrapper">
+                            <h4>{{ugc.title}}</h4>
+                            <div ng-bind-html-unsafe="ugc.textContent"></div>
+                        </div>
+                    </article>
 
                     <moderation-action class="clearfix" ugcid="{{ugc.id}}" modstatus="{{ugc.moderationStatus}}"></moderation-action>
                 </li>

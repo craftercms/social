@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="moderationDashboard">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Moderation Dashboard</title>
@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="resources/css/ugc_list.css"/>
 </head>
 <body>
-    <div ng-view></div>
+    <div class="moderation-dashboard-wrapper" ng-app="moderationDashboard">
+        <div ng-view></div>
+    </div>
 
     <script src="resources/lib/jquery/jquery-1.10.2.js"></script>
     <script src="resources/lib/bootstrap/js/bootstrap.js"></script>
