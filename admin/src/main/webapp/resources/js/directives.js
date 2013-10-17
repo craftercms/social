@@ -55,7 +55,17 @@ angular.module('moderationDashboard.directives', []).
                             data: queryParams,
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                         }).success(function (data) {
-                            console.log('success');
+                            var key;
+                            angular.forEach(scope.$parent.ugcList, function (ugc, index) {
+                                if (ugc.id === data.id) {
+                                    key = index;
+                                }
+                            });
+                            if (key !== undefined) {
+                                scope.$parent.ugcList.splice(key, 1);
+
+                                //TODO efect for removed item
+                            }
                         }).error(function (data) {
                             console.log("error");
                         });
