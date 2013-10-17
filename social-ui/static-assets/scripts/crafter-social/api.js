@@ -174,7 +174,7 @@
 
     var Orchestrator = $.extend({
         url: {
-            base: '/crafter/social/crafter-social/api/2/',
+            base: '/crafter/social/social-ui/crafter-social/api/2/',
             ugc: {
                 target: '.json',
                 create: '.json',
