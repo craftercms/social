@@ -7,9 +7,17 @@
                 </moderation-status>
             </nav>
 
+            <div class="bulk-actions">
+                <select name="bulkActions" id="bulkActions">
+                    <option value="0">Bulk Actions</option>
+                    <option ng-repeat="action in moderationActions" value="{{action}}">{{action}}</option>
+                </select>
+                <button class="btn entries-list-btn" ng-click="bulkUpdate()">Apply</button>
+            </div>
+
             <div class="heading-wrapper row-fluid">
                 <span class="span1">
-                    <input type="checkbox"/>
+                    <input type="checkbox" selectallugcs />
                 </span>
                 <span class="span4 title">
                     Author
@@ -22,7 +30,7 @@
             <ul class="unstyled entries-list">
                 <li ng-repeat="ugc in ugcList" class="row-fluid">
                     <div class="span1">
-                        <input type="checkbox"/>
+                        <input ugcid="{{ugc.id}}" type="checkbox"/>
                     </div>
 
                     <div class="span4 user-profile">
@@ -36,7 +44,7 @@
                         </div>
                     </article>
 
-                    <moderation-action class="clearfix" ugcid="{{ugc.id}}" modstatus="{{ugc.moderationStatus}}"></moderation-action>
+                    <moderation-action class="clearfix span12" ugcid="{{ugc.id}}" modstatus="{{ugc.moderationStatus}}"></moderation-action>
                 </li>
             </ul>
         </main>
