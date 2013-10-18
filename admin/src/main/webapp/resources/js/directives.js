@@ -7,9 +7,7 @@ angular.module('moderationDashboard.directives', []).
             restrict: "E",
             templateUrl: "/crafter-social-admin/resources/templates/moderation_status.html",
             link: function (scope, elm, attrs) {
-                if (rp.moderationStatus === undefined) {
-                    rp.moderationStatus = "unmoderated";
-                }
+
             }
         }
     }]).
@@ -29,13 +27,7 @@ angular.module('moderationDashboard.directives', []).
             },
             link: {
                 pre: function (scope, elm, attrs) {
-                    attrs.$observe('modstatus', function () {
-                        angular.forEach(scope.$parent.moderationList, function (modObject) {
-                            if (modObject.moderation.toLowerCase() === scope.modstatus.toLocaleLowerCase()){
-                                scope.moderationActions = modObject.actions;
-                            }
-                        });
-                    });
+                    scope.moderationActions = scope.$parent.moderationActions;
                 },
                 post: function (scope, elm) {
                     // updating moderation value
@@ -46,16 +38,27 @@ angular.module('moderationDashboard.directives', []).
                             queryParams = {
                                 moderationid: element.attr('ugcid'),
                                 moderationstatus : moderationSelected.toUpperCase(),
-                                tenant: scope.$parent.tenantObj.tenant
+                                tenant: scope.$parent.confObj.tenant
                             };
 
+                        //TODO change $resource for restangular
                         http({
                             method: 'POST',
                             url: "/crafter-social/api/2/ugc/moderation/" + queryParams.moderationid + "/status.json?moderationStatus=" + queryParams.moderationstatus + "&tenant=" + queryParams.tenant,
                             data: queryParams,
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                         }).success(function (data) {
-                            console.log('success');
+                            var key;
+                            angular.forEach(scope.$parent.$parent.ugcList, function (ugc, index) {
+                                if (ugc.id === data.id) {
+                                    key = index;
+                                }
+                            });
+                            if (key !== undefined) {
+                                scope.$parent.ugcList.splice(key, 1);
+
+                                //TODO efect for removed item
+                            }
                         }).error(function (data) {
                             console.log("error");
                         });
@@ -78,4 +81,15 @@ angular.module('moderationDashboard.directives', []).
 
             }
         }
+    }]).
+    directive('selectallugcs', [function () {
+        return function (scope, elm) {
+            elm.change(function (ev) {
+                if (elm.is(":checked")) {
+                    $('.entries-list input').prop('checked', true);
+                }else {
+                    $('.entries-list input').prop('checked', false);
+                }
+            });
+        };
     }]);
