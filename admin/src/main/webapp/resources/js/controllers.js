@@ -48,6 +48,8 @@ angular.module('moderationDashboard.controllers', []).
         scope.ugcList = [];
         scope.status = "";
         scope.moderationActions = [];
+        scope.errorMessage;
+        scope.classError;
 
         //set actual status
         var setStatus = function () {
@@ -100,11 +102,11 @@ angular.module('moderationDashboard.controllers', []).
         };
 
         //handler for bulk actions update
-        scope.bulkUpdate = function () {
-            var optionSelected = $('#bulkActions').find(':selected').val(),
+        scope.bulkUpdate = function (event) {
+            var optionSelected = scope.item,
                 listItems = [];
 
-            if (optionSelected !== "0"){
+            if (optionSelected !== undefined){
                 $('.entries-list input').each(function (index) {
                     if ($(this).prop('checked')){
                         listItems.push($(this).attr('ugcid'));
@@ -112,6 +114,12 @@ angular.module('moderationDashboard.controllers', []).
                 });
 
                 if (listItems.length > 0) {
+                    // hiding error message
+                    var applyBtn = $('#applyBtn');
+                    if (applyBtn.next('div.popover:visible').length){
+                        applyBtn.popover('hide');
+                    }
+
                     optionSelected = optionSelected.toUpperCase();
                     var ids = "&ids=";
                     ids += listItems.join("&ids=");
@@ -130,23 +138,58 @@ angular.module('moderationDashboard.controllers', []).
                                 }
                             });
                         });
+
+                        scope.setAlert("UGCs updated correctly", "alert-success");
                     }).error(function (data) {
-                        console.log("error bulk update");
+                        scope.setAlert("Error trying to save UGC", "alert-error");
                     });
 
                     //TODO change for restangular
                 }else{
-                    //TODO display error message, please check an option
+                    var displayError = $(event.currentTarget).popover({
+                        animation: true,
+                        placement: 'right',
+                        trigger: 'manual',
+                        title: 'Error Title',
+                        content: 'Please check an ugc'
+                    });
+                    displayError.popover('show');
+
                 }
             }else{
-                //TODO display error message, please select an option
+                var displayError = $(event.currentTarget).popover({
+                    animation: true,
+                    placement: 'right',
+                    trigger: 'manual',
+                    title: 'Error Title',
+                    content: 'Please select an option'
+                });
+                displayError.popover('show');
+
+                $('#bulkActions').focus();
             }
 
         };
 
+        // handler for when an checkbox has been clicked
+        scope.optionSelected = function () {
+            var applyBtn = $('#applyBtn');
+            if (applyBtn.next('div.popover:visible').length){
+                applyBtn.popover('destroy');
+            }
+        };
+
+        // error messages
+        scope.setAlert = function (message, cssClass) {
+            scope.errorMessage = message;
+            scope.classError = cssClass;
+        };
 
         setStatus();
         getModerationList();
         getUgcList();
         moderationActions();
+
+        scope.setAlert("", "hide-error");
+
     }]);

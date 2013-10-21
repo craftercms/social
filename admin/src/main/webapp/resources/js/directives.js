@@ -16,7 +16,7 @@ angular.module('moderationDashboard.directives', []).
             elm.text(version);
         };
     }]).
-    directive('moderationAction', ['Api', '$http', function (api, http) {
+    directive('moderationAction', ['Api', '$http', '$timeout', function (api, http, timeout) {
         return {
             restrict: "E",
             templateUrl: "/crafter-social-admin/resources/templates/moderation_actions.html",
@@ -41,33 +41,54 @@ angular.module('moderationDashboard.directives', []).
                                 tenant: scope.$parent.confObj.tenant
                             };
 
-                        //TODO change $resource for restangular
-                        http({
-                            method: 'POST',
-                            url: "/crafter-social/api/2/ugc/moderation/" + queryParams.moderationid + "/status.json?moderationStatus=" + queryParams.moderationstatus + "&tenant=" + queryParams.tenant,
-                            data: queryParams,
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                        }).success(function (data) {
-                            var key;
-                            angular.forEach(scope.$parent.$parent.ugcList, function (ugc, index) {
-                                if (ugc.id === data.id) {
-                                    key = index;
-                                }
+                        // validate if any option was selected
+                        if (moderationSelected !== ""){
+                            //TODO change $resource for restangular
+                            http({
+                                method: 'POST',
+                                url: "/crafter-social/api/2/ugc/moderation/" + queryParams.moderationid + "/status.json?moderationStatus=" + queryParams.moderationstatus + "&tenant=" + queryParams.tenant,
+                                data: queryParams,
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                            }).success(function (data) {
+                                    var key;
+                                    angular.forEach(scope.$parent.$parent.ugcList, function (ugc, index) {
+                                        if (ugc.id === data.id) {
+                                            key = index;
+                                        }
+                                    });
+                                    if (key !== undefined) {
+                                        scope.$parent.ugcList.splice(key, 1);
+
+                                        //TODO efect for removed item
+                                        scope.$parent.setAlert(
+                                            "UGC updated correctly",
+                                            "alert-success"
+                                        );
+                                    }
+                                }).error(function (data) {
+                                    scope.$parent.setAlert("Error trying to save UGC", "alert-error");
+                                });
+                        }else{
+                            // error message when an action was not selected
+                            var displayError = $(this).popover({
+                                animation: true,
+                                placement: 'right',
+                                trigger: 'manual',
+                                title: 'Error Title',
+                                content: 'Please select an option'
                             });
-                            if (key !== undefined) {
-                                scope.$parent.ugcList.splice(key, 1);
 
-                                //TODO efect for removed item
+                            displayError.popover('show');
+                        }
+                    });
+
+                    // handler when a options is selected and the error message is displayed
+                    timeout(function () {
+                        elm.find('.btn-group').delegate('.btn', 'click', {saveBtn: elm.find('.entries-list-btn')}, function (ev) {
+                            if ($(ev.data.saveBtn).next('div.popover:visible').length){
+                                $(ev.data.saveBtn).popover('hide');
                             }
-                        }).error(function (data) {
-                            console.log("error");
                         });
-
-                        //api.updateModeration.save(queryParams, function () {
-                        //    console.log('saving');
-                        //});
-
-                        //TODO: validate if no moderation is selected
                     });
                 }
             }
@@ -92,4 +113,13 @@ angular.module('moderationDashboard.directives', []).
                 }
             });
         };
+    }]).
+    directive('alert', [function () {
+        return {
+            restrict: "E",
+            templateUrl: "/crafter-social-admin/resources/templates/error.html",
+            link: function (scope, elm, attrs) {
+
+            }
+        }
     }]);

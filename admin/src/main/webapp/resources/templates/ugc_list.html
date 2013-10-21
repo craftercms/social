@@ -7,12 +7,13 @@
                 </moderation-status>
             </nav>
 
+            <alert>
+            </alert>
+
             <div class="bulk-actions">
-                <select name="bulkActions" id="bulkActions">
-                    <option value="0">Bulk Actions</option>
-                    <option ng-repeat="action in moderationActions" value="{{action}}">{{action}}</option>
+                <select id="bulkActions" ng-model="item" ng-options="action for action in moderationActions" ng-change="optionSelected()">
                 </select>
-                <button class="btn entries-list-btn" ng-click="bulkUpdate()">Apply</button>
+                <button id="applyBtn" class="btn entries-list-btn" ng-click="bulkUpdate($event)">Apply</button>
             </div>
 
             <div class="heading-wrapper row-fluid">
