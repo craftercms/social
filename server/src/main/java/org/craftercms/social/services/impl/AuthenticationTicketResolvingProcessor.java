@@ -51,16 +51,21 @@ public class AuthenticationTicketResolvingProcessor extends AuthenticationTokenR
 
                   token.setTicket(null);
                   token.setProfile(SecurityUtils.getAnonymousProfile());
+                  
+                  
               }
+              context.setAuthenticationToken(token);
+              processorChain.processRequest(context);
               
             } else {
             	super.processRequest(context, processorChain);
+            	//processorChain.processRequest(context);
             }
-            context.setAuthenticationToken(token);
-            processorChain.processRequest(context);
+            
 
            } else {
                 processorChain.processRequest(context);
+                
            }
     }
 

@@ -18,27 +18,10 @@ package org.craftercms.social.repositories;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGCAudit;
-import org.craftercms.social.domain.UGCAudit.AuditAction;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository("uGCAuditRepository")
-public interface UGCAuditRepository extends MongoRepository<UGCAudit,ObjectId>, UGCAuditRepositoryCustom {
+public interface UGCAuditRepositoryCustom {
 
-	UGCAudit findByProfileIdAndUgcIdAndAction(String profileId, ObjectId ugcId,
-			AuditAction action);
-	
-	List<UGCAudit> findByUgcId(ObjectId ugcID);
-
-	List<UGCAudit> findByUgcIdAndAction(ObjectId ugcId, AuditAction auditAction);
-
-	List<UGCAudit> findByUgcIdAndProfileId(ObjectId ugcId, String profileId);
-
-	List<UGCAudit> findByProfileIdAndAction(String profileId,
-			AuditAction auditAction);
-
-	List<UGCAudit> findByProfileId(String profileId);
+	List<UGCAudit> findByLastRetrievedRow(long lastRetrievedRow);
 
 }

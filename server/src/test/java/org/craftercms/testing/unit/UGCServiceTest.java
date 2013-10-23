@@ -25,6 +25,7 @@ import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
+import org.craftercms.social.services.CounterService;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.SupportDataAccess;
 import org.craftercms.social.services.TenantService;
@@ -53,6 +54,8 @@ public class UGCServiceTest {
 	
 	@Mock
 	private PermissionService permissionService;
+	@Mock
+	private CounterService counterService;
 	@Mock
 	private TenantService tenantService;
 	
@@ -114,6 +117,7 @@ public class UGCServiceTest {
 		when(repository.save(Mockito.<UGC>any())).thenReturn(currentUGC);
 		when(permissionService.getQuery(ActionEnum.READ, currentProfile)).thenReturn(getQuery());
 		when(permissionService.allowed(Mockito.<ActionEnum>any(), Mockito.<UGC>any(), Mockito.<Profile>any())).thenReturn(true);
+		when(counterService.getNextSequence(Mockito.<String>any())).thenReturn(1);
 		when(auditRepository.findByProfileIdAndAction(PROFILE_ID, AuditAction.CREATE)).thenReturn(la);
 		when(auditRepository.findByProfileIdAndUgcIdAndAction(PROFILE_ID, new ObjectId(VALID_ID),AuditAction.CREATE)).thenReturn(audit);
 		when(tenantService.getRootModeratorRoles("test")).thenReturn(moderateRootRoles);
@@ -386,6 +390,7 @@ public class UGCServiceTest {
 		a.setProfileId(PROFILE_ID);
 		a.setReason("");
 		a.setTenant("test");
+		a.setTarget("craftercms");
 		a.setId(new ObjectId("5202b88203643ac2849709bc"));
 		a.setUgcId(new ObjectId(VALID_ID));
 		return a;

@@ -33,6 +33,7 @@
 			/WEB-INF/classes/mongo-config.xml
 			/WEB-INF/classes/moderation-context.xml
 			/WEB-INF/classes/security-context.xml
+			/WEB-INF/classes/scheduler-context.xml
 		</param-value>
 	</context-param>
 	<listener>

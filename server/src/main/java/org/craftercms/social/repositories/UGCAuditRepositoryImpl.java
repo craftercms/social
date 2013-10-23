@@ -20,25 +20,27 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGCAudit;
-import org.craftercms.social.domain.UGCAudit.AuditAction;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Order;
+import org.springframework.data.mongodb.core.query.Query;
 
-@Repository("uGCAuditRepository")
-public interface UGCAuditRepository extends MongoRepository<UGCAudit,ObjectId>, UGCAuditRepositoryCustom {
-
-	UGCAudit findByProfileIdAndUgcIdAndAction(String profileId, ObjectId ugcId,
-			AuditAction action);
+public class UGCAuditRepositoryImpl implements UGCAuditRepositoryCustom {
 	
-	List<UGCAudit> findByUgcId(ObjectId ugcID);
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
+	private static final String SEQUENCE = "sequence";
+	
+	@Override
+	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve) {
+		Query query = new Query();
+		query.sort().on(SEQUENCE, Order.DESCENDING);
+		query.addCriteria(Criteria.where(SEQUENCE).gt(lastRowRetrieve));
+		//query.skip(lastRowRetrieve);
+		return mongoTemplate.find(query, UGCAudit.class);
+	}
 
-	List<UGCAudit> findByUgcIdAndAction(ObjectId ugcId, AuditAction auditAction);
-
-	List<UGCAudit> findByUgcIdAndProfileId(ObjectId ugcId, String profileId);
-
-	List<UGCAudit> findByProfileIdAndAction(String profileId,
-			AuditAction auditAction);
-
-	List<UGCAudit> findByProfileId(String profileId);
 
 }

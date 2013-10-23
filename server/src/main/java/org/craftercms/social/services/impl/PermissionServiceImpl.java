@@ -21,12 +21,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.PermissionService;
-import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.action.ActionConstants;
 import org.craftercms.social.util.action.ActionEnum;
@@ -40,7 +38,7 @@ import org.springframework.stereotype.Component;
 public class PermissionServiceImpl implements PermissionService {
 	
 	@Autowired
-	private UGCService ugcService;
+	private UGCService uGCService;
 	
 	@Autowired
 	private CrafterProfile crafterProfileService;
@@ -74,7 +72,7 @@ public class PermissionServiceImpl implements PermissionService {
 
 	@Override
 	public boolean allowed(ActionEnum action, ObjectId ugcId, String profileId) {
-		return allowed(action, ugcService.findById(ugcId), crafterProfileService.getProfile(profileId));
+		return allowed(action, uGCService.findById(ugcId), crafterProfileService.getProfile(profileId));
 	}
 
 	@Override
