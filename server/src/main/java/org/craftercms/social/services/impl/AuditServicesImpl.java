@@ -30,39 +30,39 @@ import org.springframework.stereotype.Service;
 public class AuditServicesImpl implements AuditServices {
 
 	@Autowired
-	private UGCAuditRepository repository;
+	private UGCAuditRepository uGCAuditRepository;
 	
 	@Override
 	public List<UGCAudit> findUGCAudits(ObjectId ugcID) {
-		return repository.findByUgcId(ugcID);
+		return uGCAuditRepository.findByUgcId(ugcID);
 	}
 
 	@Override
 	public List<UGCAudit> findUGCAudits(ObjectId ugcId, AuditAction auditAction) {
-		return repository.findByUgcIdAndAction(ugcId,auditAction);
+		return uGCAuditRepository.findByUgcIdAndAction(ugcId,auditAction);
 	}
 
 	@Override
 	public UGCAudit findUGCAudits(ObjectId ugcId, AuditAction action,
 			String profileId) {
-		return repository.findByProfileIdAndUgcIdAndAction(profileId, ugcId, action);
+		return uGCAuditRepository.findByProfileIdAndUgcIdAndAction(profileId, ugcId, action);
 	}
 
 	@Override
 	public List<UGCAudit> findUGCAudits(ObjectId ugcId, String profileId) {
-		return repository.findByUgcIdAndProfileId(ugcId,profileId);
+		return uGCAuditRepository.findByUgcIdAndProfileId(ugcId,profileId);
 	}
 
 	@Override
 	public List<UGCAudit> findUGCAuditsForProfile(String profileId,
 			AuditAction auditAction) {
-		return repository.findByProfileIdAndAction(profileId,auditAction);
+		return uGCAuditRepository.findByProfileIdAndAction(profileId,auditAction);
 		
 	}
 
 	@Override
 	public List<UGCAudit> findUGCAuditsForProfile(String profileId) {
-		return repository.findByProfileId(profileId);
+		return uGCAuditRepository.findByProfileId(profileId);
 	}
 
 	
