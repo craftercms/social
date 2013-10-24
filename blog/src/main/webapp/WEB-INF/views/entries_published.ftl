@@ -16,7 +16,9 @@
 		<script type="text/javascript" src="/crafter-social/resources/js/ugc_blog_post.js"></script>
 		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 		<link rel="stylesheet" href="/crafter-social/resources/css/style.css" type="text/css" media="screen"/>
-
+		<link href="/crafter-social/resources/js/video-js/video-js.css" rel="stylesheet">
+		<script src="/crafter-social/resources/js/video-js/video.js"></script>
+		<script>videojs.options.flash.swf = "/crafter-social/resources/js/video-js/video-js.swf"</script>
 </head>
 <body>
 	<div id="page" class="container">

@@ -22,8 +22,10 @@ import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UGCAuditRepository extends MongoRepository<UGCAudit,ObjectId> {
+@Repository("uGCAuditRepository")
+public interface UGCAuditRepository extends MongoRepository<UGCAudit,ObjectId>, UGCAuditRepositoryCustom {
 
 	UGCAudit findByProfileIdAndUgcIdAndAction(String profileId, ObjectId ugcId,
 			AuditAction action);

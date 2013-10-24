@@ -16,7 +16,7 @@ public class AuthenticationTicketResolvingProcessor extends AuthenticationTokenR
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         // Make sure not to run the logic if there's already a token in the context
        if (context.getAuthenticationToken() == null) {
-            AuthenticationToken token;
+            AuthenticationToken token = null;
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Retrieving authentication token for request '" + context.getRequestUri() + "' from cache");
@@ -51,18 +51,21 @@ public class AuthenticationTicketResolvingProcessor extends AuthenticationTokenR
 
                   token.setTicket(null);
                   token.setProfile(SecurityUtils.getAnonymousProfile());
+                  
+                  
               }
+              context.setAuthenticationToken(token);
+              processorChain.processRequest(context);
               
             } else {
-            	//super.processRequest(context, processorChain);
-            	token = new AuthenticationToken();
-                token.setProfile(SecurityUtils.getAnonymousProfile());
+            	super.processRequest(context, processorChain);
+            	//processorChain.processRequest(context);
             }
-            context.setAuthenticationToken(token);
-            processorChain.processRequest(context);
+            
 
            } else {
                 processorChain.processRequest(context);
+                
            }
     }
 

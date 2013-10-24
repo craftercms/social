@@ -19,7 +19,12 @@ package org.craftercms.social.repositories;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.craftercms.profile.constants.ProfileConstants;
+import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.services.PermissionService;
+import org.craftercms.social.util.UGCConstants;
+import org.craftercms.social.util.action.ActionEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -28,17 +33,26 @@ import org.springframework.data.mongodb.core.query.Query;
 
 public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	
+	private static final String TENANT = "tenant";
+	private static final String TARGET_ID = "targetId";
+	private static final String PARENT_ID = "parentId";
+	private static final String MODERATION_STATUS = "moderationStatus";
+	
 	@Autowired
 	private MongoTemplate mongoTemplate;
 	
 	private static final String ID = "_id";
+	
+	@Autowired
+    private PermissionService permissionService;
 
 	@Override
 	public List<UGC> findTenantAndTargetIdAndParentIsNull(String tenant, String target,
-			Query query) {
-		query.addCriteria(Criteria.where("tenant").is(tenant));
-        query.addCriteria(Criteria.where("targetId").is(target));
-        query.addCriteria(Criteria.where("parentId").is(null));
+			ActionEnum action) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		query.addCriteria(Criteria.where(TENANT).is(tenant));
+        query.addCriteria(Criteria.where(TARGET_ID).is(target));
+        query.addCriteria(Criteria.where(PARENT_ID).is(null));
         
 		
 		return mongoTemplate.find(query, UGC.class);
@@ -46,31 +60,39 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	
 	@Override
 	public List<UGC> findUGCs(String tenant, String target,
-			String[] moderationStatusArr, String[] roles, boolean sortChronological, Query query) {
+			String[] moderationStatusArr, ActionEnum action, int page, int pageSize, String sortField, String sortOrder) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		if (tenant !=null) {
-			query.addCriteria(Criteria.where("tenant").is(tenant));
+			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
         if (target !=null) {
-        	query.addCriteria(Criteria.where("targetId").is(target));
+        	query.addCriteria(Criteria.where(TARGET_ID).is(target));
         }
         if (moderationStatusArr !=null) {
-        	query.addCriteria(Criteria.where("moderationStatus").in(moderationStatusArr));
+        	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatusArr));
+        }
+        
+        if (page != -1 && pageSize !=-1) {
+        	int start = getStart(page, pageSize);
+    		int end = pageSize;
+    		query.skip(start);
+    		query.limit(end);
         }
 
-		if (sortChronological) {
-			query.sort().on(ID, Order.DESCENDING);
-		} else {
-			query.sort().on(ID, Order.ASCENDING);
-		}
-		
+        if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
+        	query.sort().on(sortField, Order.DESCENDING);
+        } else {
+        	query.sort().on(sortField, Order.ASCENDING);
+        }
 		return mongoTemplate.find(query, UGC.class);
 	}
 
 	@Override
-	public UGC findUGC(ObjectId id, Query query, String[] moderationStatusArr) {
-		query.addCriteria(Criteria.where("id").is(id));
+	public UGC findUGC(ObjectId id, ActionEnum action, String[] moderationStatusArr) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		query.addCriteria(Criteria.where(ID).is(id));
 		if (moderationStatusArr !=null) {
-        	query.addCriteria(Criteria.where("moderationStatus").in(moderationStatusArr));
+        	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatusArr));
         }
 		List<UGC> list = mongoTemplate.find(query, UGC.class);
 		if (list!=null && list.size()>0) { 
@@ -81,34 +103,53 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	
 	@Override
 	public List<UGC> findByTenantTargetPaging(String tenant, String target,
-			int page, int pageSize, boolean sortChronological, Query query) {
-		query.addCriteria(Criteria.where("tenant").is(tenant));
-		query.addCriteria(Criteria.where("targetId").is(target));
+			int page, int pageSize, ActionEnum action, String sortField, String sortOrder) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		if(tenant!=null) {
+			query.addCriteria(Criteria.where(TENANT).is(tenant));
+		}
+		if (target!=null) {
+			query.addCriteria(Criteria.where(TARGET_ID).is(target));
+		}
 		int start = getStart(page, pageSize);
 		int end = pageSize;
 		query.skip(start);
 		query.limit(end);
 		
-		if (sortChronological) {
-			query.sort().on("_id", Order.DESCENDING);
-		} else {
-			query.sort().on("_id", Order.ASCENDING);
-		}
-		
+		if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
+        	query.sort().on(sortField, Order.DESCENDING);
+        } else {
+        	query.sort().on(sortField, Order.ASCENDING);
+        }
 		return mongoTemplate.find(query, UGC.class);
 	}
 	
 	@Override
-	public List<UGC> findByParentIdWithReadPermission(ObjectId parentId, Query query, String[] moderationStatus, boolean sortChronological) {
-		query.addCriteria(Criteria.where("parentId").is(parentId));
-		if (moderationStatus !=null) {
-        	query.addCriteria(Criteria.where("moderationStatus").in(moderationStatus));
-        }
-		if (sortChronological) {
-			query.sort().on(ID, Order.DESCENDING);
-		} else {
-			query.sort().on(ID, Order.ASCENDING);
+	public List<UGC> findByTenantAndSort(String tenant, ActionEnum action, String sortField, String sortOrder) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		if(tenant!=null) {
+			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
+		if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
+        	query.sort().on(sortField, Order.DESCENDING);
+        } else {
+        	query.sort().on(sortField, Order.ASCENDING);
+        }
+		return mongoTemplate.find(query, UGC.class);
+	}
+	
+	@Override
+	public List<UGC> findByParentIdWithReadPermission(ObjectId parentId, ActionEnum action, String[] moderationStatus, String sortField, String sortOrder) {
+		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		query.addCriteria(Criteria.where(PARENT_ID).is(parentId));
+		if (moderationStatus !=null) {
+        	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatus));
+        }
+		if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
+        	query.sort().on(sortField, Order.DESCENDING);
+        } else {
+        	query.sort().on(sortField, Order.ASCENDING);
+        }
 		return mongoTemplate.find(query, UGC.class);
 	}
 	

@@ -6496,3 +6496,9 @@ display:none;
     color: #000000;
     text-decoration: none;
 }
+
+.attachment-video-js p {
+    padding: 0 10px;
+    position: absolute;
+    bottom: 0;
+}

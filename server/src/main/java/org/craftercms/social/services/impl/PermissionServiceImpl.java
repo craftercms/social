@@ -21,12 +21,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.PermissionService;
-import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.action.ActionConstants;
 import org.craftercms.social.util.action.ActionEnum;
@@ -40,7 +38,7 @@ import org.springframework.stereotype.Component;
 public class PermissionServiceImpl implements PermissionService {
 	
 	@Autowired
-	private UGCService ugcService;
+	private UGCService uGCService;
 	
 	@Autowired
 	private CrafterProfile crafterProfileService;
@@ -74,7 +72,7 @@ public class PermissionServiceImpl implements PermissionService {
 
 	@Override
 	public boolean allowed(ActionEnum action, ObjectId ugcId, String profileId) {
-		return allowed(action, ugcService.findById(ugcId), crafterProfileService.getProfile(profileId));
+		return allowed(action, uGCService.findById(ugcId), crafterProfileService.getProfile(profileId));
 	}
 
 	@Override
@@ -109,6 +107,36 @@ public class PermissionServiceImpl implements PermissionService {
 		}
 		return grantedList;
 	}
+
+    @Override
+    public boolean excludeProfileInfo(UGC ugc, ActionEnum actionName, List<String> roles) {
+    	boolean exclude = true;
+         List<Action> actions = ugc.getActions();
+         Action action = new Action();
+         action.setName(actionName.toString());
+         if (actions != null && !actions.isEmpty()) {
+        	 for (Action current: actions) {
+        		 if (current.equals(action) && !excludeProfileInfo(current, roles)) {
+    				 exclude = false;
+    				 break;
+        		 }
+        	 }
+         }
+         return exclude;
+    }
+    
+    private boolean excludeProfileInfo(Action currentAction, List<String> roles) {
+    	boolean exclude = true;
+    	if (roles == null) {
+    		return exclude;
+    	}
+		 for (String r: roles) {
+			 if (currentAction.getRoles().contains(r)) {
+				 return false;
+			 }
+		 }
+    	return exclude;
+    }
 	
 	private boolean checkActionPermission(Action a, UGC ugc, Profile p) {
 		List<String> rolesAllowed = a.getRoles();
@@ -127,7 +155,7 @@ public class PermissionServiceImpl implements PermissionService {
 		return found;
 	}
 
-	private boolean isInProfileRoles(String roleAllowed,
+   private boolean isInProfileRoles(String roleAllowed,
 			List<String> rolesProfile) {
 		if (roleAllowed.equalsIgnoreCase(ActionConstants.ANONYMOUS)) {
 			return true;

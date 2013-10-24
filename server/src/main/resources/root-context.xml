@@ -40,6 +40,8 @@
                   <value>classpath*:crafter/social/extension/mongo.properties</value>
                   <value>classpath:crafter/social/profile.properties</value>
 	            <value>classpath*:crafter/social/extension/profile.properties</value>
+                  <value>classpath:crafter/social/harvester.properties</value>
+	            <value>classpath*:crafter/social/extension/harvester.properties</value>
             </list>
         </property>
     </bean>
@@ -54,12 +56,15 @@
 	</bean>
 	
 	<context:component-scan
-		base-package="org.craftercms.social.dao, org.craftercms.social.services,org.craftercms.social.util.support" />
+		base-package="org.craftercms.social.dao, org.craftercms.social.services,org.craftercms.social.util.support,org.craftercms.social.notification" />
 
 
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<!-- <property name="maxUploadSize" value="104857600" /> --> <!-- the maximum file size in bytes: 100 MB -->
+	</bean>
+	
+	<bean id="harvesterService" class="org.craftercms.social.notification.harvester.impl.HarvesterServiceImpl">
+	    
 	</bean>
 	
 </beans>

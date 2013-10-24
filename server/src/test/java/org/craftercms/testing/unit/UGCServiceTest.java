@@ -25,6 +25,7 @@ import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
+import org.craftercms.social.services.CounterService;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.SupportDataAccess;
 import org.craftercms.social.services.TenantService;
@@ -54,6 +55,8 @@ public class UGCServiceTest {
 	@Mock
 	private PermissionService permissionService;
 	@Mock
+	private CounterService counterService;
+	@Mock
 	private TenantService tenantService;
 	
 	@Mock
@@ -73,6 +76,8 @@ public class UGCServiceTest {
 	private static final String ROOT_ID = 	 "520278180364146bdbd42d16";
 	private static final String PROFILE_ID = "5202b88203643ac2849709bc";
 	private static final String ATTACHMENT_ID = "5202b88203643ac2849709ac";
+	private static final String SORT_FIELD = "createdDate";
+	private static final String SORT_ORDER = "DESC";
 	
 	private Profile currentProfile;
 	private UGC currentUGC;
@@ -85,6 +90,10 @@ public class UGCServiceTest {
 	
 	@Before
 	public void startup() {
+		mockStatic(RequestContext.class);
+		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
+		
+		
 		currentProfile = getProfile();
 		currentUGC = getUGC();
 		ul = new ArrayList<UGC>();
@@ -100,14 +109,15 @@ public class UGCServiceTest {
 		when(crafterProfileService.getProfile(PROFILE_ID)).thenReturn(currentProfile);
 		when(repository.findOne(new ObjectId(VALID_ID))).thenReturn(currentUGC);
 		when(repository.findOne(new ObjectId(ROOT_ID))).thenReturn(currentUGC);
-		when(repository.findUGCs("test", "testing", new String[]{""}, new String[]{""}, true, getQuery())).thenReturn(ul);
-		when(repository.findUGC(Mockito.<ObjectId>any(), Mockito.<Query>any(),Mockito.<String[]>any())).thenReturn(currentUGC);
+		when(repository.findUGCs("","", new String[]{""}, ActionEnum.READ, 0, 0, SORT_FIELD,SORT_ORDER)).thenReturn(ul);
+		when(repository.findUGC(new ObjectId(VALID_ID), ActionEnum.READ,new String[]{""})).thenReturn(currentUGC);
 		when(repository.findByIds(Mockito.<ObjectId[]>any())).thenReturn(ul);
-		when(repository.findByTenantTargetPaging("test","testing",1,10,true, getQuery())).thenReturn(ul);
-		when(repository.findTenantAndTargetIdAndParentIsNull(Mockito.<String>any(),Mockito.<String>any(),Mockito.<Query>any())).thenReturn(ul);
+		when(repository.findByTenantTargetPaging("test","testing",1,10,ActionEnum.READ,SORT_FIELD,SORT_ORDER)).thenReturn(ul);
+		when(repository.findTenantAndTargetIdAndParentIsNull(Mockito.<String>any(),Mockito.<String>any(),Mockito.<ActionEnum>any())).thenReturn(ul);
 		when(repository.save(Mockito.<UGC>any())).thenReturn(currentUGC);
 		when(permissionService.getQuery(ActionEnum.READ, currentProfile)).thenReturn(getQuery());
 		when(permissionService.allowed(Mockito.<ActionEnum>any(), Mockito.<UGC>any(), Mockito.<Profile>any())).thenReturn(true);
+		when(counterService.getNextSequence(Mockito.<String>any())).thenReturn(1);
 		when(auditRepository.findByProfileIdAndAction(PROFILE_ID, AuditAction.CREATE)).thenReturn(la);
 		when(auditRepository.findByProfileIdAndUgcIdAndAction(PROFILE_ID, new ObjectId(VALID_ID),AuditAction.CREATE)).thenReturn(audit);
 		when(tenantService.getRootModeratorRoles("test")).thenReturn(moderateRootRoles);
@@ -127,7 +137,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 
-		List<UGC> l = ugcServiceImpl.findByModerationStatus(ModerationStatus.UNMODERATED, "test");
+		List<UGC> l = ugcServiceImpl.findByModerationStatus(ModerationStatus.UNMODERATED, "test", 0, 0, SORT_FIELD,SORT_ORDER);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -138,7 +148,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByModerationStatusAndTargetId(ModerationStatus.UNMODERATED, "test", "testing");
+		List<UGC> l = ugcServiceImpl.findByModerationStatusAndTargetId(ModerationStatus.UNMODERATED, "test", "testing", 0, 0, SORT_FIELD,SORT_ORDER);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -150,7 +160,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByTarget("test", "testing");
+		List<UGC> l = ugcServiceImpl.findByTarget("test", "testing", 0, 0, SORT_FIELD,SORT_ORDER);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -161,7 +171,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,true);
+		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,SORT_FIELD,SORT_ORDER);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -172,7 +182,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,1,10,true);
+		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,1,10,SORT_FIELD,SORT_ORDER);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -182,8 +192,10 @@ public class UGCServiceTest {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
-		
-		UGC ugc = ugcServiceImpl.findUGCAndChildren(new ObjectId(VALID_ID), "test", PROFILE_ID);
+		when(repository.findUGC(new ObjectId(VALID_ID), ActionEnum.READ, new String[] {
+			ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(),
+			ModerationStatus.PENDING.toString(), ModerationStatus.TRASH.toString()})).thenReturn(currentUGC);
+		UGC ugc = ugcServiceImpl.findUGCAndChildren(new ObjectId(VALID_ID), "test", PROFILE_ID, SORT_FIELD,SORT_ORDER);
 		assertNotNull(ugc);
 		
 	}
@@ -193,7 +205,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		UGC ugc = ugcServiceImpl.initUGCAndChildren(currentUGC, currentProfile, new String[]{"UNMODERATED"});
+		UGC ugc = ugcServiceImpl.initUGCAndChildren(currentUGC, currentProfile, new String[]{"UNMODERATED"}, SORT_FIELD,SORT_ORDER);
 		assertNotNull(ugc);
 		
 	}
@@ -255,7 +267,7 @@ public class UGCServiceTest {
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		UGC u  = null;
 		try {
-			u = ugcServiceImpl.newUgc(currentUGC, null, ActionUtil.getDefaultActions(), "test", PROFILE_ID);
+			u = ugcServiceImpl.newUgc(currentUGC, null, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
 		} catch (PermissionDeniedException pde) {
 			fail(pde.getMessage());
 		}
@@ -271,7 +283,7 @@ public class UGCServiceTest {
 		UGC u  = null;
 		try {
 			currentUGC.setParentId(new ObjectId(ROOT_ID));
-			u = ugcServiceImpl.newChildUgc(currentUGC, null, ActionUtil.getDefaultActions(), "test", PROFILE_ID);
+			u = ugcServiceImpl.newChildUgc(currentUGC, null, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
 		} catch (PermissionDeniedException pde) {
 			fail(pde.getMessage());
 		}
@@ -309,7 +321,7 @@ public class UGCServiceTest {
 		attributeMap.put("article", "Content");
 		UGC ugc = null;
 		try {
-			ugc = ugcServiceImpl.updateUgc(currentUGC.getId(), "test", "testing", PROFILE_ID, null, "Content", null);
+			ugc = ugcServiceImpl.updateUgc(currentUGC.getId(), "test", "testing", PROFILE_ID, null, "Content", null, null, null);
 		} catch(PermissionDeniedException pde) {
 			fail(pde.getMessage());
 		}
@@ -349,7 +361,7 @@ public class UGCServiceTest {
 
 	private Profile getProfile() {
 		Map<String,Object> attributes = new HashMap<String, Object>();
-		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes,"");
+		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes,"", true);
 		return p;
 	}
 	
@@ -378,6 +390,7 @@ public class UGCServiceTest {
 		a.setProfileId(PROFILE_ID);
 		a.setReason("");
 		a.setTenant("test");
+		a.setTarget("craftercms");
 		a.setId(new ObjectId("5202b88203643ac2849709bc"));
 		a.setUgcId(new ObjectId(VALID_ID));
 		return a;

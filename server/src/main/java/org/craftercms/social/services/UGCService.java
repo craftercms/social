@@ -43,7 +43,7 @@ public interface UGCService {
 	 *            The Status to search for
 	 * @return A list of UGC with the given status or a empty list
 	 */
-	List<UGC> findByModerationStatus(ModerationStatus moderationStatus, String tenant);
+	List<UGC> findByModerationStatus(ModerationStatus moderationStatus, String tenant, int page, int pageSize, String sortField, String sortOrder);
 
 	/**
 	 * Updates the UGC
@@ -66,7 +66,7 @@ public interface UGCService {
 	 * @return the saved {@link UGC}
 	 */
 	UGC newUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions,
-                   String tenant, String profileId) throws PermissionDeniedException;
+                   String tenant, String profileId, boolean isAnonymous) throws PermissionDeniedException;
 
 	/**
 	 * Creates a new child {@link UGC}
@@ -79,7 +79,7 @@ public interface UGCService {
 	 *             if the Parent UGC does not exist
 	 */
 	UGC newChildUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions,
-                       String tenant, String profileId) throws PermissionDeniedException;
+                       String tenant, String profileId, boolean isAnonymous) throws PermissionDeniedException;
 
 	/**
 	 * Checks if a UGC Exists
@@ -107,16 +107,15 @@ public interface UGCService {
 
 	List<String> getTargets();
 
-	List<UGC> findByModerationStatusAndTargetId(
-			ModerationStatus valueOf, String tenant, String target);
+	List<UGC> findByModerationStatusAndTargetId(ModerationStatus valueOf, String tenant, String target, int page, int pageSize, String sortField, String sortOrder);
 
 	List<String> findTargetsForModerationStatus(ModerationStatus valueOf, String tenant);
 
-	List<UGC> findByTarget(String tenant, String target);
+	List<UGC> findByTarget(String tenant, String target, int page, int pageSize, String sortField, String sortOrder);
 
-	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, boolean sortChronological);
+	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, String sortField, String sortOrder);
 	
-	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, boolean sortChronological);
+	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, String sortField, String sortOrder);
 
 	int getTenantTargetCount(String tenant, String target);
 
@@ -128,13 +127,23 @@ public interface UGCService {
 
 	void streamAttachment(ObjectId attachmentId, HttpServletResponse response);
 
-	UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId);
+	UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId, String sortField, String sortOrder);
 
 	UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
-			String textContent, MultipartFile[] attachments) throws PermissionDeniedException;
+			String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException;
 
 	void deleteUgc(ObjectId objectId, String tenant, String profileId) throws PermissionDeniedException;
 	
 	void deleteUgc(List<String> ugcIds, String tenant, String profileId) throws PermissionDeniedException;
+
+	List<UGC> findUGCsByTenant(String tenantName, int page, int pageSize,
+			String sortField, String sortOrder);
+
+	List<UGC> findUGCsByTenant(String tenantName, String sortField, String sortOrder);
+
+	List<UGC> updateModerationStatus(List<String> ids, ModerationStatus status,
+			String tenant);
+
+	List<UGC> findByParentId(ObjectId id);
 	
 }

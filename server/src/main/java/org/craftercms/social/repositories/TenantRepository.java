@@ -19,7 +19,9 @@ package org.craftercms.social.repositories;
 import org.bson.types.ObjectId;
 import org.craftercms.social.domain.Tenant;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository("tenantRepository")
 public interface TenantRepository extends MongoRepository<Tenant,ObjectId>, TenantRepositoryCustom {
 	Tenant findTenantByTenantName(String tenantName);
 }

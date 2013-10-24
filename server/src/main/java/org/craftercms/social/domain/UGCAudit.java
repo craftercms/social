@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -51,23 +50,37 @@ public class UGCAudit {
     private String tenant;
 
 	private String profileId;
+	
+	private String target;
+	
+	private Date createdDate;
 
 	private AuditAction action;
 	
 	private String reason;
 	
+	private long sequence = 0;
+	
 	public UGCAudit() {
-		this(null,null,null,null,null);
+		this(null,null,null,null,null, null);
 	}
-
+	
 	public UGCAudit(ObjectId ugcId, String tenant, String profileId,
-			AuditAction action, String reason) {
+			AuditAction action, String reason, String target, Date createdDate) {
 		super();
         this.tenant = tenant;
 		this.ugcId = ugcId;
 		this.profileId = profileId;
 		this.action = action;
 		this.reason = reason;
+		this.target = target;
+		this.createdDate = createdDate;
+	}
+
+	public UGCAudit(ObjectId ugcId, String tenant, String profileId,
+			AuditAction action, String reason, String target) {
+		this(ugcId, tenant, profileId, action, reason, target, new Date());
+
 	}
 
 	public ObjectId getId() {
@@ -122,6 +135,30 @@ public class UGCAudit {
     public void setTenant(String tenant) {
         this.tenant = tenant;
     }
+
+	public String getTarget() {
+		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public long getSequence() {
+		return sequence;
+	}
+
+	public void setSequence(long sequence) {
+		this.sequence = sequence;
+	}
 
 
 }

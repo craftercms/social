@@ -40,11 +40,11 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 @XmlRootElement
 public class UGC implements Hierarchical<UGC> {
 	public enum ModerationStatus {
-		UNMODERATED, PENDING, APPROVED, REJECTED
+		UNMODERATED, PENDING, APPROVED, SPAM, TRASH
 	}
 	
 	public static final String[] ModerationStatusString = {
-		"UNMODERATED", "PENDING", "APPROVED", "REJECTED"
+		"UNMODERATED", "PENDING", "APPROVED", "SPAM", "TRASH"
 	};
 
 	public static final String COLLECTION_NAME = null;
@@ -70,6 +70,9 @@ public class UGC implements Hierarchical<UGC> {
 	private String profileId;
     private String tenant;
 	private String targetId;
+	private String targetUrl;
+	private String targetDescription;
+	private boolean anonymousFlag;
 	@Transient
 	private transient List<UGC> children;
 	@Transient
@@ -83,11 +86,11 @@ public class UGC implements Hierarchical<UGC> {
 	private Map<String, Object> attributes = null;
 
 	public UGC() {
-		this(null, null, null, null, null, null);
+		this(null, null, null, null, null, null,null,null);
 	}
 
 	public UGC(ObjectId parentId, String textContent, ObjectId[] attachmentId, String profileId, String tenant, String targetId,
-			Map<String, Object> attributes) {
+			Map<String, Object> attributes, String targetUrl, String targetDescription) {
 		super();
 		this.parentId = parentId;
 		this.textContent = textContent;
@@ -101,15 +104,17 @@ public class UGC implements Hierarchical<UGC> {
 		this.targetId = targetId;
 		this.attributes = attributes;
 		this.children = new ArrayList<UGC>();
+		this.targetDescription = targetDescription;
+		this.targetUrl = targetUrl;
 		
 	}
 
-	public UGC(String textContent, String profileId, String tenant, String target, Map<String, Object> attributeMap) {
-		this(null, textContent, null, profileId, tenant, target, attributeMap);
+	public UGC(String textContent, String profileId, String tenant, String target, Map<String, Object> attributeMap, String targetUrl, String targetDescription) {
+		this(null, textContent, null, profileId, tenant, target, attributeMap, targetUrl, targetDescription);
 	}
 
-	public UGC(String textContent, String profileId, String tenant, String target, ObjectId parentId, Map<String, Object> attributeMap) {
-		this(parentId, textContent, null, profileId, tenant, target, attributeMap);
+	public UGC(String textContent, String profileId, String tenant, String target, ObjectId parentId, Map<String, Object> attributeMap, String targetUrl, String targetDescription) {
+		this(parentId, textContent, null, profileId, tenant, target, attributeMap, targetUrl, targetDescription);
 	}
 
 	@Override
@@ -326,5 +331,29 @@ public class UGC implements Hierarchical<UGC> {
 
 	public void setAttachmentsList(AttachmentsList attachmentsList) {
 		this.attachmentsList = attachmentsList;
+	}
+
+	public boolean isAnonymousFlag() {
+		return anonymousFlag;
+	}
+
+	public void setAnonymousFlag(boolean isAnonymous) {
+		this.anonymousFlag = isAnonymous;
+	}
+
+	public String getTargetUrl() {
+		return targetUrl;
+	}
+
+	public void setTargetUrl(String targetUrl) {
+		this.targetUrl = targetUrl;
+	}
+
+	public String getTargetDescription() {
+		return targetDescription;
+	}
+
+	public void setTargetDescription(String targetDescription) {
+		this.targetDescription = targetDescription;
 	}
 }

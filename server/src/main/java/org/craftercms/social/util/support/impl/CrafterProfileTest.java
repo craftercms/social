@@ -7,19 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.impl.domain.Attribute;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.impl.domain.Schema;
 import org.craftercms.profile.impl.domain.Tenant;
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.util.action.ActionConstants;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.support.CrafterProfile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -184,7 +181,7 @@ public class CrafterProfileTest implements CrafterProfile {
 		List<String> roles = new ArrayList<String>();
 		roles.add("SOCIAL_USER");
 		return new Profile(BASIC_ID, BASIC_USER, BASIC_PASS, true, new Date(),
-				new Date(), attributes, roles, TENANT_TEST, TENANT_TEST_EMAIL);
+				new Date(), attributes, roles, TENANT_TEST, TENANT_TEST_EMAIL, true);
 
 	}
 
@@ -195,7 +192,7 @@ public class CrafterProfileTest implements CrafterProfile {
 		List<String> roles = new ArrayList<String>();
 		roles.add("SOCIAL_ADMIN");
 		return new Profile(ADMIN_ID, ADMIN_USER, ADMIN_PASS, true, new Date(),
-				new Date(), attributes, roles, TENANT_TEST,TENANT_TEST_EMAIL);
+				new Date(), attributes, roles, TENANT_TEST,TENANT_TEST_EMAIL, true);
 	}
 
 	protected UGC createBasicUGC(Profile p) {
@@ -206,7 +203,7 @@ public class CrafterProfileTest implements CrafterProfile {
 		actions.add(DELETE_ACTION);
 		actions.add(ACT_ON_ACTION);
 		actions.add(MODERATE_ACTION);
-		UGC ugc = new UGC(CONTENT, p.getId(), TENANT_TEST, TARGET_TEST, null);
+		UGC ugc = new UGC(CONTENT, p.getId(), TENANT_TEST, TARGET_TEST, null, null, null);
 
 		ugc.setActions(actions);
 

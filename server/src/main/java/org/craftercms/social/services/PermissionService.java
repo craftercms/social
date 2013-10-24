@@ -52,6 +52,8 @@ public interface PermissionService {
 	Query getQuery(ActionEnum action, Profile profile);
 	
 	List<UGC> checkGrantedPermission(ActionEnum action, List<UGC> list, String profileId);
+
+    boolean excludeProfileInfo(UGC ugc, ActionEnum action, List<String> roles);
 	
 	
 }

@@ -48,7 +48,7 @@ public class SupportDataAccessImpl implements SupportDataAccess {
 	private final transient Logger log = LoggerFactory
 			.getLogger(SupportDataAccessImpl.class);
 	@Autowired
-	private MongoTemplate operations;
+	private MongoTemplate mongoTemplate;
 	
 	/*
 	 * (non-Javadoc)
@@ -59,7 +59,7 @@ public class SupportDataAccessImpl implements SupportDataAccess {
 	 */
 	@Override
 	public ObjectId saveFile(MultipartFile file) throws IOException {
-		GridFS gFS = new GridFS(operations.getDb());
+		GridFS gFS = new GridFS(mongoTemplate.getDb());
 		GridFSInputFile gFSInputFile = gFS.createFile(file.getInputStream());
 		gFSInputFile.setFilename(file.getOriginalFilename());
 		gFSInputFile.setContentType(file.getContentType());
@@ -70,7 +70,7 @@ public class SupportDataAccessImpl implements SupportDataAccess {
 	@Override
 	public void streamAttachment(ObjectId attachmentId, HttpServletResponse response) {
 		try {
-			GridFS gFS = new GridFS(operations.getDb());
+			GridFS gFS = new GridFS(mongoTemplate.getDb());
 			GridFSDBFile file = gFS.find(attachmentId);
 			if (file != null) {
 				response.setContentType(file.getContentType());
@@ -92,7 +92,7 @@ public class SupportDataAccessImpl implements SupportDataAccess {
 	@Override
 	public void removeAttachment(ObjectId attachmentId) {
 		try {
-			GridFS gFS = new GridFS(operations.getDb());
+			GridFS gFS = new GridFS(mongoTemplate.getDb());
 			gFS.remove(attachmentId);
 		} catch (Exception e) {
 			log.error("Can not stream file.", e);
@@ -102,7 +102,7 @@ public class SupportDataAccessImpl implements SupportDataAccess {
 	@Override
 	public Attachment getAttachment(ObjectId attachmentId) {
 		try {
-			GridFS gFS = new GridFS(operations.getDb());
+			GridFS gFS = new GridFS(mongoTemplate.getDb());
 			GridFSDBFile file = gFS.find(attachmentId);
 			if (file != null) {
 				Attachment attach = null;
@@ -127,7 +127,7 @@ public class SupportDataAccessImpl implements SupportDataAccess {
 		if (documentAnotation != null) {
 			inputCollectionName = documentAnotation.collection();
 		}
-		operations.getDb().command(
+		mongoTemplate.getDb().command(
 				String.format("{ distinct : '%s', key : '%s' }",
 						inputCollectionName, key));
 
@@ -143,7 +143,7 @@ public class SupportDataAccessImpl implements SupportDataAccess {
 		if (documentAnotation != null) {
 			inputCollectionName = documentAnotation.collection();
 		}
-		MapReduceResults<?> r = operations.mapReduce(inputCollectionName,
+		MapReduceResults<?> r = mongoTemplate.mapReduce(inputCollectionName,
 				mapFunction, reduceFunction, entity);
 		return parser.parseList(r.getRawResults().toMap());
 	}
@@ -157,7 +157,7 @@ public class SupportDataAccessImpl implements SupportDataAccess {
 		if (documentAnotation != null) {
 			inputCollectionName = documentAnotation.collection();
 		}
-		MapReduceResults<?> r = operations.mapReduce(new BasicQuery(query),inputCollectionName,
+		MapReduceResults<?> r = mongoTemplate.mapReduce(new BasicQuery(query),inputCollectionName,
 				mapFunction, reduceFunction, entity);
 		return parser.parseList(r.getRawResults().toMap());
 	}

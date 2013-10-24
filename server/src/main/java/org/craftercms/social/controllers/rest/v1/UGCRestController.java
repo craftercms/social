@@ -58,7 +58,7 @@ public class UGCRestController {
 	@Autowired
 	private transient UGCService ugcService;
 	
-	private static final List<String> ugcFieldList = Arrays.asList(new String[] { "parentId", "textContent", "attachmentId",
+	private static final List<String> ugcFieldList = Arrays.asList(new String[] { "parentId", "textContent", "attachmentId","anonymousFlag", "targetUrl","targetDescription",
 			"moderationStatus", "profileId", "tenant", "target", "ticket", "attachments", "action_read", "action_create", "action_update",
 			"action_delete", "action_act_on", "action_moderate"});
 	private static final Set<String> ugcFieldSet = new HashSet<String>(ugcFieldList);
@@ -69,10 +69,14 @@ public class UGCRestController {
 			@PathVariable final String moderationStatus,
             @RequestParam final String tenant,
             @RequestParam final String target,
+            @RequestParam(required=false,defaultValue="0")int page,
+			@RequestParam(required=false,defaultValue="0")int pageSize,
+			@RequestParam(required=false,defaultValue="createdDate")String sortField,
+			@RequestParam(required=false,defaultValue="DESC") String sortOrder,
 			final HttpServletResponse response) throws IOException {
         log.debug("Get Request for UGC with status %s", moderationStatus);
 		return ugcService.findByModerationStatusAndTargetId(ModerationStatus
-				.valueOf(moderationStatus.toUpperCase()), tenant, target);
+				.valueOf(moderationStatus.toUpperCase()), tenant, target, page, pageSize, sortField, sortOrder);
 	}
 
 	@RequestMapping(value = "/moderation/{moderationStatus}", method = RequestMethod.GET)
@@ -80,10 +84,14 @@ public class UGCRestController {
 	public List<UGC> findByModerationStatus(
 			@PathVariable final String moderationStatus,
             @RequestParam final String tenant,
+            @RequestParam(required=false,defaultValue="0")int page,
+			@RequestParam(required=false,defaultValue="0")int pageSize,
+			@RequestParam(required=false,defaultValue="createdDate")String sortField,
+			@RequestParam(required=false,defaultValue="DESC") String sortOrder,
 			final HttpServletResponse response) throws IOException {
         log.debug("Get Request for UGC with status %s", moderationStatus);
 		return ugcService.findByModerationStatus(ModerationStatus
-				.valueOf(moderationStatus.toUpperCase()), tenant);
+				.valueOf(moderationStatus.toUpperCase()), tenant,page, pageSize, sortField, sortOrder);
 	}
 	
 	@RequestMapping(value = "/target", method = RequestMethod.GET)
@@ -93,11 +101,26 @@ public class UGCRestController {
 			@RequestParam(required=false,defaultValue="99")int childCount,
 			@RequestParam(required=false,defaultValue="0")int page,
 			@RequestParam(required=false,defaultValue="0")int pageSize,
-			@RequestParam(required=false,defaultValue="true")boolean sortChronological){
+			@RequestParam(required=false,defaultValue="createdDate")String sortField,
+			@RequestParam(required=false,defaultValue="DESC") String sortOrder){
         if(page>=0 && pageSize>0){
-			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page,pageSize, sortChronological),null,rootCount,childCount);
+			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page,pageSize, sortField, sortOrder),null,rootCount,childCount);
 		}else{
-			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortChronological),null,rootCount,childCount);
+			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder),null,rootCount,childCount);
+		}
+	}
+	
+	@RequestMapping(value = "/moderation/{tenantName}/all", method = RequestMethod.GET)
+	@ModelAttribute
+	public List<UGC> getUgcsByTenant(@PathVariable final String tenantName, 
+			@RequestParam(required=false,defaultValue="0")int page,
+			@RequestParam(required=false,defaultValue="0")int pageSize,
+			@RequestParam(required=false,defaultValue="createdDate")String sortField,
+			@RequestParam(required=false,defaultValue="DESC") String sortOrder){
+        if(page >= 0 && pageSize > 0){
+			return ugcService.findUGCsByTenant(tenantName, page,pageSize, sortField, sortOrder);
+		}else{
+			return ugcService.findUGCsByTenant(tenantName, sortField, sortOrder);
 		}
 	}
 	
@@ -119,11 +142,23 @@ public class UGCRestController {
 		return u;
 	}
 	
+	@RequestMapping(value = "/moderation/update/status", method = RequestMethod.POST)
+	@ModelAttribute
+	public List<UGC> updateModerationStatus(@RequestParam (required = false) List<String> ids,
+			@RequestParam final String moderationStatus,
+            @RequestParam final String tenant,
+			final HttpServletResponse response) throws IOException, PermissionDeniedException {
+        return ugcService.updateModerationStatus(ids,
+				ModerationStatus.valueOf(moderationStatus.toUpperCase()), tenant);
+	}
+	
 	@RequestMapping(value = "/get_ugc/{ugcId}", method = RequestMethod.GET)
 	public UGC findByUGCId(@PathVariable String ugcId,
 				@RequestParam final String tenant,
+				@RequestParam(required=false,defaultValue="createdDate")String sortField,
+				@RequestParam(required=false,defaultValue="DESC") String sortOrder,
 				HttpServletResponse response) throws IOException {		
-        return ugcService.findUGCAndChildren(new ObjectId(ugcId), tenant, getProfileId());
+        return ugcService.findUGCAndChildren(new ObjectId(ugcId), tenant, getProfileId(), sortField, sortOrder);
 	}
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -132,21 +167,27 @@ public class UGCRestController {
 	public UGC addUGC(@RequestParam(required = true) String target,
             @RequestParam(required = true) String tenant,
 			@RequestParam(required = false) String parentId,
+			@RequestParam(required = false) String targetUrl,
+			@RequestParam(required = false) String targetDescription,
 			@RequestParam(required = false) String textContent,
 			@RequestParam(required = false) MultipartFile[] attachments,
+			@RequestParam(required = false) Boolean anonymousFlag,
 			HttpServletRequest request) throws PermissionDeniedException{
+		if (anonymousFlag == null) {
+			anonymousFlag = false;
+		}
 		/** Pre validations **/
 		if (target == null && parentId == null) {
 			throw new IllegalArgumentException(
 					"Target or Parent Id Must a valid not empty String");
 		}
 		if (target != null && parentId == null) {
-			return ugcService.newUgc(new UGC(textContent, getProfileId(), tenant, target, parseAttibutes(request)), attachments,
-                            ActionUtil.getActions(request), tenant, getProfileId());
+			return ugcService.newUgc(new UGC(textContent, getProfileId(), tenant, target, parseAttibutes(request), targetUrl, targetDescription), attachments,
+                            ActionUtil.getActions(request), tenant, getProfileId(), anonymousFlag);
 		} else {
 			return ugcService
-					.newChildUgc(new UGC(textContent, getProfileId(), tenant, target, new ObjectId(parentId), parseAttibutes(request)), attachments,
-                            ActionUtil.getActions(request), tenant, getProfileId());
+					.newChildUgc(new UGC(textContent, getProfileId(), tenant, target, new ObjectId(parentId), parseAttibutes(request), targetUrl, targetDescription), attachments,
+                            ActionUtil.getActions(request), tenant, getProfileId(), anonymousFlag);
 		}
 	}
 	
@@ -156,11 +197,13 @@ public class UGCRestController {
 			@RequestParam(required = true)String ugcId,
             @RequestParam(required = true) String tenant,
             @RequestParam(required = false) String target,
+            @RequestParam(required = false) String targetUrl,
+			@RequestParam(required = false) String targetDescription,
             @RequestParam(required = false) String parentId,
 			@RequestParam(required = false)String textContent,
 			@RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException{
         return ugcService.updateUgc(new ObjectId(ugcId), tenant, target, getProfileId(),
-                parentId==null?null:new ObjectId(parentId), textContent, attachments);
+                parentId==null?null:new ObjectId(parentId), textContent, attachments,targetUrl, targetDescription);
 	}
 	
 	@RequestMapping(value = "/delete/{ugcId}", method = RequestMethod.POST)

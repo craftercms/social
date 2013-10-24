@@ -132,7 +132,7 @@ public class PermissionServiceTest {
 
 	private Profile getProfile() {
 		Map<String,Object> attributes = new HashMap<String, Object>();
-		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes, EMAIL);
+		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes, EMAIL,true);
 		List<String> roles = new ArrayList<String>(){
 			{
 			

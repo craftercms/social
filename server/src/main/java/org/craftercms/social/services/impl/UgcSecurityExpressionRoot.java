@@ -16,13 +16,9 @@
  */
 package org.craftercms.social.services.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
@@ -40,6 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import clover.retrotranslator.edu.emory.mathcs.backport.java.util.Arrays;
+
 public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot { 
 	
 	private static final String ADMIN = "ADMIN";
@@ -56,6 +54,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 	
 	private static final String APPLICATION_JSON = "application/json";
 	private static final String CONTENT_TYPE = "Content-Type";
+	private static final String UPDATE_URI = "update";
 
 	@Autowired
 	private CrafterProfile crafterProfileService;
@@ -102,6 +101,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
 		String[] ugcId = (String[]) params.get("ugcId");
 		if (ugcId == null || ugcId.length == 0) {
+			log.error("Parameter ugcId is mandory and has to have a valid value", ugcId);
 			return false;
 		}
 		try {
@@ -123,6 +123,9 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		if (RequestContext.getCurrent().getRequest().getMethod().toLowerCase().equals("get")) {
 			return true;
 		}
+		if (isUpdateStatusList()) {
+			return hasModeratorPermissionUpdateStatusList();
+		}
 		String ugcId = getUgcIdFromModerationUri();
 		if (ugcId == null || ugcId.length() == 0) {
 			return true;
@@ -139,6 +142,100 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 			return false;
 		}
 		return true;
+	}
+
+	private boolean hasModeratorPermissionUpdateStatusList() {
+		List<String> ids = getUgcIdFromParamList("ids");
+		for (String ugcId: ids) {
+			if (ugcId == null || ugcId.length() == 0) {
+				return false;
+			}
+			try {
+				if (!permissionService.allowed(ActionEnum.MODERATE,
+						new ObjectId(ugcId), getProfileId())) {
+					log.error("MODERATOR permission not granted", ugcId);
+					return false;
+				}
+			} catch(Exception e1) {
+				log.error("Error when was checking for permissions: " + e1.getMessage(), ugcId);
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public boolean hasDeletePermissions() {
+		String ugcId = getUgcIdFromDeleteUri() ;
+		//String ugcId = getUgcIdFromModerationUri();
+		String profileId = getProfileId();
+		boolean result = true;
+		if (ugcId != null && ugcId.length() > 0) {
+			result = hasDeletePermissions(new ObjectId(ugcId), profileId);
+		} else {
+			List<String> ids = getUgcIdFromParamList("ugcIds");
+			result = hasDeletePermissions(ids, profileId);
+		}
+		return result;
+	}
+	
+	private boolean hasDeletePermissions(ObjectId id, String profileId) {
+		if (!permissionService.allowed(ActionEnum.DELETE, id, profileId)) {
+			log.error("Delete permission not granted", id);
+			return false; 
+		 }
+		boolean result = true;
+		List<UGC> children = this.ugcService.findByParentId(id);
+        for (UGC ugcChild: children) {
+        	result = hasDeletePermissions(ugcChild.getId(), profileId);
+        	if (!result) {
+        		break;
+        	}
+        }
+		
+		return result;
+	}
+	
+	private boolean hasDeletePermissions(List<String> ids, String profileId) {
+		if (ids==null || ids.size() == 0) {
+			return false;
+		}
+		boolean result = true;
+		for (String id: ids) {
+			if (id == null || id.length() == 0) {
+				result = false;
+				break;
+			} 
+			try {
+				result = hasDeletePermissions(new ObjectId(id), profileId);
+			} catch(Exception e1) {
+				log.error("Error when was checking for Delete permissions: " + e1.getMessage(), id);
+				result = false;
+			}
+			if (!result) {
+				break;
+			}
+		}
+		return result;
+	}
+
+	private List<String> getUgcIdFromParamList(String idsName) {
+		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
+		String[] ids = (String[]) params.get(idsName);
+		if (ids == null) {
+			return new ArrayList<String>();
+		} else {
+			return Arrays.asList(ids);
+		}
+	}
+
+	private boolean isUpdateStatusList() {
+		boolean isUpdate = false;
+		String uri = getMiddleModerationUri();
+		if (uri!=null && uri.equalsIgnoreCase(UPDATE_URI)) {
+			isUpdate = true;
+		}
+		return isUpdate;
 	}
 
 	public boolean hasActOnPermission() {
@@ -246,8 +343,28 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		}
 		return ugcId;
 	}
+	
+	private String getUgcIdFromDeleteUri() {
+		String ugcId = RequestContext.getCurrent().getRequest().getRequestURI().replaceAll(
+				".*api/2/ugc/[^\\/]*/([^\\/\\.]*).*", "$1");
+		if (ugcId.equals(RequestContext.getCurrent().getRequest().getRequestURI())) {
+			return null;
+		}
+		return ugcId;
+	}
 
 	private String getUgcIdFromModerationUri() {
+		String interceptedUri = "moderation/";
+		String endPath = RequestContext.getCurrent().getRequest().getRequestURI().substring(
+				RequestContext.getCurrent().getRequest().getRequestURI().indexOf("moderation/")
+						+ interceptedUri.length());
+		if (endPath.contains("/status")) {
+			return endPath.substring(0, endPath.indexOf("/status"));
+		}
+		return null;
+	}
+	
+	private String getMiddleModerationUri() {
 		String interceptedUri = "moderation/";
 		String endPath = RequestContext.getCurrent().getRequest().getRequestURI().substring(
 				RequestContext.getCurrent().getRequest().getRequestURI().indexOf("moderation/")
@@ -262,12 +379,6 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		this.crafterProfileService = crafterProfileService;
 	}
 	
-	private void setForbiddenResponse() {
-		//try {
-			//response.sendError(HttpServletResponse.SC_FORBIDDEN);
-		//} catch(IOException e) {
-		//	log.error("IOError when was seeting FORBIDDEN ERROR: " + e.getMessage());
-		//}
-	}
+	
 
 }
