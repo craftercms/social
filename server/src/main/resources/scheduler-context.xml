@@ -11,7 +11,7 @@
                     <property name="jobDetail">
                         <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
                             <property name="targetBeanName" value="harvesterService"/>
-                            <property name="targetMethod" value="executeJob"/>
+                            <property name="targetMethod" value="harvest"/>
                             <property name="concurrent" value="false"/>
                         </bean>
                     </property>
