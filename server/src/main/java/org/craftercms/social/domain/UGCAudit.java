@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -43,7 +44,7 @@ public class UGCAudit {
 		}
 	}
 
-	private ObjectId id;
+	//private ObjectId id;
 
 	private ObjectId ugcId;
 
@@ -51,7 +52,9 @@ public class UGCAudit {
 
 	private String profileId;
 	
-	private String target;
+	//private String target;
+	
+	private Target target;
 	
 	private Date createdDate;
 
@@ -59,14 +62,15 @@ public class UGCAudit {
 	
 	private String reason;
 	
-	private long sequence = 0;
+	@Id
+	private long row = 0;
 	
 	public UGCAudit() {
 		this(null,null,null,null,null, null);
 	}
 	
 	public UGCAudit(ObjectId ugcId, String tenant, String profileId,
-			AuditAction action, String reason, String target, Date createdDate) {
+			AuditAction action, String reason, Target target, Date createdDate) {
 		super();
         this.tenant = tenant;
 		this.ugcId = ugcId;
@@ -78,18 +82,18 @@ public class UGCAudit {
 	}
 
 	public UGCAudit(ObjectId ugcId, String tenant, String profileId,
-			AuditAction action, String reason, String target) {
+			AuditAction action, String reason, Target target) {
 		this(ugcId, tenant, profileId, action, reason, target, new Date());
 
 	}
 
-	public ObjectId getId() {
-		return id;
-	}
-
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
+//	public ObjectId getId() {
+//		return id;
+//	}
+//
+//	public void setId(ObjectId id) {
+//		this.id = id;
+//	}
 
 	public ObjectId getUgcId() {
 		return ugcId;
@@ -123,10 +127,10 @@ public class UGCAudit {
 		this.reason = reason;
 	}
 	
-	@XmlElement
-	public Date getDateCreated() {
-		return new Date(id.getTime());
-	}
+//	@XmlElement
+//	public Date getDateCreated() {
+//		return new Date(id.getTime());
+//	}
 
     public String getTenant() {
         return tenant;
@@ -136,11 +140,11 @@ public class UGCAudit {
         this.tenant = tenant;
     }
 
-	public String getTarget() {
+	public Target getTarget() {
 		return target;
 	}
 
-	public void setTarget(String target) {
+	public void setTarget(Target target) {
 		this.target = target;
 	}
 
@@ -152,12 +156,12 @@ public class UGCAudit {
 		this.createdDate = createdDate;
 	}
 
-	public long getSequence() {
-		return sequence;
+	public long getRow() {
+		return row;
 	}
 
-	public void setSequence(long sequence) {
-		this.sequence = sequence;
+	public void setRow(long row) {
+		this.row = row;
 	}
 
 

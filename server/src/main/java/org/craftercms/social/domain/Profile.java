@@ -74,6 +74,9 @@ public class Profile implements Serializable {
 
     @Field(ATTRIBUTES)
     private Map<String, Serializable> attributes;
+    
+    @Field("subscriptions")
+    private Subscriptions subscriptions;
 
     public ObjectId getId() {
         return id;
@@ -168,4 +171,12 @@ public class Profile implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
+
+	public Subscriptions getSubscriptions() {
+		return subscriptions;
+	}
+
+	public void setSubscriptions(Subscriptions subscriptions) {
+		this.subscriptions = subscriptions;
+	}
 }

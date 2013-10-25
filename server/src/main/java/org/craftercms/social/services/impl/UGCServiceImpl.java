@@ -33,6 +33,7 @@ import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.AttachmentsList;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.Target;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
@@ -108,7 +109,7 @@ public class UGCServiceImpl implements UGCService {
             this.uGCRepository.save(ugc);
             ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             //Audit call
-            auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null, targetId);
+            auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
         }
         return ugc;
     }
@@ -125,7 +126,7 @@ public class UGCServiceImpl implements UGCService {
             removeAttachments(ugcId);
             this.uGCRepository.delete(ugcId);
             //Audit call
-            auditUGC(ugcId, AuditAction.DELETE, tenant, profileId, null, parent.getTargetId());
+            auditUGC(ugcId, AuditAction.DELETE, tenant, profileId, null);
         }
     }
 
@@ -176,7 +177,7 @@ public class UGCServiceImpl implements UGCService {
             ugc.setModerationStatus(newStatus);
             ugc.setLastModifiedDate(new Date());
             //Audit call
-            auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null, ugc.getTargetId());
+            auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
             return populateUGCWithProfile(save(ugc));
         } else {
             log.error("UGC {} does not exist", uGCId);
@@ -199,7 +200,7 @@ public class UGCServiceImpl implements UGCService {
 	            ugc.setModerationStatus(newStatus);
 	            ugc.setLastModifiedDate(new Date());
 	            //Audit call
-	            auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null, ugc.getTargetId());
+	            auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
 	            result.add(populateUGCWithProfile(save(ugc)));
 	        } else {
 	            log.error("UGC {} does not exist", uGCId);
@@ -223,7 +224,7 @@ public class UGCServiceImpl implements UGCService {
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
-        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null, ugc.getTargetId());
+        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
         return ugcWithProfile;
     }
 
@@ -247,7 +248,7 @@ public class UGCServiceImpl implements UGCService {
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
-        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null, ugc.getTargetId());
+        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
         return ugcWithProfile;
     }
 
@@ -298,7 +299,7 @@ public class UGCServiceImpl implements UGCService {
             UGC ugc = uGCRepository.findOne(ugcId);
             if (userCan(AuditAction.LIKE, ugc, profileId)) {
                 ugc.setLikeCount(ugc.getLikeCount() + 1);
-                auditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null, ugc.getTargetId());
+                auditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
                 checkForModeration(ugc);
                 if (!userCan(AuditAction.DISLIKE, ugc, profileId)) {
                 	ugc.setOffenceCount(ugc.getOffenceCount() - 1);
@@ -327,7 +328,7 @@ public class UGCServiceImpl implements UGCService {
             UGC ugc = uGCRepository.findOne(ugcId);
             if (userCan(AuditAction.DISLIKE, ugc, profileId)) {
             	ugc.setOffenceCount(ugc.getOffenceCount() + 1);
-                auditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null, ugc.getTargetId());
+                auditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
                 checkForModeration(ugc);
                 if (!userCan(AuditAction.LIKE, ugc, profileId)) {
                 	ugc.setLikeCount(ugc.getLikeCount() - 1);
@@ -423,7 +424,7 @@ public class UGCServiceImpl implements UGCService {
         UGC ugc = uGCRepository.findOne(ugcId);
         if (userCan(AuditAction.FLAG, ugc, profileId)) {
             ugc.setFlagCount(ugc.getFlagCount() + 1);
-            auditUGC(ugcId, AuditAction.FLAG, tenant, profileId, reason, ugc.getTargetId());
+            auditUGC(ugcId, AuditAction.FLAG, tenant, profileId, reason);
             checkForModeration(ugc);
             return populateUGCWithProfile(save(ugc));
         } else {
@@ -431,10 +432,17 @@ public class UGCServiceImpl implements UGCService {
         }
     }
 
-    private void auditUGC(ObjectId ugcId, AuditAction auditAction, String tenant, String profileId, String reason, String target) {
+    private void auditUGC(ObjectId ugcId, AuditAction auditAction, String tenant, String profileId, String reason) {
         //uGCAuditRepository.save(new UGCAudit(ugcId, tenant, profileId, auditAction, reason, target));
+    	UGC ugc = this.uGCRepository.findOne(ugcId);
+    	Target target = null;
+    	if (ugc != null) {
+    		target = new Target(ugc.getTargetId(),ugc.getTargetDescription(), ugc.getTargetUrl());
+    	} else {
+    		return;
+    	}
     	UGCAudit audit = new UGCAudit(ugcId, tenant, profileId, auditAction, reason, target);
-    	audit.setSequence(counterService.getNextSequence("uGCAudit"));
+    	audit.setRow(counterService.getNextSequence("uGCAudit"));
         uGCAuditRepository.save(audit);
     }
     
@@ -458,7 +466,7 @@ public class UGCServiceImpl implements UGCService {
                 ugc.setLastModifiedDate(new Date());
                 uGCRepository.save(ugc);
                 //Audit call
-                auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null, ugc.getTargetId());
+                auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
             }
         }
     }

@@ -31,7 +31,7 @@ public class UGCAuditRepositoryImpl implements UGCAuditRepositoryCustom {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 	
-	private static final String SEQUENCE = "sequence";
+	private static final String SEQUENCE = "row";
 	
 	@Override
 	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve) {
