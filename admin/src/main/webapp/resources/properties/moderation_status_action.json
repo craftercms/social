@@ -13,10 +13,10 @@
     },
     {
         "moderation": "Spam",
-        "actions": ["Restore", "Permanently Delete", "Unmoderated"]
+        "actions": ["Restore", "Permanently Delete"]
     },
     {
         "moderation": "Trash",
-        "actions": ["Restore", "Permanently Delete", "Unmoderated"]
+        "actions": ["Restore", "Permanently Delete"]
     }
 ]
