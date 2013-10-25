@@ -7,9 +7,10 @@ angular.module('moderationDashboard.controllers', []).
      *  contains tenant, default moderation status and the list of moderations
      *  all this variables are in properties files
      */
-    controller('AppCtrl', ['$scope', 'Api', function (scope, api) {
+    controller('AppCtrl', ['$scope', 'Api', '$http', function (scope, api, http) {
         scope.confObj = {};
         scope.moderationList = [];
+        scope.appToken = "";
 
         var getTenant = function () {
             api.defaultTenant.get(function (conf) {
@@ -36,6 +37,21 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
+        var getAppToken = function () {
+            var url = "/crafter-profile/api/2/auth/app_token.json?username=craftersocial&password=craftersocial";
+
+            http({
+                method: 'GET',
+                url: url
+            }).success(function (token) {
+               scope.appToken = token;
+                    console.log(scope.appToken);
+            }).error(function () {
+                scope.setAlert("Error trying to get app token", "alert-error");
+            });
+        };
+
+        getAppToken();
         getTenant();
         getModerationList();
 
@@ -48,6 +64,9 @@ angular.module('moderationDashboard.controllers', []).
         scope.ugcList = [];
         scope.status = "";
         scope.moderationActions = [];
+        scope.ugcSelectedList = [];
+        scope.errorMessage;
+        scope.classError;
 
         //set actual status
         var setStatus = function () {
@@ -75,20 +94,47 @@ angular.module('moderationDashboard.controllers', []).
             api.Ugc.query(conf, function (list) {
                 var txtContent = {},
                     tmpList = [];
+
                 angular.forEach(list, function (ugc){
                     txtContent = angular.fromJson(ugc.textContent);
-
                     tmpList.push({
                         'title': txtContent.title,
                         'id': ugc.id,
-                        'textContent': txtContent.content,
-                        'moderationStatus': ugc.moderationStatus
+                        'textContent': getTextFromhtml(txtContent.content),
+                        'moderationStatus': ugc.moderationStatus,
+                        'completeContent': txtContent.content,
+                        'dateAdded': getDateTime(ugc.dateAdded),
+                        'userName': ugc.profile.userName,
+                        'userMail': ugc.profile.email,
+                        'targetUrl': 'target Url',
+                        'targetTitle': 'target Title'
                     });
                 });
 
                 scope.ugcList = tmpList;
             });
         };
+
+        // get text snippet from html
+        var getTextFromhtml = function (html) {
+            var elmText = $(html).text(),
+                snippet;
+            if (elmText.length > 200) {
+                snippet = elmText.substring(0, 200);
+                snippet += " [...]";
+            }else{
+                snippet = elmText;
+            }
+
+            return snippet;
+        };
+
+        // get date and hour of last update
+        var getDateTime = function (dateLong) {
+            var date = new Date(dateLong);
+
+            return date.toDateString();
+        }
 
         // set list of moderation actions available according status selected
         var moderationActions = function () {
@@ -100,53 +146,96 @@ angular.module('moderationDashboard.controllers', []).
         };
 
         //handler for bulk actions update
-        scope.bulkUpdate = function () {
-            var optionSelected = $('#bulkActions').find(':selected').val(),
+        scope.bulkUpdate = function (event) {
+            var optionSelected = scope.bulkAction,
                 listItems = [];
 
-            if (optionSelected !== "0"){
-                $('.entries-list input').each(function (index) {
-                    if ($(this).prop('checked')){
-                        listItems.push($(this).attr('ugcid'));
-                    }
+            //check if bulk option is selected
+            if (optionSelected === undefined){
+                var displayError = $(event.currentTarget).popover({
+                    animation: true,
+                    placement: 'right',
+                    trigger: 'manual',
+                    title: 'Error Title',
+                    content: 'Please select an option'
                 });
+                displayError.popover('show');
 
-                if (listItems.length > 0) {
-                    optionSelected = optionSelected.toUpperCase();
-                    var ids = "&ids=";
-                    ids += listItems.join("&ids=");
+                $('#bulkActions').focus();
 
-                    console.log(ids);
-
-                    http({
-                        method: 'POST',
-                        url: "/crafter-social/api/2/ugc/moderation/update/status.json?moderationStatus=" + optionSelected + "&tenant=" + scope.confObj.tenant + ids
-                    }).success(function (data) {
-                        angular.forEach(data, function (item) {
-                            angular.forEach(scope.ugcList, function(ugc, index){
-                                if (item.id === ugc.id) {
-                                    scope.ugcList.splice(index, 1);
-                                    return;
-                                }
-                            });
-                        });
-                    }).error(function (data) {
-                        console.log("error bulk update");
-                    });
-
-                    //TODO change for restangular
-                }else{
-                    //TODO display error message, please check an option
-                }
-            }else{
-                //TODO display error message, please select an option
+                return;
             }
 
+
+            $('.entries-list input').each(function (index) {
+                if ($(this).prop('checked')){
+                    listItems.push($(this).attr('ugcid'));
+                }
+            });
+
+            if (listItems.length > 0) {
+                // hiding error message
+                var applyBtn = $('#applyBtn');
+                if (applyBtn.next('div.popover:visible').length){
+                    applyBtn.popover('hide');
+                }
+
+                optionSelected = optionSelected.toUpperCase();
+                var ids = "&ids=";
+                ids += listItems.join("&ids=");
+
+                http({
+                    method: 'POST',
+                    url: "/crafter-social/api/2/ugc/moderation/update/status.json?moderationStatus=" + optionSelected + "&tenant=" + scope.confObj.tenant + ids
+                }).success(function (data) {
+                    angular.forEach(data, function (item) {
+                        angular.forEach(scope.ugcList, function(ugc, index){
+                            if (item.id === ugc.id) {
+                                scope.ugcList.splice(index, 1);
+                                return;
+                            }
+                        });
+                    });
+
+                    scope.setAlert("UGCs updated correctly", "alert-success");
+                }).error(function (data) {
+                    scope.setAlert("Error trying to save UGC", "alert-error");
+                });
+
+                //TODO change for restangular
+            }else{
+                var displayError = $(event.currentTarget).popover({
+                    animation: true,
+                    placement: 'right',
+                    trigger: 'manual',
+                    title: 'Error Title',
+                    content: 'Please check an ugc'
+                });
+                displayError.popover('show');
+
+            }
         };
 
+
+        // handler for when a select option has been updated
+        scope.optionSelected = function () {
+            var applyBtn = $('#applyBtn');
+            if (applyBtn.next('div.popover:visible').length){
+                applyBtn.popover('destroy');
+            }
+        };
+
+        // error messages
+        scope.setAlert = function (message, cssClass) {
+            scope.errorMessage = message;
+            scope.classError = cssClass;
+        };
 
         setStatus();
         getModerationList();
         getUgcList();
         moderationActions();
+
+        scope.setAlert("", "hide-error");
+
     }]);
