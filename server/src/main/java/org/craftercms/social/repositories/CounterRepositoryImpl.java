@@ -11,18 +11,21 @@ import org.springframework.data.mongodb.core.query.Update;
 
 public class CounterRepositoryImpl implements CounterRepositoryCustom {
 	
-	@Autowired 
-	  private MongoTemplate mongoTemplate;
+	private static final long INIT_VALUE = 1l;
+	private static final String SEQUENCE_FIELD = "seq";
 	
-	public int getNextSequence(String collectionName) {
+	@Autowired 
+	private MongoTemplate mongoTemplate;
+	
+	public long getNextSequence(String collectionName) {
 		Query q = new Query();
 		query(where("_id").is(collectionName));
-		Update u = new Update().inc("seq", 1);
+		Update u = new Update().inc(SEQUENCE_FIELD, 1);
 		Counter counter = mongoTemplate.findAndModify(q, u, Counter.class);
 		if (counter == null) {
 			counter = new Counter();
 			counter.setId(collectionName);
-			counter.setSeq(1);
+			counter.setSeq(INIT_VALUE);
 			mongoTemplate.save(counter);
 		}
        

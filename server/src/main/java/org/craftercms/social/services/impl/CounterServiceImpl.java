@@ -13,7 +13,7 @@ public class CounterServiceImpl implements CounterService {
 	private CounterRepository counterRepository;
 	
 	@Override
-	public int getNextSequence(String collectionName) {
+	public long getNextSequence(String collectionName) {
 	  
 	  return counterRepository.getNextSequence(collectionName);
 
