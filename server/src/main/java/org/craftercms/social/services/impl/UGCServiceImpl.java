@@ -37,6 +37,7 @@ import org.craftercms.social.domain.Target;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
+import org.craftercms.social.exceptions.DataErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
@@ -95,23 +96,37 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
-                         String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException {
-        UGC ugc = null;
-        if (existsUGC(ugcId)) {
-            ugc = uGCRepository.findOne(ugcId);
-            ugc.setTargetId(targetId);
-            ugc.setParentId(parentId);
-            ugc.setTextContent(textContent);
-            ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
-            ugc.setTargetUrl(targetUrl);
-            ugc.setTargetDescription(targetDescription);
-            ugc.setLastModifiedDate(new Date());
-            this.uGCRepository.save(ugc);
-            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
-            //Audit call
-            auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
+                         String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, DataErrorException {
+
+        String errorMessage = null;
+
+        if(attachments != null){
+            VirusScannerServiceImpl virusScannerService = new VirusScannerServiceImpl();
+            errorMessage = virusScannerService.scan(attachments);
         }
-        return ugc;
+
+        if(errorMessage != null){
+            log.error("Error Message after scanning: "+ errorMessage);
+            throw new DataErrorException(errorMessage);
+        }
+        else{
+            UGC ugc = null;
+            if (existsUGC(ugcId)) {
+                ugc = uGCRepository.findOne(ugcId);
+                ugc.setTargetId(targetId);
+                ugc.setParentId(parentId);
+                ugc.setTextContent(textContent);
+                ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
+                ugc.setTargetUrl(targetUrl);
+                ugc.setTargetDescription(targetDescription);
+                ugc.setLastModifiedDate(new Date());
+                this.uGCRepository.save(ugc);
+                ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+                //Audit call
+                auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
+            }
+            return ugc;
+        }
     }
 
     @Override
@@ -212,44 +227,72 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC newUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
-            throws PermissionDeniedException {
-    	ugc.setAnonymousFlag(isAnonymousFlag);
-    	List<Action> resolveActions = resolveUGCActions(ugc, actions);
-    	ugc.setModerationStatus(ModerationStatus.UNMODERATED);
-    	ugc.setCreatedDate(new Date());
-    	ugc.setLastModifiedDate(new Date());
-    	checkForModeration(ugc);
-        ugc.setAttachmentId(saveUGCAttachments(files));
-        ugc.setActions(resolveActions);
-        UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
-        ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
-        //Audit call
-        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
-        return ugcWithProfile;
+            throws PermissionDeniedException, DataErrorException {
+
+        String errorMessage = null;
+
+        if(files != null){
+            VirusScannerServiceImpl virusScannerService = new VirusScannerServiceImpl();
+            errorMessage = virusScannerService.scan(files);
+        }
+
+        if(errorMessage != null){
+            log.error("Error Message after scanning: "+ errorMessage);
+            throw new DataErrorException(errorMessage);
+        }
+        else{
+            ugc.setAnonymousFlag(isAnonymousFlag);
+            List<Action> resolveActions = resolveUGCActions(ugc, actions);
+            ugc.setModerationStatus(ModerationStatus.UNMODERATED);
+            ugc.setCreatedDate(new Date());
+            ugc.setLastModifiedDate(new Date());
+            checkForModeration(ugc);
+            ugc.setAttachmentId(saveUGCAttachments(files));
+            ugc.setActions(resolveActions);
+            UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
+            ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
+            //Audit call
+            auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
+            return ugcWithProfile;
+        }
     }
 
 
 
     @Override
     public UGC newChildUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
-            throws PermissionDeniedException {
+            throws PermissionDeniedException , DataErrorException{
         if (!existsUGC(ugc.getParentId())) {
             log.error("Parent for {} does not exist", ugc);
             throw new DataIntegrityViolationException("Parent UGC does not exist");
         }
-        ugc.setAnonymousFlag(isAnonymousFlag);
-        // resolve and set the actions
-        ugc.setActions(resolveUGCActions(ugc, actions));
-        ugc.setModerationStatus(ModerationStatus.UNMODERATED);
-        ugc.setCreatedDate(new Date());
-    	ugc.setLastModifiedDate(new Date());
-        checkForModeration(ugc);
-        ugc.setAttachmentId(saveUGCAttachments(files));
-        UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
-        ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
-        //Audit call
-        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
-        return ugcWithProfile;
+
+        String errorMessage = null;
+
+        if(files != null){
+            VirusScannerServiceImpl virusScannerService = new VirusScannerServiceImpl();
+            errorMessage = virusScannerService.scan(files);
+        }
+
+        if(errorMessage != null){
+            log.error("Error Message after scanning: "+ errorMessage);
+            throw new DataErrorException(errorMessage);
+        }
+        else{
+            ugc.setAnonymousFlag(isAnonymousFlag);
+            // resolve and set the actions
+            ugc.setActions(resolveUGCActions(ugc, actions));
+            ugc.setModerationStatus(ModerationStatus.UNMODERATED);
+            ugc.setCreatedDate(new Date());
+            ugc.setLastModifiedDate(new Date());
+            checkForModeration(ugc);
+            ugc.setAttachmentId(saveUGCAttachments(files));
+            UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
+            ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
+            //Audit call
+            auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
+            return ugcWithProfile;
+        }
     }
 
     private ObjectId[] saveUGCAttachments(MultipartFile[] files) {

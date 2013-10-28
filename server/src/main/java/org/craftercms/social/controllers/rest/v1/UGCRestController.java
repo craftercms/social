@@ -31,6 +31,7 @@ import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
+import org.craftercms.social.exceptions.DataErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.HierarchyGenerator;
@@ -172,7 +173,7 @@ public class UGCRestController {
 			@RequestParam(required = false) String textContent,
 			@RequestParam(required = false) MultipartFile[] attachments,
 			@RequestParam(required = false) Boolean anonymousFlag,
-			HttpServletRequest request) throws PermissionDeniedException{
+			HttpServletRequest request) throws PermissionDeniedException, DataErrorException {
 		if (anonymousFlag == null) {
 			anonymousFlag = false;
 		}
@@ -201,7 +202,7 @@ public class UGCRestController {
 			@RequestParam(required = false) String targetDescription,
             @RequestParam(required = false) String parentId,
 			@RequestParam(required = false)String textContent,
-			@RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException{
+			@RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException, DataErrorException {
         return ugcService.updateUgc(new ObjectId(ugcId), tenant, target, getProfileId(),
                 parentId==null?null:new ObjectId(parentId), textContent, attachments,targetUrl, targetDescription);
 	}
@@ -262,6 +263,12 @@ public class UGCRestController {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
         return ex.getMessage();
 	}
+
+    @ExceptionHandler(DataErrorException.class)
+    public String handleDataErrorException(DataErrorException ex, HttpServletResponse response) {
+        response.setHeader("Content-Type", "application/json");
+        return ex.getMessage();
+    }
 	
 	private Map<String, Object> parseAttibutes(HttpServletRequest request) {
 		Map<String, Object> attributeMap = new HashMap<String, Object>();
