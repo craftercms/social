@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2007-2013 Crafter Software Corporation.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.craftercms.social.notification.harvester.impl;
 
 import java.util.ArrayList;
@@ -8,62 +24,66 @@ import java.util.Map;
 import java.util.Set;
 
 import org.craftercms.social.domain.Event;
-import org.craftercms.social.domain.HarvestStatus;
 import org.craftercms.social.domain.Notification;
 import org.craftercms.social.domain.Notification.TransmittedStatus;
 import org.craftercms.social.domain.Profile;
 import org.craftercms.social.domain.UGCAudit;
-import org.craftercms.social.notification.harvester.HarvesterService;
-import org.craftercms.social.repositories.HarvestStatusRepository;
+import org.craftercms.social.notification.harvester.BaseHarvesterService;
 import org.craftercms.social.repositories.NotificationRepository;
 import org.craftercms.social.repositories.ProfileRepository;
 import org.craftercms.social.repositories.UGCAuditRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * UGCAudit harvester implementation.
+ *
+ * This harvester reads ugcAudit entries since the last read, and creates entries in the notifications collection.
+ */
 @Component
-public class HarvesterServiceImpl implements HarvesterService {
-	
-	private final transient Logger log = LoggerFactory.getLogger(HarvesterServiceImpl.class);
-	
-	@Autowired
-	private HarvestStatusRepository harvestStatusRepository;
+public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
+
+
+    // These should be dynamically calculated
+    static final String ACTION = "email";
+    static final String FREQUENCY = "instant";
+    static final String FORMAT = "single";
+
+    // TODO: These need to be passed in as parameters and are specific to the implementation
+    static final String APPLICATION_ID = "crafter-social";
+    static final String COLLECTION_NAME = "uGCAudit";
+    static final String DEFAULT_JOB_ID = "crafter-social-harvester";
+
 	@Autowired
 	private NotificationRepository notificationRepository;
 	@Autowired
 	private ProfileRepository profileRepository;
 	@Autowired
 	private UGCAuditRepository ugcAuditRepository;
+
 	
 	private String action;
 	private String frequency;
 	private String format;
+
 	
-	private String applicationId;
-	private String collectionName;
-	
-	private String jobId;
-	
-	public HarvesterServiceImpl() {
-		jobId = DEFAULT_JOB_ID;
-		action = ACTION;
-		frequency = FREQUENCY;
-		format = FORMAT;
-		this.applicationId = APPLICATION_ID;
-		this.collectionName = COLLECTION_NAME;
+	public UGCAuditHarvesterServiceImpl() {
+
+        // TODO: collectionName
+//		jobId = DEFAULT_JOB_ID;
+//		action = ACTION;
+//		frequency = FREQUENCY;
+//		format = FORMAT;
+//		this.applicationId = APPLICATION_ID;
+//		this.collectionName = COLLECTION_NAME;
 	}
 	
 	@Override
-	public void harvest() {
-		log.debug("Starting harvester JOB " + jobId);
-		// GET Harvest status
-		HarvestStatus harvestStatus = harvestStatusRepository.findHarvestStatusByJobId(jobId);
-		// Update Harvest status to RUNNING
-		updateLastNotification(harvestStatus, null, HARVESTER_STATUS_RUNNING);
-		// GET Audits using last retrieved row
-		List<UGCAudit> listUGCAudit = findUGCAuditList(harvestStatus);
+	public void doHarvestInternal(Map<String, ?> harvesterProperties) {
+
+        // GET Audits using last retrieved row
+		List<UGCAudit> listUGCAudit = findUGCAuditList(getLastRowRetrieved(harvesterProperties));
 		if (listUGCAudit != null && listUGCAudit.size() > 0) {
 			log.debug("Harvester JOB found audits " + listUGCAudit.size());
 			// Sets audits into a map -> target / Audits
@@ -73,7 +93,7 @@ public class HarvesterServiceImpl implements HarvesterService {
 			List<Profile> pl;
 			
 			for (String target: targets) {
-				// Gets Susbcriptors by a target, an action, a frequency and format
+				// Gets subscribers by a target, an action, a frequency and format
 				pl = this.profileRepository.findProfilesBySubscriptions(target, action, frequency, format);
 				log.debug("Harvester JOB found " + pl.size() + " subscribers for target " + target);
 				
@@ -81,14 +101,24 @@ public class HarvesterServiceImpl implements HarvesterService {
 				createNotifications(pl, targetIdUGCAuditMap.get(target));
 				 
 			}
-			// Update Harvest status to IDLE and update the last row retrieve
-			updateLastNotification(harvestStatus, listUGCAudit, HARVESTER_STATUS_IDLE);
+
 		}
-		
+
+        // TODO: Set the updated last row retrieved in the properties
 		
 	}
-	
-	private Map<String, List<UGCAudit>> flatAuditsByTarget(List<UGCAudit> listUGCAudit) {
+
+    private Long getLastRowRetrieved(Map<String, ?> harvesterProperties) {
+        Long lastRowRetrieved = null;
+        if (harvesterProperties == null || harvesterProperties.get(LAST_ROW_RETRIEVED) == null) {
+            lastRowRetrieved = new Long(0);
+        } else {
+            lastRowRetrieved =  (Long) harvesterProperties.get(LAST_ROW_RETRIEVED);
+        }
+        return lastRowRetrieved;
+    }
+
+    private Map<String, List<UGCAudit>> flatAuditsByTarget(List<UGCAudit> listUGCAudit) {
 		List<UGCAudit> lua;
 		Map<String, List<UGCAudit>> targetIdUGCAuditMap = new HashMap<String, List<UGCAudit>>();
 		//flatten audits by target
@@ -154,43 +184,24 @@ public class HarvesterServiceImpl implements HarvesterService {
 		return event;
 	}
 
-	private List<UGCAudit> findUGCAuditList(HarvestStatus harvestStatus) {
+	private List<UGCAudit> findUGCAuditList(long lastRowRetrieved) {
 		List<UGCAudit> listUGCAudit = null;
-		if (harvestStatus == null) {
-			listUGCAudit = ugcAuditRepository.findAll();
-		} else {
-			listUGCAudit = ugcAuditRepository.findByLastRetrievedRow(harvestStatus.getLastRowRetrieved());
-		}
+		//if (harvestStatus == null) {                  // TODO: Discuss when this would happen
+		//	listUGCAudit = ugcAuditRepository.findAll();
+		//} else {
+			listUGCAudit = ugcAuditRepository.findByLastRetrievedRow(lastRowRetrieved);
+		//}
 		return  listUGCAudit;
 	}
 
-	private void updateLastNotification(HarvestStatus harvestStatus, List<UGCAudit> listUGCAudit, String status) {
-		if (harvestStatus == null) {
-			harvestStatus = new HarvestStatus();
-			harvestStatus.setId(jobId);
-			harvestStatus.setApplicationId(applicationId);
-			harvestStatus.setCollectionName(collectionName);
-		}
-		
-		
-		harvestStatus.setStatus(status);
-		if (listUGCAudit != null && listUGCAudit.size() > 0) {
-			harvestStatus.setLastRowRetrieved(retrieveLastUGCAudit(listUGCAudit));
-		}
-		
-		this.harvestStatusRepository.save(harvestStatus);
-	}
+
+    @Override
+    protected Class getCollectionClassName() {
+        return UGCAuditRepository.class;
+    }
 
 	private long retrieveLastUGCAudit(List<UGCAudit> listUGCAudit) {
 		return listUGCAudit.get(listUGCAudit.size() - 1).getRow();
-	}
-
-	public String getJobId() {
-		return jobId;
-	}
-
-	public void setJobId(String jobId) {
-		this.jobId = jobId;
 	}
 
 	public String getAction() {
@@ -207,30 +218,6 @@ public class HarvesterServiceImpl implements HarvesterService {
 
 	public void setFormat(String format) {
 		this.format = format;
-	}
-
-	public String getApplicationId() {
-		return applicationId;
-	}
-
-	public void setApplicationId(String applicationId) {
-		this.applicationId = applicationId;
-	}
-
-	public String getCollectionName() {
-		return collectionName;
-	}
-
-	public void setCollectionName(String collectionName) {
-		this.collectionName = collectionName;
-	}
-
-	public String getFrequency() {
-		return frequency;
-	}
-
-	public void setFrequency(String frequency) {
-		this.frequency = frequency;
 	}
 
 }
