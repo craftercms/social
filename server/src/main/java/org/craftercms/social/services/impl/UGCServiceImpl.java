@@ -16,29 +16,20 @@
  */
 package org.craftercms.social.services.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.AttachmentsList;
-import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.Target;
+import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
-import org.craftercms.social.exceptions.DataErrorException;
+import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
+import org.craftercms.social.helpers.MultipartFileClone;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
@@ -47,6 +38,7 @@ import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.SupportDataAccess;
 import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCService;
+import org.craftercms.social.services.VirusScannerService;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.support.CrafterProfile;
@@ -59,6 +51,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class UGCServiceImpl implements UGCService {
@@ -87,6 +88,9 @@ public class UGCServiceImpl implements UGCService {
     @Autowired
 	private TenantService tenantService;
 
+	@Autowired
+	private VirusScannerService virusScannerService;
+
     @Override
     public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant, int page, int pageSize, String sortField, String sortOrder) {
         log.debug("Looking for Users with status %s and tenant %s", moderationStatus, tenant);
@@ -96,37 +100,28 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
-                         String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, DataErrorException {
+                         String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, AttachmentErrorException {
 
-        String errorMessage = null;
-
-        if(attachments != null){
-            VirusScannerServiceImpl virusScannerService = new VirusScannerServiceImpl();
-            errorMessage = virusScannerService.scan(attachments);
+        if(attachments != null) {
+	        attachments = scanFilesForVirus(attachments);
         }
 
-        if(errorMessage != null){
-            log.error("Error Message after scanning: "+ errorMessage);
-            throw new DataErrorException(errorMessage);
+        UGC ugc = null;
+        if (existsUGC(ugcId)) {
+            ugc = uGCRepository.findOne(ugcId);
+            ugc.setTargetId(targetId);
+            ugc.setParentId(parentId);
+            ugc.setTextContent(textContent);
+            ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
+            ugc.setTargetUrl(targetUrl);
+            ugc.setTargetDescription(targetDescription);
+            ugc.setLastModifiedDate(new Date());
+            this.uGCRepository.save(ugc);
+            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+            //Audit call
+            auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
         }
-        else{
-            UGC ugc = null;
-            if (existsUGC(ugcId)) {
-                ugc = uGCRepository.findOne(ugcId);
-                ugc.setTargetId(targetId);
-                ugc.setParentId(parentId);
-                ugc.setTextContent(textContent);
-                ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
-                ugc.setTargetUrl(targetUrl);
-                ugc.setTargetDescription(targetDescription);
-                ugc.setLastModifiedDate(new Date());
-                this.uGCRepository.save(ugc);
-                ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
-                //Audit call
-                auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
-            }
-            return ugc;
-        }
+        return ugc;
     }
 
     @Override
@@ -227,41 +222,34 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC newUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
-            throws PermissionDeniedException, DataErrorException {
+            throws PermissionDeniedException, AttachmentErrorException {
 
         String errorMessage = null;
 
         if(files != null){
-            VirusScannerServiceImpl virusScannerService = new VirusScannerServiceImpl();
-            errorMessage = virusScannerService.scan(files);
+	        files = scanFilesForVirus(files);
         }
 
-        if(errorMessage != null){
-            log.error("Error Message after scanning: "+ errorMessage);
-            throw new DataErrorException(errorMessage);
-        }
-        else{
-            ugc.setAnonymousFlag(isAnonymousFlag);
-            List<Action> resolveActions = resolveUGCActions(ugc, actions);
-            ugc.setModerationStatus(ModerationStatus.UNMODERATED);
-            ugc.setCreatedDate(new Date());
-            ugc.setLastModifiedDate(new Date());
-            checkForModeration(ugc);
-            ugc.setAttachmentId(saveUGCAttachments(files));
-            ugc.setActions(resolveActions);
-            UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
-            ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
-            //Audit call
-            auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
-            return ugcWithProfile;
-        }
+        ugc.setAnonymousFlag(isAnonymousFlag);
+        List<Action> resolveActions = resolveUGCActions(ugc, actions);
+        ugc.setModerationStatus(ModerationStatus.UNMODERATED);
+        ugc.setCreatedDate(new Date());
+        ugc.setLastModifiedDate(new Date());
+        checkForModeration(ugc);
+        ugc.setAttachmentId(saveUGCAttachments(files));
+        ugc.setActions(resolveActions);
+        UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
+        ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
+        //Audit call
+        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
+        return ugcWithProfile;
     }
 
 
 
     @Override
     public UGC newChildUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
-            throws PermissionDeniedException , DataErrorException{
+            throws PermissionDeniedException , AttachmentErrorException {
         if (!existsUGC(ugc.getParentId())) {
             log.error("Parent for {} does not exist", ugc);
             throw new DataIntegrityViolationException("Parent UGC does not exist");
@@ -270,29 +258,22 @@ public class UGCServiceImpl implements UGCService {
         String errorMessage = null;
 
         if(files != null){
-            VirusScannerServiceImpl virusScannerService = new VirusScannerServiceImpl();
-            errorMessage = virusScannerService.scan(files);
+	        files = scanFilesForVirus(files);
         }
 
-        if(errorMessage != null){
-            log.error("Error Message after scanning: "+ errorMessage);
-            throw new DataErrorException(errorMessage);
-        }
-        else{
-            ugc.setAnonymousFlag(isAnonymousFlag);
-            // resolve and set the actions
-            ugc.setActions(resolveUGCActions(ugc, actions));
-            ugc.setModerationStatus(ModerationStatus.UNMODERATED);
-            ugc.setCreatedDate(new Date());
-            ugc.setLastModifiedDate(new Date());
-            checkForModeration(ugc);
-            ugc.setAttachmentId(saveUGCAttachments(files));
-            UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
-            ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
-            //Audit call
-            auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
-            return ugcWithProfile;
-        }
+        ugc.setAnonymousFlag(isAnonymousFlag);
+        // resolve and set the actions
+        ugc.setActions(resolveUGCActions(ugc, actions));
+        ugc.setModerationStatus(ModerationStatus.UNMODERATED);
+        ugc.setCreatedDate(new Date());
+        ugc.setLastModifiedDate(new Date());
+        checkForModeration(ugc);
+        ugc.setAttachmentId(saveUGCAttachments(files));
+        UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
+        ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
+        //Audit call
+        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
+        return ugcWithProfile;
     }
 
     private ObjectId[] saveUGCAttachments(MultipartFile[] files) {
@@ -583,6 +564,33 @@ public class UGCServiceImpl implements UGCService {
 	public List<UGC> findUGCsByTenant(String tenantName,
 			String sortField, String sortOrder) {
 		return findUGCsByTenant(tenantName, -1, -1, sortField, sortOrder); 
+	}
+
+	/**
+	 *
+	 * @param attachments
+	 * @return              cloned original MultipartFile[] that should be used further
+	 * @throws IOException
+	 */
+	protected MultipartFile[] scanFilesForVirus(MultipartFile[] attachments) throws AttachmentErrorException {
+		if (attachments == null) {
+			return null;
+		}
+		MultipartFileClone[] multipartFileClone = new MultipartFileClone[attachments.length];
+		// clone files so they could be used for virus scanning and further for storing by the UGC service
+		for (int i = 0; i < multipartFileClone.length; i++) {
+			try {
+				multipartFileClone[i] = new MultipartFileClone(attachments[i]);
+			} catch (IOException e) {
+				throw new AttachmentErrorException(e);
+			}
+		}
+		// scan files
+		String errorMessage = virusScannerService.scan(multipartFileClone);
+		if (errorMessage != null) {
+			throw new AttachmentErrorException(errorMessage);
+		}
+		return multipartFileClone;
 	}
 
     private List<UGC> populateUGCListWithProfiles(List<UGC> ugcList) {

@@ -27,7 +27,7 @@ import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.domain.Action;
-import org.craftercms.social.exceptions.DataErrorException;
+import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.util.web.Attachment;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -67,7 +67,7 @@ public interface UGCService {
 	 * @return the saved {@link UGC}
 	 */
 	UGC newUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions,
-                   String tenant, String profileId, boolean isAnonymous) throws PermissionDeniedException, DataErrorException;
+                   String tenant, String profileId, boolean isAnonymous) throws PermissionDeniedException, AttachmentErrorException;
 
 	/**
 	 * Creates a new child {@link UGC}
@@ -80,7 +80,7 @@ public interface UGCService {
 	 *             if the Parent UGC does not exist
 	 */
 	UGC newChildUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions,
-                       String tenant, String profileId, boolean isAnonymous) throws PermissionDeniedException, DataErrorException;
+                       String tenant, String profileId, boolean isAnonymous) throws PermissionDeniedException, AttachmentErrorException;
 
 	/**
 	 * Checks if a UGC Exists
@@ -131,7 +131,7 @@ public interface UGCService {
 	UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId, String sortField, String sortOrder);
 
 	UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
-			String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, DataErrorException;
+			String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, AttachmentErrorException;
 
 	void deleteUgc(ObjectId objectId, String tenant, String profileId) throws PermissionDeniedException;
 	

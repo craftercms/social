@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.craftercms</groupId>
+    <artifactId>crafter-virus-scanner</artifactId>
+    <version>1.0</version>
+	<name>Crafter Social Virus Scanner</name>
+	<description>Crafter Social Virus Scanner</description>
+	<url>https://github.com/craftercms/social/tree/master/virus-scanner</url>
+
+	<parent>
+		<groupId>org.craftercms</groupId>
+		<artifactId>crafter-social-parent</artifactId>
+		<version>2.2.4-SNAPSHOT</version>
+	</parent>
+
+	<organization>
+		<name>CrafterCMS</name>
+		<url>http://craftercms.org</url>
+	</organization>
+
+    <dependencies>
+        <dependency>
+            <artifactId>clamavj</artifactId>
+            <groupId>com.philvarner.clamavj</groupId>
+            <version>0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+</project>

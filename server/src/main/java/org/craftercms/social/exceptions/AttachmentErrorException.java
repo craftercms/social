@@ -19,25 +19,25 @@ package org.craftercms.social.exceptions;
 import org.craftercms.social.util.action.ActionEnum;
 
 
-public class DataErrorException extends Exception {
+public class AttachmentErrorException extends Exception {
 
-	public DataErrorException() {
+	public AttachmentErrorException() {
 		super();
 	}
 
-    public DataErrorException(String msg) {
+    public AttachmentErrorException(String msg) {
         super(msg);
     }
 
-	public DataErrorException(String msg, ActionEnum action, Throwable thr) {
+	public AttachmentErrorException(String msg, ActionEnum action, Throwable thr) {
 		super(msg + ": Action " + action, thr);
 	}
 
-	public DataErrorException(String msg, ActionEnum action) {
+	public AttachmentErrorException(String msg, ActionEnum action) {
 		super(msg + ": Action " + action);
 	}
 
-	public DataErrorException(Throwable thr) {
+	public AttachmentErrorException(Throwable thr) {
 		super(thr);
 	}
 

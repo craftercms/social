@@ -5,6 +5,7 @@ import com.rivetlogic.isaca.virusscanner.impl.VirusScannerImpl;
 import org.craftercms.social.services.VirusScannerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -12,15 +13,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Service
 public class VirusScannerServiceImpl implements VirusScannerService {
 
     private final transient Logger log = LoggerFactory.getLogger(VirusScannerServiceImpl.class);
 
-    private VirusScannerImpl virusScanner;
-
-    public VirusScannerServiceImpl(){
-        this.virusScanner = new VirusScannerImpl();
-    }
+    private VirusScannerImpl virusScanner = new VirusScannerImpl();
 
     @Override
     public String scan(MultipartFile[] files) {
@@ -28,7 +26,7 @@ public class VirusScannerServiceImpl implements VirusScannerService {
         String userErrorMessage = null;
 
         if(files != null){
-            for(MultipartFile multipartFile : files){
+            for(MultipartFile multipartFile : files) {
 
                 File tempFile = null;
                 InputStream inputStream = null;

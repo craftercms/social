@@ -16,22 +16,11 @@
  */
 package org.craftercms.social.controllers.rest.v1;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
-import org.craftercms.social.exceptions.DataErrorException;
+import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.HierarchyGenerator;
@@ -50,6 +39,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/api/2/ugc")
@@ -173,7 +172,7 @@ public class UGCRestController {
 			@RequestParam(required = false) String textContent,
 			@RequestParam(required = false) MultipartFile[] attachments,
 			@RequestParam(required = false) Boolean anonymousFlag,
-			HttpServletRequest request) throws PermissionDeniedException, DataErrorException {
+			HttpServletRequest request) throws PermissionDeniedException, AttachmentErrorException {
 		if (anonymousFlag == null) {
 			anonymousFlag = false;
 		}
@@ -202,7 +201,7 @@ public class UGCRestController {
 			@RequestParam(required = false) String targetDescription,
             @RequestParam(required = false) String parentId,
 			@RequestParam(required = false)String textContent,
-			@RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException, DataErrorException {
+			@RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException, AttachmentErrorException {
         return ugcService.updateUgc(new ObjectId(ugcId), tenant, target, getProfileId(),
                 parentId==null?null:new ObjectId(parentId), textContent, attachments,targetUrl, targetDescription);
 	}
@@ -264,9 +263,10 @@ public class UGCRestController {
         return ex.getMessage();
 	}
 
-    @ExceptionHandler(DataErrorException.class)
-    public String handleDataErrorException(DataErrorException ex, HttpServletResponse response) {
+    @ExceptionHandler(AttachmentErrorException.class)
+    public String handleDataErrorException(AttachmentErrorException ex, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
+	    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
         return ex.getMessage();
     }
 	
