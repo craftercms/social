@@ -107,7 +107,7 @@
     });
 
     social.define('Constants', {
-        TEMPLATES_URL: '../hbs/',
+        TEMPLATES_URL: 'hbs/',
 
         EVENT_GET_LIST: 'get-list',
         EVENT_STATE_SUCCESS: 'success',
@@ -174,7 +174,8 @@
 
     var Orchestrator = $.extend({
         url: {
-            base: '/crafter/social/social-ui/crafter-social/api/2/',
+            base: '/crafter-social/api/2/',
+            //base: '/crafter/social/social-ui/crafter-social/api/2/',
             ugc: {
                 target: '.json',
                 create: '.json',

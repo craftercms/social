@@ -7,9 +7,9 @@
         idAttribute: 'id',
         url: function () {
             if (this.isNew()) {
-                return '/crafter/social/crafter-social/api/2/ugc/create.json';
+                return '/crafter-social/api/2/ugc/create.json';
             } else {
-                return '/crafter/social/crafter-social/api/2/ugc/like/%@.json'.fmt(this.id);
+                return '/crafter-social/api/2/ugc/like/%@.json'.fmt(this.id);
             }
         },
         defaults: {

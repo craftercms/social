@@ -32,9 +32,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git:git://github.com/craftercms/social/tree/master/blog</connection>
-		<developerConnection>scm:git:git://github.com/craftercms/social/tree/master/blog</developerConnection>
-		<url>scm:git:git://github.com/craftercms/social/tree/master/blog</url>
+		<connection>scm:git:git://github.com/craftercms/social/tree/master/admin</connection>
+		<developerConnection>scm:git:git://github.com/craftercms/social/tree/master/admin</developerConnection>
+		<url>scm:git:git://github.com/craftercms/social/tree/master/admin</url>
 	</scm>
 	<properties>
 		<java.version>1.6</java.version>
