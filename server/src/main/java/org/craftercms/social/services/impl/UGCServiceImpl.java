@@ -103,7 +103,8 @@ public class UGCServiceImpl implements UGCService {
                          String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, AttachmentErrorException {
 
         if(attachments != null) {
-	        attachments = scanFilesForVirus(attachments);
+	        attachments = cloneMultipartFiles(attachments);
+	        scanFilesForVirus(attachments);
         }
 
         UGC ugc = null;
@@ -227,7 +228,8 @@ public class UGCServiceImpl implements UGCService {
         String errorMessage = null;
 
         if(files != null){
-	        files = scanFilesForVirus(files);
+	        files = cloneMultipartFiles(files);
+	        scanFilesForVirus(files);
         }
 
         ugc.setAnonymousFlag(isAnonymousFlag);
@@ -258,7 +260,8 @@ public class UGCServiceImpl implements UGCService {
         String errorMessage = null;
 
         if(files != null){
-	        files = scanFilesForVirus(files);
+	        files = cloneMultipartFiles(files);
+	        scanFilesForVirus(files);
         }
 
         ugc.setAnonymousFlag(isAnonymousFlag);
@@ -572,7 +575,13 @@ public class UGCServiceImpl implements UGCService {
 	 * @return              cloned original MultipartFile[] that should be used further
 	 * @throws IOException
 	 */
-	protected MultipartFile[] scanFilesForVirus(MultipartFile[] attachments) throws AttachmentErrorException {
+	/**
+	 *
+	 * @param attachments
+	 * @return              cloned original MultipartFile[] that should be used further
+	 * @throws AttachmentErrorException
+	 */
+	protected MultipartFile[] cloneMultipartFiles(MultipartFile[] attachments) throws AttachmentErrorException {
 		if (attachments == null) {
 			return null;
 		}
@@ -585,12 +594,15 @@ public class UGCServiceImpl implements UGCService {
 				throw new AttachmentErrorException(e);
 			}
 		}
+		return multipartFileClone;
+	}
+
+	protected void scanFilesForVirus(MultipartFile[] attachments) throws AttachmentErrorException {
 		// scan files
-		String errorMessage = virusScannerService.scan(multipartFileClone);
+		String errorMessage = virusScannerService.scan(attachments);
 		if (errorMessage != null) {
 			throw new AttachmentErrorException(errorMessage);
 		}
-		return multipartFileClone;
 	}
 
     private List<UGC> populateUGCListWithProfiles(List<UGC> ugcList) {
