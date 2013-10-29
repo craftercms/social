@@ -50,10 +50,6 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
     static final String FREQUENCY = "instant";
     static final String FORMAT = "single";
 
-    // TODO: These need to be passed in as parameters and are specific to the implementation
-    static final String APPLICATION_ID = "crafter-social";
-    static final String COLLECTION_NAME = "uGCAudit";
-    static final String DEFAULT_JOB_ID = "crafter-social-harvester";
 
 	@Autowired
 	private NotificationRepository notificationRepository;
@@ -81,6 +77,11 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 	
 	@Override
 	public void doHarvestInternal(Map<String, ?> harvesterProperties) {
+
+
+        // find all new audit entries (process X at a time)
+            // for each audit entry, find all subscriptions that match target   (process X subscriptions at a time)
+                // for each subscription create an entry in the notification collection
 
         // GET Audits using last retrieved row
 		List<UGCAudit> listUGCAudit = findUGCAuditList(getLastRowRetrieved(harvesterProperties));
@@ -185,12 +186,7 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 	}
 
 	private List<UGCAudit> findUGCAuditList(long lastRowRetrieved) {
-		List<UGCAudit> listUGCAudit = null;
-		//if (harvestStatus == null) {                  // TODO: Discuss when this would happen
-		//	listUGCAudit = ugcAuditRepository.findAll();
-		//} else {
-			listUGCAudit = ugcAuditRepository.findByLastRetrievedRow(lastRowRetrieved);
-		//}
+		List<UGCAudit> listUGCAudit = ugcAuditRepository.findByLastRetrievedRow(lastRowRetrieved);
 		return  listUGCAudit;
 	}
 

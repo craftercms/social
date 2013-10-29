@@ -61,7 +61,7 @@ public abstract class BaseHarvesterService implements HarvesterService {
 
         HarvestStatus harvestStatus = getHarvesterLock(jobId, applicationId);
 
-        if (harvestStatus.equals(HARVESTER_STATUS_RUNNING))  {
+        if (harvestStatus != null && harvestStatus.equals(HARVESTER_STATUS_RUNNING))  {
 
             Map<String, ?> harvestResults = null;
             try {
