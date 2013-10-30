@@ -11,8 +11,16 @@
                     <property name="jobDetail">
                         <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
                             <property name="targetBeanName" value="harvesterService"/>
-                            <property name="targetMethod" value="harvest"/>
+                            <property name="targetMethod" value="doHarvest"/>
                             <property name="concurrent" value="false"/>
+                            <property name="arguments">
+                                <array>
+                                    <map>
+										<entry key="jobId" value="crafter-social-job" />
+										<entry key="applicationId" value="crafter-social" />
+									</map>
+                                </array>
+                            </property>
                         </bean>
                     </property>
                 </bean>

@@ -196,7 +196,7 @@ public class UGCServiceImpl implements UGCService {
     	for (String id: ids) {
     		uGCId = new ObjectId(id);
 	        if (existsUGC(uGCId)) {
-	            UGC ugc = uGCRepository.findOne(uGCId);
+	            UGC ugc = uGCRepository.findOne(uGCId); //TODO: performance improvement. ONLY one call to DB
 	            ugc.setModerationStatus(newStatus);
 	            ugc.setLastModifiedDate(new Date());
 	            //Audit call

@@ -31,13 +31,13 @@ public class UGCAuditRepositoryImpl implements UGCAuditRepositoryCustom {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 	
-	private static final String SEQUENCE = "row";
+	private static final String ROW = "row";
 	
 	@Override
 	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve) {
 		Query query = new Query();
-		query.sort().on(SEQUENCE, Order.DESCENDING);
-		query.addCriteria(Criteria.where(SEQUENCE).gt(lastRowRetrieve));
+		query.sort().on(ROW, Order.DESCENDING);
+		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
 		//query.skip(lastRowRetrieve);
 		return mongoTemplate.find(query, UGCAudit.class);
 	}
