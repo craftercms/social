@@ -22,11 +22,6 @@
 	</organization>
 
     <dependencies>
-        <!-- <dependency>
-            <artifactId>clamavj</artifactId>
-            <groupId>com.philvarner.clamavj</groupId>
-            <version>0.2</version>
-        </dependency> -->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
