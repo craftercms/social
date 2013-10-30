@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	
+	<bean name="virusscanner.properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath:crafter/social/virusscanner.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean  id="virusScannerService" class="org.craftercms.social.services.impl.VirusScannerServiceImpl">
+        <constructor-arg ref="clamavjVirusScanner"/>
+    </bean>
+
+    <bean id="clamavjVirusScanner" class="org.craftercms.virusscanner.impl.ClamavjVirusScannerImpl">
+        <constructor-arg index="0" type="java.lang.String" value="${virusscanner.clamavj.clamd.clamdHost}"/>
+        <constructor-arg index="1" type="int" value="${virusscanner.clamavj.clamd.clamdPort}"/>
+        <constructor-arg index="2" type="int" value="${virusscanner.clamavj.clamd.clamdTimeout}"/>
+    </bean>
+	
+</beans>

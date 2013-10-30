@@ -11,10 +11,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-@Component
 public class ClamavjVirusScannerImpl implements VirusScanner {
 
 	public static final String THREAT_FOUND_MESSAGE = "Threat found";
@@ -27,9 +23,6 @@ public class ClamavjVirusScannerImpl implements VirusScanner {
 	private int clamdPort;
 	private int clamdTimeout;
 
-	/*public ClamavjVirusScannerImpl() {
-		//this("localhost", 3310, 60000);
-	}*/
 
 	public ClamavjVirusScannerImpl(String clamdHost, int clamdPort, int clamdTimeout) {
 		this.clamdHost = clamdHost;
@@ -130,16 +123,14 @@ public class ClamavjVirusScannerImpl implements VirusScanner {
 
 	}
 
-    @Value("${virusscanner.clamavj.clamd.clamdHost}")
     public void setClamdHost(String clamdHost) {
         this.clamdHost = clamdHost;
     }
 
-    @Value("${virusscanner.clamavj.clamd.clamdPort}")
     public void setClamdPort(int clamdPort) {
         this.clamdPort = clamdPort;
     }
-    @Value("${virusscanner.clamavj.clamd.clamdTimeout}")
+
     public void setClamdTimeout(int clamdTimeout) {
         this.clamdTimeout = clamdTimeout;
     }
