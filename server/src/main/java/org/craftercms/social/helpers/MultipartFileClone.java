@@ -10,8 +10,8 @@ import java.io.InputStream;
 
 public class MultipartFileClone implements MultipartFile {
 
-	File tempFile = null;
-	MultipartFile multipartFile;
+	private File tempFile = null;
+	private MultipartFile multipartFile;
 
 	public MultipartFileClone(MultipartFile multipartFile) throws IOException {
 		this.multipartFile = multipartFile;
@@ -50,7 +50,7 @@ public class MultipartFileClone implements MultipartFile {
 
 	@Override
 	public byte[] getBytes() throws IOException {
-		return new byte[0];  //To change body of implemented methods use File | Settings | File Templates.
+		return FileCopyUtils.copyToByteArray(getInputStream());
 	}
 
 	@Override
