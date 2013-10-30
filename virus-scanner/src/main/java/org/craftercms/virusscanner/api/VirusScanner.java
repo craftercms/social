@@ -1,4 +1,4 @@
-package com.rivetlogic.isaca.virusscanner.api;
+package org.craftercms.virusscanner.api;
 
 import java.io.InputStream;
 

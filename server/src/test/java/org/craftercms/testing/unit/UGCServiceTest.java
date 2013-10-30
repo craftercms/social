@@ -1,11 +1,11 @@
 package org.craftercms.testing.unit;
 
+import org.craftercms.virusscanner.impl.ClamavjVirusScannerImpl;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.authentication.AuthenticationToken;
-import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.Target;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
@@ -77,7 +77,7 @@ public class UGCServiceTest {
     private SupportDataAccess supportDataAccess;
 
     @Mock
-    private VirusScannerServiceImpl virusScannerService = new VirusScannerServiceImpl();
+    private VirusScannerService virusScannerService = new VirusScannerServiceImpl(new ClamavjVirusScannerImpl("localhost", 3310, 60000));
 
 	@InjectMocks
 	private UGCServiceImpl ugcServiceImpl;
@@ -102,8 +102,8 @@ public class UGCServiceTest {
 	public void startup() {
 		mockStatic(RequestContext.class);
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
-		
-		
+
+
 		currentProfile = getProfile();
 		currentUGC = getUGC();
 		ul = new ArrayList<UGC>();
@@ -293,10 +293,7 @@ public class UGCServiceTest {
     public void testNewChildCleanFile() {
         mockStatic(RequestContext.class);
 
-        boolean failed = false;
-
         when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
-        UGC u  = null;
 
         MultipartFile[] files = new MultipartFile[1];
 
@@ -314,22 +311,19 @@ public class UGCServiceTest {
         }
 
         try {
-            u = ugcServiceImpl.newUgc(currentUGC,files, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
+            ugcServiceImpl.newUgc(currentUGC,files, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
         } catch (PermissionDeniedException pde) {
             fail(pde.getMessage());
-            failed = true;
         } catch (AttachmentErrorException dee) {
             fail(dee.getMessage());
-            failed = true;
         }
         catch (NullPointerException ignore) {
             // This NullPointerException probably means that the item could not be
             // store successfully (mainly because of the db and the nature of these tests).
-            // This is not always true but it doesn't matter because the success flag
+            // This may not always true but it doesn't matter because the catch above
             // should be enough to test the virus scanning
         }
 
-        assertFalse(failed);
 
     }
 
@@ -338,7 +332,6 @@ public class UGCServiceTest {
         mockStatic(RequestContext.class);
 
         when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
-        UGC u  = null;
 
         MultipartFile[] files = new MultipartFile[1];
 
@@ -356,14 +349,12 @@ public class UGCServiceTest {
         }
 
         try {
-            u = ugcServiceImpl.newUgc(currentUGC, files, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
+            ugcServiceImpl.newUgc(currentUGC, files, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
         } catch (PermissionDeniedException pde) {
             fail(pde.getMessage());
-        } catch (AttachmentErrorException dee) {
-            u = null;
+        } catch (AttachmentErrorException aee) {
+            assertTrue(ClamavjVirusScannerImpl.THREAT_FOUND_MESSAGE.equals(aee.getMessage()));
         }
-
-        assertEquals(null,u);
 
     }
 

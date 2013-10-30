@@ -1,4 +1,4 @@
-package com.philvarner.clamavj;
+package clamavj;
 
 public class ScanResult {
 

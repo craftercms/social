@@ -1,7 +1,8 @@
 package org.craftercms.social.services.impl;
 
 
-import com.rivetlogic.isaca.virusscanner.impl.VirusScannerImpl;
+import org.craftercms.virusscanner.api.VirusScanner;
+import org.craftercms.virusscanner.impl.ClamavjVirusScannerImpl;
 import org.craftercms.social.services.VirusScannerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +19,10 @@ public class VirusScannerServiceImpl implements VirusScannerService {
 
     private final transient Logger log = LoggerFactory.getLogger(VirusScannerServiceImpl.class);
 
-    private VirusScannerImpl virusScanner;
+    private VirusScanner virusScanner;
 
-    public VirusScannerServiceImpl(){
-        this.virusScanner = new VirusScannerImpl();
-    }
-
-    public VirusScannerServiceImpl(String host, int port,int timeout){
-        this.virusScanner = new VirusScannerImpl(host,port,timeout);
+    public VirusScannerServiceImpl(VirusScanner virusScanner){
+        this.virusScanner = virusScanner;
     }
 
     @Override
@@ -45,7 +42,7 @@ public class VirusScannerServiceImpl implements VirusScannerService {
                     inputStream = new FileInputStream(tempFile);
                     userErrorMessage = this.virusScanner.scan(inputStream);
                 } catch (IOException e) {
-                    userErrorMessage = VirusScannerImpl.SCAN_FAILED_MESSAGE;
+                    userErrorMessage = ClamavjVirusScannerImpl.SCAN_FAILED_MESSAGE;
                     log.error(e + " - USER MESSAGE: " + userErrorMessage);
                 }
                 finally {
@@ -53,7 +50,7 @@ public class VirusScannerServiceImpl implements VirusScannerService {
                         try {
                             inputStream.close();
                         } catch (IOException e) {
-                            userErrorMessage = VirusScannerImpl.SCAN_FAILED_MESSAGE;
+                            userErrorMessage = ClamavjVirusScannerImpl.SCAN_FAILED_MESSAGE;
                             log.error(e + " - USER MESSAGE: " + userErrorMessage);
                         }
                     }
@@ -72,5 +69,13 @@ public class VirusScannerServiceImpl implements VirusScannerService {
         }
 
         return userErrorMessage;
+    }
+
+    public VirusScanner getVirusScanner() {
+        return virusScanner;
+    }
+
+    public void setVirusScanner(VirusScanner virusScanner) {
+        this.virusScanner = virusScanner;
     }
 }

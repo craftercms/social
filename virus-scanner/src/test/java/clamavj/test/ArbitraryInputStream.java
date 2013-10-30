@@ -1,4 +1,4 @@
-package com.philvarner.clamavj.test;
+package clamavj.test;
 
 import java.io.InputStream;
 

@@ -1,8 +1,8 @@
-package com.rivetlogic.isaca.virusscanner.impl;
+package org.craftercms.virusscanner.impl;
 
-import com.philvarner.clamavj.ClamScan;
-import com.philvarner.clamavj.ScanResult;
-import com.rivetlogic.isaca.virusscanner.api.VirusScanner;
+import clamavj.ClamScan;
+import clamavj.ScanResult;
+import org.craftercms.virusscanner.api.VirusScanner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -11,27 +11,30 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-public class VirusScannerImpl implements VirusScanner {
+@Component
+public class ClamavjVirusScannerImpl implements VirusScanner {
 
 	public static final String THREAT_FOUND_MESSAGE = "Threat found";
 	public static final String FILE_NOT_FOUND_MESSAGE = "File not found";
 	public static final String SCAN_FAILED_MESSAGE = "Scan failed";
 
-	private static Log log = LogFactory.getLog(VirusScanner.class);
+	private static Log log = LogFactory.getLog(ClamavjVirusScannerImpl.class);
 
-	private String host;
-	private int port;
-	private int timeout;
+	private String clamdHost;
+	private int clamdPort;
+	private int clamdTimeout;
 
-	public VirusScannerImpl() {
-		this("localhost", 3310, 60000);
-	}
+	/*public ClamavjVirusScannerImpl() {
+		//this("localhost", 3310, 60000);
+	}*/
 
-	public VirusScannerImpl(String host, int port, int timeout) {
-		this.host = host;
-		this.port = port;
-		this.timeout = timeout;
+	public ClamavjVirusScannerImpl(String clamdHost, int clamdPort, int clamdTimeout) {
+		this.clamdHost = clamdHost;
+		this.clamdPort = clamdPort;
+		this.clamdTimeout = clamdTimeout;
 	}
 
 	public String scan(String filename) {
@@ -55,7 +58,7 @@ public class VirusScannerImpl implements VirusScanner {
 				file = new File(filename);
 				fileInputStream = new FileInputStream(file);
 
-				clamScan = new ClamScan(this.host, this.port, this.timeout);
+				clamScan = new ClamScan(this.clamdHost, this.clamdPort, this.clamdTimeout);
 
 				scanResult = clamScan.scan(fileInputStream);
 
@@ -100,7 +103,7 @@ public class VirusScannerImpl implements VirusScanner {
 			String statusName;
 			String signature;
 
-			clamScan = new ClamScan(this.host, this.port, this.timeout);
+			clamScan = new ClamScan(this.clamdHost, this.clamdPort, this.clamdTimeout);
 
 			scanResult = clamScan.scan(inputStream);
 
@@ -126,5 +129,32 @@ public class VirusScannerImpl implements VirusScanner {
 		return userMessage;
 
 	}
+
+    @Value("${virusscanner.clamavj.clamd.clamdHost}")
+    public void setClamdHost(String clamdHost) {
+        this.clamdHost = clamdHost;
+    }
+
+    @Value("${virusscanner.clamavj.clamd.clamdPort}")
+    public void setClamdPort(int clamdPort) {
+        this.clamdPort = clamdPort;
+    }
+    @Value("${virusscanner.clamavj.clamd.clamdTimeout}")
+    public void setClamdTimeout(int clamdTimeout) {
+        this.clamdTimeout = clamdTimeout;
+    }
+
+    public String getClamdHost() {
+        return clamdHost;
+    }
+
+    public int getClamdPort() {
+        return clamdPort;
+    }
+
+    public int getClamdTimeout() {
+        return clamdTimeout;
+    }
+
 
 }

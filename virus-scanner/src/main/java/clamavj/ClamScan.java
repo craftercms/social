@@ -1,4 +1,4 @@
-package com.philvarner.clamavj;
+package clamavj;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
