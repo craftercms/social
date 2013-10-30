@@ -10,8 +10,8 @@ import java.io.InputStream;
 
 public class MultipartFileClone implements MultipartFile {
 
-	File tempFile = null;
-	MultipartFile multipartFile;
+	private File tempFile = null;
+	private MultipartFile multipartFile;
 
 	public MultipartFileClone(MultipartFile multipartFile) throws IOException {
 		this.multipartFile = multipartFile;
