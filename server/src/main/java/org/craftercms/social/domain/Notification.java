@@ -34,6 +34,8 @@ public class Notification {
 	
 	private String subscriberEmail;
 	
+	private String subscriberUsername;
+	
 	private Event event;
 	
 	private TransmittedStatus transmitedStatus;
@@ -108,6 +110,14 @@ public class Notification {
 
 	public void setTransmitedStatus(TransmittedStatus transmitedStatus) {
 		this.transmitedStatus = transmitedStatus;
+	}
+
+	public String getSubscriberUsername() {
+		return subscriberUsername;
+	}
+
+	public void setSubscriberUsername(String subscriberUsername) {
+		this.subscriberUsername = subscriberUsername;
 	}
 
 }
