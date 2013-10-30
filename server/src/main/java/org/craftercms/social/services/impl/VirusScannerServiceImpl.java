@@ -18,7 +18,15 @@ public class VirusScannerServiceImpl implements VirusScannerService {
 
     private final transient Logger log = LoggerFactory.getLogger(VirusScannerServiceImpl.class);
 
-    private VirusScannerImpl virusScanner = new VirusScannerImpl();
+    private VirusScannerImpl virusScanner;
+
+    public VirusScannerServiceImpl(){
+        this.virusScanner = new VirusScannerImpl();
+    }
+
+    public VirusScannerServiceImpl(String host, int port,int timeout){
+        this.virusScanner = new VirusScannerImpl(host,port,timeout);
+    }
 
     @Override
     public String scan(MultipartFile[] files) {
@@ -50,7 +58,9 @@ public class VirusScannerServiceImpl implements VirusScannerService {
                         }
                     }
                     if(tempFile != null){
-                        tempFile.delete();
+                        if(!tempFile.delete()){
+                            log.error("The temporary file could not be deleted");
+                        }
                     }
                 }
 
