@@ -23,6 +23,7 @@ import java.util.Map;
  */
 public interface HarvesterService {
 
+    // parameters that get passed to harvester job
     static final String JOB_ID_PARAM = "jobId";
     static final String APPLICATION_ID_PARAM = "applicationId";
 
