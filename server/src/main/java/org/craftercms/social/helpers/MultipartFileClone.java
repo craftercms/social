@@ -50,7 +50,7 @@ public class MultipartFileClone implements MultipartFile {
 
 	@Override
 	public byte[] getBytes() throws IOException {
-		return new byte[0];  //To change body of implemented methods use File | Settings | File Templates.
+		return FileCopyUtils.copyToByteArray(getInputStream());
 	}
 
 	@Override

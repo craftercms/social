@@ -570,15 +570,9 @@ public class UGCServiceImpl implements UGCService {
 	}
 
 	/**
-	 *
+	 *  Clone files so they could be used for virus scanning and further for storing by the UGC service
 	 * @param attachments
-	 * @return              cloned original MultipartFile[] that should be used further
-	 * @throws IOException
-	 */
-	/**
-	 *
-	 * @param attachments
-	 * @return              cloned original MultipartFile[] that should be used further
+	 * @return              cloned files MultipartFile[] that can be user multiple times
 	 * @throws AttachmentErrorException
 	 */
 	protected MultipartFile[] cloneMultipartFiles(MultipartFile[] attachments) throws AttachmentErrorException {
@@ -586,7 +580,6 @@ public class UGCServiceImpl implements UGCService {
 			return null;
 		}
 		MultipartFileClone[] multipartFileClone = new MultipartFileClone[attachments.length];
-		// clone files so they could be used for virus scanning and further for storing by the UGC service
 		for (int i = 0; i < multipartFileClone.length; i++) {
 			try {
 				multipartFileClone[i] = new MultipartFileClone(attachments[i]);
