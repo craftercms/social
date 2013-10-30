@@ -1,36 +1,51 @@
 package org.craftercms.social.domain;
 
-import java.util.List;
+import java.util.ArrayList;
+
 
 public class Subscriptions {
 	
-	List<String> frequency;
-	List<String> action;
-	List<String> format;
-	List<String> target;
-	public List<String> getFrequency() {
+	private String frequency;
+	private String action;
+	private String format;
+	private ArrayList<Target> subscription;
+	
+	public Subscriptions() {
+		this.subscription =  new ArrayList<Target>();
+	}
+	
+	
+	public String getFrequency() {
 		return frequency;
 	}
-	public void setFrequency(List<String> frequency) {
+	public void setFrequency(String frequency) {
 		this.frequency = frequency;
 	}
-	public List<String> getAction() {
+	public String getAction() {
 		return action;
 	}
-	public void setAction(List<String> action) {
+	public void setAction(String action) {
 		this.action = action;
 	}
-	public List<String> getFormat() {
+	public String getFormat() {
 		return format;
 	}
-	public void setFormat(List<String> format) {
+	public void setFormat(String format) {
 		this.format = format;
 	}
-	public List<String> getTarget() {
-		return target;
+	public ArrayList<Target> getSubscription() {
+		return subscription;
 	}
-	public void setTarget(List<String> target) {
-		this.target = target;
+	public void setSubscription(ArrayList<Target> subscription) {
+		this.subscription = subscription;
+	}
+	
+	public void addSubscription(Target target) {
+		this.subscription.add(target);
+	}
+	
+	public void removeSubscription(Target target) {
+		this.subscription.remove(target);
 	}
 	
 

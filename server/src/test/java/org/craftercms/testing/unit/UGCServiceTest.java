@@ -392,9 +392,9 @@ public class UGCServiceTest {
 		a.setReason("");
 		a.setTenant("test");
 		Target t = new Target();
-		t.setId("targetId");
-		t.setDescription("targetdescription");
-		t.setUrl("targeturl");
+		t.setTargetId("targetId");
+		t.setTargetDescription("targetdescription");
+		t.setTargetUrl("targeturl");
 		a.setTarget(t);
 		//a.setId(new ObjectId("5202b88203643ac2849709bc"));
 		a.setRow(10l);

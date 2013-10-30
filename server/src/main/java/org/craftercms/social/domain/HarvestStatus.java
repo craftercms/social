@@ -16,6 +16,8 @@
  */
 package org.craftercms.social.domain;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Date;
 
@@ -35,12 +37,17 @@ public class HarvestStatus {
 	
 	private String status;
 	
+	private String jobId;
+	
 	private String applicationId;
 
-    // TODO: Add date field
     private Date lastRunDate;
 
-    private Map<String, ?> attributes;
+    private Map<String, Serializable> attributes;
+    
+    public HarvestStatus() {
+    	attributes = new HashMap<String, Serializable>();
+    }
 
 	public String getId() {
 		return id;
@@ -75,12 +82,28 @@ public class HarvestStatus {
 	}
 
 
-    public Map<String, ?> getAttributes() {
+    public Map<String, Serializable> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Map<String, ?> attributes) {
+    public void setAttributes(Map<String, Serializable> attributes) {
         this.attributes = attributes;
     }
+
+	public Date getLastRunDate() {
+		return lastRunDate;
+	}
+
+	public void setLastRunDate(Date lastRunDate) {
+		this.lastRunDate = lastRunDate;
+	}
+
+	public String getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(String jobId) {
+		this.jobId = jobId;
+	}
 
 }
