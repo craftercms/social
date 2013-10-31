@@ -53,6 +53,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,10 +103,7 @@ public class UGCServiceImpl implements UGCService {
     public UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
                          String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, AttachmentErrorException {
 
-        if(attachments != null) {
-	        attachments = cloneMultipartFiles(attachments);
-	        scanFilesForVirus(attachments);
-        }
+        attachments = scanFilesForVirus(attachments);
 
         UGC ugc = null;
         if (existsUGC(ugcId)) {
@@ -222,7 +220,7 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC newUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
+    public UGC newUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
             throws PermissionDeniedException, AttachmentErrorException {
 
         if(virusScannerService == null){
@@ -232,10 +230,7 @@ public class UGCServiceImpl implements UGCService {
             log.error("VIRUS-SCANER-SERVICE:"+virusScannerService.toString());
         }
 
-        if(files != null){
-	        files = cloneMultipartFiles(files);
-	        scanFilesForVirus(files);
-        }
+	    attachments = scanFilesForVirus(attachments);
 
         ugc.setAnonymousFlag(isAnonymousFlag);
         List<Action> resolveActions = resolveUGCActions(ugc, actions);
@@ -243,7 +238,7 @@ public class UGCServiceImpl implements UGCService {
         ugc.setCreatedDate(new Date());
         ugc.setLastModifiedDate(new Date());
         checkForModeration(ugc);
-        ugc.setAttachmentId(saveUGCAttachments(files));
+        ugc.setAttachmentId(saveUGCAttachments(attachments));
         ugc.setActions(resolveActions);
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
@@ -255,19 +250,14 @@ public class UGCServiceImpl implements UGCService {
 
 
     @Override
-    public UGC newChildUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
+    public UGC newChildUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
             throws PermissionDeniedException , AttachmentErrorException {
         if (!existsUGC(ugc.getParentId())) {
             log.error("Parent for {} does not exist", ugc);
             throw new DataIntegrityViolationException("Parent UGC does not exist");
         }
 
-        String errorMessage = null;
-
-        if(files != null){
-	        files = cloneMultipartFiles(files);
-	        scanFilesForVirus(files);
-        }
+	    attachments = scanFilesForVirus(attachments);
 
         ugc.setAnonymousFlag(isAnonymousFlag);
         // resolve and set the actions
@@ -276,7 +266,7 @@ public class UGCServiceImpl implements UGCService {
         ugc.setCreatedDate(new Date());
         ugc.setLastModifiedDate(new Date());
         checkForModeration(ugc);
-        ugc.setAttachmentId(saveUGCAttachments(files));
+        ugc.setAttachmentId(saveUGCAttachments(attachments));
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
@@ -580,7 +570,7 @@ public class UGCServiceImpl implements UGCService {
 	 * @return              cloned files MultipartFile[] that can be user multiple times
 	 * @throws AttachmentErrorException
 	 */
-	protected MultipartFile[] cloneMultipartFiles(MultipartFile[] attachments) throws AttachmentErrorException {
+	protected MultipartFileClone[] cloneMultipartFiles(MultipartFile[] attachments) throws AttachmentErrorException {
 		if (attachments == null) {
 			return null;
 		}
@@ -595,12 +585,28 @@ public class UGCServiceImpl implements UGCService {
 		return multipartFileClone;
 	}
 
-	protected void scanFilesForVirus(MultipartFile[] attachments) throws AttachmentErrorException {
+	/**
+	 *
+	 * @param attachments
+	 * @return  MultipartFile[]
+	 * @throws AttachmentErrorException
+	 */
+	protected MultipartFile[] scanFilesForVirus(MultipartFile[] attachments) throws AttachmentErrorException {
+		if (attachments == null) {
+			return null;
+		}
+		MultipartFileClone[] multipartFileClones = cloneMultipartFiles(attachments);
+
+		File[] files = new File[multipartFileClones.length];
+		for (int i = 0; i < files.length; i++) {
+			files[i] = multipartFileClones[i].getTempFile();
+		}
 		// scan files
-		String errorMessage = virusScannerService.scan(attachments);
+		String errorMessage = virusScannerService.scan(files);
 		if (errorMessage != null) {
 			throw new AttachmentErrorException(errorMessage);
 		}
+		return multipartFileClones;
 	}
 
     private List<UGC> populateUGCListWithProfiles(List<UGC> ugcList) {

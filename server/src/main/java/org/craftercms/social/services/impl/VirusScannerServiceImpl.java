@@ -3,11 +3,10 @@ package org.craftercms.social.services.impl;
 
 import org.craftercms.social.services.VirusScannerService;
 import org.craftercms.virusscanner.api.VirusScanner;
-import org.craftercms.virusscanner.impl.ClamavjVirusScannerImpl;
+import org.craftercms.virusscanner.impl.ClamavVirusScannerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,58 +16,38 @@ import java.io.InputStream;
 
 public class VirusScannerServiceImpl implements VirusScannerService {
 
-    private final transient Logger log = LoggerFactory.getLogger(VirusScannerServiceImpl.class);
+	private final transient Logger log = LoggerFactory.getLogger(VirusScannerServiceImpl.class);
 
-    private VirusScanner virusScanner;
+	private VirusScanner virusScanner;
 
-    @Override
-    public String scan(MultipartFile[] files) {
+	@Override
+	public String scan(File[] files) {
 
-        String userErrorMessage = null;
+		String userErrorMessage = null;
 
-        if(files != null){
-            for(MultipartFile multipartFile : files) {
+		if (files != null) {
+			for (File file : files) {
 
-                File tempFile = null;
-                InputStream inputStream = null;
+				try {
+					InputStream inputStream = new FileInputStream(file);
+					userErrorMessage = this.virusScanner.scan(inputStream);
+				} catch (IOException e) {
+					userErrorMessage = ClamavVirusScannerImpl.SCAN_FAILED_MESSAGE;
+					log.error(e + " - USER MESSAGE: " + userErrorMessage);
+				}
 
-                try {
-                    tempFile = File.createTempFile("tmp",null);
-                    multipartFile.transferTo(tempFile);
-                    inputStream = new FileInputStream(tempFile);
-                    userErrorMessage = this.virusScanner.scan(inputStream);
-                } catch (IOException e) {
-                    userErrorMessage = ClamavjVirusScannerImpl.SCAN_FAILED_MESSAGE;
-                    log.error(e + " - USER MESSAGE: " + userErrorMessage);
-                }
-                finally {
-                    if(inputStream != null){
-                        try {
-                            inputStream.close();
-                        } catch (IOException e) {
-                            userErrorMessage = ClamavjVirusScannerImpl.SCAN_FAILED_MESSAGE;
-                            log.error(e + " - USER MESSAGE: " + userErrorMessage);
-                        }
-                    }
-                    if(tempFile != null){
-                        if(!tempFile.delete()){
-                            log.error("The temporary file could not be deleted");
-                        }
-                    }
-                }
+				if (userErrorMessage != null) {
+					break;
+				}
 
-                if(userErrorMessage != null){
-                    break;
-                }
+			}
+		}
 
-            }
-        }
-
-        return userErrorMessage;
-    }
+		return userErrorMessage;
+	}
 
 	@Required
-    public void setVirusScanner(VirusScanner virusScanner) {
-        this.virusScanner = virusScanner;
-    }
+	public void setVirusScanner(VirusScanner virusScanner) {
+		this.virusScanner = virusScanner;
+	}
 }

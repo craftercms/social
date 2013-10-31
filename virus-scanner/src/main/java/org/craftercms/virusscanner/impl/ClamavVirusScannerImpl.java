@@ -11,23 +11,26 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-public class ClamavjVirusScannerImpl implements VirusScanner {
+public class ClamavVirusScannerImpl implements VirusScanner {
 
 	public static final String THREAT_FOUND_MESSAGE = "Threat found";
 	public static final String FILE_NOT_FOUND_MESSAGE = "File not found";
 	public static final String SCAN_FAILED_MESSAGE = "Scan failed";
 
-	private static Log log = LogFactory.getLog(ClamavjVirusScannerImpl.class);
+	private static Log log = LogFactory.getLog(ClamavVirusScannerImpl.class);
 
-	private String clamdHost;
-	private int clamdPort;
-	private int clamdTimeout;
+	private String host;
+	private int port;
+	private int timeout;
 
+	public ClamavVirusScannerImpl() {
 
-	public ClamavjVirusScannerImpl(String clamdHost, int clamdPort, int clamdTimeout) {
-		this.clamdHost = clamdHost;
-		this.clamdPort = clamdPort;
-		this.clamdTimeout = clamdTimeout;
+	}
+
+	public ClamavVirusScannerImpl(String host, int port, int timeout) {
+		this.host = host;
+		this.port = port;
+		this.timeout = timeout;
 	}
 
 	public String scan(String filename) {
@@ -51,7 +54,7 @@ public class ClamavjVirusScannerImpl implements VirusScanner {
 				file = new File(filename);
 				fileInputStream = new FileInputStream(file);
 
-				clamScan = new ClamScan(this.clamdHost, this.clamdPort, this.clamdTimeout);
+				clamScan = new ClamScan(this.host, this.port, this.timeout);
 
 				scanResult = clamScan.scan(fileInputStream);
 
@@ -96,7 +99,7 @@ public class ClamavjVirusScannerImpl implements VirusScanner {
 			String statusName;
 			String signature;
 
-			clamScan = new ClamScan(this.clamdHost, this.clamdPort, this.clamdTimeout);
+			clamScan = new ClamScan(this.host, this.port, this.timeout);
 
 			scanResult = clamScan.scan(inputStream);
 
@@ -123,28 +126,28 @@ public class ClamavjVirusScannerImpl implements VirusScanner {
 
 	}
 
-    public void setClamdHost(String clamdHost) {
-        this.clamdHost = clamdHost;
+    public void setHost(String host) {
+        this.host = host;
     }
 
-    public void setClamdPort(int clamdPort) {
-        this.clamdPort = clamdPort;
+    public void setPort(int port) {
+        this.port = port;
     }
 
-    public void setClamdTimeout(int clamdTimeout) {
-        this.clamdTimeout = clamdTimeout;
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
-    public String getClamdHost() {
-        return clamdHost;
+    public String getHost() {
+        return host;
     }
 
-    public int getClamdPort() {
-        return clamdPort;
+    public int getPort() {
+        return port;
     }
 
-    public int getClamdTimeout() {
-        return clamdTimeout;
+    public int getTimeout() {
+        return timeout;
     }
 
 

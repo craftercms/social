@@ -1,6 +1,6 @@
 package org.craftercms.testing.unit;
 
-import org.craftercms.virusscanner.impl.ClamavjVirusScannerImpl;
+import org.craftercms.virusscanner.impl.ClamavVirusScannerImpl;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
@@ -77,7 +77,7 @@ public class UGCServiceTest {
     private SupportDataAccess supportDataAccess;
 
     @Mock
-    private VirusScannerService virusScannerService = new VirusScannerServiceImpl(new ClamavjVirusScannerImpl("localhost", 3310, 60000));
+    private VirusScannerService virusScannerService = new VirusScannerServiceImpl(new ClamavVirusScannerImpl("localhost", 3310, 60000));
 
 	@InjectMocks
 	private UGCServiceImpl ugcServiceImpl;
@@ -391,7 +391,7 @@ public class UGCServiceTest {
         } catch (PermissionDeniedException pde) {
             fail(pde.getMessage());
         } catch (AttachmentErrorException aee) {
-            assertTrue(ClamavjVirusScannerImpl.THREAT_FOUND_MESSAGE.equals(aee.getMessage()));
+            assertTrue(ClamavVirusScannerImpl.THREAT_FOUND_MESSAGE.equals(aee.getMessage()));
         }
 
     }

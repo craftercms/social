@@ -23,6 +23,10 @@ public class MultipartFileClone implements MultipartFile {
 		multipartFile.transferTo(tempFile);
 	}
 
+	public File getTempFile() {
+		return tempFile;
+	}
+
 	@Override
 	public String getName() {
 		return multipartFile.getName();
