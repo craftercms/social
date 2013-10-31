@@ -21,10 +21,6 @@ public class VirusScannerServiceImpl implements VirusScannerService {
 
     private VirusScanner virusScanner;
 
-    public VirusScannerServiceImpl(VirusScanner virusScanner){
-        this.virusScanner = virusScanner;
-    }
-
     @Override
     public String scan(MultipartFile[] files) {
 
