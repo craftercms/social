@@ -6,6 +6,7 @@ import org.craftercms.virusscanner.api.VirusScanner;
 import org.craftercms.virusscanner.impl.ClamavjVirusScannerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
