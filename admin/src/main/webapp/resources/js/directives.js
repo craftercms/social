@@ -27,12 +27,14 @@ angular.module('moderationDashboard.directives', []).
                     // handler when a options is selected, changes the status
                     timeout(function () {
                         elm.find('.btn-group').delegate('.btn', 'click', function (ev) {
-                            var action = $(ev.currentTarget).val().toUpperCase(),
+                            var currentEl = $(ev.currentTarget),
+                                action = currentEl.val().toUpperCase(),
                                 queryParams = {
                                     moderationid: element.attr('ugcid'),
                                     moderationstatus : action,
                                     tenant: scope.$parent.confObj.tenant
                                 };
+
 
                             http({
                                 method: 'POST',
@@ -42,9 +44,14 @@ angular.module('moderationDashboard.directives', []).
                             }).success(function (data) {
                                 angular.forEach(scope.$parent.$parent.ugcList, function (ugc, index) {
                                     if (ugc.id === data.id) {
+                                        // removing active state of clicked button
+                                        if (currentEl.hasClass('active')) {
+                                            currentEl.removeClass('active');
+                                        }
                                         scope.$parent.ugcList[index].updated = true;
-                                        scope.$parent.ugcList[index].updateMessage = "Comment updated correctly"
+                                        scope.$parent.ugcList[index].updateMessage = scope.$parent.ugcList[index].title + " - " + scope.$parent.ugcList[index].dateAdded
                                         scope.$parent.ugcList[index].alertClass = "success";
+                                        scope.$parent.ugcList[index].undo = true;
                                     }
                                 });
                             }).error(function (data) {

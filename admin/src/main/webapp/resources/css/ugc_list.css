@@ -17,6 +17,14 @@ select {
     margin: 0;
 }
 
+.undo-action {
+    cursor: pointer;
+    color: #0088cc;
+}
+.undo-action:hover {
+    text-decoration: underline;
+}
+
 /* app wrapper */
 .moderation-dashboard-wrapper {
     margin: 20px 0;
@@ -47,6 +55,7 @@ select {
 /* alerts entries list */
 .entries-list .alert {
     margin-bottom: 0;
+    padding: 4px 35px 4px 14px;
 }
 
 /* bulk actions */

@@ -93,7 +93,8 @@ angular.module('moderationDashboard.controllers', []).
                         'targetTitle': 'target Title',
                         'updated': false,
                         'updateMessage': "",
-                        'alertClass': ""
+                        'alertClass': "",
+                        'undo': false
                     });
                 });
 
@@ -104,7 +105,7 @@ angular.module('moderationDashboard.controllers', []).
                     scope.displayUgcs = true;
                 }else {
                     scope.displayUgcs = false;
-                    scope.infoMessage = "No results available";
+                    scope.infoMessage = "No results found";
                 }
             });
         };
@@ -182,8 +183,9 @@ angular.module('moderationDashboard.controllers', []).
                     angular.forEach(scope.ugcList, function(ugc, index){
                         if (item.id === ugc.id) {
                             scope.ugcList[index].updated = true;
-                            scope.ugcList[index].updateMessage = "Comment updated correctly"
+                            scope.ugcList[index].updateMessage = scope.ugcList[index].title + " - " + scope.ugcList[index].dateAdded
                             scope.ugcList[index].alertClass = "success";
+                            scope.ugcList[index].undo = true;
 
                             return;
                         }
@@ -230,6 +232,29 @@ angular.module('moderationDashboard.controllers', []).
                 }
             }
         }
+
+        //handler when undo is clicked
+        scope.reverseAction = function (event, id) {
+            http({
+                method: 'POST',
+                url: "/crafter-social/api/2/ugc/moderation/" + id + "/status.json?moderationStatus=" + scope.status + "&tenant=" + scope.confObj.tenant,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }).success(function (data) {
+                    angular.forEach(scope.ugcList, function (ugc, index) {
+                        if (ugc.id === data.id) {
+                            scope.ugcList[index].updated = false;
+                            scope.ugcList[index].updateMessage = "",
+                            scope.ugcList[index].alertClass = "";
+                            scope.ugcList[index].undo = false;
+                        }
+                    });
+                }).error(function (data) {
+                    scope.$parent.ugcList[index].updated = true;
+                    scope.$parent.ugcList[index].updateMessage = "Error tryinh to update"
+                    scope.$parent.ugcList[index].alertClass = "error";
+                });
+
+        };
 
         setStatus();
         getModerationList();
