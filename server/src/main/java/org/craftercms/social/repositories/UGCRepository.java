@@ -23,9 +23,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository("uGCRepository")
 public interface UGCRepository extends MongoRepository<UGC, ObjectId>, UGCRepositoryCustom {
 
 	List<UGC> findByModerationStatusAndTenant(ModerationStatus moderationStatus, String tenant);

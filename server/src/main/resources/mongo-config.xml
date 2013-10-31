@@ -12,7 +12,7 @@
     		http://www.springframework.org/schema/context 
     		http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 	
-	<mongo:mongo host="${mongo.host}" port="${mongo.port}" write-concern="SAFE">
+	<mongo:mongo id="mongoConnection" host="${mongo.host}" port="${mongo.port}" write-concern="SAFE">
 		<mongo:options connections-per-host="${mongo.connectionsPerHost}"
 			threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
 			connect-timeout="${mongo.connectTimeout}" max-wait-time="${mongo.maxWaitTime}"
@@ -20,14 +20,30 @@
 			slave-ok="${mongo.slaveOk}"
 			write-number="1" write-timeout="0" write-fsync="true" />
 	</mongo:mongo>
+	
+	<mongo:db-factory id="socialDBFactory" mongo-ref="mongoConnection" dbname="craftersocial"/>
 
-	<mongo:db-factory dbname="${mongo.db}" mongo-ref="mongo" />
+	<!-- THIS IS FOR THE SUBSCRIPTION SERVICE  -->
+    <mongo:db-factory id="profileDBFactory" mongo-ref="mongoConnection" dbname="crafterprofile"/>
 
-	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
-		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg ref="socialDBFactory"/>
+	</bean>
+	
+	<!-- THIS IS FOR THE SUBSCRIPTION SERVICE  -->
+	<bean id="profileTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg ref="profileDBFactory"/>
 	</bean>
 
-	<mongo:repositories base-package="org.craftercms.social.repositories"
-		create-query-indexes="true" mongo-template-ref="mongoTemplate" />
+	<!-- mongo:repositories base-package="org.craftercms.social.repositories" create-query-indexes="true" mongo-template-ref="mongoTemplate"/-->
+	<mongo:repositories  base-package="org.craftercms.social.repositories">	
+		<mongo:repository id="uGCRepository" mongo-template-ref="mongoTemplate"/>
+		<mongo:repository id="uGCAuditRepository" mongo-template-ref="mongoTemplate"/>
+		<mongo:repository id="harvestStatusRepository" mongo-template-ref="mongoTemplate"/>
+		<mongo:repository id="notificationRepository" mongo-template-ref="mongoTemplate"/>
+		<mongo:repository id="tenantRepository" mongo-template-ref="mongoTemplate"/>
+		<mongo:repository id="profileRepository" mongo-template-ref="profileTemplate"/>
+		<mongo:repository id="counterRepository" mongo-template-ref="mongoTemplate"/>
+	</mongo:repositories>	
 
 </beans>

@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -44,39 +44,56 @@ public class UGCAudit {
 		}
 	}
 
-	private ObjectId id;
+	//private ObjectId id;
 
 	private ObjectId ugcId;
 
     private String tenant;
 
 	private String profileId;
+	
+	//private String target;
+	
+	private Target target;
+	
+	private Date createdDate;
 
 	private AuditAction action;
 	
 	private String reason;
 	
+	@Id
+	private long row = 0;
+	
 	public UGCAudit() {
-		this(null,null,null,null,null);
+		this(null,null,null,null,null, null);
 	}
-
+	
 	public UGCAudit(ObjectId ugcId, String tenant, String profileId,
-			AuditAction action, String reason) {
+			AuditAction action, String reason, Target target, Date createdDate) {
 		super();
         this.tenant = tenant;
 		this.ugcId = ugcId;
 		this.profileId = profileId;
 		this.action = action;
 		this.reason = reason;
+		this.target = target;
+		this.createdDate = createdDate;
 	}
 
-	public ObjectId getId() {
-		return id;
+	public UGCAudit(ObjectId ugcId, String tenant, String profileId,
+			AuditAction action, String reason, Target target) {
+		this(ugcId, tenant, profileId, action, reason, target, new Date());
+
 	}
 
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
+//	public ObjectId getId() {
+//		return id;
+//	}
+//
+//	public void setId(ObjectId id) {
+//		this.id = id;
+//	}
 
 	public ObjectId getUgcId() {
 		return ugcId;
@@ -110,10 +127,10 @@ public class UGCAudit {
 		this.reason = reason;
 	}
 	
-	@XmlElement
-	public Date getDateCreated() {
-		return new Date(id.getTime());
-	}
+//	@XmlElement
+//	public Date getDateCreated() {
+//		return new Date(id.getTime());
+//	}
 
     public String getTenant() {
         return tenant;
@@ -122,6 +139,30 @@ public class UGCAudit {
     public void setTenant(String tenant) {
         this.tenant = tenant;
     }
+
+	public Target getTarget() {
+		return target;
+	}
+
+	public void setTarget(Target target) {
+		this.target = target;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public long getRow() {
+		return row;
+	}
+
+	public void setRow(long row) {
+		this.row = row;
+	}
 
 
 }

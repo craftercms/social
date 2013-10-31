@@ -110,7 +110,8 @@ public class AuditServiceTest {
 		a.setProfileId(PROFILE_ID);
 		a.setReason("");
 		a.setTenant("test");
-		a.setId(new ObjectId("5202b88203643ac2849709bc"));
+		//a.setId(new ObjectId("5202b88203643ac2849709bc"));
+		a.setRow(10l);
 		a.setUgcId(new ObjectId(UGC_ID));
 		return a;
 	}
