@@ -223,13 +223,6 @@ public class UGCServiceImpl implements UGCService {
     public UGC newUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
             throws PermissionDeniedException, AttachmentErrorException {
 
-        if(virusScannerService == null){
-            log.error("VIRUS-SCANER-SERVICE: NULL");
-        }
-        else{
-            log.error("VIRUS-SCANER-SERVICE: "+virusScannerService.toString());
-        }
-
 	    attachments = scanFilesForVirus(attachments);
 
         ugc.setAnonymousFlag(isAnonymousFlag);
@@ -567,7 +560,7 @@ public class UGCServiceImpl implements UGCService {
 	/**
 	 *  Clone files so they could be used for virus scanning and further for storing by the UGC service
 	 * @param attachments
-	 * @return              cloned files MultipartFile[] that can be user multiple times
+	 * @return cloned files MultipartFile[] that can be used multiple times
 	 * @throws AttachmentErrorException
 	 */
 	protected MultipartFileClone[] cloneMultipartFiles(MultipartFile[] attachments) throws AttachmentErrorException {
@@ -586,10 +579,12 @@ public class UGCServiceImpl implements UGCService {
 	}
 
 	/**
-	 *
+	 * If the virus scanner service is implemented (e.g it is not the default crafter null scanner service) this
+     * method scans the multipartfile attachments looking for viruses. A clone of the multipart files is used
+     * for the scanning so they can be read later if needed).
 	 * @param attachments
-	 * @return  MultipartFile[]
-	 * @throws AttachmentErrorException
+	 * @return  MultipartFile[] (the clone if the scanning is performed or the original if it is not)
+	 * @throws AttachmentErrorException if a threat is found or scan fails
 	 */
 	protected MultipartFile[] scanFilesForVirus(MultipartFile[] attachments) throws AttachmentErrorException {
 		if (attachments == null) {

@@ -11,6 +11,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+/**
+ * A virus scanner that uses ClamScan to scan input-streams/files
+ */
 public class ClamavVirusScannerImpl implements VirusScanner {
 
 	public static final String THREAT_FOUND_MESSAGE = "Threat found";
@@ -24,15 +27,26 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 	private int timeout;
 
     public ClamavVirusScannerImpl() {
-
+        this("localhost",3310,60000);
     }
 
+    /**
+     *
+     * @param host the clamd server host
+     * @param port the clamd server port
+     * @param timeout milliseconds to wait for the connection
+     */
 	public ClamavVirusScannerImpl(String host, int port, int timeout) {
 		this.host = host;
 		this.port = port;
 		this.timeout = timeout;
 	}
 
+    /**
+     *
+     * @param filename full path
+     * @return  null for a successful scan (the file is clean) or an error message if the scan fails or a threat is found
+     */
 	public String scan(String filename) {
 
 		String userMessage = null;
@@ -86,6 +100,11 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 
 	}
 
+    /**
+     *
+     * @param inputStream
+     * @return  null for a successful scan (the input stream is clean) or an error message if the scan fails or a threat is found
+     */
 	public String scan(InputStream inputStream) {
 
 		String userMessage = null;
@@ -126,26 +145,50 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 
 	}
 
+    /**
+     *
+     * @param host the clamd server host
+     */
     public void setHost(String host) {
         this.host = host;
     }
 
+    /**
+     *
+     * @param port the clamd server port
+     */
     public void setPort(int port) {
         this.port = port;
     }
 
+    /**
+     *
+     * @param timeout milliseconds to wait for the connection
+     */
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
 
+    /**
+     *
+     * @return the clamd server host
+     */
     public String getHost() {
         return host;
     }
 
+    /**
+     *
+     * @return the clamd server port
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     *
+     * @return the milliseconds to wait for the connection
+     */
     public int getTimeout() {
         return timeout;
     }
