@@ -14,7 +14,7 @@
     </bean>
 
     <bean  id="virusScannerService" class="org.craftercms.social.services.impl.VirusScannerServiceImpl">
-        <constructor-arg ref="clamavjVirusScanner"/>
+        <property name="virusScanner" ref="clamavjVirusScanner"/>
     </bean>
 
     <bean id="clamavjVirusScanner" class="org.craftercms.virusscanner.impl.ClamavjVirusScannerImpl">
@@ -22,5 +22,7 @@
         <constructor-arg index="1" type="int" value="${virusscanner.clamavj.clamd.clamdPort}"/>
         <constructor-arg index="2" type="int" value="${virusscanner.clamavj.clamd.clamdTimeout}"/>
     </bean>
-	
+
+	<bean id="nullVirusScanner" class="org.craftercms.virusscanner.impl.NullVirusScannerImpl" />
+
 </beans>
