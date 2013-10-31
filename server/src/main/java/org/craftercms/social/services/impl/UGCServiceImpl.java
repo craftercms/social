@@ -225,7 +225,12 @@ public class UGCServiceImpl implements UGCService {
     public UGC newUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
             throws PermissionDeniedException, AttachmentErrorException {
 
-        String errorMessage = null;
+        if(virusScannerService == null){
+            log.error("VIRUS-SCANER-SERVICE: NULL");
+        }
+        else{
+            log.error("VIRUS-SCANER-SERVICE:"+virusScannerService.toString());
+        }
 
         if(files != null){
 	        files = cloneMultipartFiles(files);

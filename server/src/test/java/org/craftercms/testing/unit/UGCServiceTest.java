@@ -328,6 +328,44 @@ public class UGCServiceTest {
     }
 
     @Test
+    public void testNewChildCleanPDFFile() {
+        mockStatic(RequestContext.class);
+
+        when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
+
+        MultipartFile[] files = new MultipartFile[1];
+
+        try{
+            String path = getClass().getResource("/warranty.pdf").getPath();
+            File file = new File(path);
+            MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(),file.getAbsolutePath(),"file",new FileInputStream(file));
+            files[0] = mockMultipartFile;
+        }
+        catch (FileNotFoundException e){
+            fail(e.getMessage());
+        }
+        catch (IOException e){
+            fail(e.getMessage());
+        }
+
+        try {
+            ugcServiceImpl.newUgc(currentUGC,files, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
+        } catch (PermissionDeniedException pde) {
+            fail(pde.getMessage());
+        } catch (AttachmentErrorException dee) {
+            fail(dee.getMessage());
+        }
+        catch (NullPointerException ignore) {
+            // This NullPointerException probably means that the item could not be
+            // store successfully (mainly because of the db and the nature of these tests).
+            // This may not always true but it doesn't matter because the catch above
+            // should be enough to test the virus scanning
+        }
+
+
+    }
+
+    @Test
     public void testNewChildVirusFile() {
         mockStatic(RequestContext.class);
 
