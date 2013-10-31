@@ -1,13 +1,11 @@
 package org.craftercms.social.services.impl;
 
 
+import org.craftercms.social.services.VirusScannerService;
 import org.craftercms.virusscanner.api.VirusScanner;
 import org.craftercms.virusscanner.impl.ClamavjVirusScannerImpl;
-import org.craftercms.social.services.VirusScannerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -15,12 +13,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Service
+
 public class VirusScannerServiceImpl implements VirusScannerService {
 
     private final transient Logger log = LoggerFactory.getLogger(VirusScannerServiceImpl.class);
 
     private VirusScanner virusScanner;
+
+    public VirusScannerServiceImpl(VirusScanner virusScanner){
+        this.virusScanner = virusScanner;
+    }
 
     @Override
     public String scan(MultipartFile[] files) {
