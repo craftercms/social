@@ -4,6 +4,7 @@ package org.craftercms.social.services.impl;
 import org.craftercms.social.services.VirusScannerService;
 import org.craftercms.virusscanner.api.VirusScanner;
 import org.craftercms.virusscanner.impl.ClamavVirusScannerImpl;
+import org.craftercms.virusscanner.impl.NullVirusScannerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -44,6 +45,11 @@ public class VirusScannerServiceImpl implements VirusScannerService {
 		}
 
 		return userErrorMessage;
+	}
+
+	@Override
+	public boolean isNullScanner() {
+		return virusScanner instanceof NullVirusScannerImpl;
 	}
 
 	@Required

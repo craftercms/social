@@ -595,6 +595,10 @@ public class UGCServiceImpl implements UGCService {
 		if (attachments == null) {
 			return null;
 		}
+		if (virusScannerService.isNullScanner()) {
+			return attachments;
+		}
+
 		MultipartFileClone[] multipartFileClones = cloneMultipartFiles(attachments);
 
 		File[] files = new File[multipartFileClones.length];

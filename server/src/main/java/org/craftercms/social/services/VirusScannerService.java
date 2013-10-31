@@ -12,4 +12,9 @@ public interface VirusScannerService {
 	 */
     public String scan(File[] files);
 
+	/**
+	 * Used to avoid data preparation for scan() method
+	 * @return
+	 */
+	public boolean isNullScanner();
 }
