@@ -23,6 +23,10 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 	private int port;
 	private int timeout;
 
+    public ClamavVirusScannerImpl() {
+
+    }
+
 	public ClamavVirusScannerImpl(String host, int port, int timeout) {
 		this.host = host;
 		this.port = port;
