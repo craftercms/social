@@ -2,15 +2,6 @@
 
 /* Directives */
 angular.module('moderationDashboard.directives', []).
-    directive('moderationStatus', [ '$routeParams', function (rp) {
-        return {
-            restrict: "E",
-            templateUrl: "/crafter-social-admin/resources/templates/moderation_status.html",
-            link: function (scope, elm, attrs) {
-
-            }
-        }
-    }]).
     directive('appVersion', ['version', function(version) {
         return function(scope, elm) {
             elm.text(version);
@@ -49,25 +40,17 @@ angular.module('moderationDashboard.directives', []).
                                 data: queryParams,
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                             }).success(function (data) {
-                                var key;
                                 angular.forEach(scope.$parent.$parent.ugcList, function (ugc, index) {
                                     if (ugc.id === data.id) {
-                                        key = index;
+                                        scope.$parent.ugcList[index].updated = true;
+                                        scope.$parent.ugcList[index].updateMessage = "Comment updated correctly"
+                                        scope.$parent.ugcList[index].alertClass = "success";
                                     }
                                 });
-                                if (key !== undefined) {
-                                    scope.$parent.ugcList.splice(key, 1);
-
-
-
-                                    //TODO efect for removed item
-                                    scope.$parent.setAlert(
-                                        "UGC updated correctly - " + action,
-                                        "alert-success"
-                                    );
-                                }
                             }).error(function (data) {
-                                scope.$parent.setAlert("Error trying to save UGC", "alert-error");
+                                scope.$parent.ugcList[index].updated = true;
+                                scope.$parent.ugcList[index].updateMessage = "Error tryinh to update"
+                                scope.$parent.ugcList[index].alertClass = "error";
                             });
 
                         });
@@ -81,46 +64,53 @@ angular.module('moderationDashboard.directives', []).
             elm.change(function (ev) {
                 if (elm.is(":checked")) {
                     $('.entries-list input').prop('checked', true);
+
+                    // hiding error message
+                    var applyBtn = $('#applyBtn');
+                    if (applyBtn.next('div.tooltip:visible').length){
+                        applyBtn.tooltip('hide');
+                    }
                 }else {
                     $('.entries-list input').prop('checked', false);
                 }
             });
         };
     }]).
-    directive('alert', [function () {
-        return {
-            restrict: "E",
-            templateUrl: "/crafter-social-admin/resources/templates/error.html",
-            link: function (scope, elm, attrs) {
-
-            }
-        }
-    }]).
     directive('detailInformation', ['$sanitize', function (sanitize) {
         return {
             restrict: "A",
             link: function (scope, elm, attrs) {
                 attrs.$observe('detailInformation', function (val) {
+                    var down = elm.find(".icon-chevron-down"),
+                        up = elm.find(".icon-chevron-up");
+
                     elm.bind('click', function (ev) {
                         if (elm.hasClass('collapsed')){
                             angular.forEach(scope.$parent.ugcList, function (ugc) {
                                 if (ugc.id === val) {
                                     var wholeContent = sanitize(ugc.completeContent);
-
                                     elm.find(".ugc-content").html(wholeContent);
+
+                                    elm.toggleClass("collapsed");
+                                    elm.toggleClass("expanded");
+
+                                    up.toggleClass('hide');
+                                    down.toggleClass('hide');
                                 }
                             });
-                            elm.toggleClass("collapsed");
-                            elm.toggleClass("expanded");
                         }else if (elm.hasClass('expanded')) {
                             angular.forEach(scope.$parent.ugcList, function (ugc) {
                                 if (ugc.id === val) {
                                     var partialContent = ugc.textContent;
                                     elm.find(".ugc-content").html(partialContent);
+
+                                    elm.toggleClass("collapsed");
+                                    elm.toggleClass("expanded");
+
+                                    down.toggleClass('hide');
+                                    up.toggleClass('hide');
                                 }
                             });
-                            elm.toggleClass("collapsed");
-                            elm.toggleClass("expanded");
                         }
                     });
                 });

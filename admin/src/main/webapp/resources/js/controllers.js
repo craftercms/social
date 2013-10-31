@@ -10,7 +10,6 @@ angular.module('moderationDashboard.controllers', []).
     controller('AppCtrl', ['$scope', 'Api', '$http', function (scope, api, http) {
         scope.confObj = {};
         scope.moderationList = [];
-        scope.appToken = "";
 
         var getTenant = function () {
             api.defaultTenant.get(function (conf) {
@@ -37,21 +36,6 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
-        var getAppToken = function () {
-            var url = "/crafter-profile/api/2/auth/app_token.json?username=craftersocial&password=craftersocial";
-
-            http({
-                method: 'GET',
-                url: url
-            }).success(function (token) {
-               scope.appToken = token;
-                    console.log(scope.appToken);
-            }).error(function () {
-                scope.setAlert("Error trying to get app token", "alert-error");
-            });
-        };
-
-        getAppToken();
         getTenant();
         getModerationList();
 
@@ -65,8 +49,7 @@ angular.module('moderationDashboard.controllers', []).
         scope.status = "";
         scope.moderationActions = [];
         scope.ugcSelectedList = [];
-        scope.errorMessage;
-        scope.classError;
+
 
         //set actual status
         var setStatus = function () {
@@ -107,11 +90,22 @@ angular.module('moderationDashboard.controllers', []).
                         'userName': ugc.profile.userName,
                         'userMail': ugc.profile.email,
                         'targetUrl': 'target Url',
-                        'targetTitle': 'target Title'
+                        'targetTitle': 'target Title',
+                        'updated': false,
+                        'updateMessage': "",
+                        'alertClass': ""
                     });
                 });
 
                 scope.ugcList = tmpList;
+
+                //if no results available a information messsage will be displayed
+                if (scope.ugcList.length > 0) {
+                    scope.displayUgcs = true;
+                }else {
+                    scope.displayUgcs = false;
+                    scope.infoMessage = "No results available";
+                }
             });
         };
 
@@ -151,91 +145,95 @@ angular.module('moderationDashboard.controllers', []).
                 listItems = [];
 
             //check if bulk option is selected
-            if (optionSelected === undefined){
-                var displayError = $(event.currentTarget).popover({
-                    animation: true,
-                    placement: 'right',
-                    trigger: 'manual',
-                    title: 'Error Title',
-                    content: 'Please select an option'
-                });
-                displayError.popover('show');
-
+            if (optionSelected === null || optionSelected === undefined ){
                 $('#bulkActions').focus();
-
                 return;
             }
 
-
+            // check if an item has been selected
             $('.entries-list input').each(function (index) {
                 if ($(this).prop('checked')){
                     listItems.push($(this).attr('ugcid'));
                 }
             });
 
-            if (listItems.length > 0) {
-                // hiding error message
-                var applyBtn = $('#applyBtn');
-                if (applyBtn.next('div.popover:visible').length){
-                    applyBtn.popover('hide');
-                }
-
-                optionSelected = optionSelected.toUpperCase();
-                var ids = "&ids=";
-                ids += listItems.join("&ids=");
-
-                http({
-                    method: 'POST',
-                    url: "/crafter-social/api/2/ugc/moderation/update/status.json?moderationStatus=" + optionSelected + "&tenant=" + scope.confObj.tenant + ids
-                }).success(function (data) {
-                    angular.forEach(data, function (item) {
-                        angular.forEach(scope.ugcList, function(ugc, index){
-                            if (item.id === ugc.id) {
-                                scope.ugcList.splice(index, 1);
-                                return;
-                            }
-                        });
-                    });
-
-                    scope.setAlert("UGCs updated correctly", "alert-success");
-                }).error(function (data) {
-                    scope.setAlert("Error trying to save UGC", "alert-error");
-                });
-
-                //TODO change for restangular
-            }else{
-                var displayError = $(event.currentTarget).popover({
+            if (listItems.length <= 0){
+                var displayError = $(event.currentTarget).tooltip({
                     animation: true,
                     placement: 'right',
                     trigger: 'manual',
-                    title: 'Error Title',
-                    content: 'Please check an ugc'
+                    title: 'Please select at least one comment'
                 });
-                displayError.popover('show');
+                displayError.tooltip('show');
 
+                return;
             }
+
+            optionSelected = optionSelected.toUpperCase();
+            var ids = "&ids=";
+            ids += listItems.join("&ids=");
+
+            //TODO change for restangular
+            http({
+                method: 'POST',
+                url: "/crafter-social/api/2/ugc/moderation/update/status.json?moderationStatus=" + optionSelected + "&tenant=" + scope.confObj.tenant + ids
+            }).success(function (data) {
+                angular.forEach(data, function (item) {
+                    angular.forEach(scope.ugcList, function(ugc, index){
+                        if (item.id === ugc.id) {
+                            scope.ugcList[index].updated = true;
+                            scope.ugcList[index].updateMessage = "Comment updated correctly"
+                            scope.ugcList[index].alertClass = "success";
+
+                            return;
+                        }
+                    });
+                });
+            }).error(function (data) {
+                angular.forEach(data, function (item) {
+                    angular.forEach(scope.ugcList, function(ugc, index){
+                        if (item.id === ugc.id) {
+                            scope.ugcList[index].updated = true;
+                            scope.ugcList[index].updateMessage = "Error trying to update"
+                            scope.ugcList[index].alertClass = "error";
+
+                            return;
+                        }
+                    });
+                });
+            });
         };
 
 
         // handler for when a select option has been updated
         scope.optionSelected = function () {
             var applyBtn = $('#applyBtn');
-            if (applyBtn.next('div.popover:visible').length){
-                applyBtn.popover('destroy');
+            if (this.bulkAction !== null) {
+                applyBtn.removeClass('disabled');
+            }else {
+                applyBtn.addClass('disabled');
+
+                // hide error message if has been displayed
+                if (applyBtn.next('div.tooltip:visible').length){
+                    applyBtn.tooltip('hide');
+                }
             }
         };
 
-        // error messages
-        scope.setAlert = function (message, cssClass) {
-            scope.errorMessage = message;
-            scope.classError = cssClass;
-        };
+        // handler when input checkbox is clicked. Hide error message if is displayed
+        scope.hideCheckUgcError = function (event) {
+            if ($(event.currentTarget).prop('checked')) {
+                // hiding error message
+                var applyBtn = $('#applyBtn');
+                if (applyBtn.next('div.tooltip:visible').length){
+                    applyBtn.tooltip('hide');
+                }
+            }
+        }
 
         setStatus();
         getModerationList();
         getUgcList();
         moderationActions();
-
-        scope.setAlert("", "hide-error");
 
     }]);

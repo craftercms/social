@@ -1,19 +1,23 @@
 <div class="container-fluid">
+    <!-- ugc navigation -->
     <div class="row-fluid">
+        <nav class="span12">
+            <ul class="nav nav-tabs">
+                <li ng-repeat="mod in moderationList" class="{{mod.state}}">
+                    <a href="#/status/{{mod.moderation}}">{{mod.moderation}}</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
-        <main role="main" class="span12">
-            <nav>
-                <moderation-status>
-                </moderation-status>
-            </nav>
-
-            <alert>
-            </alert>
-
+    <!-- main section displayed when results are available -->
+    <div class="row-fluid">
+        <main ng-show="displayUgcs" role="main" class="span12">
             <div class="bulk-actions">
-                <select id="bulkActions" ng-model="bulkAction" ng-options="action for action in moderationActions" ng-change="optionSelected()">
+                <select id="bulkActions" ng-model="bulkAction" ng-options="action.tab as action.label for action in moderationActions" ng-change="optionSelected()">
+                    <option value="">-- Choose an option --</option>
                 </select>
-                <button id="applyBtn" class="btn entries-list-btn" ng-click="bulkUpdate($event)">Apply</button>
+                <button id="applyBtn" class="btn entries-list-btn disabled" ng-click="bulkUpdate($event)">Apply</button>
             </div>
 
             <div class="heading-wrapper row-fluid">
@@ -31,9 +35,9 @@
             <ul class="unstyled entries-list">
                 <li ng-repeat="ugc in ugcList">
 
-                    <div class="row-fluid">
+                    <div class="row-fluid hide-element" ng-show="!ugc.updated">
                         <div class="span1 col1">
-                            <input ugcid="{{ugc.id}}" type="checkbox" />
+                            <input ng-click="hideCheckUgcError($event)" ugcid="{{ugc.id}}" type="checkbox" />
                         </div>
 
                         <div class="span2 col2 author-section">
@@ -45,32 +49,54 @@
                                     <dl>
                                         <dt>{{ugc.userName}}</dt>
                                         <dd>{{ugc.userMail}}</dd>
-                                        <dd><strong>{{ugc.targetTitle}}</strong></dd>
-                                        <dd><a ng-href="">{{ugc.targetUrl}}</a></dd>
                                     </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <article class="span9 col9 comment-section">
+                            <div class="entry-wrapper collapsed" detail-information="{{ugc.id}}">
+                                <span class="last-update">
+                                    Submitted on: <span class="date">{{ugc.dateAdded}}</span>
+                                </span>
+
+                                <a class="target-url" ng-href="ugc.targetUrl">{{ugc.targetTitle}}</a>
+                                <h4>{{ugc.title}}</h4>
+                                <div class="ugc-content">
+                                    {{ugc.textContent}}
+                                </div>
+
+                                <div class="expand-collapse">
+                                    <i class="icon-chevron-down"></i>
+                                    <i class="hide icon-chevron-up"></i>
                                 </div>
                             </div>
 
                             <div class="row-fluid moderation-buttons">
                                 <moderation-action class="span12" ugcid="{{ugc.id}}" modstatus="{{ugc.moderationStatus}}"></moderation-action>
                             </div>
-                        </div>
-
-                        <article class="span9 comment-section">
-                            <div class="entry-wrapper collapsed" detail-information="{{ugc.id}}">
-                                <p class="last-update">
-                                    submission date: <span class="date">{{ugc.dateAdded}}</span>
-                                </p>
-                                <h4>{{ugc.title}}</h4>
-                                <div class="ugc-content">
-                                    {{ugc.textContent}}
-                                </div>
-                            </div>
-
                         </article>
+                    </div>
+
+                    <!-- display message when ugc has been updated -->
+                    <div class="row-fluid hide-element" ng-hide="!ugc.updated">
+                        <div class="span12">
+                            <div class="alert alert-{{ugc.alertClass}}">
+                                {{ugc.updateMessage}}
+                            </div>
+                        </div>
                     </div>
                 </li>
             </ul>
         </main>
+    </div>
+
+    <!-- displayed when no results available -->
+    <div class="row-fluid">
+        <section class="span12" ng-show="!displayUgcs">
+            <div class="alert alert-info">
+                {{infoMessage}}
+            </div>
+        </section>
     </div>
 </div>
