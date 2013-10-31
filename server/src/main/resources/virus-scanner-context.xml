@@ -18,9 +18,9 @@
     </bean>
 
     <bean id="clamavVirusScanner" class="org.craftercms.virusscanner.impl.ClamavVirusScannerImpl">
-		<property name="host" value="${virusscanner.clamavj.clamd.clamdHost}" />
-		<property name="port" value="${virusscanner.clamavj.clamd.clamdPort}" />
-		<property name="timeout" value="${virusscanner.clamavj.clamd.clamdTimeout}" />
+		<property name="host" value="${clamav.virusscanner.host}" />
+		<property name="port" value="${clamav.virusscanner.port}" />
+		<property name="timeout" value="${clamav.virusscanner.timeout}" />
     </bean>
 
 	<bean id="nullVirusScanner" class="org.craftercms.virusscanner.impl.NullVirusScannerImpl" />

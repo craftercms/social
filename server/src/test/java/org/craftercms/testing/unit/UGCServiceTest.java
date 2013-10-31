@@ -77,7 +77,7 @@ public class UGCServiceTest {
     private SupportDataAccess supportDataAccess;
 
     @Mock
-    private VirusScannerService virusScannerService = new VirusScannerServiceImpl(new ClamavVirusScannerImpl("localhost", 3310, 60000));
+    private VirusScannerServiceImpl virusScannerService;
 
 	@InjectMocks
 	private UGCServiceImpl ugcServiceImpl;
@@ -96,7 +96,12 @@ public class UGCServiceTest {
 	private List<UGC> ul;
 	private List<UGCAudit> la;
 	private List<String> moderateRootRoles;
-	
+
+    public UGCServiceTest(){
+        this.virusScannerService = new VirusScannerServiceImpl();
+        this.virusScannerService.setVirusScanner(new ClamavVirusScannerImpl("localhost", 3310, 60000));
+
+    }
 	
 	@Before
 	public void startup() {
@@ -139,8 +144,8 @@ public class UGCServiceTest {
 	public void testFindById() {
 		UGC ugc = ugcServiceImpl.findById(new ObjectId(VALID_ID));
 		assertNotNull(ugc);
-		
 	}
+
 	@Test
 	public void testFindByModerationStatus() {
 		mockStatic(RequestContext.class);

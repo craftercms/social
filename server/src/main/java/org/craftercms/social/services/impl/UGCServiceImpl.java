@@ -227,7 +227,7 @@ public class UGCServiceImpl implements UGCService {
             log.error("VIRUS-SCANER-SERVICE: NULL");
         }
         else{
-            log.error("VIRUS-SCANER-SERVICE:"+virusScannerService.toString());
+            log.error("VIRUS-SCANER-SERVICE: "+virusScannerService.toString());
         }
 
 	    attachments = scanFilesForVirus(attachments);
