@@ -14,7 +14,7 @@
     </bean>
 
     <bean  id="virusScannerService" class="org.craftercms.social.services.impl.VirusScannerServiceImpl">
-        <property name="virusScanner" ref="clamavVirusScanner"/>
+        <property name="virusScanner" ref="nullVirusScanner"/>
     </bean>
 
     <bean id="clamavVirusScanner" class="org.craftercms.virusscanner.impl.ClamavVirusScannerImpl">
