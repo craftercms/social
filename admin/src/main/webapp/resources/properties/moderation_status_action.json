@@ -1,22 +1,43 @@
 [
     {
         "moderation": "Unmoderated",
-        "actions": ["Approved", "Spam", "Trash", "Edit"]
+        "actions": [
+            { "label": "Approve", "tab": "Approved" },
+            { "label": "Spam", "tab": "Spam" },
+            { "label": "Trash", "tab": "Trash" },
+            { "label": "Edit", "tab": "Edit" }
+        ]
     },
     {
         "moderation": "Approved",
-        "actions": ["Spam", "Trash", "Edit", "Unmoderated"]
+        "actions": [
+            { "label": "Spam", "tab": "Spam" },
+            { "label": "Trash", "tab": "Trash" },
+            { "label": "Edit", "tab": "Edit" },
+            { "label": "Unmoderated", "tab": "Unmoderated" }
+        ]
     },
     {
         "moderation": "Pending",
-        "actions": ["Approved", "Spam", "Trash", "Edit"]
+        "actions": [
+            { "label": "Approved", "tab": "Approved" },
+            { "label": "Trash", "tab": "Trash" },
+            { "label": "Edit", "tab": "Edit" }
+        ]
     },
     {
         "moderation": "Spam",
-        "actions": ["Restore", "Permanently Delete"]
+        "actions": [
+            { "label": "Restore", "tab": "Restore" },
+            { "label": "Permantly delete", "tab": "Permantly delete" },
+            { "label": "Unmoderated", "tab": "Unmoderated" }
+        ]
     },
     {
         "moderation": "Trash",
-        "actions": ["Restore", "Permanently Delete"]
+        "actions": [
+            { "label": "Restore", "tab": "Restore" },
+            { "label": "Permantly delete", "tab": "Permantly delete" }
+        ]
     }
 ]

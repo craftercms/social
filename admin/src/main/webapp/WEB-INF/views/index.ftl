@@ -16,10 +16,12 @@
 
     <script src="resources/lib/jquery/jquery-1.10.2.js"></script>
     <script src="resources/lib/bootstrap/js/bootstrap.js"></script>
-    <script src="resources/lib/angular/angular.js"></script>
-    <script src="resources/lib/angular/angular-resource.js"></script>
-    <script src="resources/lib/angular/angular-cookies.js"></script>
-    <script src="resources/lib/angular/angular-sanitize.js"></script>
+    <script src="resources/lib/angular-1.2.0-rc.3/angular.js"></script>
+    <script src="resources/lib/angular-1.2.0-rc.3/angular-route.js"></script>
+    <script src="resources/lib/angular-1.2.0-rc.3/angular-resource.js"></script>
+    <script src="resources/lib/angular-1.2.0-rc.3/angular-cookies.js"></script>
+    <script src="resources/lib/angular-1.2.0-rc.3/angular-sanitize.js"></script>
+    <script src="resources/lib/angular-1.2.0-rc.3/angular-animate.js"></script>
     <script src="resources/js/app.js"></script>
     <script src="resources/js/services.js"></script>
     <script src="resources/js/controllers.js"></script>
