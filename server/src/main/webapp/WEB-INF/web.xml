@@ -34,6 +34,7 @@
 			/WEB-INF/classes/moderation-context.xml
 			/WEB-INF/classes/security-context.xml
 			/WEB-INF/classes/scheduler-context.xml
+            /WEB-INF/classes/virus-scanner-context.xml
 		</param-value>
 	</context-param>
 	<listener>

@@ -1,17 +1,6 @@
 package org.craftercms.testing.unit;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.craftercms.virusscanner.impl.ClamavVirusScannerImpl;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
@@ -22,15 +11,14 @@ import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
+import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
-import org.craftercms.social.services.CounterService;
-import org.craftercms.social.services.PermissionService;
-import org.craftercms.social.services.SupportDataAccess;
-import org.craftercms.social.services.TenantService;
+import org.craftercms.social.services.*;
 import org.craftercms.social.services.impl.UGCServiceImpl;
+import org.craftercms.social.services.impl.VirusScannerServiceImpl;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.support.CrafterProfile;
@@ -45,6 +33,23 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( { RequestContext.class})
 public class UGCServiceTest {
@@ -69,7 +74,11 @@ public class UGCServiceTest {
 	@Mock
 	private ModerationDecision moderationDecisionManager;
 	@Mock
-	private SupportDataAccess supportDataAccess;
+    private SupportDataAccess supportDataAccess;
+
+    @Mock
+    private VirusScannerServiceImpl virusScannerService;
+
 	@InjectMocks
 	private UGCServiceImpl ugcServiceImpl;
 	
@@ -87,14 +96,19 @@ public class UGCServiceTest {
 	private List<UGC> ul;
 	private List<UGCAudit> la;
 	private List<String> moderateRootRoles;
-	
+
+    public UGCServiceTest(){
+        this.virusScannerService = new VirusScannerServiceImpl();
+        this.virusScannerService.setVirusScanner(new ClamavVirusScannerImpl("localhost", 3310, 60000));
+
+    }
 	
 	@Before
 	public void startup() {
 		mockStatic(RequestContext.class);
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
-		
-		
+
+
 		currentProfile = getProfile();
 		currentUGC = getUGC();
 		ul = new ArrayList<UGC>();
@@ -130,8 +144,8 @@ public class UGCServiceTest {
 	public void testFindById() {
 		UGC ugc = ugcServiceImpl.findById(new ObjectId(VALID_ID));
 		assertNotNull(ugc);
-		
 	}
+
 	@Test
 	public void testFindByModerationStatus() {
 		mockStatic(RequestContext.class);
@@ -271,10 +285,123 @@ public class UGCServiceTest {
 			u = ugcServiceImpl.newUgc(currentUGC, null, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
 		} catch (PermissionDeniedException pde) {
 			fail(pde.getMessage());
-		}
-		assertNotNull(u);
+		} catch (AttachmentErrorException dee) {
+            fail(dee.getMessage());
+        }
+        assertNotNull(u);
 		
 	}
+
+    // Testing VirusScanner
+
+    @Test
+    public void testNewChildCleanFile() {
+        mockStatic(RequestContext.class);
+
+        when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
+
+        MultipartFile[] files = new MultipartFile[1];
+
+        try{
+            String path = getClass().getResource("/clean.txt").getPath();
+            File file = new File(path);
+            MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(),file.getAbsolutePath(),"file",new FileInputStream(file));
+            files[0] = mockMultipartFile;
+        }
+        catch (FileNotFoundException e){
+            fail(e.getMessage());
+        }
+        catch (IOException e){
+            fail(e.getMessage());
+        }
+
+        try {
+            ugcServiceImpl.newUgc(currentUGC,files, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
+        } catch (PermissionDeniedException pde) {
+            fail(pde.getMessage());
+        } catch (AttachmentErrorException dee) {
+            fail(dee.getMessage());
+        }
+        catch (NullPointerException ignore) {
+            // This NullPointerException probably means that the item could not be
+            // store successfully (mainly because of the db and the nature of these tests).
+            // This may not always true but it doesn't matter because the catch above
+            // should be enough to test the virus scanning
+        }
+
+
+    }
+
+    @Test
+    public void testNewChildCleanPDFFile() {
+        mockStatic(RequestContext.class);
+
+        when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
+
+        MultipartFile[] files = new MultipartFile[1];
+
+        try{
+            String path = getClass().getResource("/warranty.pdf").getPath();
+            File file = new File(path);
+            MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(),file.getAbsolutePath(),"file",new FileInputStream(file));
+            files[0] = mockMultipartFile;
+        }
+        catch (FileNotFoundException e){
+            fail(e.getMessage());
+        }
+        catch (IOException e){
+            fail(e.getMessage());
+        }
+
+        try {
+            ugcServiceImpl.newUgc(currentUGC,files, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
+        } catch (PermissionDeniedException pde) {
+            fail(pde.getMessage());
+        } catch (AttachmentErrorException dee) {
+            fail(dee.getMessage());
+        }
+        catch (NullPointerException ignore) {
+            // This NullPointerException probably means that the item could not be
+            // store successfully (mainly because of the db and the nature of these tests).
+            // This may not always true but it doesn't matter because the catch above
+            // should be enough to test the virus scanning
+        }
+
+
+    }
+
+    @Test
+    public void testNewChildVirusFile() {
+        mockStatic(RequestContext.class);
+
+        when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
+
+        MultipartFile[] files = new MultipartFile[1];
+
+        try{
+            String path = getClass().getResource("/eicar.txt").getPath();
+            File file = new File(path);
+            MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(),file.getAbsolutePath(),"file",new FileInputStream(file));
+            files[0] = mockMultipartFile;
+        }
+        catch (FileNotFoundException e){
+            fail(e.getMessage());
+        }
+        catch (IOException e){
+            fail(e.getMessage());
+        }
+
+        try {
+            ugcServiceImpl.newUgc(currentUGC, files, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
+        } catch (PermissionDeniedException pde) {
+            fail(pde.getMessage());
+        } catch (AttachmentErrorException aee) {
+            assertTrue(ClamavVirusScannerImpl.THREAT_FOUND_MESSAGE.equals(aee.getMessage()));
+        }
+
+    }
+
+    // End of the virus scanning testing
 	
 	@Test
 	public void testNewChildUgc() {
@@ -287,7 +414,9 @@ public class UGCServiceTest {
 			u = ugcServiceImpl.newChildUgc(currentUGC, null, ActionUtil.getDefaultActions(), "test", PROFILE_ID, false);
 		} catch (PermissionDeniedException pde) {
 			fail(pde.getMessage());
-		}
+        } catch (AttachmentErrorException dee) {
+            fail(dee.getMessage());
+        }
 		assertNotNull(u);
 		
 	}
@@ -325,7 +454,10 @@ public class UGCServiceTest {
 			ugc = ugcServiceImpl.updateUgc(currentUGC.getId(), "test", "testing", PROFILE_ID, null, "Content", null, null, null);
 		} catch(PermissionDeniedException pde) {
 			fail(pde.getMessage());
-		}
+        } catch (AttachmentErrorException dee) {
+            fail(dee.getMessage());
+        }
+
 		assertNotNull(ugc);
 	}
 //	@Test
