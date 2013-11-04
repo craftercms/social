@@ -126,7 +126,8 @@ public class UGCServiceImpl implements UGCService {
             removeAttachments(ugcId);
             this.uGCRepository.delete(ugcId);
             //Audit call
-            auditUGC(ugcId, AuditAction.DELETE, tenant, profileId, null);
+            auditForDeleteUGC(parent, profileId);
+            //auditUGC(ugcId, AuditAction.DELETE, tenant, profileId, null);
         }
     }
 
@@ -433,8 +434,7 @@ public class UGCServiceImpl implements UGCService {
     }
 
     private void auditUGC(ObjectId ugcId, AuditAction auditAction, String tenant, String profileId, String reason) {
-        //uGCAuditRepository.save(new UGCAudit(ugcId, tenant, profileId, auditAction, reason, target));
-    	UGC ugc = this.uGCRepository.findOne(ugcId);
+        UGC ugc = this.uGCRepository.findOne(ugcId);
     	Target target = null;
     	if (ugc != null) {
     		target = new Target(ugc.getTargetId(),ugc.getTargetDescription(), ugc.getTargetUrl());
@@ -444,6 +444,18 @@ public class UGCServiceImpl implements UGCService {
     	UGCAudit audit = new UGCAudit(ugcId, tenant, profileId, auditAction, reason, target);
     	audit.setRow(counterService.getNextSequence("uGCAudit"));
         uGCAuditRepository.save(audit);
+    }
+    
+    private void auditForDeleteUGC(UGC ugc, String profileId) {
+    	Target target = null;
+    	if (ugc != null) {
+    		target = new Target(ugc.getTargetId(),ugc.getTargetDescription(), ugc.getTargetUrl());
+    	} else {
+    		return;
+    	}
+    	UGCAudit audit = new UGCAudit(ugc.getId(), ugc.getTenant(), profileId, AuditAction.DELETE, null, target);
+    	audit.setRow(counterService.getNextSequence("uGCAudit"));
+    	uGCAuditRepository.save(audit);
     }
     
     private void removeAuditUGC(ObjectId ugcId, AuditAction auditAction, String tenant, String profileId, String reason) {
