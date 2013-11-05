@@ -603,8 +603,12 @@ public class UGCServiceImpl implements UGCService {
 		// scan files
 		String errorMessage = virusScannerService.scan(files);
 		if (errorMessage != null) {
+            log.error(errorMessage);
 			throw new AttachmentErrorException(errorMessage);
 		}
+
+        log.debug("Successful scanning: The attachments are clean");
+
 		return multipartFileClones;
 	}
 

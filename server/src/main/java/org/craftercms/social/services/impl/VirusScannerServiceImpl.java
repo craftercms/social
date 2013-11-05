@@ -45,6 +45,7 @@ public class VirusScannerServiceImpl implements VirusScannerService {
 				}
 
 				if (userErrorMessage != null) {
+                    userErrorMessage += " when scanning " + file.getName();
 					break;
 				}
 
