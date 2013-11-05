@@ -18,7 +18,6 @@ package org.craftercms.social.repositories;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGCAudit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -38,9 +37,34 @@ public class UGCAuditRepositoryImpl implements UGCAuditRepositoryCustom {
 		Query query = new Query();
 		query.sort().on(ROW, Order.DESCENDING);
 		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
-		//query.skip(lastRowRetrieve);
+	
 		return mongoTemplate.find(query, UGCAudit.class);
 	}
+	
+	@Override
+	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, int start, int end) {
+		Query query = new Query();
+		
+		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
+		
+		query.skip(start);
+        query.limit(end > start? (end - start + 1): 0);
+		
+		query.sort().on(ROW, Order.DESCENDING);
+	
+		return mongoTemplate.find(query, UGCAudit.class);
+	}
+	
+	@Override
+	public long count(long lastRowRetrieve) {
+		Query query = new Query();
+		
+		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
+		
+		return mongoTemplate.count(query, UGCAudit.class);
+	}
+	
+
 
 
 }

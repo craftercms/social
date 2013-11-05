@@ -44,15 +44,11 @@ public class UGCAudit {
 		}
 	}
 
-	//private ObjectId id;
-
 	private ObjectId ugcId;
 
     private String tenant;
 
 	private String profileId;
-	
-	//private String target;
 	
 	private Target target;
 	
