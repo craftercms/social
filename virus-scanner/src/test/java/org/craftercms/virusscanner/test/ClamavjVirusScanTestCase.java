@@ -56,18 +56,11 @@ public class ClamavjVirusScanTestCase {
 
     @Test
     public void testFailedConnection() throws Exception {
-        ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost",8080,60000);
-        String path = getClass().getResource("/eicar.txt").getPath();
+        ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost",8383,60000);
+        String path = getClass().getResource("/clean.txt").getPath();
         String message = virusScanner.scan(path);
         assertNotNull(message);
     }
 
-    @Test
-    public void testTimeoutFailedConnection() throws Exception {
-        ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost",3310,0);
-        String path = getClass().getResource("/eicar.txt").getPath();
-        String message = virusScanner.scan(path);
-        assertNotNull(message);
-    }
 
 }
