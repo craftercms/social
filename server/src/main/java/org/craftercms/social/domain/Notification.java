@@ -3,11 +3,19 @@ package org.craftercms.social.domain;
 import java.util.Date;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 
+/*@CompoundIndexes({
+    @CompoundIndex(name = "frequency_transmitedStatus_row_idx", def = "{'frequency': 1, 'transmitedStatus': 1,'row': 1}", unique = true)
+    ,
+    @CompoundIndex(name = "tenantName_idx", def = "{'tenantName': 1}" )
+})*/
 public class Notification {
 	
 	public enum TransmittedStatus {
-		PROCESSING("processing"), PROCESSED("processed"), PENDING("pending");
+		PROCESSING("PROCESSING"), PROCESSED("PROCESSED"), PENDING("PENDING");
 		private String name;
 
 		private TransmittedStatus(String name) {
@@ -19,6 +27,8 @@ public class Notification {
 			return name;
 		}
 	}
+	
+	private long row;
 	
 	private ObjectId id;
 	
@@ -33,6 +43,8 @@ public class Notification {
 	private ObjectId subscriberId;
 	
 	private String subscriberEmail;
+	
+	private String subscriberUsername;
 	
 	private Event event;
 	
@@ -108,6 +120,22 @@ public class Notification {
 
 	public void setTransmitedStatus(TransmittedStatus transmitedStatus) {
 		this.transmitedStatus = transmitedStatus;
+	}
+
+	public String getSubscriberUsername() {
+		return subscriberUsername;
+	}
+
+	public void setSubscriberUsername(String subscriberUsername) {
+		this.subscriberUsername = subscriberUsername;
+	}
+
+	public long getRow() {
+		return row;
+	}
+
+	public void setRow(long row) {
+		this.row = row;
 	}
 
 }

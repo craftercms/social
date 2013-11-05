@@ -16,28 +16,20 @@
  */
 package org.craftercms.social.services.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.AttachmentsList;
-import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.Target;
+import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
+import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
+import org.craftercms.social.helpers.MultipartFileClone;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
@@ -46,6 +38,7 @@ import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.SupportDataAccess;
 import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCService;
+import org.craftercms.social.services.VirusScannerService;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.support.CrafterProfile;
@@ -58,6 +51,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class UGCServiceImpl implements UGCService {
@@ -86,6 +89,9 @@ public class UGCServiceImpl implements UGCService {
     @Autowired
 	private TenantService tenantService;
 
+	@Autowired
+	private VirusScannerService virusScannerService;
+
     @Override
     public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant, int page, int pageSize, String sortField, String sortOrder) {
         log.debug("Looking for Users with status %s and tenant %s", moderationStatus, tenant);
@@ -95,7 +101,10 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
-                         String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException {
+                         String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, AttachmentErrorException {
+
+        attachments = scanFilesForVirus(attachments);
+
         UGC ugc = null;
         if (existsUGC(ugcId)) {
             ugc = uGCRepository.findOne(ugcId);
@@ -126,7 +135,8 @@ public class UGCServiceImpl implements UGCService {
             removeAttachments(ugcId);
             this.uGCRepository.delete(ugcId);
             //Audit call
-            auditUGC(ugcId, AuditAction.DELETE, tenant, profileId, null);
+            auditForDeleteUGC(parent, profileId);
+            //auditUGC(ugcId, AuditAction.DELETE, tenant, profileId, null);
         }
     }
 
@@ -196,7 +206,7 @@ public class UGCServiceImpl implements UGCService {
     	for (String id: ids) {
     		uGCId = new ObjectId(id);
 	        if (existsUGC(uGCId)) {
-	            UGC ugc = uGCRepository.findOne(uGCId);
+	            UGC ugc = uGCRepository.findOne(uGCId); //TODO: performance improvement. ONLY one call to DB
 	            ugc.setModerationStatus(newStatus);
 	            ugc.setLastModifiedDate(new Date());
 	            //Audit call
@@ -211,15 +221,18 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC newUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
-            throws PermissionDeniedException {
-    	ugc.setAnonymousFlag(isAnonymousFlag);
-    	List<Action> resolveActions = resolveUGCActions(ugc, actions);
-    	ugc.setModerationStatus(ModerationStatus.UNMODERATED);
-    	ugc.setCreatedDate(new Date());
-    	ugc.setLastModifiedDate(new Date());
-    	checkForModeration(ugc);
-        ugc.setAttachmentId(saveUGCAttachments(files));
+    public UGC newUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
+            throws PermissionDeniedException, AttachmentErrorException {
+
+	    attachments = scanFilesForVirus(attachments);
+
+        ugc.setAnonymousFlag(isAnonymousFlag);
+        List<Action> resolveActions = resolveUGCActions(ugc, actions);
+        ugc.setModerationStatus(ModerationStatus.UNMODERATED);
+        ugc.setCreatedDate(new Date());
+        ugc.setLastModifiedDate(new Date());
+        checkForModeration(ugc);
+        ugc.setAttachmentId(saveUGCAttachments(attachments));
         ugc.setActions(resolveActions);
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
@@ -231,20 +244,23 @@ public class UGCServiceImpl implements UGCService {
 
 
     @Override
-    public UGC newChildUgc(UGC ugc, MultipartFile[] files, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
-            throws PermissionDeniedException {
+    public UGC newChildUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
+            throws PermissionDeniedException , AttachmentErrorException {
         if (!existsUGC(ugc.getParentId())) {
             log.error("Parent for {} does not exist", ugc);
             throw new DataIntegrityViolationException("Parent UGC does not exist");
         }
+
+	    attachments = scanFilesForVirus(attachments);
+
         ugc.setAnonymousFlag(isAnonymousFlag);
         // resolve and set the actions
         ugc.setActions(resolveUGCActions(ugc, actions));
         ugc.setModerationStatus(ModerationStatus.UNMODERATED);
         ugc.setCreatedDate(new Date());
-    	ugc.setLastModifiedDate(new Date());
+        ugc.setLastModifiedDate(new Date());
         checkForModeration(ugc);
-        ugc.setAttachmentId(saveUGCAttachments(files));
+        ugc.setAttachmentId(saveUGCAttachments(attachments));
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
@@ -433,8 +449,7 @@ public class UGCServiceImpl implements UGCService {
     }
 
     private void auditUGC(ObjectId ugcId, AuditAction auditAction, String tenant, String profileId, String reason) {
-        //uGCAuditRepository.save(new UGCAudit(ugcId, tenant, profileId, auditAction, reason, target));
-    	UGC ugc = this.uGCRepository.findOne(ugcId);
+        UGC ugc = this.uGCRepository.findOne(ugcId);
     	Target target = null;
     	if (ugc != null) {
     		target = new Target(ugc.getTargetId(),ugc.getTargetDescription(), ugc.getTargetUrl());
@@ -444,6 +459,18 @@ public class UGCServiceImpl implements UGCService {
     	UGCAudit audit = new UGCAudit(ugcId, tenant, profileId, auditAction, reason, target);
     	audit.setRow(counterService.getNextSequence("uGCAudit"));
         uGCAuditRepository.save(audit);
+    }
+    
+    private void auditForDeleteUGC(UGC ugc, String profileId) {
+    	Target target = null;
+    	if (ugc != null) {
+    		target = new Target(ugc.getTargetId(),ugc.getTargetDescription(), ugc.getTargetUrl());
+    	} else {
+    		return;
+    	}
+    	UGCAudit audit = new UGCAudit(ugc.getId(), ugc.getTenant(), profileId, AuditAction.DELETE, null, target);
+    	audit.setRow(counterService.getNextSequence("uGCAudit"));
+    	uGCAuditRepository.save(audit);
     }
     
     private void removeAuditUGC(ObjectId ugcId, AuditAction auditAction, String tenant, String profileId, String reason) {
@@ -540,6 +567,57 @@ public class UGCServiceImpl implements UGCService {
 	public List<UGC> findUGCsByTenant(String tenantName,
 			String sortField, String sortOrder) {
 		return findUGCsByTenant(tenantName, -1, -1, sortField, sortOrder); 
+	}
+
+	/**
+	 *  Clone files so they could be used for virus scanning and further for storing by the UGC service
+	 * @param attachments
+	 * @return cloned files MultipartFile[] that can be used multiple times
+	 * @throws AttachmentErrorException
+	 */
+	protected MultipartFileClone[] cloneMultipartFiles(MultipartFile[] attachments) throws AttachmentErrorException {
+		if (attachments == null) {
+			return null;
+		}
+		MultipartFileClone[] multipartFileClone = new MultipartFileClone[attachments.length];
+		for (int i = 0; i < multipartFileClone.length; i++) {
+			try {
+				multipartFileClone[i] = new MultipartFileClone(attachments[i]);
+			} catch (IOException e) {
+				throw new AttachmentErrorException(e);
+			}
+		}
+		return multipartFileClone;
+	}
+
+	/**
+	 * If the virus scanner service is implemented (e.g it is not the default crafter null scanner service) this
+     * method scans the multipartfile attachments looking for viruses. A clone of the multipart files is used
+     * for the scanning so they can be read later if needed).
+	 * @param attachments
+	 * @return  MultipartFile[] (the clone if the scanning is performed or the original if it is not)
+	 * @throws AttachmentErrorException if a threat is found or scan fails
+	 */
+	protected MultipartFile[] scanFilesForVirus(MultipartFile[] attachments) throws AttachmentErrorException {
+		if (attachments == null) {
+			return null;
+		}
+		if (virusScannerService.isNullScanner()) {
+			return attachments;
+		}
+
+		MultipartFileClone[] multipartFileClones = cloneMultipartFiles(attachments);
+
+		File[] files = new File[multipartFileClones.length];
+		for (int i = 0; i < files.length; i++) {
+			files[i] = multipartFileClones[i].getTempFile();
+		}
+		// scan files
+		String errorMessage = virusScannerService.scan(files);
+		if (errorMessage != null) {
+			throw new AttachmentErrorException(errorMessage);
+		}
+		return multipartFileClones;
 	}
 
     private List<UGC> populateUGCListWithProfiles(List<UGC> ugcList) {

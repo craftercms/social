@@ -37,9 +37,11 @@
 		<url>scm:git:git://github.com/craftercms/social</url>
 	</scm>
 	<modules>
+		<module>virus-scanner</module>
 		<module>server</module>
 		<module>blog</module>
 		<module>admin</module>
+        <!--<module>ui-plugin</module>-->
 	</modules>
 	<profiles>
     	<profile>

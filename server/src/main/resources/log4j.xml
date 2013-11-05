@@ -12,14 +12,14 @@
 
 	<!-- Application Loggers -->
 	<logger name="org.craftercms.social">
-		<level value="error" />
+		<level value="debug" />
 	</logger>
 
 	<!-- 3rdparty Loggers -->
 
 	<logger
 		name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
-		<level value="error" />
+		<level value="debug" />
 	</logger>
 
 	<logger name="org.springframework.core">
@@ -27,19 +27,19 @@
 	</logger>
 
 	<logger name="org.springframework.data">
-		<level value="error" />
+		<level value="debug" />
 	</logger>
 
 	<logger name="org.springframework.beans">
-		<level value="error" />
+		<level value="debug" />
 	</logger>
 
 	<logger name="org.springframework.context">
-		<level value="error" />
+		<level value="debug" />
 	</logger>
 
 	<logger name="org.springframework.web">
-		<level value="error" />
+		<level value="debug" />
 	</logger>
 
 	<!-- Root Logger -->
