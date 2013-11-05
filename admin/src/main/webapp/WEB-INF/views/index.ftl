@@ -22,6 +22,7 @@
     <script src="resources/lib/angular-1.2.0-rc.3/angular-cookies.js"></script>
     <script src="resources/lib/angular-1.2.0-rc.3/angular-sanitize.js"></script>
     <script src="resources/lib/angular-1.2.0-rc.3/angular-animate.js"></script>
+    <script src="resources/lib/ui_bootstrap/ui-bootstrap-tpls-0.6.0.js"></script>
     <script src="resources/js/app.js"></script>
     <script src="resources/js/services.js"></script>
     <script src="resources/js/controllers.js"></script>

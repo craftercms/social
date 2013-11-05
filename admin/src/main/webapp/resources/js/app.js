@@ -5,7 +5,7 @@ angular.module('moderationDashboard',
         [
             'moderationDashboard.filters', 'moderationDashboard.services',
             'moderationDashboard.directives', 'moderationDashboard.controllers',
-            'ngSanitize', 'ngRoute', 'ngAnimate'
+            'ngSanitize', 'ngRoute', 'ngAnimate', 'ui.bootstrap'
         ]).
     config(['$routeProvider', function($routeProvider) {
         $routeProvider.

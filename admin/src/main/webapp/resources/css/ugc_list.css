@@ -193,3 +193,11 @@ select {
 .hide-element.ng-hide-remove.ng-hide-remove-active {
     opacity:1;
 }
+
+/* ui.bootstrap */
+.nav, .pagination, .carousel a { cursor: pointer; }
+
+.pagination {
+    margin: 5px 0;
+    height: 26px;
+}

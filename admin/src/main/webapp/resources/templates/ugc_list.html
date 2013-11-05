@@ -13,7 +13,7 @@
     <!-- main section displayed when results are available -->
     <div class="row-fluid">
         <main ng-show="displayUgcs" role="main" class="span12">
-            <div class="bulk-actions">
+            <div class="bulk-actions" ng-controller="BulkActionCtrl">
                 <select id="bulkActions" ng-model="bulkAction" ng-options="action.tab as action.label for action in moderationActions" ng-change="optionSelected()">
                     <option value="">-- Choose Bulk Action --</option>
                 </select>
@@ -98,5 +98,18 @@
                 {{infoMessage}}
             </div>
         </section>
+    </div>
+
+    <!-- pagination -->
+    <div class="row-flui">
+        <div ng-controller="PaginationCtrl" class="well well-small">
+            <pagination
+                total-items="totalItems"
+                items-per-page="itemsPerPage"
+                page="currentPage"
+                num-pages="numPages"
+                on-select-page="pageChanged(page)"
+                max-size="maxSize" class="pagination-small" boundary-links="true" rotate="false" ></pagination>
+        </div>
     </div>
 </div>

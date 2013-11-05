@@ -11,12 +11,13 @@ angular.module('moderationDashboard.controllers', []).
         scope.confObj = {};
         scope.moderationList = [];
 
-        var getTenant = function () {
+        var getAppConf = function () {
             api.defaultTenant.get(function (conf) {
                 if (conf) {
                     scope.confObj = {
                         tenant: conf.tenant,
-                        defaultModeration: conf.moderation.toUpperCase()
+                        defaultModeration: conf.moderation.toUpperCase(),
+                        pagination: conf.pagination
                     };
                 }else {
                     //TODO: error message, no tenant was provide
@@ -36,7 +37,7 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
-        getTenant();
+        getAppConf();
         getModerationList();
 
     }]).
@@ -48,7 +49,6 @@ angular.module('moderationDashboard.controllers', []).
         scope.ugcList = [];
         scope.status = "";
         scope.moderationActions = [];
-        scope.ugcSelectedList = [];
 
 
         //set actual status
@@ -68,10 +68,12 @@ angular.module('moderationDashboard.controllers', []).
         };
 
         // get ugc list by status from rest call
-        var getUgcList = function () {
+        scope.getUgcList = function (page) {
             var conf = {
                 tenant: scope.confObj.tenant,
-                moderation: scope.status + ".json"
+                moderation: scope.status + ".json",
+                page: page,
+                pageSize: scope.confObj.pagination.commentsPerPage
             };
 
             api.Ugc.query(conf, function (list) {
@@ -83,10 +85,10 @@ angular.module('moderationDashboard.controllers', []).
                     tmpList.push({
                         'title': txtContent.title,
                         'id': ugc.id,
-                        'textContent': getTextFromhtml(txtContent.content),
+                        'textContent': scope.getTextFromhtml(txtContent.content),
                         'moderationStatus': ugc.moderationStatus,
                         'completeContent': txtContent.content,
-                        'dateAdded': getDateTime(ugc.dateAdded),
+                        'dateAdded': scope.getDateTime(ugc.dateAdded),
                         'userName': ugc.profile.userName,
                         'userMail': ugc.profile.email,
                         'targetUrl': 'target Url',
@@ -111,7 +113,8 @@ angular.module('moderationDashboard.controllers', []).
         };
 
         // get text snippet from html
-        var getTextFromhtml = function (html) {
+        //TODO if text is less than 200 then no arrow nor red corner has to appear
+        scope.getTextFromhtml = function (html) {
             var elmText = $(html).text(),
                 snippet;
             if (elmText.length > 200) {
@@ -125,7 +128,7 @@ angular.module('moderationDashboard.controllers', []).
         };
 
         // get date and hour of last update
-        var getDateTime = function (dateLong) {
+        scope.getDateTime = function (dateLong) {
             var date = new Date(dateLong);
 
             return date.toDateString();
@@ -140,6 +143,51 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
+        // handler when input checkbox is clicked. Hide error message if is displayed
+        scope.hideCheckUgcError = function (event) {
+            if ($(event.currentTarget).prop('checked')) {
+                // hiding error message
+                var applyBtn = $('#applyBtn');
+                if (applyBtn.next('div.tooltip:visible').length){
+                    applyBtn.tooltip('hide');
+                }
+            }
+        }
+
+        //handler when undo is clicked
+        scope.reverseAction = function (event, id) {
+            http({
+                method: 'POST',
+                url: "/crafter-social/api/2/ugc/moderation/" + id + "/status.json?moderationStatus=" + scope.status + "&tenant=" + scope.confObj.tenant,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }).success(function (data) {
+                    angular.forEach(scope.ugcList, function (ugc, index) {
+                        if (ugc.id === data.id) {
+                            scope.ugcList[index].updated = false;
+                            scope.ugcList[index].updateMessage = "";
+                            scope.ugcList[index].alertClass = "";
+                            scope.ugcList[index].undo = false;
+                        }
+                    });
+                }).error(function (data) {
+                    scope.$parent.ugcList[index].updated = true;
+                    scope.$parent.ugcList[index].updateMessage = "Error trying to update"
+                    scope.$parent.ugcList[index].alertClass = "error";
+                });
+
+        };
+
+        setStatus();
+        getModerationList();
+        scope.getUgcList(1);
+        moderationActions();
+
+    }]).
+
+    /**
+     * bulk action controller
+     */
+    controller('BulkActionCtrl', ['$scope', '$http', function (scope, http) {
         //handler for bulk actions update
         scope.bulkUpdate = function (event) {
             var optionSelected = scope.bulkAction,
@@ -206,7 +254,6 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
-
         // handler for when a select option has been updated
         scope.optionSelected = function () {
             var applyBtn = $('#applyBtn');
@@ -221,44 +268,35 @@ angular.module('moderationDashboard.controllers', []).
                 }
             }
         };
+    }]).
 
-        // handler when input checkbox is clicked. Hide error message if is displayed
-        scope.hideCheckUgcError = function (event) {
-            if ($(event.currentTarget).prop('checked')) {
-                // hiding error message
-                var applyBtn = $('#applyBtn');
-                if (applyBtn.next('div.tooltip:visible').length){
-                    applyBtn.tooltip('hide');
-                }
-            }
+    /**
+     * pagination controller
+     */
+    controller('PaginationCtrl', ['$scope', function (scope) {
+        scope.currentPage = 1;
+        scope.totalItems = 10;
+
+        // if no pagination configuration was detected
+        if (scope.confObj.pagination === undefined) {
+            // default values
+            scope.itemsPerPage = 10;
+            scope.maxSize = 5;
+        }else{
+            scope.itemsPerPage = scope.confObj.pagination.commentsPerPage;
+            scope.maxSize = scope.confObj.pagination.maxNumberPagItem;
         }
 
-        //handler when undo is clicked
-        scope.reverseAction = function (event, id) {
-            http({
-                method: 'POST',
-                url: "/crafter-social/api/2/ugc/moderation/" + id + "/status.json?moderationStatus=" + scope.status + "&tenant=" + scope.confObj.tenant,
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-            }).success(function (data) {
-                    angular.forEach(scope.ugcList, function (ugc, index) {
-                        if (ugc.id === data.id) {
-                            scope.ugcList[index].updated = false;
-                            scope.ugcList[index].updateMessage = "",
-                            scope.ugcList[index].alertClass = "";
-                            scope.ugcList[index].undo = false;
-                        }
-                    });
-                }).error(function (data) {
-                    scope.$parent.ugcList[index].updated = true;
-                    scope.$parent.ugcList[index].updateMessage = "Error tryinh to update"
-                    scope.$parent.ugcList[index].alertClass = "error";
-                });
+        // change page when user click pagination
+        scope.pageChanged = function (page) {
+            scope.$parent.getUgcList(page);
+        }
 
+        // set pagination data
+        var setPaginationData = function () {
+            scope.numPages = Math.ceil(scope.totalItems / scope.itemsPerPage);
         };
 
-        setStatus();
-        getModerationList();
-        getUgcList();
-        moderationActions();
+        setPaginationData();
 
     }]);
