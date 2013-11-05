@@ -62,24 +62,20 @@ public interface UGCService {
 	 * 
 	 * @param ugc
 	 *            the {@link UGC} to save
-	 * @param attachments 
 	 * @return the saved {@link UGC}
 	 */
-	UGC newUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions,
-                   String tenant, String profileId, boolean isAnonymous) throws PermissionDeniedException;
+     UGC newUgc(UGC ugc) throws PermissionDeniedException;
 
 	/**
 	 * Creates a new child {@link UGC}
 	 * 
 	 * @param ugc
 	 *            the {@link UGC} to save
-	 * @param attachments 
 	 * @return the saved {@link UGC}
 	 * @throws DataIntegrityViolationException
 	 *             if the Parent UGC does not exist
 	 */
-	UGC newChildUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions,
-                       String tenant, String profileId, boolean isAnonymous) throws PermissionDeniedException;
+	UGC newChildUgc(UGC ugc) throws PermissionDeniedException;
 
 	/**
 	 * Checks if a UGC Exists
@@ -92,7 +88,6 @@ public interface UGCService {
 
 	/**
 	 * Gets the Attachment for that UGC
-	 * @param ugcId Ugc Id to check the attachment
 	 * @return a Attachment instance, Null if a IO exception happen reading the File
 	 * @throws DataRetrievalFailureException if the Ugc does not exist or if the attachment does not 
 	 *         exist either
@@ -131,6 +126,8 @@ public interface UGCService {
 
 	UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
 			String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException;
+
+    UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant, String profileId) throws PermissionDeniedException;
 
 	void deleteUgc(ObjectId objectId, String tenant, String profileId) throws PermissionDeniedException;
 	

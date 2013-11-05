@@ -38,6 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import clover.retrotranslator.edu.emory.mathcs.backport.java.util.Arrays;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot { 
 	
 	private static final String ADMIN = "ADMIN";
@@ -65,11 +67,10 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 
 	public boolean hasCreatePermission() {
 		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
-		String[] target = (String[]) params.get("target");
+        // need to parse parentId from request parameter
 		String[] parentId = (String[]) params.get("parentId");
 		UGC parent = null;
-		if (target != null && target.length == 1
-				&& (parentId == null || parentId.length == 0)) {
+		if (parentId == null || parentId.length == 0) {
 			String[] tenant = (String[]) params.get("tenant");
 			List<String> createRoles = this.tenantService
 					.getRootCreateRoles(tenant[0]);
