@@ -16,21 +16,11 @@
  */
 package org.craftercms.social.controllers.rest.v1;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
+import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.HierarchyGenerator;
@@ -51,6 +41,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/api/2/ugc")
@@ -167,7 +167,7 @@ public class UGCRestController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@ModelAttribute
 	public UGC addUGC(@RequestBody(required = true) UGCRequest ugcRequest,
-			HttpServletRequest request) throws PermissionDeniedException{
+			HttpServletRequest request) throws PermissionDeniedException, AttachmentErrorException {
 
 		/** Pre validations **/
 		if (ugcRequest.getTarget() == null) {
@@ -185,11 +185,12 @@ public class UGCRestController {
 	@RequestMapping(value = "/update", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ModelAttribute
 	public UGC updateUGC(@RequestBody(required = true) UGCRequest ugcRequest,
-                         HttpServletRequest request) throws PermissionDeniedException{
+                         HttpServletRequest request) throws PermissionDeniedException, AttachmentErrorException {
 
         return ugcService.updateUgc(new ObjectId(ugcRequest.getUgcId()), ugcRequest.getTenant(), ugcRequest.getTarget(), getProfileId(),
                 ugcRequest.getParentId()==null?null:new ObjectId(ugcRequest.getParentId()), ugcRequest.getTextContent(),
                 ugcRequest.getAttachments(), ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription());
+
 	}
 
     @RequestMapping(value = "/{ugcId}/add_attachments", method = RequestMethod.POST)
@@ -258,6 +259,13 @@ public class UGCRestController {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
         return ex.getMessage();
 	}
+
+    @ExceptionHandler(AttachmentErrorException.class)
+    public String handleDataErrorException(AttachmentErrorException ex, HttpServletResponse response) {
+        response.setHeader("Content-Type", "application/json");
+	    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
+        return ex.getMessage();
+    }
 	
 	private Map<String, Object> parseAttibutes(HttpServletRequest request) {
 		Map<String, Object> attributeMap = new HashMap<String, Object>();

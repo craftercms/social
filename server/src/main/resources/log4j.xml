@@ -12,7 +12,7 @@
 
 	<!-- Application Loggers -->
 	<logger name="org.craftercms.social">
-		<level value="error" />
+		<level value="debug" />
 	</logger>
 
 	<!-- 3rdparty Loggers -->

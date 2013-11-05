@@ -58,13 +58,14 @@ public abstract class BaseHarvesterService implements HarvesterService {
 
         String jobId = (String) params.get(JOB_ID_PARAM);
         String applicationId = (String) params.get(APPLICATION_ID_PARAM);
-        log.debug("Starting harvester job ID->" + jobId + " with application ID->" + applicationId);
+        if (log.isDebugEnabled()) {
+        	log.debug("Starting harvester job ID->" + jobId + " with application ID->" + applicationId);
+        }
 
         HarvestStatus harvestStatus = getHarvesterLock(jobId, applicationId);
 
         if (harvestStatus.getStatus().equals(HARVESTER_STATUS_RUNNING))  {
 
-            Map<String, ?> harvestResults = null;
             try {
                 // call the harvest internal method
                 doHarvestInternal(harvestStatus.getAttributes());
@@ -105,7 +106,6 @@ public abstract class BaseHarvesterService implements HarvesterService {
      * @return
      */
     private HarvestStatus getHarvesterLock(String jobId, String applicationId) {
-
         // If HarvestStatus is null, it means that:
         //  1) the harvester is already running, OR
         //  2) the harvester is running for the first time, to a new entry needs to be created

@@ -17,7 +17,7 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 	@Override
 	public List<Profile> findProfilesBySubscriptions(String target) {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("subscriptions.subscription.targets.id").is(target));
+		query.addCriteria(Criteria.where("subscriptions.subscription.targetId").is(target));
 		return profileTemplate.find(query, Profile.class);
 	}
 

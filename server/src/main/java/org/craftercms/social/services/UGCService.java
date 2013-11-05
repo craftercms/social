@@ -27,6 +27,7 @@ import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.domain.Action;
+import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.util.web.Attachment;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -64,7 +65,7 @@ public interface UGCService {
 	 *            the {@link UGC} to save
 	 * @return the saved {@link UGC}
 	 */
-     UGC newUgc(UGC ugc) throws PermissionDeniedException;
+     UGC newUgc(UGC ugc) throws PermissionDeniedException, AttachmentErrorException;
 
 	/**
 	 * Creates a new child {@link UGC}
@@ -75,7 +76,8 @@ public interface UGCService {
 	 * @throws DataIntegrityViolationException
 	 *             if the Parent UGC does not exist
 	 */
-	UGC newChildUgc(UGC ugc) throws PermissionDeniedException;
+
+	UGC newChildUgc(UGC ugc) throws PermissionDeniedException, AttachmentErrorException;
 
 	/**
 	 * Checks if a UGC Exists
@@ -125,7 +127,7 @@ public interface UGCService {
 	UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId, String sortField, String sortOrder);
 
 	UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
-			String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException;
+			String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, AttachmentErrorException;
 
     UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant, String profileId) throws PermissionDeniedException;
 
