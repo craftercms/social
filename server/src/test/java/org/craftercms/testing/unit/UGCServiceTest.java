@@ -396,7 +396,7 @@ public class UGCServiceTest {
         } catch (PermissionDeniedException pde) {
             fail(pde.getMessage());
         } catch (AttachmentErrorException aee) {
-            assertTrue(ClamavVirusScannerImpl.THREAT_FOUND_MESSAGE.equals(aee.getMessage()));
+            assertTrue(aee.getMessage().contains(ClamavVirusScannerImpl.THREAT_FOUND_MESSAGE));
         }
 
     }

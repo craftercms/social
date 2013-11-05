@@ -591,8 +591,11 @@ public class UGCServiceImpl implements UGCService {
 			return null;
 		}
 		if (virusScannerService.isNullScanner()) {
+            log.debug("Virus scanning is disabled");
 			return attachments;
 		}
+
+        log.debug("Scanning the attachments");
 
 		MultipartFileClone[] multipartFileClones = cloneMultipartFiles(attachments);
 
