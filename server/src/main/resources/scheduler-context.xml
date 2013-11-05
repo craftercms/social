@@ -3,20 +3,52 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
+	<bean id="ugcAuditHarvesterService" class="org.craftercms.social.notification.harvester.impl.UGCAuditHarvesterServiceImpl">
+	    <property name="pageSize" value="15"/>
+	</bean>
+	
+	<bean id="emailInstantService" class="org.craftercms.social.notification.harvester.impl.EmailNotifierHarvesterServiceImpl">
+	    <property name="frequency" value="instant"/>
+	    <property name="emailTemplateFtl" value="${crafter.social.notification.instant.mail.ftl}"/>
+	    <property name="emailSubject" value="${crafter.social.notification.instant.mail.subject}"/>
+	    <property name="emailText" value="${crafter.social.notification.instant.text.body}"/>
+	    <property name="pageSize" value="15"/>
+	</bean>
+
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
+            	<!-- -  JOB to HEARVEST data from UGCAudit table and produces notifications   - -->
                 <bean class="org.springframework.scheduling.quartz.CronTriggerBean">
                     <property name="cronExpression" value="${social.harvester.instant.cronexpression}"/>
                     <property name="jobDetail">
                         <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                            <property name="targetBeanName" value="harvesterService"/>
+                            <property name="targetBeanName" value="ugcAuditHarvesterService"/>
                             <property name="targetMethod" value="doHarvest"/>
                             <property name="concurrent" value="false"/>
                             <property name="arguments">
                                 <array>
                                     <map>
-										<entry key="jobId" value="crafter-social-job" />
+										<entry key="jobId" value="crafter-social-harvester" />
+										<entry key="applicationId" value="crafter-social" />
+									</map>
+                                </array>
+                            </property>
+                        </bean>
+                    </property>
+                </bean>
+                <!-- -  JOB to Consume the notifications via email   - -->
+                <bean class="org.springframework.scheduling.quartz.CronTriggerBean">
+                    <property name="cronExpression" value="${social.harvester.notifier.instant.cronexpression}"/>
+                    <property name="jobDetail">
+                        <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                            <property name="targetBeanName" value="emailInstantService"/>
+                            <property name="targetMethod" value="doHarvest"/>
+                            <property name="concurrent" value="false"/>
+                            <property name="arguments">
+                                <array>
+                                    <map>
+										<entry key="jobId" value="crafter-social-notifier" />
 										<entry key="applicationId" value="crafter-social" />
 									</map>
                                 </array>

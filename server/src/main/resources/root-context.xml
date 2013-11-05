@@ -62,9 +62,4 @@
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 	</bean>
-	
-	<bean id="harvesterService" class="org.craftercms.social.notification.harvester.impl.UGCAuditHarvesterServiceImpl">
-	    
-	</bean>
-	
 </beans>
