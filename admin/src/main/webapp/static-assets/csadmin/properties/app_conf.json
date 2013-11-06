@@ -1,0 +1,8 @@
+{
+    "tenant": "craftercms",
+    "moderation": "UNMODERATED",
+    "pagination": {
+        "commentsPerPage": 4,
+        "maxNumberPagItem": 2
+    }
+}

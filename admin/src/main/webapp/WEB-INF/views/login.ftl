@@ -5,8 +5,8 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>Crafter Social Admin - Login</title>
-	<link href="resources/img/favicon.ico" rel="Shortcut Icon">
-	<link rel="stylesheet" href="resources/css/style.css">
+	<link href="static-assets/csadmin/img/favicon.ico" rel="Shortcut Icon">
+	<link rel="stylesheet" href="static-assets/csadmin/css/style.css">
 </head>
 
 <body>
