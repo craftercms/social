@@ -20,6 +20,25 @@
 		<name>CrafterCMS</name>
 		<url>http://craftercms.org</url>
 	</organization>
+	<licenses>
+	        <license>
+	            <name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
+	            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+	            <distribution>repo</distribution>
+	        </license>
+	    </licenses>
+	    <developers>
+	        <developer>
+	            <id>sumerjabri</id>
+	            <name>Sumer Jabri</name>
+	            <email>sumer.jabri@craftercms.org</email>
+	        </developer>
+	    </developers>
+	    <scm>
+	        <connection>scm:git:git://github.com/craftercms/profile/tree/master/virus-scanner</connection>
+	        <developerConnection>scm:git:git://github.com/craftercms/profile/tree/master/virus-scanner</developerConnection>
+	        <url>scm:git:git://github.com/craftercms/profile/tree/master/virus-scanner</url>
+	    </scm>
 
     <dependencies>
         <dependency>
