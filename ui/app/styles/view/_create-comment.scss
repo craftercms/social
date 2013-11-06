@@ -1,0 +1,48 @@
+.create-comment-view {
+  padding: 5px;
+
+  .actions {
+    text-align: left;
+  }
+
+  .textarea {
+
+    background-color: #fff;
+    border: 1px solid $input-group-addon-border-color;
+
+    margin-bottom: 5px;
+    padding: 5px;
+    // min-height: 30px;
+
+    > textarea {
+      border: none;
+      resize: none;
+      width: 100%;
+    }
+
+    > div {
+      min-height: 1em;
+    }
+
+    *:focus {
+      outline: none;
+    }
+
+    p {
+
+      margin-bottom: 0;
+
+      &:last-child {
+
+      }
+
+    }
+
+  }
+
+  button {
+    height: auto;
+    width: auto;
+  }
+
+}

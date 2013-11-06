@@ -1,0 +1,83 @@
+@import "../variables";
+
+$popover-font-size: 12px;
+
+.#{$app-namespace}-comment-thread {
+
+  min-height: 35px;
+
+  .no-comments {
+    padding: 10px 20px;
+    text-align: center;
+    color: $text-muted;
+  }
+
+  &:empty:before {
+    position: relative;
+    text-align: center;
+    display: block;
+    top: 10px;
+    content: "(no comments so far)";
+    color: #d9d9d9;
+  }
+
+  .#{$app-namespace}-comment {
+
+    .popover-title {
+      padding: 5px;
+      border-radius: 0;
+
+      > img {
+        float: left !important;
+        margin: 0 5px !important;
+      }
+
+      strong {
+        display: block;
+      }
+
+      small {
+        display: block;
+        font-size: 0.8em;
+      }
+
+    }
+
+    + .#{$app-namespace}-comment {
+
+      .popover-title {
+        border-top: 1px solid darken($popover-title-bg, 5%);
+      }
+
+    }
+
+    .popover-content {
+      padding: 5px;
+      font-size: $popover-font-size;
+
+      p {
+        margin-bottom: 0;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+      }
+
+    }
+
+    * {
+      max-width: 100%;
+    }
+
+    ul {
+      margin-bottom: 0;
+      border-top: 1px solid darken($popover-title-bg, 5%);
+      background-color: lighten($popover-title-bg, 10%);
+      font-size: .9em;
+    }
+
+  }
+
+
+}
