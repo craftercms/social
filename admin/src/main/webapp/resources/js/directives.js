@@ -55,9 +55,8 @@ angular.module('moderationDashboard.directives', []).
                                     }
                                 });
                             }).error(function (data) {
-                                scope.$parent.ugcList[index].updated = true;
-                                scope.$parent.ugcList[index].updateMessage = "Error tryinh to update"
-                                scope.$parent.ugcList[index].alertClass = "error";
+                                //TODO error message: data needs to have information about the error
+                                console.log("error trying to update");
                             });
 
                         });
