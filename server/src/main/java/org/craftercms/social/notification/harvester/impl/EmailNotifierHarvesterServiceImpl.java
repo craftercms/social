@@ -217,9 +217,6 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	
 	private Map<String, Object> getTemplateArguments(Notification notification) {
 		Map<String, Object> templateArgs = new HashMap<String, Object>();
-//		templateArgs.put(EVENT_USER_EMAIL,notification.getEvent().getProfile().getUserName());
-//		templateArgs.put(EVENT_ACTION,this.actionToDisplay.get(notification.getEvent().getAction().toString()));
-//		templateArgs.put(EVENT_TARGET,notification.getEvent().getTarget());
 		
 		templateArgs.put(SIGNATURE_EMAIL,this.signatureEmail);
 		templateArgs.put(SUBSCRIBER_USER_NAME,notification.getSubscriberUsername());
@@ -231,17 +228,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		templateArgs.put(EVENT_USERNAME,notification.getEvent().getProfile().getUserName());
 		templateArgs.put(EVENT_USER_EMAIL,notification.getEvent().getProfile().getEmail());
 		templateArgs.put(EVENT_DATE,notification.getEvent().getAuditDate());
-		
-		
-		
-//		private static final String SIGNATURE_EMAIL = "signatureEmail";
-//		private static final String SUBSCRIBER_USER_NAME = "subscriberUsername";
-//		private static final String SUBSCRIBER_EMAIL = "subscriberEmail";
-//		private static final String EVENT_ACTION = "eventAction";
-//		private static final String EVENT_TARGET = "eventTarget";
-//		private static final String EVENT_USERNAME = "eventUsername";
-//		private static final String EVENT_USER_EMAIL = "eventUserEmail";
-//		private static final String EVENT_DATE = "eventDate";
+
 		return templateArgs;
 	}
 
