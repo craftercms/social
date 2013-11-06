@@ -81,9 +81,9 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 					log.error("STATUS: " + statusName + " - RESULT: " + result + " - EXCEPTION: " + scanResult.getException() + " - USER MESSAGE: " + userMessage);
 				} else if (scanResult.getStatus().compareTo(ScanResult.Status.FAILED) == 0) {
 					userMessage = THREAT_FOUND_MESSAGE;
-					log.info("STATUS: " + statusName + " - RESULT: " + result + " - SIGNATURE " + signature + " - USER MESSAGE: " + userMessage);
+					log.error("STATUS: " + statusName + " - RESULT: " + result + " - SIGNATURE " + signature + " - USER MESSAGE: " + userMessage);
 				} else {
-					log.info("STATUS: " + statusName + " - RESULT: " + result);
+					log.debug("STATUS: " + statusName + " - RESULT: " + result);
 				}
 
 			} catch (FileNotFoundException e) {
@@ -131,9 +131,9 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 				log.error("STATUS: " + statusName + " - RESULT: " + result + " - EXCEPTION: " + scanResult.getException() + " - USER MESSAGE: " + userMessage);
 			} else if (scanResult.getStatus().compareTo(ScanResult.Status.FAILED) == 0) {
 				userMessage = THREAT_FOUND_MESSAGE;
-				log.info("STATUS: " + statusName + " - RESULT: " + result + " - SIGNATURE " + signature + " - USER MESSAGE: " + userMessage);
+				log.error("STATUS: " + statusName + " - RESULT: " + result + " - SIGNATURE " + signature + " - USER MESSAGE: " + userMessage);
 			} else {
-				log.info("STATUS: " + statusName + " - RESULT: " + result);
+				log.debug("STATUS: " + statusName + " - RESULT: " + result);
 			}
 
 		} else {

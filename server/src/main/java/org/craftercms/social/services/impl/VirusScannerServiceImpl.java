@@ -1,6 +1,7 @@
 package org.craftercms.social.services.impl;
 
 
+import org.apache.commons.io.FilenameUtils;
 import org.craftercms.social.services.VirusScannerService;
 import org.craftercms.virusscanner.api.VirusScanner;
 import org.craftercms.virusscanner.impl.ClamavVirusScannerImpl;
@@ -25,32 +26,30 @@ public class VirusScannerServiceImpl implements VirusScannerService {
 
     /**
      *
-     * @param files the files to be scanned
+     * @param tmpFile the file to be scanned
+     * @param originalFilename the simple file name of the original file
      * @return null on success or error message
      */
 	@Override
-	public String scan(File[] files) {
+	public String scan(File tmpFile, String originalFilename) {
 
 		String userErrorMessage = null;
 
-		if (files != null) {
-			for (File file : files) {
+        if(originalFilename == null){
+            originalFilename = tmpFile.getName();
+        }
 
-				try {
-					InputStream inputStream = new FileInputStream(file);
-					userErrorMessage = this.virusScanner.scan(inputStream);
-				} catch (IOException e) {
-					userErrorMessage = ClamavVirusScannerImpl.SCAN_FAILED_MESSAGE;
-					log.error(e + " - USER MESSAGE: " + userErrorMessage);
-				}
+        try {
+            InputStream inputStream = new FileInputStream(tmpFile);
+            userErrorMessage = this.virusScanner.scan(inputStream);
+        } catch (IOException e) {
+            userErrorMessage = ClamavVirusScannerImpl.SCAN_FAILED_MESSAGE;
+            log.error(e + " - USER MESSAGE: " + userErrorMessage);
+        }
 
-				if (userErrorMessage != null) {
-                    userErrorMessage += " when scanning " + file.getName();
-					break;
-				}
-
-			}
-		}
+        if (userErrorMessage != null) {
+            userErrorMessage += " when scanning " + FilenameUtils.getName(originalFilename);
+        }
 
 		return userErrorMessage;
 	}

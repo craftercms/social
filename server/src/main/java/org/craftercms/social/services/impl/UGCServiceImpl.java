@@ -19,13 +19,8 @@ package org.craftercms.social.services.impl;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
-import org.craftercms.social.domain.Action;
-import org.craftercms.social.domain.AttachmentModel;
-import org.craftercms.social.domain.AttachmentsList;
-import org.craftercms.social.domain.Target;
-import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.*;
 import org.craftercms.social.domain.UGC.ModerationStatus;
-import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
@@ -33,12 +28,7 @@ import org.craftercms.social.helpers.MultipartFileClone;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
-import org.craftercms.social.services.CounterService;
-import org.craftercms.social.services.PermissionService;
-import org.craftercms.social.services.SupportDataAccess;
-import org.craftercms.social.services.TenantService;
-import org.craftercms.social.services.UGCService;
-import org.craftercms.social.services.VirusScannerService;
+import org.craftercms.social.services.*;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.support.CrafterProfile;
@@ -53,14 +43,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class UGCServiceImpl implements UGCService {
@@ -597,18 +581,17 @@ public class UGCServiceImpl implements UGCService {
 
         log.debug("Scanning the attachments");
 
+        String errorMessage = "";
+
 		MultipartFileClone[] multipartFileClones = cloneMultipartFiles(attachments);
 
-		File[] files = new File[multipartFileClones.length];
-		for (int i = 0; i < files.length; i++) {
-			files[i] = multipartFileClones[i].getTempFile();
-		}
-		// scan files
-		String errorMessage = virusScannerService.scan(files);
-		if (errorMessage != null) {
-            log.error(errorMessage);
-			throw new AttachmentErrorException(errorMessage);
-		}
+        for(MultipartFileClone multipartFileClone : multipartFileClones){
+            errorMessage = virusScannerService.scan(multipartFileClone.getTempFile(),multipartFileClone.getName());
+            if(errorMessage != null){
+                log.error(errorMessage);
+                throw new AttachmentErrorException(errorMessage);
+            }
+        }
 
         log.debug("Successful scanning: The attachments are clean");
 
