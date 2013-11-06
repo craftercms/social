@@ -1,0 +1,23 @@
+<div>
+    <h3 class="popover-title">
+        <img src="/images/silhouette.png" class="silhouette"/>
+        <strong>{{profile.userName}}</strong>
+        <small>{{date dateAdded}}</small>
+    </h3>
+    <div class="popover-content">
+        {{html content}}
+    </div>
+    <div class="comment-actions">
+        <ul class="list-inline list-unstyled">
+            <li>
+                <a href="#" data-action-like><i class="glyphicon glyphicon-thumbs-up"></i> Like ({{likeCount}})</a>
+            </li>
+            <li>
+                <a href="#" data-action-reply><i class="glyphicon glyphicon-refresh"></i> Reply ({{childCount}})</a>
+            </li>
+            <li class="pull-right">
+                <a href="#" data-action-flag><i class="glyphicon glyphicon-flag"></i> Flag ({{flagCount}})</a>
+            </li>
+        </ul>
+    </div>
+</div>
