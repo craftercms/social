@@ -16,6 +16,17 @@
  */
 package org.craftercms.social.services.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
@@ -52,15 +63,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class UGCServiceImpl implements UGCService {
@@ -114,6 +117,21 @@ public class UGCServiceImpl implements UGCService {
             ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
             ugc.setTargetUrl(targetUrl);
             ugc.setTargetDescription(targetDescription);
+            ugc.setLastModifiedDate(new Date());
+            this.uGCRepository.save(ugc);
+            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+            //Audit call
+            auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
+        }
+        return ugc;
+    }
+
+    @Override
+    public UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant, String profileId) throws PermissionDeniedException {
+        UGC ugc = null;
+        if (existsUGC(ugcId)) {
+            ugc = uGCRepository.findOne(ugcId);
+            ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
             ugc.setLastModifiedDate(new Date());
             this.uGCRepository.save(ugc);
             ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
@@ -221,50 +239,52 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC newUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
-            throws PermissionDeniedException, AttachmentErrorException {
+    public UGC newUgc(UGC ugc)
+            throws PermissionDeniedException, AttachmentErrorException  {
 
-	    attachments = scanFilesForVirus(attachments);
 
-        ugc.setAnonymousFlag(isAnonymousFlag);
-        List<Action> resolveActions = resolveUGCActions(ugc, actions);
-        ugc.setModerationStatus(ModerationStatus.UNMODERATED);
-        ugc.setCreatedDate(new Date());
-        ugc.setLastModifiedDate(new Date());
-        checkForModeration(ugc);
-        ugc.setAttachmentId(saveUGCAttachments(attachments));
+        // attachments = scanFilesForVirus(ugc.getAttachmentsList());
+
+        ugc.setAnonymousFlag(ugc.isAnonymousFlag());
+    	List<Action> resolveActions = resolveUGCActions(ugc.getActions(), ugc.getParentId());
+    	ugc.setModerationStatus(ModerationStatus.UNMODERATED);
+    	ugc.setCreatedDate(new Date());
+    	ugc.setLastModifiedDate(new Date());
+    	checkForModeration(ugc);
+        //ugc.setAttachmentId(saveUGCAttachments(files));
         ugc.setActions(resolveActions);
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
-        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
+        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, ugc.getTenant(), ugc.getProfileId(), null);
         return ugcWithProfile;
     }
 
 
 
     @Override
-    public UGC newChildUgc(UGC ugc, MultipartFile[] attachments, List<Action> actions, String tenant, String profileId, boolean isAnonymousFlag)
-            throws PermissionDeniedException , AttachmentErrorException {
+    public UGC newChildUgc(UGC ugc) throws PermissionDeniedException, AttachmentErrorException {
+
         if (!existsUGC(ugc.getParentId())) {
             log.error("Parent for {} does not exist", ugc);
             throw new DataIntegrityViolationException("Parent UGC does not exist");
         }
 
-	    attachments = scanFilesForVirus(attachments);
+	    // attachments = scanFilesForVirus(ugc.getAttachmentsList());
 
-        ugc.setAnonymousFlag(isAnonymousFlag);
+        //ugc.setAnonymousFlag(ugc.isAnonymousFlag());
         // resolve and set the actions
-        ugc.setActions(resolveUGCActions(ugc, actions));
+        ugc.setActions(resolveUGCActions(ugc.getActions(), ugc.getParentId()));
         ugc.setModerationStatus(ModerationStatus.UNMODERATED);
         ugc.setCreatedDate(new Date());
         ugc.setLastModifiedDate(new Date());
         checkForModeration(ugc);
-        ugc.setAttachmentId(saveUGCAttachments(attachments));
+
+        //ugc.setAttachmentId(saveUGCAttachments(files));
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
-        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, tenant, profileId, null);
+        auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, ugc.getTenant(), ugc.getProfileId(), null);
         return ugcWithProfile;
     }
 
@@ -699,15 +719,14 @@ public class UGCServiceImpl implements UGCService {
 
     /**
      * Resolve the full set of actions for the new UGC
-     * @param ugc
      * @param actions from request
+     * @param parentId of ugc
      * @return
      */
-    private List<Action> resolveUGCActions(UGC ugc,
-                                                List<Action> actions) {
+    private List<Action> resolveUGCActions(List<Action> actions, ObjectId parentId) {
     	if (actions == null || actions.size() ==0) {
             // if there is a parent, get the parent's actions & set in there
-        	return resolveUGCActionsEmpty(ugc);
+        	return resolveUGCActionsEmpty(parentId);
             
         } 
         // resolve what actions need to be added from the parent if any
@@ -729,8 +748,8 @@ public class UGCServiceImpl implements UGCService {
 
             // get parent actions
             UGC parentUgc = null;
-            if (ugc.getParentId() != null) {
-                parentUgc = this.findById(ugc.getParentId());
+            if (parentId != null) {
+                parentUgc = this.findById(parentId);
             }
 
             List<Action> actionsToMerge = null;
@@ -751,14 +770,15 @@ public class UGCServiceImpl implements UGCService {
         return actions;
     }
     
-    private List<Action> resolveUGCActionsEmpty(UGC ugc) {
-    	UGC parentUgc = this.findById(ugc.getParentId());
-        if (parentUgc != null) {
-        	return parentUgc.getActions();
-        }   else {
-            // otherwise use the defaults
-        	return ActionUtil.getDefaultActions();
+    private List<Action> resolveUGCActionsEmpty(ObjectId ugcParentId) {
+        if (ugcParentId != null) {
+            UGC parentUgc = this.findById(ugcParentId);
+            if (parentUgc != null) {
+                return parentUgc.getActions();
+            }
         }
+    	// otherwise use the defaults
+        return ActionUtil.getDefaultActions();
 	}
 
 	private List<UGC> findUGCs(String[] moderationStatus, final String tenant,String target, int page, int pageSize,

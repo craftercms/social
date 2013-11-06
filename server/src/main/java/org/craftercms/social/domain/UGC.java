@@ -25,13 +25,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.bson.types.ObjectId;
-import org.craftercms.profile.constants.ProfileConstants;
+import org.craftercms.social.controllers.rest.v1.to.UGCRequest;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.util.Hierarchical;
 import org.craftercms.social.util.serialization.StringObjectMapConverter;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
@@ -116,6 +114,16 @@ public class UGC implements Hierarchical<UGC> {
 	public UGC(String textContent, String profileId, String tenant, String target, ObjectId parentId, Map<String, Object> attributeMap, String targetUrl, String targetDescription) {
 		this(parentId, textContent, null, profileId, tenant, target, attributeMap, targetUrl, targetDescription);
 	}
+
+    public UGC(UGCRequest ugcRequest, String profileId) {
+        this(ugcRequest.getTextContent(), profileId, ugcRequest.getTenant(), ugcRequest.getTarget(),
+                ugcRequest.getParentId() == null ? null : new ObjectId(ugcRequest.getParentId()), ugcRequest.getAttributes(),
+                ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription());
+
+        this.setActions(ugcRequest.getActions());
+        this.setAttributes(this.getAttributes());
+
+    }
 
 	@Override
 	public void addChild(UGC child) {
@@ -266,7 +274,7 @@ public class UGC implements Hierarchical<UGC> {
 	public String toString() {
 		return String.format("UGC [id=%s, parentId=%s, textContent=%s, attachmentId=%s, moderationStatus=%s,"
 				+ " timesModerated=%s, likeCount=%s, offenceCount=%s, profileId=%s, targetId=%s]", id, parentId, textContent,
-				attachmentId.length, moderationStatus, timesModerated, likeCount, offenceCount, profileId, targetId);
+                attachmentId!=null ? attachmentId.length : 0, moderationStatus, timesModerated, likeCount, offenceCount, profileId, targetId);
 	}
 
 	public List<Action> getActions() {

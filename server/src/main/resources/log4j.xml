@@ -23,7 +23,7 @@
 	</logger>
 
 	<logger name="org.springframework.core">
-		<level value="info" />
+		<level value="debug" />
 	</logger>
 
 	<logger name="org.springframework.data">
