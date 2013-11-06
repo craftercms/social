@@ -25,9 +25,11 @@ Clam Virus Scanner local Mac Configuration
 2) Uncomment the following lines in /usr/local/clamXav/etc/clamd.conf
 
 TCPSocket 3310
+
 TCPAddr 127.0.0.1
 
 3) To start the clamd daemon
 
 cd /usr/local/clamXav/sbin
+
 ./clamd
