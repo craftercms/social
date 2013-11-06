@@ -586,7 +586,7 @@ public class UGCServiceImpl implements UGCService {
 		MultipartFileClone[] multipartFileClones = cloneMultipartFiles(attachments);
 
         for(MultipartFileClone multipartFileClone : multipartFileClones){
-            errorMessage = virusScannerService.scan(multipartFileClone.getTempFile(),multipartFileClone.getName());
+            errorMessage = virusScannerService.scan(multipartFileClone.getTempFile(),multipartFileClone.getOriginalFilename());
             if(errorMessage != null){
                 log.error(errorMessage);
                 throw new AttachmentErrorException(errorMessage);
