@@ -1,5 +1,5 @@
 <br/>
-${userName} ${action} a comment in topic ${topicDescription}
+${eventUsername} ${eventAction} a comment in topic ${eventTarget.targetDescription}
 
 <br/><br/>
 Best regards,

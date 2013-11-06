@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Query;
 public class NotificationRepositoryImpl implements NotificationRepositoryCustom {
 	
 	private static final String TRANSMITED_STATUS = "transmitedStatus";
+	private static final String ACTION = "action";
 	private static final String FREQUENCY = "frequency";
 	private static final String CREATED_DATE = "createdDate";
 	
@@ -21,17 +22,9 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom 
 
 	@Override
 	public List<Notification> findNotificationByFrequencyAndTransmitedStatus(
-			String frequency, String transmittedStatus) {
+			String frequency, String transmittedStatus, String action, int start, int end) {
 		Query query = new Query();
-		query.addCriteria(Criteria.where(FREQUENCY).is(frequency).and(TRANSMITED_STATUS).is(transmittedStatus));
-		query.sort().on(CREATED_DATE, Order.DESCENDING);
-		return mongoTemplate.find(query, Notification.class);
-	}
-	@Override
-	public List<Notification> findNotificationByFrequencyAndTransmitedStatus(
-			String frequency, String transmittedStatus,int start, int end) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where(FREQUENCY).is(frequency).and(TRANSMITED_STATUS).is(transmittedStatus));
+		query.addCriteria(Criteria.where(FREQUENCY).is(frequency).and(ACTION).is(action).and(TRANSMITED_STATUS).is(transmittedStatus));
 		query.sort().on(CREATED_DATE, Order.DESCENDING);
 		query.skip(start);
         query.limit(end > start? (end - start + 1): 0);
