@@ -17,12 +17,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	
 	private static final String DEFAULT_FREQUENCY = "instant";
+	private static final String DEFAULT_ACTION = "email";
 	private static final String DEFAULT_SIGNATURE_EMAIL = "Crafter Team";
 	
-	private static final String USER_NAME = "userName";
-	private static final String ACTION = "action";
-	private static final String TOPIC_DESCRIPTION = "topicDescription";
+	//Email arguments that could be used by the freemarker template
 	private static final String SIGNATURE_EMAIL = "signatureEmail";
+	private static final String SUBSCRIBER_USER_NAME = "subscriberUsername";
+	private static final String SUBSCRIBER_EMAIL = "subscriberEmail";
+	private static final String EVENT_ACTION = "eventAction";
+	private static final String EVENT_TARGET = "eventTarget";
+	private static final String EVENT_USERNAME = "eventUsername";
+	private static final String EVENT_USER_EMAIL = "eventUserEmail";
+	private static final String EVENT_DATE = "eventDate";
+	
 	
 	private String frequency;
 	
@@ -77,8 +84,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		
 		boolean isDone = initPageManagement();
 		while(!isDone) {
-			notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency, transmitedStatus.toString(), pageManagement.getStart(), pageManagement.getEnd());
-			//notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency, transmitedStatus.toString().toUpperCase());
+			notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency, transmitedStatus.toString(), DEFAULT_ACTION, pageManagement.getStart(), pageManagement.getEnd());
 			
 			if (notificationList != null && notificationList.size() > 0) {
 				if (log.isDebugEnabled()) {
@@ -211,10 +217,31 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	
 	private Map<String, Object> getTemplateArguments(Notification notification) {
 		Map<String, Object> templateArgs = new HashMap<String, Object>();
-		templateArgs.put(USER_NAME,notification.getEvent().getProfile().getUserName());
-		templateArgs.put(ACTION,this.actionToDisplay.get(notification.getEvent().getAction().toString()));
-		templateArgs.put(TOPIC_DESCRIPTION,notification.getEvent().getTarget().getTargetDescription());
+//		templateArgs.put(EVENT_USER_EMAIL,notification.getEvent().getProfile().getUserName());
+//		templateArgs.put(EVENT_ACTION,this.actionToDisplay.get(notification.getEvent().getAction().toString()));
+//		templateArgs.put(EVENT_TARGET,notification.getEvent().getTarget());
+		
 		templateArgs.put(SIGNATURE_EMAIL,this.signatureEmail);
+		templateArgs.put(SUBSCRIBER_USER_NAME,notification.getSubscriberUsername());
+		templateArgs.put(SUBSCRIBER_EMAIL,notification.getSubscriberEmail());
+		
+		
+		templateArgs.put(EVENT_ACTION,notification.getEvent().getAction());
+		templateArgs.put(EVENT_TARGET,notification.getEvent().getTarget());
+		templateArgs.put(EVENT_USERNAME,notification.getEvent().getProfile().getUserName());
+		templateArgs.put(EVENT_USER_EMAIL,notification.getEvent().getProfile().getEmail());
+		templateArgs.put(EVENT_DATE,notification.getEvent().getAuditDate());
+		
+		
+		
+//		private static final String SIGNATURE_EMAIL = "signatureEmail";
+//		private static final String SUBSCRIBER_USER_NAME = "subscriberUsername";
+//		private static final String SUBSCRIBER_EMAIL = "subscriberEmail";
+//		private static final String EVENT_ACTION = "eventAction";
+//		private static final String EVENT_TARGET = "eventTarget";
+//		private static final String EVENT_USERNAME = "eventUsername";
+//		private static final String EVENT_USER_EMAIL = "eventUserEmail";
+//		private static final String EVENT_DATE = "eventDate";
 		return templateArgs;
 	}
 
