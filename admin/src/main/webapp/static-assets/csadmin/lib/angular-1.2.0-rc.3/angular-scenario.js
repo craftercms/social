@@ -19411,7 +19411,7 @@ function $ParseProvider() {
  * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)`
  *
  * - `finally(callback)` – allows you to observe either the fulfillment or rejection of a promise,
- *   but to do so without modifying the final value. This is useful to release resources or do some
+ *   but to do so without modifying the final value. This is useful to release static-assets or do some
  *   clean-up that needs to be done whether the promise was rejected or resolved. See the [full
  *   specification](https://github.com/kriskowal/q/wiki/API-Reference#promisefinallycallback) for
  *   more information.
@@ -20891,7 +20891,7 @@ function adjustMatchers(matchers) {
  * The default instance of `$sceDelegate` should work out of the box with little pain.  While you
  * can override it completely to change the behavior of `$sce`, the common case would
  * involve configuring the {@link ng.$sceDelegateProvider $sceDelegateProvider} instead by setting
- * your own whitelists and blacklists for trusting URLs used for loading AngularJS resources such as
+ * your own whitelists and blacklists for trusting URLs used for loading AngularJS static-assets such as
  * templates.  Refer {@link ng.$sceDelegateProvider#resourceUrlWhitelist
  * $sceDelegateProvider.resourceUrlWhitelist} and {@link
  * ng.$sceDelegateProvider#resourceUrlBlacklist $sceDelegateProvider.resourceUrlBlacklist}

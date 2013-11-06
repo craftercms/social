@@ -9,6 +9,6 @@ angular.module('moderationDashboard',
         ]).
     config(['$routeProvider', function($routeProvider) {
         $routeProvider.
-            when('/', {templateUrl: 'resources/templates/ugc_list.html', controller: 'UgcListCtrl'}).
-            when('/status/:moderationStatus', {templateUrl: 'resources/templates/ugc_list.html', controller: 'UgcListCtrl'});
+            when('/', {templateUrl: 'static-assets/csadmin/templates/ugc_list.html', controller: 'UgcListCtrl'}).
+            when('/status/:moderationStatus', {templateUrl: 'static-assets/csadmin/templates/ugc_list.html', controller: 'UgcListCtrl'});
     }]);

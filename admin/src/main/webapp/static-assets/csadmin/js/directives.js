@@ -10,7 +10,7 @@ angular.module('moderationDashboard.directives', []).
     directive('moderationAction', ['Api', '$http', '$timeout', function (api, http, timeout) {
         return {
             restrict: "E",
-            templateUrl: "/crafter-social-admin/resources/templates/moderation_actions.html",
+            templateUrl: "/crafter-social-admin/static-assets/csadmin/templates/moderation_actions.html",
 
             scope: {
                 modstatus: '@',

@@ -64,7 +64,7 @@
 		<dependency>
 			<groupId>org.craftercms</groupId>
 			<artifactId>crafter-security-provider</artifactId>
-			<version>${crafter.profile.version}</version>
+			<version>2.2.4-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Spring -->

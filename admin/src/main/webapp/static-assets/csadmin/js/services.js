@@ -11,8 +11,8 @@ angular.module('moderationDashboard.services', ['ngResource']).
      **/
     factory('Api', function ($resource) {
         var ugcUrl = "/crafter-social/api/2/ugc/moderation/:moderation?tenant=:tenant&page=:page&pageSize=:pageSize",
-            moderationUrl = "/crafter-social-admin/resources/properties/moderation_status_action.json",
-            defaultUrl = "/crafter-social-admin/resources/properties/app_conf.json",
+            moderationUrl = "/crafter-social-admin/static-assets/csadmin/properties/moderation_status_action.json",
+            defaultUrl = "/crafter-social-admin/static-assets/csadmin/properties/app_conf.json",
             updateIndividualUrl = "/crafter-social/api/2/ugc/moderation/:moderationid/status.json?moderationStatus=:moderationstatus&tenant=:tenant";
 
         return {
