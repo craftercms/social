@@ -16,6 +16,7 @@
  */
 package org.craftercms.social.services.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +27,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
@@ -62,8 +62,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
 
 @Component
 public class UGCServiceImpl implements UGCService {
@@ -127,7 +125,9 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant, String profileId) throws PermissionDeniedException {
+    public UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException {
+    	
+    	attachments = scanFilesForVirus(attachments);
         UGC ugc = null;
         if (existsUGC(ugcId)) {
             ugc = uGCRepository.findOne(ugcId);
@@ -154,7 +154,7 @@ public class UGCServiceImpl implements UGCService {
             this.uGCRepository.delete(ugcId);
             //Audit call
             auditForDeleteUGC(parent, profileId);
-            //auditUGC(ugcId, AuditAction.DELETE, tenant, profileId, null);
+            
         }
     }
 
@@ -241,17 +241,14 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public UGC newUgc(UGC ugc)
             throws PermissionDeniedException, AttachmentErrorException  {
-
-
-        // attachments = scanFilesForVirus(ugc.getAttachmentsList());
-
-        ugc.setAnonymousFlag(ugc.isAnonymousFlag());
+    	
+    	ugc.setAnonymousFlag(ugc.isAnonymousFlag());
     	List<Action> resolveActions = resolveUGCActions(ugc.getActions(), ugc.getParentId());
     	ugc.setModerationStatus(ModerationStatus.UNMODERATED);
     	ugc.setCreatedDate(new Date());
     	ugc.setLastModifiedDate(new Date());
     	checkForModeration(ugc);
-        //ugc.setAttachmentId(saveUGCAttachments(files));
+        
         ugc.setActions(resolveActions);
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
@@ -270,9 +267,6 @@ public class UGCServiceImpl implements UGCService {
             throw new DataIntegrityViolationException("Parent UGC does not exist");
         }
 
-	    // attachments = scanFilesForVirus(ugc.getAttachmentsList());
-
-        //ugc.setAnonymousFlag(ugc.isAnonymousFlag());
         // resolve and set the actions
         ugc.setActions(resolveUGCActions(ugc.getActions(), ugc.getParentId()));
         ugc.setModerationStatus(ModerationStatus.UNMODERATED);
@@ -280,7 +274,6 @@ public class UGCServiceImpl implements UGCService {
         ugc.setLastModifiedDate(new Date());
         checkForModeration(ugc);
 
-        //ugc.setAttachmentId(saveUGCAttachments(files));
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
@@ -288,22 +281,22 @@ public class UGCServiceImpl implements UGCService {
         return ugcWithProfile;
     }
 
-    private ObjectId[] saveUGCAttachments(MultipartFile[] files) {
-        if (files != null) {
-            ObjectId[] attacments = new ObjectId[files.length];
-            try {
-                for (int i = 0; i < files.length; i++) {
-                    attacments[i] = supportDataAccess.saveFile(files[i]);
-                }
-            } catch (IOException ex) {
-                log.error("Unable to save the attachemnts ", ex);
-                attacments = new ObjectId[] {};
-            }
-            return attacments;
-        } else {
-            return new ObjectId[] {};
-        }
-    }
+//    private ObjectId[] saveUGCAttachments(MultipartFile[] files) {
+//        if (files != null) {
+//            ObjectId[] attacments = new ObjectId[files.length];
+//            try {
+//                for (int i = 0; i < files.length; i++) {
+//                    attacments[i] = supportDataAccess.saveFile(files[i]);
+//                }
+//            } catch (IOException ex) {
+//                log.error("Unable to save the attachemnts ", ex);
+//                attacments = new ObjectId[] {};
+//            }
+//            return attacments;
+//        } else {
+//            return new ObjectId[] {};
+//        }
+//    }
 
     @Override
     public boolean existsUGC(ObjectId id) {

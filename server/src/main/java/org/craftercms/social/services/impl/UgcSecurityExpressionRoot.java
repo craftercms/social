@@ -38,8 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import clover.retrotranslator.edu.emory.mathcs.backport.java.util.Arrays;
 
-import javax.servlet.http.HttpServletRequest;
-
 public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot { 
 	
 	private static final String ADMIN = "ADMIN";
@@ -71,9 +69,10 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		String[] parentId = (String[]) params.get("parentId");
 		UGC parent = null;
 		if (parentId == null || parentId.length == 0) {
-			String[] tenant = (String[]) params.get("tenant");
+			String tenantName = getTenantName();
+			
 			List<String> createRoles = this.tenantService
-					.getRootCreateRoles(tenant[0]);
+					.getRootCreateRoles(tenantName);
 			ArrayList<Action> actions = new ArrayList<Action>();
 			Action createAction = new Action(ActionEnum.CREATE.toString(),
 					createRoles);
@@ -97,6 +96,8 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		}
 		return true;
 	}
+
+	
 
 	public boolean hasUpdatePermission() {
 		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
@@ -380,6 +381,14 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		this.crafterProfileService = crafterProfileService;
 	}
 	
-	
+	private String getTenantName() {
+		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
+		String[] tenant = (String[]) params.get("tenant");
+		String tenantName = null;
+		if (tenant!=null && tenant.length>0) {
+			tenantName = tenant[0];
+		}
+		return tenantName;
+	}
 
 }
