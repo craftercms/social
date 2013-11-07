@@ -22,11 +22,12 @@ public class UGCRequest {
     private String ugcId;
     private String parentId;
 
-    private String target;
+    private String targetId;
     private String targetUrl;
     private String targetDescription;
 
-    private String textContent;
+//    private String textContent;
+    private String content;
 
     private MultipartFile[] attachments;
     private Boolean anonymousFlag = false;
@@ -59,12 +60,12 @@ public class UGCRequest {
         this.parentId = parentId;
     }
 
-    public String getTarget() {
-        return target;
+    public String getTargetId() {
+        return targetId;
     }
 
-    public void setTarget(String target) {
-        this.target = target;
+    public void setTargetId(String target) {
+        this.targetId = target;
     }
 
     public String getTargetUrl() {
@@ -83,12 +84,12 @@ public class UGCRequest {
         this.targetDescription = targetDescription;
     }
 
-    public String getTextContent() {
-        return textContent;
+    public String getContent() {
+        return content;
     }
 
-    public void setTextContent(String textContent) {
-        this.textContent = textContent;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public MultipartFile[] getAttachments() {

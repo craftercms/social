@@ -129,7 +129,7 @@ public interface UGCService {
 	UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
 			String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, AttachmentErrorException;
 
-    UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant, String profileId) throws PermissionDeniedException;
+    UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException;
 
 	void deleteUgc(ObjectId objectId, String tenant, String profileId) throws PermissionDeniedException;
 	
