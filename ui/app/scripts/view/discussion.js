@@ -3,7 +3,6 @@
 
     var Discussion,
         Base = S.view.Base,
-        C = S.Constants,
         $ = S.$,
         SPACE = ' ';
 
@@ -40,6 +39,7 @@
             this.collection.each(this.addOne, this);
         },
         addOne: function (comment) {
+            this.$('.no-comments').remove();
             var view = new S.view.Comment({ model: comment });
             this.$('.comments:first').append(view.render().element());
         }
@@ -48,7 +48,7 @@
     Discussion.DEFAULTS = {
         classes: 'crafter-social-discussion-view',
         templates: {
-            main: ('%@discussion.hbs').fmt(C.TEMPLATES_URL)
+            main: ('%@discussion.hbs').fmt(S.Cfg('url.templates'))
         },
         commenting: {
             editor: {

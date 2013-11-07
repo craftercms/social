@@ -262,7 +262,9 @@ module.exports = function (grunt) {
                         '.htaccess',
                         'images/{,*/}*.{webp,gif}',
                         'styles/fonts/{,*/}*.*',
-                        'libs/sass-bootstrap/fonts/*.*'
+                        'libs/sass-bootstrap/fonts/*.*',
+                        'libs/ckeditor/**',
+                        'templates/*.*'
                     ]
                 }]
             },
@@ -337,10 +339,10 @@ module.exports = function (grunt) {
         'useminPrepare',
         'concurrent:dist',
         'autoprefixer',
-        'requirejs',
+//        'requirejs',
         'concat',
         'cssmin',
-        'uglify',
+//        'uglify',
         'modernizr',
         'copy:dist',
         'rev',

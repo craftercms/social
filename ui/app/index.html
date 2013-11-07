@@ -4,19 +4,36 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
     <head>
+
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>ui</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-        <!-- build:css(.tmp) styles/main.css -->
-        <link rel="stylesheet" href="styles/main.css">
+
+        <!-- build:css(.tmp) styles/index.css -->
         <link rel="stylesheet" href="styles/index.css">
         <!-- endbuild -->
-        <!-- build:js scripts/vendor/modernizr.js -->
-        <script src="libs/modernizr/modernizr.js"></script>
-        <!-- endbuild -->
+
+        <script>
+            var crafterSocial_cfg = {
+                // 'url.base': '...',
+                // 'url.service': '...',
+                // 'url.templates': '...'
+                // ...
+            }
+            function crafterSocial_onAppReady ( Director, CrafterSocial ) {
+                console.log('Crafter Social is Ready!');
+
+                Director.socialise({
+                    target: '#jumbotron',
+                    tenant: 'xyz'
+                });
+
+            }
+        </script>
+
     </head>
     <body>
         <!--[if lt IE 10]>
@@ -64,14 +81,53 @@
 
         </div>
 
-        <!-- build:js scripts/vendor.js -->
         <!-- bower:js -->
-        <script src="libs/jquery/jquery.js"></script>
+        <script src="libs/modernizr/modernizr.js"></script>
         <!-- endbower -->
+
+        <!-- build:css(.tmp) styles/main.css -->
+        <link rel="stylesheet" href="styles/main.css">
         <!-- endbuild -->
 
-        <!-- build:js scripts/main.js -->
-        <script data-main="scripts/main" src="libs/requirejs/require.js"></script>
+        <!-- build:js scripts/social.js -->
+
+        <script src="scripts/app.js"></script>
+
+        <script src="libs/handlebars/handlebars.js"></script>
+        <script src="libs/jquery/jquery.js"></script>
+        <script src="libs/underscore/underscore.js"></script>
+        <script src="libs/backbone/backbone.js"></script>
+        <script src="libs/ckeditor/ckeditor.js"></script>
+        <script src="scripts/component/ckeditor/plugins/autogrow/plugin.js"></script>
+        <script src="libs/sass-bootstrap/js/tooltip.js"></script>
+        <script src="libs/sass-bootstrap/js/popover.js"></script>
+        <script src="libs/sass-bootstrap/js/modal.js"></script>
+
+        <script src="scripts/api.js"></script>
+
+        <script src="scripts/component/director.js"></script>
+        <script src="scripts/component/editor.js"></script>
+        <script src="scripts/component/template-engine.js"></script>
+        <script src="scripts/model/comment.js"></script>
+        <script src="scripts/controller/base.js"></script>
+
+        <script src="scripts/view/base.js"></script>
+        <script src="scripts/view/comment.js"></script>
+        <script src="scripts/view/commenting.js"></script>
+        <script src="scripts/view/discussion.js"></script>
+        <script src="scripts/view/lightbox.js"></script>
+        <script src="scripts/view/popover.js"></script>
+        <script src="scripts/view/commentable.js"></script>
+        <script src="scripts/view/barget/base.js"></script>
+        <script src="scripts/view/barget/reveal.js"></script>
+        <script src="scripts/view/barget/feedback.js"></script>
+        <script src="scripts/view/barget/share.js"></script>
+        <script src="scripts/view/barget/rate.js"></script>
+        <script src="scripts/view/social-bar.js"></script>
+
+        <script src="scripts/starter.js"></script>
+
         <!-- endbuild -->
+
 </body>
 </html>

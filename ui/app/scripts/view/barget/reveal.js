@@ -22,33 +22,33 @@
         },
 
         listen: function () {
-            this.listenTo(S.component.Director, C.EVENT_AREAS_VISIBILITY_CHANGE, this.visibilityModeChanged);
+            this.listenTo(S.component.Director, C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
         },
 
         visibilityModeChanged: function (mode) {
             switch (mode) {
-                case C.AREA_VISIBILITY_MODE_REVEAL:
+                case C.get('AREA_VISIBILITY_MODE_REVEAL'):
                     this.$trigger
                         .find('i')
                             .removeClass(this.icons.reveal)
                             .addClass(this.icons.hover);
                     break;
-                case C.AREA_VISIBILITY_MODE_HOVER:
+                case C.get('AREA_VISIBILITY_MODE_HOVER'):
                     this.$trigger
                         .find('i')
                             .removeClass(this.icons.hover)
                             .addClass(this.icons.reveal);
                     break;
-                // case C.AREA_VISIBILITY_MODE_HIDE:
+                // case C.get('AREA_VISIBILITY_MODE_HIDE'):
             }
         },
 
         activate: function ( $trigger ) {
 
-            if (S.component.Director.getAreaVisibilityMode() !== C.AREA_VISIBILITY_MODE_REVEAL) {
-                S.component.Director.setAreaVisibilityMode(C.AREA_VISIBILITY_MODE_REVEAL);
+            if (S.component.Director.getAreaVisibilityMode() !== C.get('AREA_VISIBILITY_MODE_REVEAL')) {
+                S.component.Director.setAreaVisibilityMode(C.get('AREA_VISIBILITY_MODE_REVEAL'));
             } else {
-                S.component.Director.setAreaVisibilityMode(C.AREA_VISIBILITY_MODE_HOVER);
+                S.component.Director.setAreaVisibilityMode(C.get('AREA_VISIBILITY_MODE_HOVER'));
             }
 
         }

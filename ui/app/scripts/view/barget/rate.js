@@ -66,7 +66,7 @@
     Class.DEFAULTS = {
         classes: ['crafter-social-bar-form', 'crafter-social-bar-rate'],
         templates: {
-            main: ('%@rate-barget.hbs').fmt(C.TEMPLATES_URL)
+            main: ('%@rate-barget.hbs').fmt(S.Cfg('url.templates'))
         }
     };
 

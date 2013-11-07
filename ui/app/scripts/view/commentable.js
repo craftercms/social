@@ -41,7 +41,7 @@
         },
         listen: function () {
             this.listenTo(this.collection, 'sync', this.render);
-            this.listenTo(S.component.Director, C.EVENT_AREAS_VISIBILITY_CHANGE, this.visibilityModeChanged);
+            this.listenTo(S.component.Director, C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
         },
         createUI: function () {
 
@@ -74,17 +74,17 @@
         /* jshint -W015 */
         visibilityModeChanged: function (mode) {
             switch (mode) {
-                case C.AREA_VISIBILITY_MODE_REVEAL:
+                case C.get('AREA_VISIBILITY_MODE_REVEAL'):
                     this.hide = false;
                     this.reveal = true;
                     this.mouseenter();
                     break;
-                case C.AREA_VISIBILITY_MODE_HOVER:
+                case C.get('AREA_VISIBILITY_MODE_HOVER'):
                     this.hide = false;
                     this.reveal = false;
                     this.mouseleave();
                     break;
-                case C.AREA_VISIBILITY_MODE_HIDE:
+                case C.get('AREA_VISIBILITY_MODE_HIDE'):
                     this.hide = true;
                     this.reveal = false;
                     break;
@@ -161,7 +161,7 @@
 
     Commentable.DEFAULTS = {
         templates: {
-            main: ('%@commentable.hbs').fmt(C.TEMPLATES_URL)
+            main: ('%@commentable.hbs').fmt(S.Cfg('url.templates'))
         }
     };
 

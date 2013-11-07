@@ -30,7 +30,7 @@
     Class.DEFAULTS = {
         classes: ['crafter-social-bar-form', 'crafter-social-bar-feedback'],
         templates: {
-            main: ('%@feedback-barget.hbs').fmt(C.TEMPLATES_URL)
+            main: ('%@feedback-barget.hbs').fmt(S.Cfg('url.templates'))
         }
     };
 

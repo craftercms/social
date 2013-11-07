@@ -105,6 +105,10 @@
             // var args = arguments, Director = social.get('crafter.social.component.Director');
             // Director.socialise.apply(Director, args);
             // TODO ... should the app publish this from its root ?
+        },
+
+        url: function ( url ) {
+            return ('%@%@'.fmt(this.Cfg('url.base'), url));
         }
 
     });

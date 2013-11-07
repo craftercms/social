@@ -4,11 +4,11 @@
     var C = S.Constants,
         $ = S.$,
 
-        areaVisibilityMode  = C.AREA_VISIBILITY_MODE_HOVER,
+        areaVisibilityMode  = C.get('AREA_VISIBILITY_MODE_HOVER'),
         areaVisibilityModes = [
-            C.AREA_VISIBILITY_MODE_HOVER,
-            C.AREA_VISIBILITY_MODE_REVEAL,
-            C.AREA_VISIBILITY_MODE_HIDE
+            C.get('AREA_VISIBILITY_MODE_HOVER'),
+            C.get('AREA_VISIBILITY_MODE_REVEAL'),
+            C.get('AREA_VISIBILITY_MODE_HIDE')
         ],
 
         socialbar = null; // TODO Single instance, right?
@@ -16,7 +16,7 @@
     var Director = $.extend({
 
         url: {
-            base: C.get('SERVICE'),
+            base: S.Cfg('url.service'),
             ugc: {
                 target: '.json',
                 create: '.json',
@@ -37,7 +37,7 @@
                 throw new Error('Unknown mode %@ supplied to Director (setAreaVisibilityMode)'.fmt(mode));
             }
             areaVisibilityMode = mode;
-            this.trigger(C.EVENT_AREAS_VISIBILITY_CHANGE, mode);
+            this.trigger(C.get('EVENT_AREAS_VISIBILITY_CHANGE'), mode);
         },
 
         getUser: function () {
@@ -64,28 +64,28 @@
                 // set a default view class
                 viewClass: 'view.Commentable',
                 socialbar: true,
-                viewCfg: {}
+                viewCfg: { }
             }, oConfig);
 
-            require([ 'controller.Base', oCfg.viewClass, 'view.SocialBar' ], function ( Ctrl, View, Bar ) {
+            var Ctrl = S.get('controller.Base'),
+                View = S.get(oCfg.viewClass) || S.get(oCfg.viewClass, window),
+                Bar = S.get('view.SocialBar');
 
-                var controller = new Ctrl({
-                    target: oCfg.target,
-                    tenant: oCfg.tenant
-                });
-
-                new View($.extend({
-                    target: oCfg.target,
-                    tenant: oCfg.tenant,
-                    collection: controller
-                }, oCfg.viewCfg));
-
-                if (oCfg.socialbar && !socialbar) {
-                    socialbar = new Bar();
-                    socialbar.$el.appendTo('body');
-                }
-
+            var controller = new Ctrl({
+                target: oCfg.target,
+                tenant: oCfg.tenant
             });
+
+            new View($.extend({
+                target: oCfg.target,
+                tenant: oCfg.tenant,
+                collection: controller
+            }, oCfg.viewCfg));
+
+            if (oCfg.socialbar && !socialbar) {
+                socialbar = new Bar();
+                socialbar.$el.appendTo('body');
+            }
 
         },
 
@@ -101,15 +101,5 @@
     }, S.EventProvider);
 
     S.define('component.Director', Director);
-
-    /* jshint -W106 */
-    var ready = window.crafterSocial_onAppReady;
-    if ( S.util.isArray(ready) ) {
-        ready.every(function (fn) {
-            return fn(S);
-        });
-    } else if (ready) {
-        ready(S);
-    }
 
 }) (crafter.social);
