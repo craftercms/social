@@ -5,12 +5,13 @@ import java.io.File;
 
 public interface VirusScannerService {
 
-	/**
-	 *
-	 * @param files
-	 * @return  null on success or error string
-	 */
-    public String scan(File[] files);
+    /**
+     *
+     * @param tmpFile
+     * @param originalFilename
+     * @return null on success or error message
+     */
+    public String scan(File tmpFile, String originalFilename);
 
 	/**
 	 * Used to avoid data preparation for scan() method

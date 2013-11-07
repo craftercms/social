@@ -63,6 +63,16 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Component
 public class UGCServiceImpl implements UGCService {
 
@@ -616,20 +626,26 @@ public class UGCServiceImpl implements UGCService {
 			return null;
 		}
 		if (virusScannerService.isNullScanner()) {
+            log.debug("Virus scanning is disabled");
 			return attachments;
 		}
 
+        log.debug("Scanning the attachments");
+
+        String errorMessage = "";
+
 		MultipartFileClone[] multipartFileClones = cloneMultipartFiles(attachments);
 
-		File[] files = new File[multipartFileClones.length];
-		for (int i = 0; i < files.length; i++) {
-			files[i] = multipartFileClones[i].getTempFile();
-		}
-		// scan files
-		String errorMessage = virusScannerService.scan(files);
-		if (errorMessage != null) {
-			throw new AttachmentErrorException(errorMessage);
-		}
+        for(MultipartFileClone multipartFileClone : multipartFileClones){
+            errorMessage = virusScannerService.scan(multipartFileClone.getTempFile(),multipartFileClone.getOriginalFilename());
+            if(errorMessage != null){
+                log.error(errorMessage);
+                throw new AttachmentErrorException(errorMessage);
+            }
+        }
+
+        log.debug("Successful scanning: The attachments are clean");
+
 		return multipartFileClones;
 	}
 

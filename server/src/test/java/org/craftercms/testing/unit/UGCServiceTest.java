@@ -75,9 +75,6 @@ public class UGCServiceTest {
 	@Mock
     private SupportDataAccess supportDataAccess;
 
-    @Mock
-    private VirusScannerServiceImpl virusScannerService;
-
 	@InjectMocks
 	private UGCServiceImpl ugcServiceImpl;
 	
@@ -95,12 +92,6 @@ public class UGCServiceTest {
 	private List<UGC> ul;
 	private List<UGCAudit> la;
 	private List<String> moderateRootRoles;
-
-    public UGCServiceTest(){
-//        this.virusScannerService = new VirusScannerServiceImpl();
-//        this.virusScannerService.setVirusScanner(new ClamavVirusScannerImpl("localhost", 3310, 60000));
-
-    }
 	
 	@Before
 	public void startup() {
@@ -136,9 +127,6 @@ public class UGCServiceTest {
 		when(auditRepository.findByProfileIdAndUgcIdAndAction(PROFILE_ID, new ObjectId(VALID_ID),AuditAction.CREATE)).thenReturn(audit);
 		when(tenantService.getRootModeratorRoles("test")).thenReturn(moderateRootRoles);
 		when(supportDataAccess.getAttachment(Mockito.<ObjectId>any())).thenReturn(attachment);
-		when(virusScannerService.isNullScanner()).thenReturn(true);
-		when(virusScannerService.scan(Mockito.<File[]>any())).thenReturn("true");
-		
 		
 	}
 	
@@ -297,117 +285,6 @@ public class UGCServiceTest {
         assertNotNull(u);
 		
 	}
-
-    // Testing VirusScanner
-
-    @Test
-    public void testNewChildCleanFile() {
-        mockStatic(RequestContext.class);
-
-        when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
-
-        MultipartFile[] files = new MultipartFile[1];
-
-        try{
-            String path = getClass().getResource("/clean.txt").getPath();
-            File file = new File(path);
-            MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(),file.getAbsolutePath(),"file",new FileInputStream(file));
-            files[0] = mockMultipartFile;
-        }
-        catch (FileNotFoundException e){
-            fail(e.getMessage());
-        }
-        catch (IOException e){
-            fail(e.getMessage());
-        }
-
-        try {
-            ugcServiceImpl.newUgc(currentUGC);
-        } catch (PermissionDeniedException pde) {
-            fail(pde.getMessage());
-        } catch (AttachmentErrorException dee) {
-            fail(dee.getMessage());
-        }
-        catch (NullPointerException ignore) {
-            // This NullPointerException probably means that the item could not be
-            // store successfully (mainly because of the db and the nature of these tests).
-            // This may not always true but it doesn't matter because the catch above
-            // should be enough to test the virus scanning
-        }
-
-
-    }
-
-    @Test
-    public void testNewChildCleanPDFFile() {
-        mockStatic(RequestContext.class);
-
-        when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
-
-        MultipartFile[] files = new MultipartFile[1];
-
-        try{
-            String path = getClass().getResource("/warranty.pdf").getPath();
-            File file = new File(path);
-            MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(),file.getAbsolutePath(),"file",new FileInputStream(file));
-            files[0] = mockMultipartFile;
-        }
-        catch (FileNotFoundException e){
-            fail(e.getMessage());
-        }
-        catch (IOException e){
-            fail(e.getMessage());
-        }
-
-        try {
-            ugcServiceImpl.newUgc(currentUGC);
-        } catch (PermissionDeniedException pde) {
-            fail(pde.getMessage());
-        } catch (AttachmentErrorException dee) {
-            fail(dee.getMessage());
-        }
-        catch (NullPointerException ignore) {
-            // This NullPointerException probably means that the item could not be
-            // store successfully (mainly because of the db and the nature of these tests).
-            // This may not always true but it doesn't matter because the catch above
-            // should be enough to test the virus scanning
-        }
-
-
-    }
-
-    @Test
-    public void testNewChildVirusFile() {
-        mockStatic(RequestContext.class);
-
-        when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
-
-        MultipartFile[] files = new MultipartFile[1];
-
-        try{
-            String path = getClass().getResource("/eicar.txt").getPath();
-            File file = new File(path);
-            MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(),file.getAbsolutePath(),"file",new FileInputStream(file));
-            files[0] = mockMultipartFile;
-        }
-        catch (FileNotFoundException e){
-            fail(e.getMessage());
-        }
-        catch (IOException e){
-            fail(e.getMessage());
-        }
-
-        try {
-            ugcServiceImpl.newUgc(currentUGC);
-        } catch (PermissionDeniedException pde) {
-            fail(pde.getMessage());
-        } catch (AttachmentErrorException aee) {
-            //assertTrue(ClamavVirusScannerImpl.THREAT_FOUND_MESSAGE.equals(aee.getMessage()));
-        }
-
-    }
-
-    // End of the virus scanning testing
 	
 	@Test
 	public void testNewChildUgc() {

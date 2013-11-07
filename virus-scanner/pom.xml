@@ -90,12 +90,21 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.16</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <properties>
         <java.version>1.6</java.version>
         <spring.core.version>3.1.1.RELEASE</spring.core.version>
+        <skipTests>true</skipTests>
     </properties>
     
 </project>

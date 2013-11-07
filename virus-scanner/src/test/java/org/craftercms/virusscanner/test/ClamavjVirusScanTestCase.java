@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ClamavjVirusScanTestCase {
 
@@ -24,7 +25,7 @@ public class ClamavjVirusScanTestCase {
         ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost", 3310, 60000);
         String path = getClass().getResource("/eicar.txt").getPath();
         String message = virusScanner.scan(path);
-        assertNotNull(message);
+        assertTrue(message.contains(ClamavVirusScannerImpl.THREAT_FOUND_MESSAGE));
     }
 
     @Test
@@ -44,30 +45,23 @@ public class ClamavjVirusScanTestCase {
         File file = new File(path);
         FileInputStream fileInputStream = new FileInputStream(file);
         String message = virusScanner.scan(fileInputStream);
-        assertNotNull(message);
+        assertTrue(message.contains(ClamavVirusScannerImpl.THREAT_FOUND_MESSAGE));
     }
 
     @Test
     public void testNoFile() throws Exception {
         ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost", 3310, 60000);
         String message = virusScanner.scan("nofile.txt");
-        assertNotNull(message);
+        assertTrue(message.contains(ClamavVirusScannerImpl.FILE_NOT_FOUND_MESSAGE));
     }
 
     @Test
     public void testFailedConnection() throws Exception {
-        ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost",8080,60000);
-        String path = getClass().getResource("/eicar.txt").getPath();
+        ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost",8383,60000);
+        String path = getClass().getResource("/clean.txt").getPath();
         String message = virusScanner.scan(path);
         assertNotNull(message);
     }
 
-    @Test
-    public void testTimeoutFailedConnection() throws Exception {
-        ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost",3310,0);
-        String path = getClass().getResource("/eicar.txt").getPath();
-        String message = virusScanner.scan(path);
-        assertNotNull(message);
-    }
 
 }
