@@ -1,35 +1,38 @@
 package org.craftercms.social.domain;
 
+
 public class Target {
 	
-	private String id;
-	private String description;
-	private String url;
+	private String targetId;
+	
+	private String targetDescription;
+	
+	private String targetUrl;
 	public Target() {
 		
 	}
 	public Target(String id, String description, String url) {
-		this.id = id;
-		this.description = description;
-		this.url = url;
+		this.targetId = id;
+		this.targetDescription = description;
+		this.targetUrl = url;
 	}
-	public String getId() {
-		return id;
+	public String getTargetId() {
+		return targetId;
 	}
-	public void setId(String id) {
-		this.id = id;
+	public void setTargetId(String targetId) {
+		this.targetId = targetId;
 	}
-	public String getDescription() {
-		return description;
+	public String getTargetDescription() {
+		return targetDescription;
 	}
-	public void setDescription(String description) {
-		this.description = description;
+	public void setTargetDescription(String description) {
+		this.targetDescription = description;
 	}
-	public String getUrl() {
-		return url;
+	public String getTargetUrl() {
+		return targetUrl;
 	}
-	public void setUrl(String url) {
-		this.url = url;
+	public void setTargetUrl(String targetUrl) {
+		this.targetUrl = targetUrl;
 	}
 	
 

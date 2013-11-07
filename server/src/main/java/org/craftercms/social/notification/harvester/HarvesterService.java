@@ -23,6 +23,7 @@ import java.util.Map;
  */
 public interface HarvesterService {
 
+    // parameters that get passed to harvester job
     static final String JOB_ID_PARAM = "jobId";
     static final String APPLICATION_ID_PARAM = "applicationId";
 
@@ -35,6 +36,8 @@ public interface HarvesterService {
     static final String LAST_ROW_RETRIEVED = "LAST_ROW_RETRIEVED";
     static final String HARVESTER_STATUS_IDLE = "IDLE";
     static final String HARVESTER_STATUS_RUNNING = "RUNNING";
+    static final int DEFAULT_PAGE = 0;
+    static final int DEFAULT_PAGE_SIZE = 0;
 
     /**
      * The main doHarvest method.  A map of harvest details are passed in as parameters.

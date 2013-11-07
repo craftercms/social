@@ -1,0 +1,7 @@
+<nav>
+    <ul class="nav nav-tabs">
+        <li ng-repeat="mod in moderationList" class="{{mod.state}}">
+            <a href="#/status/{{mod.moderation}}">{{mod.moderation}}</a>
+        </li>
+    </ul>
+</nav>

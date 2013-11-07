@@ -16,8 +16,20 @@
  */
 package org.craftercms.social.controllers.rest.v1;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
+import org.craftercms.social.controllers.rest.v1.to.UGCRequest;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.exceptions.AttachmentErrorException;
@@ -25,7 +37,6 @@ import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.HierarchyGenerator;
 import org.craftercms.social.util.HierarchyList;
-import org.craftercms.social.util.action.ActionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,21 +45,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/api/2/ugc")
@@ -161,50 +163,47 @@ public class UGCRestController {
         return ugcService.findUGCAndChildren(new ObjectId(ugcId), tenant, getProfileId(), sortField, sortOrder);
 	}
 	
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@RequestMapping(value = "/create", method = RequestMethod.POST
+			, 
+			headers = "Accept=application/json")
 	@ResponseStatus(HttpStatus.CREATED)
 	@ModelAttribute
-	public UGC addUGC(@RequestParam(required = true) String target,
-            @RequestParam(required = true) String tenant,
-			@RequestParam(required = false) String parentId,
-			@RequestParam(required = false) String targetUrl,
-			@RequestParam(required = false) String targetDescription,
-			@RequestParam(required = false) String textContent,
-			@RequestParam(required = false) MultipartFile[] attachments,
-			@RequestParam(required = false) Boolean anonymousFlag,
+	public UGC addUGC(@RequestBody(required = true) UGCRequest ugcRequest,
 			HttpServletRequest request) throws PermissionDeniedException, AttachmentErrorException {
-		if (anonymousFlag == null) {
-			anonymousFlag = false;
-		}
+
 		/** Pre validations **/
-		if (target == null && parentId == null) {
+		if (ugcRequest.getTargetId() == null) {
 			throw new IllegalArgumentException(
-					"Target or Parent Id Must a valid not empty String");
+					"Target must a valid not empty String");
 		}
-		if (target != null && parentId == null) {
-			return ugcService.newUgc(new UGC(textContent, getProfileId(), tenant, target, parseAttibutes(request), targetUrl, targetDescription), attachments,
-                            ActionUtil.getActions(request), tenant, getProfileId(), anonymousFlag);
+		if (ugcRequest.getParentId() == null) {
+			return ugcService.newUgc(new UGC(ugcRequest, getProfileId()));
 		} else {
 			return ugcService
-					.newChildUgc(new UGC(textContent, getProfileId(), tenant, target, new ObjectId(parentId), parseAttibutes(request), targetUrl, targetDescription), attachments,
-                            ActionUtil.getActions(request), tenant, getProfileId(), anonymousFlag);
+					.newChildUgc(new UGC(ugcRequest, getProfileId()));
 		}
 	}
 	
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	@RequestMapping(value = "/update", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ModelAttribute
-	public UGC updateUGC(HttpServletRequest request, 
-			@RequestParam(required = true)String ugcId,
-            @RequestParam(required = true) String tenant,
-            @RequestParam(required = false) String target,
-            @RequestParam(required = false) String targetUrl,
-			@RequestParam(required = false) String targetDescription,
-            @RequestParam(required = false) String parentId,
-			@RequestParam(required = false)String textContent,
-			@RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException, AttachmentErrorException {
-        return ugcService.updateUgc(new ObjectId(ugcId), tenant, target, getProfileId(),
-                parentId==null?null:new ObjectId(parentId), textContent, attachments,targetUrl, targetDescription);
+	public UGC updateUGC(@RequestBody(required = true) UGCRequest ugcRequest,
+                         HttpServletRequest request) throws PermissionDeniedException, AttachmentErrorException {
+
+        return ugcService.updateUgc(new ObjectId(ugcRequest.getUgcId()), ugcRequest.getTenant(), ugcRequest.getTargetId(), getProfileId(),
+                ugcRequest.getParentId()==null?null:new ObjectId(ugcRequest.getParentId()), ugcRequest.getContent(),
+                ugcRequest.getAttachments(), ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription());
+
 	}
+
+    @RequestMapping(value = "/{ugcId}/add_attachments", method = RequestMethod.POST)
+    @ModelAttribute
+    public UGC addAttachments(HttpServletRequest request,
+                         @PathVariable final String ugcId,
+                         @RequestParam final String tenant,
+                         @RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException, AttachmentErrorException {
+
+        return ugcService.addAttachments(new ObjectId(ugcId), attachments, tenant, getProfileId());
+    }
 	
 	@RequestMapping(value = "/delete/{ugcId}", method = RequestMethod.POST)
 	@ModelAttribute

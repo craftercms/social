@@ -24,4 +24,9 @@ public interface UGCAuditRepositoryCustom {
 
 	List<UGCAudit> findByLastRetrievedRow(long lastRetrievedRow);
 
+	List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, int page,
+			int pageSize);
+
+	long count(long lastRowRetrieve);
+
 }

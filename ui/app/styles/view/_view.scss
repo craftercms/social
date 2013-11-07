@@ -1,0 +1,64 @@
+
+.#{$app-namespace}-view {
+
+  &, div,article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary,button,input,span,strong,em,a,p {
+    width: auto;
+    height: auto;
+    font-size: $font-size-base;
+    font-family: $font-family-base;
+    text-shadow: none;
+    line-height: 1em;
+    color: #000;
+  }
+
+  .silhouette {
+    width: 30px;
+  }
+
+  .crafter-social-logo {
+    background-image: url('#{$crafter-software-logo-data-url}');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    display: block;
+  }
+
+  // Reset
+  @import 'sass-bootstrap/lib/normalize';
+
+  // Core CSS
+  @import 'sass-bootstrap/lib/scaffolding';
+  @import 'sass-bootstrap/lib/type';
+  @import 'sass-bootstrap/lib/tables';
+  @import 'sass-bootstrap/lib/forms';
+  @import 'sass-bootstrap/lib/buttons';
+
+  // Components
+  @import 'sass-bootstrap/lib/component-animations';
+  @import '../bs/glyphicons';
+  @import 'sass-bootstrap/lib/button-groups';
+  @import 'sass-bootstrap/lib/input-groups';
+  @import 'sass-bootstrap/lib/badges';
+  @import 'sass-bootstrap/lib/alerts';
+  @import 'sass-bootstrap/lib/close';
+
+  // Components w/ JavaScript
+  @import 'sass-bootstrap/lib/tooltip';
+  @import 'sass-bootstrap/lib/popovers';
+
+  // Utility classes
+  @import 'sass-bootstrap/lib/utilities';
+
+  a {
+    color: $link-color;
+    &:hover {
+      color: $link-hover-color;
+    }
+  }
+
+  button.close {
+    background: transparent;
+    border: none;
+  }
+
+}

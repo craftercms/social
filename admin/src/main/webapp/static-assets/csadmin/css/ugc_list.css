@@ -1,0 +1,203 @@
+/* global */
+h4 {
+    color: #555;
+    margin-top: 0;
+}
+
+p {
+    margin: 0 0 5px;
+}
+
+body {
+    font-size: 12px;
+    line-height: 18px;
+}
+
+select {
+    margin: 0;
+}
+
+.undo-action {
+    cursor: pointer;
+    color: #0088cc;
+}
+.undo-action:hover {
+    text-decoration: underline;
+}
+
+/* app wrapper */
+.moderation-dashboard-wrapper {
+    margin: 20px 0;
+}
+
+/* tabs */
+.nav-tabs a {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+/* ugc styles */
+.entries-list li {
+    margin: 0 0 5px;
+    padding: 0 0 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.entries-list-btn {
+    margin: 0 0 0 15px;
+}
+
+.entries-list input {
+    margin: 0 0 0 10px;
+    padding: 0;
+}
+
+/* alerts entries list */
+.entries-list .alert {
+    margin-bottom: 0;
+    padding: 4px 35px 4px 14px;
+}
+
+/* bulk actions */
+.bulk-actions {
+    margin: 0 0 10px;
+}
+
+/* columns length */
+.row-fluid .col1 {
+    width: 2.382978723404255%
+}
+
+.row-fluid .col2 {
+    width: 19.893617021276595%;
+    margin-left: 0.127659574468085%;
+}
+
+.row-fluid .col9 {
+    width: 75.35897435897436%;
+    margin-left: 1.564102564102564%;
+}
+
+/* author section */
+.author-section dl {
+    margin: 0;
+}
+
+/* comment */
+.entry-wrapper {
+    padding: 5px;
+    background: #f6f6f6;
+    margin: 0;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    position: relative;
+}
+
+.entry-wrapper:hover {
+    /*background: #ddd;*/
+    border: 1px solid #d35400;
+}
+
+/* expand collapse */
+.entry-wrapper .expand-collapse {
+    visibility: hidden;
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+    height: 14px;
+}
+.entry-wrapper:hover .expand-collapse {
+    visibility: visible;
+}
+
+.moderation-buttons {
+    margin: 5px 0 0;
+}
+
+.moderation-buttons .btn {
+    padding: 0 8px;
+    font-size: 12px;
+}
+.comment-section .btn-group {
+    margin-top: 5px;
+}
+
+.last-update {
+    font-size: 11px;
+    color: #c0392b;
+    display: block;
+}
+
+.entry-wrapper .target-url {
+    position: absolute;
+    right: 10px;
+    top: 0;
+}
+
+/* header */
+.heading-wrapper {
+    background: #f4f6f6;
+    margin: 0 0 10px;
+}
+
+.heading-wrapper input {
+    height: 30px;
+    margin: 0 0 0 10px;
+    padding: 0;
+}
+
+.heading-wrapper .title {
+    color: #336699;
+    line-height: 30px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/*  alerts messages */
+.alert {
+    font-size: 14px;
+}
+
+.hide-element.ng-hide-add {
+    -webkit-transition:all linear 0.3s;
+    -moz-transition:all linear 0.3s;
+    -o-transition:all linear 0.3s;
+    transition:all linear 0.3s;
+
+    display:block!important;
+}
+
+/*
+.hide-element.ng-hide-remove {
+    transition: opacity 0.5s ease-in-out;
+    -moz-transition: opacity 0.5s ease-in-out;
+    -webkit-transition: opacity 0.5s ease-in-out;
+
+    display: block!important;
+}
+*/
+
+.hide-element.ng-hide-add.ng-hide-add-active {
+    line-height:0;
+    opacity:0;
+}
+
+.hide-element.ng-hide-add.ng-hide-add-active,
+.hide-element.ng-hide-remove {
+    line-height:0;
+    opacity:0;
+}
+
+.hide-element.ng-hide-add,
+.hide-element.ng-hide-remove.ng-hide-remove-active {
+    opacity:1;
+}
+
+/* ui.bootstrap */
+.nav, .pagination, .carousel a { cursor: pointer; }
+
+.pagination {
+    margin: 5px 0;
+    height: 26px;
+}

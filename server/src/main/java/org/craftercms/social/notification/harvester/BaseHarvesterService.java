@@ -16,6 +16,9 @@
  */
 package org.craftercms.social.notification.harvester;
 
+import java.util.Date;
+import java.util.Map;
+
 import org.craftercms.social.domain.HarvestStatus;
 import org.craftercms.social.repositories.HarvestStatusRepository;
 import org.slf4j.Logger;
@@ -26,8 +29,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-
-import java.util.Map;
 
 /**
  * Abstract base harvester class.
@@ -57,13 +58,14 @@ public abstract class BaseHarvesterService implements HarvesterService {
 
         String jobId = (String) params.get(JOB_ID_PARAM);
         String applicationId = (String) params.get(APPLICATION_ID_PARAM);
-        log.debug("Starting harvester job ID->" + jobId + " with application ID->" + applicationId);
+        if (log.isDebugEnabled()) {
+        	log.debug("Starting harvester job ID->" + jobId + " with application ID->" + applicationId);
+        }
 
         HarvestStatus harvestStatus = getHarvesterLock(jobId, applicationId);
 
-        if (harvestStatus.equals(HARVESTER_STATUS_RUNNING))  {
+        if (harvestStatus.getStatus().equals(HARVESTER_STATUS_RUNNING))  {
 
-            Map<String, ?> harvestResults = null;
             try {
                 // call the harvest internal method
                 doHarvestInternal(harvestStatus.getAttributes());
@@ -87,6 +89,7 @@ public abstract class BaseHarvesterService implements HarvesterService {
 
         harvestStatus.setStatus(HARVESTER_STATUS_IDLE);
         harvestStatus.setApplicationId(""); // clear the application id
+        harvestStatus.setLastRunDate(new Date());
         HarvestStatus updatedHarvestStatus = harvestStatusRepository.save(harvestStatus);
 
         return updatedHarvestStatus;
@@ -103,18 +106,16 @@ public abstract class BaseHarvesterService implements HarvesterService {
      * @return
      */
     private HarvestStatus getHarvesterLock(String jobId, String applicationId) {
-
         // If HarvestStatus is null, it means that:
         //  1) the harvester is already running, OR
         //  2) the harvester is running for the first time, to a new entry needs to be created
 
         Query query = new Query(Criteria.where(JOB_ID_DB_PARAM).is(jobId).and(STATUS_DB_PARAM).is(HARVESTER_STATUS_IDLE));
 
-        Update update = new Update().set(STATUS_DB_PARAM, HARVESTER_STATUS_RUNNING)
-                .addToSet(JOB_ID_DB_PARAM, jobId)
-                .addToSet(APPLICATION_ID_DB_PARAM, applicationId)
-                .addToSet(COLLECTION_NAME_DB_PARAM, mongoTemplate.getCollectionName(getCollectionClassName()));
-
+        Update update = new Update();
+        update.set(STATUS_DB_PARAM, HARVESTER_STATUS_RUNNING);
+        update.set(JOB_ID_DB_PARAM, jobId);
+        update.set(APPLICATION_ID_DB_PARAM, applicationId);
         FindAndModifyOptions findAndModifyOptions = new FindAndModifyOptions();
         findAndModifyOptions.returnNew(true);
         // upsert will create a new document if it doesn't already exist
@@ -133,11 +134,4 @@ public abstract class BaseHarvesterService implements HarvesterService {
      */
     protected abstract void doHarvestInternal(Map<String, ?> harvesterProperties);
 
-    /**
-     * The concrete class should implement this.  This is should return the repository class
-     * of the collection being harvested.
-     *
-     * @return
-     */
-    protected abstract Class getCollectionClassName();
 }

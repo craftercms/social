@@ -16,6 +16,7 @@
  */
 package org.craftercms.social.notification.harvester.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bson.types.ObjectId;
 import org.craftercms.social.domain.Event;
 import org.craftercms.social.domain.Notification;
 import org.craftercms.social.domain.Notification.TransmittedStatus;
@@ -32,7 +34,7 @@ import org.craftercms.social.notification.harvester.BaseHarvesterService;
 import org.craftercms.social.repositories.NotificationRepository;
 import org.craftercms.social.repositories.ProfileRepository;
 import org.craftercms.social.repositories.UGCAuditRepository;
-
+import org.craftercms.social.util.PageManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,74 +46,98 @@ import org.springframework.stereotype.Component;
 @Component
 public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 
-
-    // These should be dynamically calculated
-    static final String ACTION = "email";
-    static final String FREQUENCY = "instant";
-    static final String FORMAT = "single";
-
-    // TODO: These need to be passed in as parameters and are specific to the implementation
-    static final String APPLICATION_ID = "crafter-social";
-    static final String COLLECTION_NAME = "uGCAudit";
-    static final String DEFAULT_JOB_ID = "crafter-social-harvester";
-
 	@Autowired
 	private NotificationRepository notificationRepository;
 	@Autowired
 	private ProfileRepository profileRepository;
 	@Autowired
 	private UGCAuditRepository ugcAuditRepository;
-
 	
-	private String action;
-	private String frequency;
-	private String format;
-
+	private int pageSize;
+	
+	private PageManagement pageManagement;
 	
 	public UGCAuditHarvesterServiceImpl() {
-
-        // TODO: collectionName
-//		jobId = DEFAULT_JOB_ID;
-//		action = ACTION;
-//		frequency = FREQUENCY;
-//		format = FORMAT;
-//		this.applicationId = APPLICATION_ID;
-//		this.collectionName = COLLECTION_NAME;
+		this.pageSize = DEFAULT_PAGE_SIZE;
+		pageManagement = new PageManagement();
 	}
-	
+
 	@Override
 	public void doHarvestInternal(Map<String, ?> harvesterProperties) {
+		
+		long lastRowRetrieved = getLastRowRetrieved((Map<String, ? super Serializable>)harvesterProperties);
 
         // GET Audits using last retrieved row
-		List<UGCAudit> listUGCAudit = findUGCAuditList(getLastRowRetrieved(harvesterProperties));
-		if (listUGCAudit != null && listUGCAudit.size() > 0) {
-			log.debug("Harvester JOB found audits " + listUGCAudit.size());
-			// Sets audits into a map -> target / Audits
-			Map<String, List<UGCAudit>> targetIdUGCAuditMap = flatAuditsByTarget(listUGCAudit);
-			
-			Set<String> targets = targetIdUGCAuditMap.keySet();
-			List<Profile> pl;
-			
-			for (String target: targets) {
-				// Gets subscribers by a target, an action, a frequency and format
-				pl = this.profileRepository.findProfilesBySubscriptions(target, action, frequency, format);
-				log.debug("Harvester JOB found " + pl.size() + " subscribers for target " + target);
+		boolean isDone = initPageManagement(lastRowRetrieved);
+		//page = 0;
+		Map<String, List<UGCAudit>> targetIdUGCAuditMap;
+		List<UGCAudit> listUGCAudit;
+		Map<String, Profile> actionOwnersCache = new HashMap<String, Profile>();
+		
+		while(!isDone) {
+			listUGCAudit = findUGCAuditList(lastRowRetrieved, pageManagement.getStart(), pageManagement.getEnd());
+			if (listUGCAudit != null && listUGCAudit.size() > 0) {
+				log.debug("Harvester JOB found audits " + listUGCAudit.size());
+				// Sets audits into a map -> target / Audits
+				targetIdUGCAuditMap = flatAuditsByTarget(listUGCAudit);
 				
-				// saves notifications
-				createNotifications(pl, targetIdUGCAuditMap.get(target));
-				 
+				createNotifications(actionOwnersCache, targetIdUGCAuditMap);
+				
+				//update the last row retrieved and check if there will be more entries to process
+				isDone = updateLastRowAndPageManagement(listUGCAudit, (Map<String, ? super Serializable>)harvesterProperties);
+				
+			} else {
+				isDone = true;
 			}
-
 		}
-
-        // TODO: Set the updated last row retrieved in the properties
 		
 	}
 
-    private Long getLastRowRetrieved(Map<String, ?> harvesterProperties) {
-        Long lastRowRetrieved = null;
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	private void createNotifications(Map<String, Profile> actionOwnersCache,
+			Map<String, List<UGCAudit>> targetIdUGCAuditMap) {
+		Set<String> targets = targetIdUGCAuditMap.keySet();
+		List<Profile> pl;
+		
+		for (String target: targets) {
+			// Gets subscribers by a target, an action, a frequency and format
+			pl = this.profileRepository.findProfilesBySubscriptions(target);
+			log.debug("Harvester JOB found " + pl.size() + " subscribers for target " + target);
+			
+			// saves notifications
+			createNotifications(pl, targetIdUGCAuditMap.get(target), actionOwnersCache);
+			 
+		}
+	}
+	
+    private boolean updateLastRowAndPageManagement(List<UGCAudit> listUGCAudit,
+		Map<String, ? super Serializable> harvesterProperties) {
+    	boolean isDone = false;
+    	updateLastRowRetrieved(listUGCAudit, (Map<String, ? super Serializable>)harvesterProperties);
+		if (pageManagement.isLastPage()) {
+			isDone = true;
+		} else {
+			
+			pageManagement.next();
+		}
+		return isDone;
+    }
+
+	private Long getLastRowRetrieved(Map<String, ? super Serializable> harvesterProperties) {
+    	Long lastRowRetrieved = null;
         if (harvesterProperties == null || harvesterProperties.get(LAST_ROW_RETRIEVED) == null) {
+        	if (harvesterProperties == null) {
+        		harvesterProperties = new HashMap<String, Serializable>();
+        	}
             lastRowRetrieved = new Long(0);
+            harvesterProperties.put(LAST_ROW_RETRIEVED, lastRowRetrieved);
         } else {
             lastRowRetrieved =  (Long) harvesterProperties.get(LAST_ROW_RETRIEVED);
         }
@@ -123,14 +149,28 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 		Map<String, List<UGCAudit>> targetIdUGCAuditMap = new HashMap<String, List<UGCAudit>>();
 		//flatten audits by target
 		for(UGCAudit current: listUGCAudit) {
-			lua = targetIdUGCAuditMap.get(current.getTarget());
+			lua = targetIdUGCAuditMap.get(current.getTarget().getTargetId());
 			if (lua == null) {
 				lua = new ArrayList<UGCAudit>();
-				targetIdUGCAuditMap.put(current.getTarget().getId(), lua);
+				targetIdUGCAuditMap.put(current.getTarget().getTargetId(), lua);
 			}
 			lua.add(current);
 		}
 		return targetIdUGCAuditMap;
+	}
+    
+    private boolean initPageManagement(long lastRowRetrieve) {
+		boolean isDone = false;
+		
+		pageManagement.setStart(0);
+		pageManagement.setPageSize(this.pageSize);
+		long total = this.ugcAuditRepository.count(lastRowRetrieve);
+		pageManagement.setTotal(total);
+		if (total == 0) {
+			isDone = true;
+		}
+		
+		return isDone;
 	}
 
 	/**
@@ -140,84 +180,85 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 	 * 
 	 * @param audits The events
 	 */
-	private void createNotifications(List<Profile> pl, List<UGCAudit> audits) {
+	private void createNotifications(List<Profile> pl, List<UGCAudit> audits, Map<String, Profile> actionOwnersCache) {
 		if (pl == null || pl.size() == 0) {
 			return;
 		}
 		for (UGCAudit currentAudit: audits) {
 			for (Profile profile: pl) {
-				createNotification(profile, currentAudit);
+				log.debug("Harvester JOB creating notification event ROW " + currentAudit.getRow() + " for the subscriber: " + profile.getUserName());
+				createNotification(profile, currentAudit, actionOwnersCache);
 			}
 		}
 	}
 
 	private Notification createNotification(Profile profile,
-			UGCAudit currentAudit) {
+			UGCAudit currentAudit, Map<String, Profile> actionOwnersCache) {
 		Notification notification = new Notification();
 		// ACTION of the current JOB
-		notification.setAction(this.action);
-		//notification.setAction(profile.getSubscriptions().getAction().get(0));
+		notification.setAction(profile.getSubscriptions().getAction());
+
 		notification.setCreatedDate(new Date());
-		//notification.setFormat(profile.getSubscriptions().getFormat().get(0));
+		notification.setRow(currentAudit.getRow());
+
 		//FORMAT of the current JOB
-		notification.setAction(this.format);
+		notification.setFormat(profile.getSubscriptions().getFormat());
 		
-		//notification.setFrequency(profile.getSubscriptions().getFrequency().get(0));
 		//FORMAT of the current JOB
-		notification.setFrequency(this.frequency);
+		notification.setFrequency(profile.getSubscriptions().getFrequency());
+		notification.setSubscriberUsername(profile.getUserName());
 		
 		notification.setSubscriberEmail(profile.getEmail());
 		notification.setSubscriberId(profile.getId());
 		notification.setTransmitedStatus(TransmittedStatus.PENDING);
-		notification.setEvent(createEvent(profile,currentAudit));
+		
+		notification.setEvent(createEvent(currentAudit,getActionAuditOwner(actionOwnersCache, currentAudit)));
 		
 		this.notificationRepository.save(notification);
 		
 		return notification;
 	}
 
-	private Event createEvent(Profile profile, UGCAudit currentAudit) {
+	private Profile getActionAuditOwner(Map<String, Profile> actionOwnersCache,
+			UGCAudit currentAudit) {
+		Profile p = actionOwnersCache.get(currentAudit.getProfileId());
+		if (p == null) {
+			Profile currentProfile = this.profileRepository.findOne(new ObjectId(currentAudit.getProfileId()));
+			p = new Profile();
+			if (currentProfile != null) {
+				p.setUserName(currentProfile.getUserName());
+				p.setTenantName(currentProfile.getTenantName());
+				p.setEmail(currentProfile.getEmail());
+				p.setId(currentProfile.getId());
+			}
+			actionOwnersCache.put(currentAudit.getProfileId(), p);
+		}
+		return p;
+	}
+
+	private Event createEvent(UGCAudit currentAudit, Profile actionOwner) {
 		Event event = new Event();
 		event.setAction(currentAudit.getAction());
-		event.setProfile(profile);
+		event.setProfile(actionOwner);
 		event.setTarget(currentAudit.getTarget());
+		event.setUgcId(currentAudit.getUgcId());
+		event.setTenantName(currentAudit.getTenant());
+		event.setAuditDate(currentAudit.getCreatedDate());
 		return event;
 	}
 
-	private List<UGCAudit> findUGCAuditList(long lastRowRetrieved) {
+	private List<UGCAudit> findUGCAuditList(long lastRowRetrieved, int page, int pageSize) {
 		List<UGCAudit> listUGCAudit = null;
-		//if (harvestStatus == null) {                  // TODO: Discuss when this would happen
-		//	listUGCAudit = ugcAuditRepository.findAll();
-		//} else {
-			listUGCAudit = ugcAuditRepository.findByLastRetrievedRow(lastRowRetrieved);
-		//}
+		listUGCAudit = ugcAuditRepository.findByLastRetrievedRow(lastRowRetrieved, page, pageSize);
 		return  listUGCAudit;
 	}
 
 
-    @Override
-    protected Class getCollectionClassName() {
-        return UGCAuditRepository.class;
-    }
-
-	private long retrieveLastUGCAudit(List<UGCAudit> listUGCAudit) {
-		return listUGCAudit.get(listUGCAudit.size() - 1).getRow();
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
-	}
-
-	public String getFormat() {
-		return format;
-	}
-
-	public void setFormat(String format) {
-		this.format = format;
+    private void updateLastRowRetrieved(List<UGCAudit> listUGCAudit, Map<String, ? super Serializable> harvesterProperties) {
+		if (listUGCAudit != null && listUGCAudit.size() > 0) {
+			Long lastRowRetrived = listUGCAudit.get(listUGCAudit.size() - 1).getRow();
+			harvesterProperties.put(LAST_ROW_RETRIEVED, lastRowRetrived);
+		}
 	}
 
 }

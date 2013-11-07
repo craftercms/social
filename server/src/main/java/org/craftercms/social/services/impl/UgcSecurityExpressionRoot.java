@@ -65,14 +65,14 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 
 	public boolean hasCreatePermission() {
 		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
-		String[] target = (String[]) params.get("target");
+        // need to parse parentId from request parameter
 		String[] parentId = (String[]) params.get("parentId");
 		UGC parent = null;
-		if (target != null && target.length == 1
-				&& (parentId == null || parentId.length == 0)) {
-			String[] tenant = (String[]) params.get("tenant");
+		if (parentId == null || parentId.length == 0) {
+			String tenantName = getTenantName();
+			
 			List<String> createRoles = this.tenantService
-					.getRootCreateRoles(tenant[0]);
+					.getRootCreateRoles(tenantName);
 			ArrayList<Action> actions = new ArrayList<Action>();
 			Action createAction = new Action(ActionEnum.CREATE.toString(),
 					createRoles);
@@ -96,6 +96,8 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		}
 		return true;
 	}
+
+	
 
 	public boolean hasUpdatePermission() {
 		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
@@ -379,6 +381,14 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		this.crafterProfileService = crafterProfileService;
 	}
 	
-	
+	private String getTenantName() {
+		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
+		String[] tenant = (String[]) params.get("tenant");
+		String tenantName = null;
+		if (tenant!=null && tenant.length>0) {
+			tenantName = tenant[0];
+		}
+		return tenantName;
+	}
 
 }

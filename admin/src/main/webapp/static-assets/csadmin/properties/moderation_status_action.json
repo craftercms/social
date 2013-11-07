@@ -1,0 +1,43 @@
+[
+    {
+        "moderation": "Unmoderated",
+        "actions": [
+            { "label": "Approve", "tab": "Approved" },
+            { "label": "Spam", "tab": "Spam" },
+            { "label": "Trash", "tab": "Trash" },
+            { "label": "Edit", "tab": "Edit" }
+        ]
+    },
+    {
+        "moderation": "Approved",
+        "actions": [
+            { "label": "Spam", "tab": "Spam" },
+            { "label": "Trash", "tab": "Trash" },
+            { "label": "Edit", "tab": "Edit" },
+            { "label": "Unmoderated", "tab": "Unmoderated" }
+        ]
+    },
+    {
+        "moderation": "Pending",
+        "actions": [
+            { "label": "Approved", "tab": "Approved" },
+            { "label": "Trash", "tab": "Trash" },
+            { "label": "Edit", "tab": "Edit" }
+        ]
+    },
+    {
+        "moderation": "Spam",
+        "actions": [
+            { "label": "Restore", "tab": "Restore" },
+            { "label": "Permantly delete", "tab": "Permantly delete" },
+            { "label": "Unmoderated", "tab": "Unmoderated" }
+        ]
+    },
+    {
+        "moderation": "Trash",
+        "actions": [
+            { "label": "Restore", "tab": "Restore" },
+            { "label": "Permantly delete", "tab": "Permantly delete" }
+        ]
+    }
+]
