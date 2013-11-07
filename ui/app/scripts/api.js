@@ -108,7 +108,7 @@
             url: {
                 base: '/',
                 service: '/fixtures/api/2/',
-                templates: '/templates/'
+                templates: 'templates/'
             }
         };
 
