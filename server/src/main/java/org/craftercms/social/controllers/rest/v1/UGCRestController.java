@@ -16,8 +16,20 @@
  */
 package org.craftercms.social.controllers.rest.v1;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
+import org.craftercms.social.controllers.rest.v1.to.UGCRequest;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.exceptions.AttachmentErrorException;
@@ -25,8 +37,6 @@ import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.HierarchyGenerator;
 import org.craftercms.social.util.HierarchyList;
-import org.craftercms.social.util.action.ActionUtil;
-import org.craftercms.social.controllers.rest.v1.to.UGCRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,22 +45,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/api/2/ugc")
@@ -163,14 +163,16 @@ public class UGCRestController {
         return ugcService.findUGCAndChildren(new ObjectId(ugcId), tenant, getProfileId(), sortField, sortOrder);
 	}
 	
-	@RequestMapping(value = "/create", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/create", method = RequestMethod.POST
+			, 
+			headers = "Accept=application/json")
 	@ResponseStatus(HttpStatus.CREATED)
 	@ModelAttribute
 	public UGC addUGC(@RequestBody(required = true) UGCRequest ugcRequest,
 			HttpServletRequest request) throws PermissionDeniedException, AttachmentErrorException {
 
 		/** Pre validations **/
-		if (ugcRequest.getTarget() == null) {
+		if (ugcRequest.getTargetId() == null) {
 			throw new IllegalArgumentException(
 					"Target must a valid not empty String");
 		}
@@ -187,8 +189,8 @@ public class UGCRestController {
 	public UGC updateUGC(@RequestBody(required = true) UGCRequest ugcRequest,
                          HttpServletRequest request) throws PermissionDeniedException, AttachmentErrorException {
 
-        return ugcService.updateUgc(new ObjectId(ugcRequest.getUgcId()), ugcRequest.getTenant(), ugcRequest.getTarget(), getProfileId(),
-                ugcRequest.getParentId()==null?null:new ObjectId(ugcRequest.getParentId()), ugcRequest.getTextContent(),
+        return ugcService.updateUgc(new ObjectId(ugcRequest.getUgcId()), ugcRequest.getTenant(), ugcRequest.getTargetId(), getProfileId(),
+                ugcRequest.getParentId()==null?null:new ObjectId(ugcRequest.getParentId()), ugcRequest.getContent(),
                 ugcRequest.getAttachments(), ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription());
 
 	}
@@ -198,7 +200,7 @@ public class UGCRestController {
     public UGC addAttachments(HttpServletRequest request,
                          @PathVariable final String ugcId,
                          @RequestParam final String tenant,
-                         @RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException {
+                         @RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException, AttachmentErrorException {
 
         return ugcService.addAttachments(new ObjectId(ugcId), attachments, tenant, getProfileId());
     }
