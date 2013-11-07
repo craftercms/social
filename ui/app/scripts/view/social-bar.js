@@ -3,7 +3,6 @@
 
     var Bar,
         Base = S.view.Base,
-        C = S.Constants,
         U = S.util,
         $ = S.$;
 
@@ -83,7 +82,7 @@
     /* jshint -W015 */
     Bar.DEFAULTS = {
         templates: {
-            main: ('%@social-bar.hbs').fmt(C.TEMPLATES_URL),
+            main: ('%@social-bar.hbs').fmt(S.Cfg('url.templates')),
             widget: [
                 '<li class="subordinate">',
                     '<a data-activate-widget="{{guid}}">',

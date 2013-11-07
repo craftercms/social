@@ -8,7 +8,6 @@
 
     var Lightbox,
         Base = S.view.Discussion,
-        C = S.Constants,
         $ = S.$;
 
     var prototype = $.extend({}, $.fn.modal.Constructor.prototype, {
@@ -87,7 +86,7 @@
         /** @see view.Discussion for more */
         classes: ['crafter-social-lightbox-view', 'modal', 'fade'],
         templates: {
-            main: ('%@lightbox.hbs').fmt(C.TEMPLATES_URL)
+            main: ('%@lightbox.hbs').fmt(S.Cfg('url.templates'))
         },
         modal: $.extend({}, $.fn.modal.Constructor.DEFAULTS, {
             backdrop: true,

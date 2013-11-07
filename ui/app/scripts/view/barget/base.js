@@ -4,7 +4,6 @@
     var Widget,
         Base = S.view.Base,
         U = S.util,
-        C = S.Constants,
         $ = S.$,
         SPACE = ' ';
 
@@ -51,7 +50,7 @@
             var me = this;
             this.$el.prepend(U.template(this.getTemplate('message'), cfg));
             setTimeout(function () {
-                this.$('.alert').remove();
+                me.$('.alert').remove();
                 cfg.callback && cfg.callback.call(me, cfg);
             }, 3000);
         },

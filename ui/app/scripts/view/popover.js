@@ -8,7 +8,6 @@
 
     var Popover,
         Superclass = S.view.Discussion,
-        C = S.Constants,
         $ = S.$;
 
     var prototype = $.extend({}, $.fn.popover.Constructor.prototype, {
@@ -157,8 +156,8 @@
         /** @see view.Discussion for more */
         classes: 'crafter-social-popover popover fade',
         templates: {
-            main: ('%@popover.hbs').fmt(C.TEMPLATES_URL),
-            comment: ('%@comment.hbs').fmt(C.TEMPLATES_URL)
+            main: ('%@popover.hbs').fmt(S.Cfg('url.templates')),
+            comment: ('%@comment.hbs').fmt(S.Cfg('url.templates'))
         },
         popover: $.extend({}, $.fn.popover.Constructor.DEFAULTS, {
             placement: 'left',
