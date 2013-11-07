@@ -38,7 +38,7 @@
     Class.DEFAULTS = {
         classes: ['crafter-social-bar-form', 'crafter-social-bar-share'],
         templates: {
-            main: ('%@share-barget.hbs').fmt(C.TEMPLATES_URL)
+            main: ('%@share-barget.hbs').fmt(S.Cfg('url.templates'))
         }
     };
 

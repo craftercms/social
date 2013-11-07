@@ -26,6 +26,7 @@ $popover-font-size: 12px;
     .popover-title {
       padding: 5px;
       border-radius: 0;
+      @include clearfix();
 
       > img {
         float: left !important;

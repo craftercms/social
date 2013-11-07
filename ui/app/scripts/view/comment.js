@@ -2,7 +2,6 @@
     'use strict';
 
     var Base = S.view.Base,
-        C = S.Constants,
         U = S.util,
         $ = S.$;
 
@@ -50,7 +49,7 @@
     CommentView.DEFAULTS = {
         classes: 'crafter-social-comment',
         templates: {
-            main: ('%@comment.hbs').fmt(C.TEMPLATES_URL)
+            main: ('%@comment.hbs').fmt(S.Cfg('url.templates'))
         }
     };
 

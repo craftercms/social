@@ -8,7 +8,6 @@
     social.$ = window.$.noConflict();
     social.Backbone = window.Backbone.noConflict();
     social.underscore = window._.noConflict();
-    social.TemplateEngine = window.Handlebars;
     social.EventProvider = social.underscore.clone(social.Backbone.Events);
 
     var $ = social.$;
@@ -16,6 +15,9 @@
     social.define('request', $.ajax, false);
 
     social.define('util', $.extend({}, social.underscore, {
+
+        emptyFn: function () {},
+
         guid: (function () {
             function fn() {
                 return Math.floor((1 + Math.random()) * 0x10000)
@@ -39,19 +41,11 @@
             var Temp = function () { },
                 temp, instance;
 
-            // Give the Temp constructor the Constructor's prototype
             Temp.prototype = Class.prototype;
 
-            // Create a new temp
             temp = new Temp();
-
-            // Call the original Constructor with the temp
-            // temp as its context (i.e. its 'this' value)
             instance = Class.apply(temp, args);
 
-            // If an object has been returned then return it otherwise
-            // return the original temp.
-            // (consistent with behaviour of the new operator)
             return (Object(instance) === instance) ? instance : temp;
 
         },
@@ -71,32 +65,75 @@
             }
 
             return child;
+
         },
+
         template: function (tmpl, context) {
-            var template = Handlebars.compile(tmpl);
+            var template = social.TemplateEngine.compile(tmpl);
             return template(context);
         },
+
         isHTML: (function () {
             var regexp = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/;
             return function ( selector ) {
                 return regexp.exec( selector );
             };
         }) (),
+
         fromJSON: function (text) {
             return JSON.parse(text);
         },
-        emptyFn: function () {}
+
+        log: function ( /* txt, fmt1, fmt2 ... fmtN */ ) {
+            if ( console && console.log ) {
+                var str = social.string.fmt.apply(social.string, arguments);
+                console.log(str);
+            } else {
+                return false;
+            }
+        }
+
     }), false);
 
-    (function (social) {
+    (function (S) {
 
         var _ = {
+            /**
+             * The director class. Path can be relative to the social namespace or global.
+             */
+            director: 'component.Director',
+            /**
+             * URL configurations
+             */
+            url: {
+                base: '/',
+                service: '/fixtures/api/2/',
+                templates: '/templates/'
+            }
+        };
 
-            // TODO should APP_ROOT be here?
-            APP_ROOT: '/',
-            TEMPLATES_URL: '/templates/',
+        S.define('Cfg', function ( key, value ) {
+            if ( arguments.length === 1 ) {
+                return S.get(key, _);
+            } else {
+                S.define(key, value, _, false);
+                return true;
+            }
+        }, 'social.Cfg');
 
-            SERVICE: '/fixtures/api/2/',
+        /* jshint -W106 */
+        var cfg = S.window.crafterSocial_cfg;
+        if ( typeof cfg !== 'undefined' ) {
+            S.$.each(cfg, function ( key, value ) {
+                S.Cfg(key, value);
+            });
+        }
+
+    }) (social);
+
+    (function (S) {
+
+        var _ = {
 
             EVENT_AREAS_VISIBILITY_CHANGE: 'crater.social.event.areas.visibility.change',
             AREA_VISIBILITY_MODE_REVEAL: 'area.visibility.mode.reveal',
@@ -105,21 +142,19 @@
 
         };
 
-        social.define('Constants', {
-
-            // TODO substitute all below in favour of the private/immutable constants?
-            get: function (key) {
-                return _[key];
-            },
-
-            APP_ROOT: _.APP_ROOT,
-            TEMPLATES_URL: _.TEMPLATES_URL,
-
-            EVENT_AREAS_VISIBILITY_CHANGE: _.EVENT_AREAS_VISIBILITY_CHANGE,
-            AREA_VISIBILITY_MODE_REVEAL: _.AREA_VISIBILITY_MODE_REVEAL,
-            AREA_VISIBILITY_MODE_HOVER: _.AREA_VISIBILITY_MODE_HOVER,
-            AREA_VISIBILITY_MODE_HIDE: _.AREA_VISIBILITY_MODE_HIDE
-
+        S.define('Constants', {
+            get: function ( key ) { return _[key]; },
+            define: function ( key, value ) {
+                if ( !(key in _) ) {
+                    _[key] = value;
+                    return true;
+                } else {
+                    S.util.log(
+                        'Constant %@ is already defined (value: %@). Value not changed.',
+                        key, S.Constants.get(key));
+                    return true;
+                }
+            }
         }, 'social.Constants');
 
     }) (social);
@@ -178,29 +213,5 @@
             return result;
         };
     }
-
-    // Handlebars Helpers
-
-    var Handlebars = social.TemplateEngine;
-
-    Handlebars.registerHelper('html', function( html ) {
-        return new Handlebars.SafeString(html);
-    });
-
-    /*Handlebars.registerHelper('render', function( tmpl, context ) {
-        return new Handlebars.SafeString(tmpl);
-    });*/
-
-    Handlebars.registerHelper('date', function( millis ) {
-        var date = new Date(millis),
-            format;
-        var str = (format || '{day} {date}, {month} {year}').fmt({
-            month: 'months.%@'.fmt(date.getMonth()).loc(),
-            day: 'days.%@'.fmt(date.getDay()).loc(),
-            date: date.getDate(),
-            year: date.getFullYear()
-        });
-        return new Handlebars.SafeString(str);
-    });
 
 }) (crafter.social);

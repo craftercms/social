@@ -5,7 +5,6 @@
         Base = S.view.Base,
         app = S.component.Director,
         CKEDITOR = S.Editor,
-        C = S.Constants,
         $ = S.$;
 
     Commenting = Base.extend({
@@ -72,13 +71,27 @@
     Commenting.DEFAULTS = $.extend({}, {
         classes: ['crafter-social-commenting-view'],
         templates: {
-            main: ('%@commenting.hbs').fmt(C.TEMPLATES_URL)
+            main: ('%@commenting.hbs').fmt(S.Cfg('url.templates'))
         },
+        /* jshint -W106 */
         editor: {
             'extraPlugins': 'autogrow',
             'autoGrow_maxHeight': 800,
             // Remove the Resize plugin as it does not make sense to use it in conjunction with the AutoGrow plugin.
-            'removePlugins': 'resize'
+            'removePlugins': 'resize',
+            customConfig: '',
+            toolbar_Basic: [
+                [
+                    'Bold',
+                    'Italic',
+                    'Underline', '-',
+                    'NumberedList',
+                    'BulletedList', '-',
+                    'Link', '-',
+                    'Image'
+                ]
+            ],
+            toolbar: 'Basic'
         }
     });
 

@@ -2,7 +2,7 @@
     'use strict';
 
     var U = S.util,
-        SERVICE = S.Constants.get('SERVICE');
+        SERVICE = S.Cfg('url.service');
 
     var Comment = S.Backbone.Model.extend({
         idAttribute: 'id',

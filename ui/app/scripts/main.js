@@ -10,6 +10,7 @@
             'crafter.social': 'app',
             'crafter.social_api': 'api',
 
+            'component.TemplateEngine': 'component/template-engine',
             'component.Director': 'component/director',
             'component.Editor': 'component/editor',
 
@@ -54,20 +55,28 @@
         },
         shim: {
 
+            // 'crafter':: { deps: [] },
+            'crafter.social': { deps: [] },
             'crafter.social_api': {
-                deps: [ 'jquery', 'backbone', 'handlebars', 'crafter.social' ]
+                deps: [ 'jquery', 'backbone', 'crafter.social' ]
+            },
+
+            'component.TemplateEngine': {
+                deps: [ 'crafter.social', 'handlebars' ]
+            },
+            'component.Director': {
+                deps: [ 'crafter.social_api' ]
+            },
+            'component.Editor': {
+                deps: [ 'crafter.social_api', 'ckeditor', 'ckeditor.plugins.autogrow' ]
             },
 
             'model.Comment': {
                 deps: [ 'crafter.social_api' ]
             },
 
-            'controller.Base': {
-                deps: [ 'crafter.social_api', 'model.Comment' ]
-            },
-
             'view.Base': {
-                deps: [ 'crafter.social_api' ]
+                deps: [ 'crafter.social_api', 'component.TemplateEngine' ]
             },
             'view.Discussion': {
                 deps: [ 'view.Base' ]
@@ -90,7 +99,6 @@
             'view.SocialBar': {
                 deps: [ 'view.Base', 'view.barget.Feedback', 'view.barget.Rate', 'view.barget.Reveal', 'view.barget.Share' ]
             },
-
             'view.barget.Base': {
                 deps: [ 'crafter.social_api', 'view.Base' ]
             },
@@ -107,12 +115,13 @@
                 deps: [ 'crafter.social_api', 'view.barget.Base' ]
             },
 
-            'component.Director': {
-                deps: [ 'crafter.social_api' ]
+            'controller.Base': {
+                deps: [ 'crafter.social_api', 'model.Comment' ]
             },
-            'component.Editor': {
-                deps: [ 'crafter.social_api', 'ckeditor', 'ckeditor.plugins.autogrow' ]
-            },
+
+            /*
+             * libs
+             */
 
             backbone: {
                 deps: [ 'jquery', 'underscore' ]
