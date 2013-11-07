@@ -18,7 +18,9 @@
 
             var newConfig = $.extend(true, {}, Popover.DEFAULTS, config);
             Superclass.prototype.initialize.call(this, newConfig);
+
             this.init('popover', this.cfg.target, this.cfg.popover);
+            this.$tip = this.element();
 
             this.collection.fetch({
                 data : {
