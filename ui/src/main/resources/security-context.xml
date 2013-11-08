@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:util="http://www.springframework.org/schema/util"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    <context:annotation-config/>
+    
+	<context:component-scan base-package="org.craftercms.social.ui" />
+    <beans:import resource="classpath:crafter/security/security-context.xml"/>
+
+    <util:map id="crafter.urlRestrictions">
+        <beans:entry key="/static-assets/**" value="permitAll()"/>
+        <beans:entry key="/login**" value="permitAll()"/>
+    </util:map>
+
+</beans:beans>
