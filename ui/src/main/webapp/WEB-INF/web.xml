@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	
+	<display-name>Crafter Social UI Plugin</display-name>
+	
+	<filter>
+        <filter-name>crafter.requestContextBindingFilter</filter-name>
+        <filter-class>org.craftercms.security.servlet.filters.RequestContextBindingFilter</filter-class>
+    </filter>
+    
+    <filter>
+        <filter-name>crafter.securityFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    
+    <filter-mapping>
+    	<filter-name>crafter.requestContextBindingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+	
+	<filter-mapping>
+      <filter-name>crafter.securityFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/classes/applicationContext.xml
+			/WEB-INF/classes/security-context.xml
+		</param-value>
+	</context-param>
+	
+	<servlet>
+		<servlet-name>spring</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<listener>
+  		<listener-class>
+      		org.springframework.web.context.request.RequestContextListener
+  		</listener-class>
+	</listener>
+    
+    <listener>
+    	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<error-page>
+		<error-code>400</error-code>
+		<location>/login.ftl</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/403.jsp</location>
+	</error-page>
+    <welcome-file-list>
+        <welcome-file>/site/index.html</welcome-file>
+    </welcome-file-list>
+</web-app>
