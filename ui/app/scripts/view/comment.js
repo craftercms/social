@@ -2,6 +2,7 @@
     'use strict';
 
     var Base = S.view.Base,
+        Comment = S.model.Comment,
         U = S.util,
         $ = S.$;
 
@@ -24,8 +25,23 @@
         },
         render: function () {
 
+            var me          = this;
+            var model       = this.model.toJSON();
+
             this.$el.html(U.template(
-                this.getTemplate('main'), this.model.toJSON()));
+                this.getTemplate('main'), model));
+
+            var $children   = this.$('.comment-children:first');
+            model.children.every(function ( child ) {
+
+                var m = new Comment(child),
+                    v = new CommentView($.extend({}, me.cfg, { model: m }));
+
+                $children.append(v.render().el);
+
+                return true;
+
+            });
 
             return this;
         },
