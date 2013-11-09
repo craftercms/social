@@ -3,7 +3,7 @@
     "list":[
         {
             "id":"525c240b03647f571ceebb2a",
-            "textContent":"{\"title\":\"TITLE\",\"content\":\"I think this looks very good here.\"}",
+            "textContent":"<p>I think this looks very good here.</p>",
             "attachmentsList":{
                 "imageAttach":[
 
@@ -71,7 +71,144 @@
             "anonymousFlag":false,
             "extraChildCount":0,
             "children":[
-
+                {
+                    "id" : "527c034e0364e99105586586",
+                    "_class" : "org.craftercms.social.domain.UGC",
+                    "textContent" : "<p>test1 1</p>\n",
+                    "profile":{
+                        "id":"52571782036447c56863631c",
+                        "userName":"author",
+                        "active":true,
+                        "created":1381439362560,
+                        "modified":1381770035256,
+                        "tenantName":"craftercms",
+                        "email":"authorprofile@craftercms.com",
+                        "roles":[
+                            "SOCIAL_AUTHOR"
+                        ]
+                    },
+                    "actions" : [
+                        {
+                            "name" : "read",
+                            "roles" : [
+                                "SOCIAL_AUTHOR"
+                            ]
+                        },
+                        {
+                            "name" : "update",
+                            "roles" : [
+                                "SOCIAL_AUTHOR"
+                            ]
+                        },
+                        {
+                            "name" : "create",
+                            "roles" : [
+                                "SOCIAL_AUTHOR"
+                            ]
+                        },
+                        {
+                            "name" : "delete",
+                            "roles" : [
+                                "SOCIAL_AUTHOR"
+                            ]
+                        },
+                        {
+                            "name" : "act_on",
+                            "roles" : [
+                                "SOCIAL_AUTHOR"
+                            ]
+                        },
+                        {
+                            "name" : "moderate",
+                            "roles" : [
+                                "SOCIAL_AUTHOR"
+                            ]
+                        }
+                    ],
+                    "createdDate" : "2013-11-07T21:17:02.398Z",
+                    "lastModifiedDate" : "2013-11-07T21:17:02.398Z",
+                    "moderationStatus" : "UNMODERATED",
+                    "timesModerated" : 0,
+                    "likeCount" : 0,
+                    "offenceCount" : 0,
+                    "flagCount" : 0,
+                    "profileId" : "52616842036488b605ba815d",
+                    "tenant" : "craftercms",
+                    "targetId" : "#jumbotron",
+                    "targetUrl" : "",
+                    "targetDescription" : "",
+                    "anonymousFlag" : false,
+                    "children": [
+                        {
+                            "id" : "527c034e0364e9910558658654",
+                            "_class" : "org.craftercms.social.domain.UGC",
+                            "profile":{
+                                "id":"52571782036447c56863631c",
+                                "userName":"author",
+                                "active":true,
+                                "created":1381439362560,
+                                "modified":1381770035256,
+                                "tenantName":"craftercms",
+                                "email":"authorprofile@craftercms.com",
+                                "roles":[
+                                    "SOCIAL_AUTHOR"
+                                ]
+                            },
+                            "textContent" : "<p>test 2</p>\n",
+                            "actions" : [
+                                {
+                                    "name" : "read",
+                                    "roles" : [
+                                        "SOCIAL_AUTHOR"
+                                    ]
+                                },
+                                {
+                                    "name" : "update",
+                                    "roles" : [
+                                        "SOCIAL_AUTHOR"
+                                    ]
+                                },
+                                {
+                                    "name" : "create",
+                                    "roles" : [
+                                        "SOCIAL_AUTHOR"
+                                    ]
+                                },
+                                {
+                                    "name" : "delete",
+                                    "roles" : [
+                                        "SOCIAL_AUTHOR"
+                                    ]
+                                },
+                                {
+                                    "name" : "act_on",
+                                    "roles" : [
+                                        "SOCIAL_AUTHOR"
+                                    ]
+                                },
+                                {
+                                    "name" : "moderate",
+                                    "roles" : [
+                                        "SOCIAL_AUTHOR"
+                                    ]
+                                }
+                            ],
+                            "createdDate" : "2013-11-07T21:17:02.398Z",
+                            "lastModifiedDate" : "2013-11-07T21:17:02.398Z",
+                            "moderationStatus" : "UNMODERATED",
+                            "timesModerated" : 0,
+                            "likeCount" : 0,
+                            "offenceCount" : 0,
+                            "flagCount" : 0,
+                            "profileId" : "52616842036488b605ba815d",
+                            "tenant" : "craftercms",
+                            "targetId" : "#jumbotron",
+                            "targetUrl" : "",
+                            "targetDescription" : "",
+                            "anonymousFlag" : false
+                        }                    
+                    ]
+                }
             ],
             "profile":{
                 "id":"52571782036447c56863631c",
