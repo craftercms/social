@@ -28,7 +28,9 @@
             Base.prototype.createUI.call(this);
 
             var view = new S.util.instance('view.Commenting', $.extend({
-                collection: this.collection
+                collection: this.collection,
+                tenant: this.cfg.tenant,
+                target: this.cfg.target
             }, this.cfg.commenting));
             this.$('.reply-box').append(view.render().el);
             this.cache('commentingView', view);
