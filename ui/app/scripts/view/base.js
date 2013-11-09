@@ -82,8 +82,6 @@
     });
 
     Base.DEFAULTS = {
-        events: [],
-        ctrl: null,
         templates: {
             main: null
         }

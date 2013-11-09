@@ -3,6 +3,7 @@
 $popover-font-size: 12px;
 
 .#{$app-namespace}-comment-thread {
+  padding: 5px;
 
   min-height: 35px;
 
@@ -22,60 +23,100 @@ $popover-font-size: 12px;
   }
 
   .#{$app-namespace}-comment {
+    position: relative;
 
-    .popover-title {
-      padding: 5px;
-      border-radius: 0;
+    &:last-child {
+      footer {
+        margin-bottom: none;
+        border-bottom-style: none;
+      }
+    }
+
+    #{$main-elements} {
+      font-size: $font-size-base;
+    }
+
+    .body-wrapper {
+      position: relative;
+      padding-left: 35px;
       @include clearfix();
 
-      > img {
-        float: left !important;
-        margin: 0 5px !important;
+      [class*="-flag"] {
+        color: lighten($color-crimson, 15%);
+        &:hover {
+          color: $color-crimson;
+        }
       }
 
-      strong {
-        display: block;
+      .avatar {
+        position: absolute;
+        left: 0;
+        top: 0;
       }
 
-      small {
-        display: block;
-        font-size: 0.8em;
-      }
+      .comment-data {
 
-    }
+        header {
+          padding: 0;
+          margin: 0 0 5px 0;
+          border-radius: 0;
 
-    + .#{$app-namespace}-comment {
+          strong {
 
-      .popover-title {
-        border-top: 1px solid darken($popover-title-bg, 5%);
-      }
+          }
 
-    }
+          small {
+            font-size: 0.8em;
+            color: $headings-small-color;
+          }
 
-    .popover-content {
-      padding: 5px;
-      font-size: $popover-font-size;
+        }
 
-      p {
-        margin-bottom: 0;
+        .comment-body {
+          p {
+            margin-bottom: 0;
 
-        &:last-child {
-          margin-bottom: 0;
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+          }
         }
 
       }
 
     }
 
-    * {
-      max-width: 100%;
+    footer {
+
+      @include clearfix();
+      #{$main-elements} { font-size: $font-size-small }
+
+      border: 1px solid darken($popover-title-bg, 5%);
+      border-style: solid none;
+      padding: 2px 0;
+      margin: 5px 0;
+
+      > ul {
+        > li {
+          padding-left: 0;
+        }
+      }
+
+    }
+
+    .comment-children {
+      border-left: 2px solid darken($popover-title-bg, 10%);
+      padding-left: 5px;
     }
 
     ul {
       margin-bottom: 0;
-      border-top: 1px solid darken($popover-title-bg, 5%);
-      background-color: lighten($popover-title-bg, 10%);
       font-size: .9em;
+    }
+
+    * {
+      max-width: 100%;
     }
 
   }

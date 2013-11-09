@@ -135,7 +135,7 @@ $popover-font-size: 12px;
     }
   }
 
-  header {
+  > header {
     margin: 0; // reset heading margin
     padding: 4px 7px;
     font-weight: normal;
