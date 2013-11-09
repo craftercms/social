@@ -47,12 +47,11 @@
             if (!content) { return; }
 
             this.collection.create({
-                textContent: JSON.stringify({ content: content }),
-                content: content,
                 profile: app.getUser(),
+                textContent: content,
                 dateAdded: Date.now(),
                 tenant: this.cfg.tenant,
-                target: this.cfg.target
+                targetId: this.cfg.target
             });
 
             editor.setData('');
