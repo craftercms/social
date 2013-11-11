@@ -6,6 +6,8 @@ import java.util.List;
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Subscriptions;
+import org.craftercms.profile.impl.domain.Target;
 import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
@@ -189,5 +191,10 @@ public class CrafterProfileImpl implements CrafterProfile {
 
 		return profile;
 	}
+
+    @Override
+    public Profile createOrUpdateSubscription(String profileId, String targetId, String targetDescription, String targetUrl) {
+        return client.createOrUpdateSubscription(getAppToken(), profileId, targetId, targetDescription, targetUrl);
+    }
 
 }

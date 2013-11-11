@@ -169,7 +169,7 @@ public class UGCRestController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@ModelAttribute
 	public UGC addUGC(@RequestBody(required = true) UGCRequest ugcRequest,
-			HttpServletRequest request) throws PermissionDeniedException, AttachmentErrorException {
+			HttpServletRequest request) throws PermissionDeniedException {
 
 		/** Pre validations **/
 		if (ugcRequest.getTargetId() == null) {
