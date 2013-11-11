@@ -19,6 +19,8 @@ package org.craftercms.social.util.support;
 import java.util.List;
 
 import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Subscriptions;
+import org.craftercms.profile.impl.domain.Target;
 import org.craftercms.profile.impl.domain.Tenant;
 
 public interface CrafterProfile {
@@ -30,4 +32,6 @@ public interface CrafterProfile {
 	void resetAppToken();
 	boolean validateUserToken(String ticket);
 	Profile getUserInformation(String ticket);
+    public Profile createOrUpdateSubscription(String profileId, String targetId, String targetDescription, String targetUrl);
+
 }

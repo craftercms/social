@@ -491,7 +491,7 @@
                     </includes>
                     <excludes>
 						<exclude>**/integration/**/*.java</exclude>
-                        <exclude>**/unit/UGCServiceClamVirusScannerTest.java</exclude>
+                        <exclude>**/unit/VirusScannerServiceTest.java</exclude>
 					</excludes>
                 </configuration>
             </plugin>
