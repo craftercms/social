@@ -13,7 +13,7 @@ xmlns:security="http://www.springframework.org/schema/security"
 	<beans:import resource="classpath:crafter/security/security-context.xml"/>
 	
 	<util:map id="crafter.urlRestrictions">
-    	<beans:entry key="/resources/**" value="permitAll()" />
+    	<beans:entry key="/static-assets/**" value="permitAll()" />
     	<beans:entry key="/api/2/cache/clear_all" value="permitAll()" />
     	<beans:entry key="/login**" value="permitAll()" />
     	<!-- beans:entry key="/index**" value="permitAll()"/-->
