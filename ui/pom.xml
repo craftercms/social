@@ -59,13 +59,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.7</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Crafter -->
         <dependency>
             <groupId>org.craftercms</groupId>
@@ -90,7 +83,7 @@
             <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-server</artifactId>
             <version>2.35.0</version>
@@ -99,13 +92,7 @@
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-firefox-driver</artifactId>
             <version>2.35.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.detro.ghostdriver</groupId>
-            <artifactId>phantomjsdriver</artifactId>
-            <version>1.0.3</version>
-        </dependency>
-
+        </dependency> -->
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
@@ -161,7 +148,7 @@
             or abstraction for various logging frameworks, e.g. java.util.logging, log4j
             and logback, allowing the end user to plug in the desired logging framework
             at deployment time. -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
@@ -186,10 +173,10 @@
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
             <version>2.2.2</version>
-        </dependency>
+        </dependency> -->
 
         <!-- Spring Security -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
             <version>${spring.security.core.version}</version>
@@ -209,9 +196,9 @@
             <version>${spring.security.core.version}</version>
             <type>jar</type>
             <scope>compile</scope>
-        </dependency>
+        </dependency> -->
 
-        <dependency>
+        <!-- <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.2</version>
@@ -223,7 +210,7 @@
             <version>1.9.9</version>
         </dependency>
 
-        <!-- Javax Servlet. This needs to be included for runtime only! -->
+        Javax Servlet. This needs to be included for runtime only!
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -231,12 +218,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- AspectJ -->
+        AspectJ
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
             <version>1.7.2</version>
-        </dependency>
+        </dependency> -->
 
     </dependencies>
 
