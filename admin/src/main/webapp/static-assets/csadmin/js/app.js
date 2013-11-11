@@ -9,6 +9,34 @@ angular.module('moderationDashboard',
         ]).
     config(['$routeProvider', function($routeProvider) {
         $routeProvider.
-            when('/', {templateUrl: 'static-assets/csadmin/templates/ugc_list.html', controller: 'UgcListCtrl'}).
-            when('/status/:moderationStatus', {templateUrl: 'static-assets/csadmin/templates/ugc_list.html', controller: 'UgcListCtrl'});
+            when(
+                '/',
+                {
+                    templateUrl: 'static-assets/csadmin/templates/ugc_list.html',
+                    controller: 'UgcListCtrl',
+                    resolve: {
+                        'appData' : function (ConfigurationData) {
+                            return ConfigurationData.appDataPromise();
+                        },
+                        'moderationActions': function (ConfigurationData) {
+                            return ConfigurationData.moderationStatusPromise();
+                        }
+                    }
+                }
+            ).
+            when(
+                '/status/:moderationStatus',
+                {
+                    templateUrl: 'static-assets/csadmin/templates/ugc_list.html',
+                    controller: 'UgcListCtrl',
+                    resolve: {
+                        'appData' : function (ConfigurationData) {
+                            return ConfigurationData.appDataPromise();
+                        },
+                        'moderationActions': function (ConfigurationData) {
+                            return ConfigurationData.moderationStatusPromise();
+                        }
+                    }
+                }
+            );
     }]);

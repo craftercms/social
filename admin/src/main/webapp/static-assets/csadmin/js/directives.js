@@ -7,7 +7,7 @@ angular.module('moderationDashboard.directives', []).
             elm.text(version);
         };
     }]).
-    directive('moderationAction', ['Api', '$http', '$timeout', function (api, http, timeout) {
+    directive('moderationAction', ['$timeout', 'UgcApi', function (timeout, UgcApi) {
         return {
             restrict: "E",
             templateUrl: "/crafter-social-admin/static-assets/csadmin/templates/moderation_actions.html",
@@ -35,30 +35,25 @@ angular.module('moderationDashboard.directives', []).
                                     tenant: scope.$parent.confObj.tenant
                                 };
 
-
-                            http({
-                                method: 'POST',
-                                url: "/crafter-social/api/2/ugc/moderation/" + queryParams.moderationid + "/status.json?moderationStatus=" + queryParams.moderationstatus + "&tenant=" + queryParams.tenant,
-                                data: queryParams,
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                            }).success(function (data) {
-                                angular.forEach(scope.$parent.$parent.ugcList, function (ugc, index) {
-                                    if (ugc.id === data.id) {
-                                        // removing active state of clicked button
-                                        if (currentEl.hasClass('active')) {
-                                            currentEl.removeClass('active');
+                            UgcApi.updateUgc(queryParams).then(function (data) {
+                                if (data) {
+                                    angular.forEach(scope.$parent.$parent.ugcList, function (ugc, index) {
+                                        if (ugc.id === data.id) {
+                                            // removing active state of clicked button
+                                            if (currentEl.hasClass('active')) {
+                                                currentEl.removeClass('active');
+                                            }
+                                            scope.$parent.ugcList[index].updated = true;
+                                            scope.$parent.ugcList[index].updateMessage = scope.$parent.ugcList[index].title + " - " + scope.$parent.ugcList[index].dateAdded
+                                            scope.$parent.ugcList[index].alertClass = "success";
+                                            scope.$parent.ugcList[index].undo = true;
                                         }
-                                        scope.$parent.ugcList[index].updated = true;
-                                        scope.$parent.ugcList[index].updateMessage = scope.$parent.ugcList[index].title + " - " + scope.$parent.ugcList[index].dateAdded
-                                        scope.$parent.ugcList[index].alertClass = "success";
-                                        scope.$parent.ugcList[index].undo = true;
-                                    }
-                                });
-                            }).error(function (data) {
-                                //TODO error message: data needs to have information about the error
-                                console.log("error trying to update");
+                                    });
+                                }else {
+                                    //TODO error message: data needs to have information about the error
+                                    console.log("error trying to update");
+                                }
                             });
-
                         });
                     });
                 }

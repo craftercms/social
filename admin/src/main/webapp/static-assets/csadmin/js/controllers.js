@@ -4,62 +4,30 @@ angular.module('moderationDashboard.controllers', []).
     /**
      * AppCtrl
      * main controller
-     *  contains tenant, default moderation status and the list of moderations
-     *  all this variables are in properties files
-     */
-    controller('AppCtrl', ['$scope', 'Api', '$http', function (scope, api, http) {
-        scope.confObj = {};
-        scope.moderationList = [];
-
-        var getAppConf = function () {
-            api.defaultTenant.get(function (conf) {
-                if (conf) {
-                    scope.confObj = {
-                        tenant: conf.tenant,
-                        defaultModeration: conf.moderation.toUpperCase(),
-                        pagination: conf.pagination
-                    };
-                }else {
-                    //TODO: error message, no tenant was provide
-                    console.error("Tenant was not provided");
-                }
-            });
-        };
-
-        var getModerationList = function () {
-            api.moderationAction.query(function (moderationList) {
-                if ( moderationList !== undefined && moderationList.length > 0 ){
-                    scope.moderationList = moderationList;
-                }else{
-                    //TODO: error message, no moderation status provided
-                    console.error("Moderation Status was not provided");
-                }
-            });
-        };
-
-        getAppConf();
-        getModerationList();
+     **/
+    controller('AppCtrl', ['$scope', function (scope) {
 
     }]).
     /**
      * Moderation Dashboard Controller
      * - get UGCs by moderation status
      **/
-    controller('UgcListCtrl', ['$scope', 'Api', '$routeParams', '$http', function(scope, api, rp, http) {
+    controller('UgcListCtrl', ['$scope', '$routeParams', 'ConfigurationData', 'UgcApi',  function(scope, rp, ConfigurationData, UgcApi) {
         scope.ugcList = [];
         scope.status = "";
         scope.moderationActions = [];
-
+        scope.confObj = ConfigurationData.getConfData();
+        scope.moderationList = ConfigurationData.getModerationActions();
 
         //set actual status
         var setStatus = function () {
-            scope.status = rp.moderationStatus ? rp.moderationStatus.toUpperCase() : scope.confObj.defaultModeration;
+            scope.status = rp.moderationStatus ? rp.moderationStatus.toUpperCase() : scope.confObj.moderation;
         };
 
         // set the active tab
         var getModerationList = function () {
             angular.forEach(scope.moderationList, function (moderationObj) {
-                if (scope.status.toLocaleLowerCase() === moderationObj.moderation.toLowerCase()) {
+                if (scope.status.toLowerCase() === moderationObj.moderation.toLowerCase()) {
                     moderationObj.state = 'active';
                 }else{
                     moderationObj.state = '';
@@ -76,38 +44,43 @@ angular.module('moderationDashboard.controllers', []).
                 pageSize: scope.confObj.pagination.commentsPerPage
             };
 
-            api.Ugc.query(conf, function (list) {
-                var txtContent = {},
-                    tmpList = [];
+            UgcApi.getUgcList(conf).then(function (data) {
+                if (data) {
+                    var txtContent = {},
+                        tmpList = [];
 
-                angular.forEach(list, function (ugc){
-                    txtContent = angular.fromJson(ugc.textContent);
-                    tmpList.push({
-                        'title': txtContent.title,
-                        'id': ugc.id,
-                        'textContent': scope.getTextFromhtml(txtContent.content),
-                        'moderationStatus': ugc.moderationStatus,
-                        'completeContent': txtContent.content,
-                        'dateAdded': scope.getDateTime(ugc.dateAdded),
-                        'userName': ugc.profile.userName,
-                        'userMail': ugc.profile.email,
-                        'targetUrl': 'target Url',
-                        'targetTitle': 'target Title',
-                        'updated': false,
-                        'updateMessage': "",
-                        'alertClass': "",
-                        'undo': false
+                    angular.forEach(data, function (ugc){
+                        txtContent = angular.fromJson(ugc.textContent);
+                        tmpList.push({
+                            'title': txtContent.title,
+                            'id': ugc.id,
+                            'textContent': scope.getTextFromhtml(txtContent.content),
+                            'moderationStatus': ugc.moderationStatus,
+                            'completeContent': txtContent.content,
+                            'dateAdded': scope.getDateTime(ugc.dateAdded),
+                            'userName': ugc.profile.userName,
+                            'userMail': ugc.profile.email,
+                            'targetUrl': 'target Url',
+                            'targetTitle': 'target Title',
+                            'updated': false,
+                            'updateMessage': "",
+                            'alertClass': "",
+                            'undo': false
+                        });
                     });
-                });
 
-                scope.ugcList = tmpList;
+                    scope.ugcList = tmpList;
 
-                //if no results available a information messsage will be displayed
-                if (scope.ugcList.length > 0) {
-                    scope.displayUgcs = true;
+                    //if no results available a information messsage will be displayed
+                    if (scope.ugcList.length > 0) {
+                        scope.displayUgcs = true;
+                    }else {
+                        scope.displayUgcs = false;
+                        scope.infoMessage = "No results found";
+                    }
                 }else {
                     scope.displayUgcs = false;
-                    scope.infoMessage = "No results found";
+                    scope.infoMessage = "error, Comments were not found";
                 }
             });
         };
@@ -156,11 +129,14 @@ angular.module('moderationDashboard.controllers', []).
 
         //handler when undo is clicked
         scope.reverseAction = function (event, id) {
-            http({
-                method: 'POST',
-                url: "/crafter-social/api/2/ugc/moderation/" + id + "/status.json?moderationStatus=" + scope.status + "&tenant=" + scope.confObj.tenant,
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-            }).success(function (data) {
+            var conf = {
+                moderationid : id,
+                moderationstatus: scope.status,
+                tenant: scope.confObj.tenant
+            };
+
+            UgcApi.updateUgc(conf).then(function (data) {
+                if (data) {
                     angular.forEach(scope.ugcList, function (ugc, index) {
                         if (ugc.id === data.id) {
                             scope.ugcList[index].updated = false;
@@ -169,12 +145,10 @@ angular.module('moderationDashboard.controllers', []).
                             scope.ugcList[index].undo = false;
                         }
                     });
-                }).error(function (data) {
-                    scope.$parent.ugcList[index].updated = true;
-                    scope.$parent.ugcList[index].updateMessage = "Error trying to update"
-                    scope.$parent.ugcList[index].alertClass = "error";
-                });
-
+                }else {
+                    console.log("error trying to bulk update");
+                }
+            });
         };
 
         setStatus();
@@ -187,7 +161,7 @@ angular.module('moderationDashboard.controllers', []).
     /**
      * bulk action controller
      */
-    controller('BulkActionCtrl', ['$scope', '$http', function (scope, http) {
+    controller('BulkActionCtrl', ['$scope', 'UgcApi', function (scope, UgcApi) {
         //handler for bulk actions update
         scope.bulkUpdate = function (event) {
             var optionSelected = scope.bulkAction,
@@ -219,39 +193,43 @@ angular.module('moderationDashboard.controllers', []).
             }
 
             optionSelected = optionSelected.toUpperCase();
-            var ids = "&ids=";
-            ids += listItems.join("&ids=");
 
-            //TODO change for restangular
-            http({
-                method: 'POST',
-                url: "/crafter-social/api/2/ugc/moderation/update/status.json?moderationStatus=" + optionSelected + "&tenant=" + scope.confObj.tenant + ids
-            }).success(function (data) {
-                angular.forEach(data, function (item) {
-                    angular.forEach(scope.ugcList, function(ugc, index){
-                        if (item.id === ugc.id) {
-                            scope.ugcList[index].updated = true;
-                            scope.ugcList[index].updateMessage = scope.ugcList[index].title + " - " + scope.ugcList[index].dateAdded
-                            scope.ugcList[index].alertClass = "success";
-                            scope.ugcList[index].undo = true;
+            var conf = {
+                moderationstatus: optionSelected,
+                tenant: scope.confObj.tenant,
+                ids: listItems
+            };
 
-                            return;
-                        }
+            UgcApi.bulkUpdate(conf).then( function (data) {
+                if (data) {
+                    angular.forEach(data, function (item) {
+                        angular.forEach(scope.ugcList, function(ugc, index){
+                            if (item.id === ugc.id) {
+                                scope.ugcList[index].updated = true;
+                                scope.ugcList[index].updateMessage = scope.ugcList[index].title + " - " + scope.ugcList[index].dateAdded
+                                scope.ugcList[index].alertClass = "success";
+                                scope.ugcList[index].undo = true;
+
+                                return;
+                            }
+                        });
                     });
-                });
-            }).error(function (data) {
-                angular.forEach(data, function (item) {
-                    angular.forEach(scope.ugcList, function(ugc, index){
-                        if (item.id === ugc.id) {
-                            scope.ugcList[index].updated = true;
-                            scope.ugcList[index].updateMessage = "Error trying to update"
-                            scope.ugcList[index].alertClass = "error";
+                }else {
+                    console.error("error bulk update");
+                    angular.forEach(data, function (item) {
+                        angular.forEach(scope.ugcList, function(ugc, index){
+                            if (item.id === ugc.id) {
+                                scope.ugcList[index].updated = true;
+                                scope.ugcList[index].updateMessage = "Error trying to update"
+                                scope.ugcList[index].alertClass = "error";
 
-                            return;
-                        }
+                                return;
+                            }
+                        });
                     });
-                });
-            });
+                }
+            })
+
         };
 
         // handler for when a select option has been updated
