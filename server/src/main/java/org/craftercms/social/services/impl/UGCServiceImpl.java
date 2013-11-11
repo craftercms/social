@@ -847,5 +847,23 @@ public class UGCServiceImpl implements UGCService {
 			}
 		}
 	}
+    
+  private ObjectId[] saveUGCAttachments(MultipartFile[] files) {
+	  if (files != null) {
+	      ObjectId[] attacments = new ObjectId[files.length];
+	      try {
+	          for (int i = 0; i < files.length; i++) {
+	              attacments[i] = supportDataAccess.saveFile(files[i]);
+	          }
+	      } catch (IOException ex) {
+	          log.error("Unable to save the attachemnts ", ex);
+	          attacments = new ObjectId[] {};
+	      }
+	      return attacments;
+	  } else {
+	      return new ObjectId[] {};
+	  }
+	}
+
 
 }

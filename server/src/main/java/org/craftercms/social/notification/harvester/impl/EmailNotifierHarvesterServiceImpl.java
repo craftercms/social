@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	
 	private static final String DEFAULT_FREQUENCY = "instant";
-	private static final String DEFAULT_ACTION = "email";
+	private static final String EMAIL_ACTION = "email";
 	private static final String DEFAULT_SIGNATURE_EMAIL = "Crafter Team";
 	
 	//Email arguments that could be used by the freemarker template
@@ -57,6 +57,8 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	
 	private int pageSize;
 	
+	private Map<String, String> emailParameters;
+	
 	public EmailNotifierHarvesterServiceImpl() {
 		frequency = DEFAULT_FREQUENCY;
 		this.pageSize = DEFAULT_PAGE_SIZE;
@@ -64,6 +66,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		actionToDisplay = initActionsToDisplay();
 		signatureEmail = DEFAULT_SIGNATURE_EMAIL;
 		pageManagement = new PageManagement();
+		emailParameters = new HashMap();
 	}
 	
 	private Map<String, String> initActionsToDisplay() {
@@ -84,7 +87,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		
 		boolean isDone = initPageManagement();
 		while(!isDone) {
-			notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency, transmitedStatus.toString(), DEFAULT_ACTION, pageManagement.getStart(), pageManagement.getEnd());
+			notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency, transmitedStatus.toString(), EMAIL_ACTION, pageManagement.getStart(), pageManagement.getEnd());
 			
 			if (notificationList != null && notificationList.size() > 0) {
 				if (log.isDebugEnabled()) {
@@ -228,6 +231,8 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		templateArgs.put(EVENT_USERNAME,notification.getEvent().getProfile().getUserName());
 		templateArgs.put(EVENT_USER_EMAIL,notification.getEvent().getProfile().getEmail());
 		templateArgs.put(EVENT_DATE,notification.getEvent().getAuditDate());
+		
+		templateArgs.putAll(this.emailParameters);
 
 		return templateArgs;
 	}
@@ -238,6 +243,16 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 
 	public void setPageSize(int pageSize) {
 		this.pageSize = pageSize;
+	}
+
+	public Map<String, String> getEmailParameters() {
+		return emailParameters;
+	}
+
+	public void setEmailParameters(Map<String, String> emailParameters) {
+		if (emailParameters!=null) {
+			this.emailParameters = emailParameters;
+		}
 	}
 
 }

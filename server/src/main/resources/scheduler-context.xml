@@ -13,6 +13,11 @@
 	    <property name="emailSubject" value="${crafter.social.notification.instant.mail.subject}"/>
 	    <property name="emailText" value="${crafter.social.notification.instant.text.body}"/>
 	    <property name="pageSize" value="15"/>
+	    <property name="emailParameters">
+           <map>
+				<entry key="test" value="social value" />
+			</map>
+         </property>
 	</bean>
 
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
