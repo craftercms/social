@@ -10,15 +10,13 @@ $icon-base-class:         '#{$app-namespace}-icon' !default;
 $icon-item-class:         'cs-icon';
 
 // --------------------------------------------------
-// --------------------------------------------------
 // Override bootstrap variables here. ---------------
-// --------------------------------------------------
-// --------------------------------------------------
 
 // Iconography
-// -------------------------
-
 $icon-font-path:          '../libs/sass-bootstrap/fonts/' !default;
+
+// End bootstrap overrides. -------------------------
+// --------------------------------------------------
 
 @import 'sass-bootstrap/lib/variables';
 
