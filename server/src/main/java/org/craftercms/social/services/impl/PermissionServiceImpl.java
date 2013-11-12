@@ -91,6 +91,22 @@ public class PermissionServiceImpl implements PermissionService {
 		}
 		return query;
 	}
+//	@Override
+//	public Query getQuery(ActionEnum action, Profile p) {
+//		String[] roles = {};
+//		if (p.getRoles() != null) {
+//			roles = p.getRoles().toArray(new String[p.getRoles().size()]);
+//		}
+//		Query query = new Query();
+//		if (isSuperAdmin(roles)) {
+//			query.addCriteria(Criteria.where("actions.name").is(action.toString().toLowerCase()));
+//		} else if (roles!= null) {
+//			 query.addCriteria(Criteria.where("actions").elemMatch(
+//					Criteria.where("name").is(action.toString().toLowerCase())
+//						.and("roles").in(roles)));
+//		}
+//		return query;
+//	}
 	
 	public List<UGC> checkGrantedPermission(ActionEnum action, List<UGC> list, String profileId) {
 		List<UGC> grantedList = new ArrayList<UGC>();

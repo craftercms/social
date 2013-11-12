@@ -16,7 +16,6 @@
  */
 package org.craftercms.social.services.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,16 +62,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Component
 public class UGCServiceImpl implements UGCService {
 
@@ -107,7 +96,7 @@ public class UGCServiceImpl implements UGCService {
     public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant, int page, int pageSize, String sortField, String sortOrder) {
         log.debug("Looking for Users with status %s and tenant %s", moderationStatus, tenant);
         return findUGCs(new String[] {
-    			 moderationStatus.toString() },tenant,null, page, pageSize, sortField, sortOrder);
+    			 moderationStatus.toString() },tenant,null, page, pageSize, sortField, sortOrder, ActionEnum.MODERATE);
     }
 
     @Override
@@ -141,9 +130,11 @@ public class UGCServiceImpl implements UGCService {
         UGC ugc = null;
         if (existsUGC(ugcId)) {
             ugc = uGCRepository.findOne(ugcId);
+            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
             ugc.setLastModifiedDate(new Date());
             this.uGCRepository.save(ugc);
+            
             ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             //Audit call
             auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
@@ -206,7 +197,6 @@ public class UGCServiceImpl implements UGCService {
         return ugc.getAttachmentsList().findObjectId(file);
 
     }
-
 
     @Override
     public UGC updateModerationStatus(ObjectId uGCId, ModerationStatus newStatus, String tenant, String profileId) {
@@ -405,7 +395,7 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public List<UGC> findByModerationStatusAndTargetId(ModerationStatus moderationStatus, String tenant, String target, int page, int pageSize, String sortField, String sortOrder) {
     	return findUGCs(new String[] {
-    			 moderationStatus.toString() },tenant,target, page, pageSize, sortField, sortOrder);
+    			 moderationStatus.toString() },tenant,target, page, pageSize, sortField, sortOrder, ActionEnum.MODERATE);
     }
 
     @SuppressWarnings("unchecked")
@@ -418,12 +408,12 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public List<UGC> findByTarget(String tenant, String target, int page, int pageSize, String sortField, String sortOrder) {
-    	return findUGCs(null,tenant,target, page, pageSize, sortField, sortOrder);
+    	return findUGCs(null,tenant,target, page, pageSize, sortField, sortOrder, ActionEnum.READ);
     }
 
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, String sortField, String sortOrder) {
-    	return findUGCs(getModerationFilter(tenant, profileId),tenant,target,-1, -1, sortField, sortOrder);
+    	return findUGCs(getModerationFilter(tenant, profileId),tenant,target,-1, -1, sortField, sortOrder, ActionEnum.READ);
     }
 
     
@@ -791,8 +781,8 @@ public class UGCServiceImpl implements UGCService {
 	}
 
 	private List<UGC> findUGCs(String[] moderationStatus, final String tenant,String target, int page, int pageSize,
-			String sortField, String sortOrder) {
-		List<UGC> grantedList = uGCRepository.findUGCs(tenant, target, moderationStatus, ActionEnum.READ, page, pageSize, sortField, sortOrder);
+			String sortField, String sortOrder, ActionEnum action) {
+		List<UGC> grantedList = uGCRepository.findUGCs(tenant, target, moderationStatus, action, page, pageSize, sortField, sortOrder);
     	 return populateUGCListWithProfiles(grantedList);
     }
 	
