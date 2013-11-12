@@ -86,7 +86,7 @@
             widget: [
                 '<li class="subordinate">',
                     '<a data-activate-widget="{{guid}}">',
-                        '<i class="glyphicon glyphicon-{{icon}}"></i> {{title}}',
+                        '<i class="crafter-social-icon cs-icon-{{icon}}"></i> {{title}}',
                     '</a>',
                 '</li>'
             ].j()

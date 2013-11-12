@@ -8,8 +8,8 @@
     Class = Superclass.extend({
 
         icons: {
-            reveal: 'glyphicon-eye-close',
-            hover: 'glyphicon-eye-open'
+            reveal: 'cs-icon-eye-close',
+            hover: 'cs-icon-eye-open'
         },
 
         icon: 'eye-close',
