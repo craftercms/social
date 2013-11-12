@@ -200,7 +200,7 @@ public class UGCRestController {
     public UGC addAttachments(HttpServletRequest request,
                          @PathVariable final String ugcId,
                          @RequestParam final String tenant,
-                         @RequestParam(required = false) MultipartFile[] attachments) throws PermissionDeniedException, AttachmentErrorException {
+                         @RequestParam(required = true) MultipartFile[] attachments) throws PermissionDeniedException, AttachmentErrorException {
 
         return ugcService.addAttachments(new ObjectId(ugcId), attachments, tenant, getProfileId());
     }
