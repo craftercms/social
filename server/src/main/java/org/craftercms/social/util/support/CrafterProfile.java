@@ -25,6 +25,7 @@ public interface CrafterProfile {
 	Profile authenticateAnonymous();
 	String getAppToken();
 	Profile getProfile(String profileId);
+	Profile getProfile(String profileId, List<String> attributes);
 	List<Profile> getProfilesByIds(List<String> profileIds);
 	Tenant getTenant(String tenantName);
 	void resetAppToken();

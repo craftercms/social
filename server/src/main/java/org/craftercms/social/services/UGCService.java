@@ -150,5 +150,7 @@ public interface UGCService {
 
 	AttachmentModel addAttachment(ObjectId objectId, MultipartFile attachment,
 			String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException;
+
+	UGC findById(ObjectId ugcId, List<String> attributes);
 	
 }

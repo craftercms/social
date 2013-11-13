@@ -1,5 +1,6 @@
 package org.craftercms.social.util.support.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -188,6 +189,28 @@ public class CrafterProfileImpl implements CrafterProfile {
 				ANONYMOUS_USER, crafterProfileAppTenantName);
 
 		return profile;
+	}
+
+	@Override
+	public Profile getProfile(String profileId, List<String> attributes) {
+		if (profileId == null || profileId.equals("") || profileId.equalsIgnoreCase("anonymous")) {
+			return ProfileConstants.ANONYMOUS;
+		} else if (attributes==null) {
+			attributes = new ArrayList<String>();
+		}
+
+		try {
+			return client.getProfileWithAttributes(getAppToken(), profileId, attributes);
+		} catch (AppAuthenticationException e) {
+			try {
+				synchronized (lock) {
+					init();
+				}
+			} catch (AppAuthenticationFailedException e1) {
+				log.error(NOT_GET_APP_TOKEN, e);
+			}
+			return client.getProfileWithAttributes(getAppToken(), profileId, attributes);
+		}
 	}
 
 }

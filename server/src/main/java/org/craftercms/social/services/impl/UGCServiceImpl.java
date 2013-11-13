@@ -554,12 +554,17 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC findById(ObjectId ugcId) {
-        UGC ugc = uGCRepository.findOne(ugcId);
-        if (ugc == null) {
-        	return null;
-        }
-        ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
-        return populateUGCWithProfile(ugc);
+        return findById(ugcId, null);
+    }
+    
+    @Override
+    public UGC findById(ObjectId ugcId, List<String> profileAttributes) {
+    	UGC ugc = uGCRepository.findOne(ugcId);
+    	if (ugc == null) {
+    		return null;
+    	}
+    	ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
+    	return populateUGCWithProfile(ugc, profileAttributes);
     }
     
         @Override
@@ -767,7 +772,7 @@ public class UGCServiceImpl implements UGCService {
         return ugcList;
     }
 
-    private UGC populateUGCWithProfile(UGC ugc) {
+    private UGC populateUGCWithProfile(UGC ugc, List<String> attributes) {
     	if (isProfileSetable(ugc)) {
     		ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
     	} else {
@@ -776,6 +781,9 @@ public class UGCServiceImpl implements UGCService {
     		ugc.setProfileId(null);
     	}
         return ugc;
+    }
+    private UGC populateUGCWithProfile(UGC ugc) {
+    	return populateUGCWithProfile(ugc, null);
     }
 
     private AttachmentsList getAttachmentsList(ObjectId[] attachmentsId, String tenant) {
