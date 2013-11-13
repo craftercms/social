@@ -50,6 +50,7 @@ public class UGC implements Hierarchical<UGC> {
 	private ObjectId id;
 	private ObjectId parentId;
 	private String textContent;
+	@Transient
 	private AttachmentsList attachmentsList;
 	private ObjectId[] attachmentId;
 	private List<Action> actions;
