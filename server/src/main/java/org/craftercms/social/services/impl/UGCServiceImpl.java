@@ -19,6 +19,7 @@ package org.craftercms.social.services.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -141,6 +142,27 @@ public class UGCServiceImpl implements UGCService {
         }
         return ugc;
     }
+    
+    @Override
+    public AttachmentModel addAttachment(ObjectId ugcId, MultipartFile attachment, String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException {
+    	
+    	attachment = scanFileForVirus(attachment);
+        UGC ugc = null;
+        AttachmentModel attachmentModel = null;
+        if (existsUGC(ugcId)) {
+            ugc = uGCRepository.findOne(ugcId);
+            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+            ugc.setAttachmentId(updateUGCAttachment(ugc, attachment));
+            ugc.setLastModifiedDate(new Date());
+            this.uGCRepository.save(ugc);
+            
+            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+            //Audit call
+            auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
+            attachmentModel = ugc.getAttachmentsList().getAttachment(attachment.getOriginalFilename());
+        }
+        return attachmentModel;
+    }
 
     @Override
     public void deleteUgc(ObjectId ugcId, String tenant, String profileId) throws PermissionDeniedException{
@@ -191,6 +213,32 @@ public class UGCServiceImpl implements UGCService {
         } else {
             return new ObjectId[] {};
         }
+    }
+    private ObjectId[] updateUGCAttachment(UGC ugc, MultipartFile file) {
+    	List<ObjectId> listAttachments = new ArrayList<ObjectId>();
+    	if (file != null) {
+    		ObjectId attachmentId = null;
+    		 
+    		if (ugc.getAttachmentId()!=null) {
+    			Collections.addAll(listAttachments, ugc.getAttachmentId());
+    		}
+    		attachmentId = getAttachedId(file, ugc);
+			if (attachmentId == null) {
+				try {
+					attachmentId = supportDataAccess.saveFile(file);
+					listAttachments.add(attachmentId);
+					
+				} catch (IOException e) {
+					log.error("Unable to save the attachemnt ", e);
+	                attachmentId = new ObjectId();
+				}
+			} 
+    		
+			return listAttachments.toArray(new ObjectId[listAttachments.size()]);
+    	} else {
+    		
+    		return ugc.getAttachmentId();
+    	}
     }
 
     private ObjectId getAttachedId(MultipartFile file, UGC ugc) {
@@ -280,23 +328,6 @@ public class UGCServiceImpl implements UGCService {
         auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, ugc.getTenant(), ugc.getProfileId(), null);
         return ugcWithProfile;
     }
-
-//    private ObjectId[] saveUGCAttachments(MultipartFile[] files) {
-//        if (files != null) {
-//            ObjectId[] attacments = new ObjectId[files.length];
-//            try {
-//                for (int i = 0; i < files.length; i++) {
-//                    attacments[i] = supportDataAccess.saveFile(files[i]);
-//                }
-//            } catch (IOException ex) {
-//                log.error("Unable to save the attachemnts ", ex);
-//                attacments = new ObjectId[] {};
-//            }
-//            return attacments;
-//        } else {
-//            return new ObjectId[] {};
-//        }
-//    }
 
     @Override
     public boolean existsUGC(ObjectId id) {
@@ -594,12 +625,25 @@ public class UGCServiceImpl implements UGCService {
 		}
 		MultipartFileClone[] multipartFileClone = new MultipartFileClone[attachments.length];
 		for (int i = 0; i < multipartFileClone.length; i++) {
-			try {
-				multipartFileClone[i] = new MultipartFileClone(attachments[i]);
-			} catch (IOException e) {
-				throw new AttachmentErrorException(e);
-			}
+			multipartFileClone[i] =cloneMultipartFile(attachments[i]);
 		}
+		return multipartFileClone;
+	}
+	
+	/**
+	 *  Clone files so they could be used for virus scanning and further for storing by the UGC service
+	 * @param attachments
+	 * @return cloned files MultipartFile[] that can be used multiple times
+	 * @throws AttachmentErrorException
+	 */
+	protected MultipartFileClone cloneMultipartFile(MultipartFile attachment) throws AttachmentErrorException {
+		MultipartFileClone multipartFileClone = null;
+		try {
+			multipartFileClone = new MultipartFileClone(attachment);
+		} catch (IOException e) {
+			throw new AttachmentErrorException(e);
+		}
+		
 		return multipartFileClone;
 	}
 
@@ -637,6 +681,39 @@ public class UGCServiceImpl implements UGCService {
         log.debug("Successful scanning: The attachments are clean");
 
 		return multipartFileClones;
+	}
+	
+	/**
+	 * If the virus scanner service is implemented (e.g it is not the default crafter null scanner service) this
+     * method scans the multipartfile attachment looking for viruses. A clone of the multipart file is used
+     * for the scanning so they can be read later if needed).
+	 * @param attachments
+	 * @return  MultipartFile (the clone if the scanning is performed or the original if it is not)
+	 * @throws AttachmentErrorException if a threat is found or scan fails
+	 */
+	protected MultipartFile scanFileForVirus(MultipartFile attachment) throws AttachmentErrorException {
+		if (virusScannerService.isNullScanner()) {
+            log.debug("Virus scanning is disabled");
+			return attachment;
+		}
+
+        log.debug("Scanning one attachment");
+
+        String errorMessage = "";
+
+		MultipartFileClone multipartFileClone = cloneMultipartFile(attachment);
+
+    
+        errorMessage = virusScannerService.scan(multipartFileClone.getTempFile(),multipartFileClone.getOriginalFilename());
+        if(errorMessage != null){
+            log.error(errorMessage);
+            throw new AttachmentErrorException(errorMessage);
+        }
+        
+
+        log.debug("Successful scanning: The attachments are clean");
+
+		return multipartFileClone;
 	}
 
     private List<UGC> populateUGCListWithProfiles(List<UGC> ugcList) {
@@ -838,21 +915,15 @@ public class UGCServiceImpl implements UGCService {
 		}
 	}
     
-  private ObjectId[] saveUGCAttachments(MultipartFile[] files) {
-	  if (files != null) {
-	      ObjectId[] attacments = new ObjectId[files.length];
-	      try {
-	          for (int i = 0; i < files.length; i++) {
-	              attacments[i] = supportDataAccess.saveFile(files[i]);
-	          }
-	      } catch (IOException ex) {
-	          log.error("Unable to save the attachemnts ", ex);
-	          attacments = new ObjectId[] {};
-	      }
-	      return attacments;
-	  } else {
-	      return new ObjectId[] {};
-	  }
+	@Override
+	public List<AttachmentModel> getAttachments(ObjectId objectId, String tenant) {
+		List<AttachmentModel> result = null;
+		UGC ugc = uGCRepository.findOne(objectId);
+		if (ugc!= null) {
+			 ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+			 result = ugc.getAttachmentsList().flattenAttachments();
+		}
+		return result;
 	}
 
 

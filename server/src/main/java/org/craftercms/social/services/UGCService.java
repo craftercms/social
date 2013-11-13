@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 
+import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
@@ -144,5 +145,10 @@ public interface UGCService {
 			String tenant);
 
 	List<UGC> findByParentId(ObjectId id);
+
+	List<AttachmentModel> getAttachments(ObjectId objectId, String tenant);
+
+	AttachmentModel addAttachment(ObjectId objectId, MultipartFile attachment,
+			String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException;
 	
 }
