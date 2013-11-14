@@ -781,7 +781,7 @@ public class UGCServiceImpl implements UGCService {
 
     private UGC populateUGCWithProfile(UGC ugc, List<String> attributes) {
     	if (isProfileSetable(ugc)) {
-    		ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
+    		ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
     	} else {
     		Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null,null,null, null, true);
     		ugc.setProfile(anonymousProfile);
