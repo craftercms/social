@@ -26,8 +26,8 @@ public class UGCRequest {
     private String targetUrl;
     private String targetDescription;
 
-//    private String textContent;
-    private String content;
+    private String textContent;
+    //private String content;
 
     private MultipartFile[] attachments;
     private Boolean anonymousFlag = false;
@@ -84,12 +84,12 @@ public class UGCRequest {
         this.targetDescription = targetDescription;
     }
 
-    public String getContent() {
-        return content;
+    public String getTextContent() {
+        return textContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setTextContent(String textContent) {
+        this.textContent = textContent;
     }
 
     public MultipartFile[] getAttachments() {

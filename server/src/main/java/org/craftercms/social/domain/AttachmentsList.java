@@ -83,4 +83,26 @@ public class AttachmentsList {
 		return IMAGE_CONTENT_TYPE.contains(contentType);
 	}
 
+	public List<AttachmentModel> flattenAttachments() {
+		List<AttachmentModel> list = new ArrayList<AttachmentModel>();
+		list.addAll(this.imageAttach);
+		list.addAll(this.videoAttach);
+		list.addAll(this.regularAttach);
+		return list;
+	}
+
+	public AttachmentModel getAttachment(String fileName) {
+		List<AttachmentModel> aml = flattenAttachments();
+		AttachmentModel model = null;
+		for (AttachmentModel a: aml) {
+			if (a.getFilename().equals(fileName)) {
+				model = a;
+				break;
+			}
+		}
+		return model;
+	}
+	
+	
+
 }

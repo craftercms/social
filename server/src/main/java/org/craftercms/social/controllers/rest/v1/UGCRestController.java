@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.controllers.rest.v1.to.UGCRequest;
+import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.exceptions.AttachmentErrorException;
@@ -190,7 +191,7 @@ public class UGCRestController {
                          HttpServletRequest request) throws PermissionDeniedException, AttachmentErrorException {
 
         return ugcService.updateUgc(new ObjectId(ugcRequest.getUgcId()), ugcRequest.getTenant(), ugcRequest.getTargetId(), getProfileId(),
-                ugcRequest.getParentId()==null?null:new ObjectId(ugcRequest.getParentId()), ugcRequest.getContent(),
+                ugcRequest.getParentId()==null?null:new ObjectId(ugcRequest.getParentId()), ugcRequest.getTextContent(),
                 ugcRequest.getAttachments(), ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription());
 
 	}
@@ -203,6 +204,26 @@ public class UGCRestController {
                          @RequestParam(required = true) MultipartFile[] attachments) throws PermissionDeniedException, AttachmentErrorException {
 
         return ugcService.addAttachments(new ObjectId(ugcId), attachments, tenant, getProfileId());
+    }
+    
+    @RequestMapping(value = "/{ugcId}/add_attachment", method = RequestMethod.POST)
+    @ModelAttribute
+    public AttachmentModel addAttachments(HttpServletRequest request,
+                         @PathVariable final String ugcId,
+                         @RequestParam final String tenant,
+                         @RequestParam(required = true) MultipartFile attachment) throws PermissionDeniedException, AttachmentErrorException {
+
+        return ugcService.addAttachment(new ObjectId(ugcId), attachment, tenant, getProfileId());
+    }
+    
+    @RequestMapping(value = "/{ugcId}/get_attachments", method = RequestMethod.GET)
+    @ModelAttribute
+    public List<AttachmentModel> getAttachments(HttpServletRequest request,
+                         @PathVariable final String ugcId,
+                         @RequestParam(required = true) final String tenant
+                        ) throws PermissionDeniedException, AttachmentErrorException {
+
+        return ugcService.getAttachments(new ObjectId(ugcId), tenant);
     }
 	
 	@RequestMapping(value = "/delete/{ugcId}", method = RequestMethod.POST)

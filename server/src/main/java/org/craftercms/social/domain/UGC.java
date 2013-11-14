@@ -117,7 +117,7 @@ public class UGC implements Hierarchical<UGC> {
 	}
 
     public UGC(UGCRequest ugcRequest, String profileId) {
-        this(ugcRequest.getContent(), profileId, ugcRequest.getTenant(), ugcRequest.getTargetId(),
+        this(ugcRequest.getTextContent(), profileId, ugcRequest.getTenant(), ugcRequest.getTargetId(),
                 ugcRequest.getParentId() == null ? null : new ObjectId(ugcRequest.getParentId()), ugcRequest.getAttributes(),
                 ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription());
 

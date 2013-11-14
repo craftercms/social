@@ -271,4 +271,10 @@ public class CrafterProfileTest implements CrafterProfile {
 		}
 	}
 
+	@Override
+	public Profile getProfile(String profileId, List<String> attributes) {
+		
+		return createAdminUser();
+	}
+
 }

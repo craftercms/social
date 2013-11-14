@@ -37,5 +37,10 @@
         <property name="authenticationTokenCache" ref="crafter.authenticationTokenCache"/>
         <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
+    
+    <bean id="crafter.authenticationRequiredHandler"
+          class="org.craftercms.security.authentication.impl.AuthenticationRequiredHandlerImpl">
+        <property name="loginFormUrl" value=""/>
+    </bean>
 
 </beans>

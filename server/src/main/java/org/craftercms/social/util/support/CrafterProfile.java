@@ -19,14 +19,13 @@ package org.craftercms.social.util.support;
 import java.util.List;
 
 import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.impl.domain.Subscriptions;
-import org.craftercms.profile.impl.domain.Target;
 import org.craftercms.profile.impl.domain.Tenant;
 
 public interface CrafterProfile {
 	Profile authenticateAnonymous();
 	String getAppToken();
 	Profile getProfile(String profileId);
+	Profile getProfile(String profileId, List<String> attributes);
 	List<Profile> getProfilesByIds(List<String> profileIds);
 	Tenant getTenant(String tenantName);
 	void resetAppToken();
