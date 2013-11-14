@@ -119,6 +119,7 @@
         templates: {
             form: ('%@auth-form.hbs').fmt(S.Cfg('url.templates')),
             submit: '<button data-indentifyme="submitBtn" class="btn btn-primary">Submit</button>',
+            /* jshint -W015 */
             message: [
                 '<div class="alert alert-{{type}}">',
                     '<i class="crafter-social-icon cs-icon-{{icon}}"></i> {{html message}}',
