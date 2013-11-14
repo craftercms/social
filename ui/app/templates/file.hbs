@@ -1,0 +1,31 @@
+<div class="cs-file">
+    <button class="btn btn-default pull-right" data-action="detach">
+        <i class="crafter-social-icon cs-icon-trash"></i>
+    </button>
+    <div class="cs-file-thumb"></div>
+    <div class="cs-file-info">
+        <div class="cs-file-title">
+            <a href="{{#if url}}{{url}}{{else}}javscript:{{/if}}" target="_blank">
+                {{#if filename}}
+                    {{filename}}
+                {{else}}
+                    {{file.name}}
+                {{/if}}
+            </a>
+        </div>
+        <div class="cs-file-data">
+            {{#if contentType}}
+                {{contentType}}
+            {{else}}
+                {{file.type}}, {{divide file.size 1024}} KB
+            {{/if}}
+        </div>
+    </div>
+</div>
+<div class="cs-file-upload">
+    <div class="progress">
+        <div class="progress-bar" role="progressbar">
+            <span class="sr-only">0% Complete</span>
+        </div>
+    </div>
+</div>

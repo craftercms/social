@@ -12,9 +12,13 @@
         return new Handlebars.SafeString(html);
     });
 
-    /*Handlebars.registerHelper('render', function( tmpl, context ) {
-        return new Handlebars.SafeString(tmpl);
-    });*/
+    Handlebars.registerHelper('round', function( value ) {
+        return new Handlebars.SafeString(Math.round(value));
+    });
+
+    Handlebars.registerHelper('divide', function( x, y ) {
+        return new Handlebars.SafeString(Math.round(x / y));
+    });
 
     Handlebars.registerHelper('date', function( millis ) {
 

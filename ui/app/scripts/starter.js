@@ -3,7 +3,7 @@
     'use strict';
 
     var ready   = S.window.crafterSocial_onAppReady,
-        params  = [ S.get(S.Cfg('director')) || S.get(S.Cfg('director'), window), S ];
+        params  = [ S.getDirector(), S ];
 
     if ( S.util.isArray(ready) ) {
 

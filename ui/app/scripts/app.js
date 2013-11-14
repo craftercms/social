@@ -72,6 +72,11 @@
 
     crafter.amd('crafter', crafter, true);
 
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    // Director class instance (singleton)
+    var director;
+
     crafter.define('social', {
 
         window: window,
@@ -102,15 +107,45 @@
         },
 
         socialise: function () {
-            // var args = arguments, Director = social.get('crafter.social.component.Director');
-            // Director.socialise.apply(Director, args);
-            // TODO ... should the app publish this from its root ?
+            var D = this.getDirector();
+            D.socialise.apply(D, arguments);
         },
 
-        url: function ( url ) {
+        resource: function ( url ) {
             return ('%@%@'.fmt(this.Cfg('url.base'), url));
+        },
+
+        url: function ( url, formats ) {
+
+            var service     = this.Cfg('url.service');
+            var protocol    = (service.match(URL_PROTOCOL_REGEXP) || [''])[0];
+
+            return protocol + this.string.fmt(
+                '{base}/{path}/{action}', {
+                    base: service.substr(protocol.length),
+                    path: url.replace(/\./g, '/'),
+                    action: this.Cfg('url.' + url)
+                })
+                .replace('/.json', '.json')
+                .replace(/[\/\/]+/g, '/')
+                .fmt(formats || {});
+
+        },
+
+        getDirector: function (  ) {
+            if (!director) {
+
+                var direction   = this.Cfg('director');
+                var Director    = this.get(direction.cls);
+
+                director = new Director(direction.cfg);
+
+            }
+            return director;
         }
 
     });
+
+    var URL_PROTOCOL_REGEXP = /^(https?:)?\/\//i;
 
 }) (window);

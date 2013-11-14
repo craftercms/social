@@ -91,73 +91,24 @@
             } else {
                 return false;
             }
-        }
+        },
+
+        checkJSON: (function () {
+            var exp1 = /^[\],:{}\s]*$/,
+                exp2 = /\\["\\\/bfnrtu]/g,
+                exp3 = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
+                exp4 = /(?:^|:|,)(?:\s*\[)+/g;
+            return function (string) {
+                return exp1.test(
+                    string
+                        .replace(exp2, '@')
+                        .replace(exp3, ']')
+                        .replace(exp4, '')
+                );
+            };
+        }) ()
 
     }), false);
-
-    (function (S) {
-
-        var _ = {
-            /**
-             * The director class. Path can be relative to the social namespace or global.
-             */
-            director: 'component.Director',
-            /**
-             * URL configurations
-             */
-            url: {
-                base: '/',
-                service: '/fixtures/api/2/',
-                templates: 'templates/'
-            }
-        };
-
-        S.define('Cfg', function ( key, value ) {
-            if ( arguments.length === 1 ) {
-                return S.get(key, _);
-            } else {
-                S.define(key, value, _, false);
-                return true;
-            }
-        }, 'social.Cfg');
-
-        /* jshint -W106 */
-        var cfg = S.window.crafterSocial_cfg;
-        if ( typeof cfg !== 'undefined' ) {
-            S.$.each(cfg, function ( key, value ) {
-                S.Cfg(key, value);
-            });
-        }
-
-    }) (social);
-
-    (function (S) {
-
-        var _ = {
-
-            EVENT_AREAS_VISIBILITY_CHANGE: 'crater.social.event.areas.visibility.change',
-            AREA_VISIBILITY_MODE_REVEAL: 'area.visibility.mode.reveal',
-            AREA_VISIBILITY_MODE_HOVER: 'area.visibility.mode.hover',
-            AREA_VISIBILITY_MODE_HIDE: 'area.visibility.mode.hide'
-
-        };
-
-        S.define('Constants', {
-            get: function ( key ) { return _[key]; },
-            define: function ( key, value ) {
-                if ( !(key in _) ) {
-                    _[key] = value;
-                    return true;
-                } else {
-                    S.util.log(
-                        'Constant %@ is already defined (value: %@). Value not changed.',
-                        key, S.Constants.get(key));
-                    return true;
-                }
-            }
-        }, 'social.Constants');
-
-    }) (social);
 
     social.define('string', {
         fmt: function( str /* [ fmt1, fmt2, fm3 ] */ ) {

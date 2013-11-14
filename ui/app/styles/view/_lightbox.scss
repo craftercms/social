@@ -1,6 +1,5 @@
 
 // TODO find a way of embeding this into the lightbox view instead of the CSS "global scope"
-@import 'sass-bootstrap/lib/modals';
 
 .#{$app-namespace}-lightbox-view {
 
@@ -23,11 +22,10 @@
       }
 
       > .modal-comment-box {
-        margin-bottom: -5px;
 
         .comment-box-title {
           margin: 0;
-          padding: 10px 20px;
+          padding: 5px 20px;
           font-size: $font-size-large;
           border-bottom: 1px solid $popover-border-color;
           border-top-left-radius: $border-radius-large;
@@ -61,5 +59,20 @@
     }
 
   }
+
+}
+
+.#{$app-namespace}-lightbox-backdrop {
+
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: ($zindex-modal-background - 10);
+  background-color: $modal-backdrop-bg;
+  // Fade for backdrop
+  &.fade { @include opacity(0); }
+  &.in { @include opacity(.5); }
 
 }

@@ -4,7 +4,6 @@ $popover-font-size: 12px;
 
 .#{$app-namespace}-comment-thread {
   padding: 5px;
-
   min-height: 35px;
 
   .no-comments {
@@ -24,17 +23,22 @@ $popover-font-size: 12px;
 
   .#{$app-namespace}-comment {
     position: relative;
+    border-bottom: 1px solid darken($popover-title-bg, 5%);
+    margin: 0 0 5px 0;
+    padding: 0 0 5px 0;
 
     &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
       footer {
-        margin-bottom: none;
-        border-bottom-style: none;
+
       }
     }
 
-    #{$main-elements} {
+    /*#{$main-elements} {
       font-size: $font-size-base;
-    }
+    }*/
 
     .body-wrapper {
       position: relative;
@@ -91,11 +95,8 @@ $popover-font-size: 12px;
 
       @include clearfix();
       #{$main-elements} { font-size: $font-size-small }
-
-      border: 1px solid darken($popover-title-bg, 5%);
-      border-style: solid none;
-      padding: 2px 0;
-      margin: 5px 0;
+      margin: 5px 0 0 0;
+      padding: 0;
 
       > ul {
         > li {
@@ -106,8 +107,13 @@ $popover-font-size: 12px;
     }
 
     .comment-children {
-      border-left: 2px solid darken($popover-title-bg, 10%);
-      padding-left: 5px;
+      border-left: 2px solid darken($popover-title-bg, 20%);
+      padding: 5px 0 0 5px;
+
+      &:empty {
+        display: none;
+      }
+
     }
 
     ul {
@@ -120,6 +126,5 @@ $popover-font-size: 12px;
     }
 
   }
-
 
 }

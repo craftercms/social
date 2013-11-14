@@ -2,6 +2,7 @@
     'use strict';
 
     var C = S.Constants,
+        U = S.util,
         $ = S.$,
 
         areaVisibilityMode  = C.get('AREA_VISIBILITY_MODE_HOVER'),
@@ -13,20 +14,57 @@
 
         socialbar = null; // TODO Single instance, right?
 
-    var Director = $.extend({
+    var privates = {};
 
-        url: {
-            base: S.Cfg('url.service'),
-            ugc: {
-                target: '.json',
-                create: '.json',
-                like: '/{id}.json',
-                dislike: '/{id}.json',
-                flag: '/{id}.json',
-                moderation: {
-                    update: '/status.json'
-                }
+    function Director () {
+
+        var me = this;
+
+        var guid = this.guid = U.guid();
+        privates[guid] = { CACHE: {} };
+
+        this.cache('profile', new S.model.Profile());
+
+        this.listenTo(this, C.get('EVENT_UNAUTHORISED_RESPONSE'), this.authenticate);
+        this.listenTo(this, C.get('EVENT_USER_AUTHENTICATION_SUCCESS'), this.setProfile);
+
+        $( document ).ajaxComplete(function( event, request ) {
+            if (request.status === 401) {
+                me.trigger(C.get('EVENT_UNAUTHORISED_RESPONSE'));
             }
+        });
+
+    }
+
+    Director.DEFAULTS = {};
+
+    Director.prototype = $.extend({}, S.EventProvider, {
+
+        cache: function ( key, value ) {
+            if (arguments.length === 1) {
+                return privates[this.guid].CACHE[key];
+            } else {
+                privates[this.guid].CACHE[key] = value;
+            }
+        },
+
+        getProfile: function () {
+            return this.cache('profile');
+        },
+        setProfile: function ( oProfile ) {
+            return this.cache('profile', oProfile);
+        },
+        authenticate: function () {
+
+            var view = new (S.get('view.Auth'))({
+                model: this.getProfile(),
+                modal: {
+                    show: true
+                }
+            });
+
+            view.render();
+
         },
 
         getAreaVisibilityMode: function () {
@@ -38,14 +76,6 @@
             }
             areaVisibilityMode = mode;
             this.trigger(C.get('EVENT_AREAS_VISIBILITY_CHANGE'), mode);
-        },
-
-        getUser: function () {
-            return {
-                name: 'Tony',
-                surname: 'Romas',
-                userName: 'roman'
-            };
         },
 
         /**
@@ -87,18 +117,9 @@
                 socialbar.$el.appendTo('body');
             }
 
-        },
-
-        actionURL: function (actionPath, replace) {
-            var url = this.url;
-            return S.string.fmt('{base}/{path}/{action}', {
-                base: url.base,
-                path: actionPath.replace(/\./g, '/'),
-                action: S.util.get(url, actionPath)
-            }).replace('/.json', '.json').replace(/[\/\/]+/g, '/').fmt(replace || {});
         }
 
-    }, S.EventProvider);
+    });
 
     S.define('component.Director', Director);
 
