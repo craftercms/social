@@ -63,7 +63,29 @@
         },
         flag: function (e) {
             e.preventDefault();
-            this.model.flag();
+
+            var me = this;
+
+            var modal = S.util.instance('view.Modal', {
+                modal: { show: true },
+                events: {
+                    'click .btn-primary': function () {
+                        var reason = this.$('textarea').val().trim();
+                        (reason !== '') && me.model.flag(reason);
+                        // TODO destroy after successful flagging
+                        this.destroy();
+                    }
+                }
+            });
+
+            modal.set({
+                'title': 'Flag Comment',
+                'body': '<div class="form-group"><label>Reason</label><textarea class="form-control"></textarea></div>',
+                'footer': '<button class="btn btn-primary">Submit</button>'
+            });
+
+            modal.render();
+
         },
 
         files: function () {
