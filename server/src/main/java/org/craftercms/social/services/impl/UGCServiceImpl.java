@@ -44,12 +44,7 @@ import org.craftercms.social.helpers.MultipartFileClone;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
-import org.craftercms.social.services.CounterService;
-import org.craftercms.social.services.PermissionService;
-import org.craftercms.social.services.SupportDataAccess;
-import org.craftercms.social.services.TenantService;
-import org.craftercms.social.services.UGCService;
-import org.craftercms.social.services.VirusScannerService;
+import org.craftercms.social.services.*;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.support.CrafterProfile;
@@ -92,6 +87,9 @@ public class UGCServiceImpl implements UGCService {
 
 	@Autowired
 	private VirusScannerService virusScannerService;
+
+    @Autowired
+    private UGCHook ugcHook;
 
     @Override
     public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant, int page, int pageSize, String sortField, String sortOrder) {
@@ -192,7 +190,10 @@ public class UGCServiceImpl implements UGCService {
         }
     }
 
-    private ObjectId[] updateUGCAttachments(UGC ugc, MultipartFile[] files) {
+    private ObjectId[] updateUGCAttachments(UGC ugc, MultipartFile[] files) throws AttachmentErrorException {
+
+        files = scanFilesForVirus(files);
+
         if (files != null) {
             ObjectId[] attachments = new ObjectId[files.length];
             ObjectId currentId = null;
@@ -243,7 +244,6 @@ public class UGCServiceImpl implements UGCService {
 
     private ObjectId getAttachedId(MultipartFile file, UGC ugc) {
         return ugc.getAttachmentsList().findObjectId(file);
-
     }
 
     @Override
@@ -287,8 +287,7 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC newUgc(UGC ugc)
-            throws PermissionDeniedException, AttachmentErrorException  {
+    public UGC newUgc(UGC ugc) throws PermissionDeniedException  {
     	
     	ugc.setAnonymousFlag(ugc.isAnonymousFlag());
     	List<Action> resolveActions = resolveUGCActions(ugc.getActions(), ugc.getParentId());
@@ -302,13 +301,17 @@ public class UGCServiceImpl implements UGCService {
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
         auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, ugc.getTenant(), ugc.getProfileId(), null);
+
+        //UGC Hook
+        ugcHook.onNewUGC(ugcWithProfile, ugcWithProfile.getProfile());
+
         return ugcWithProfile;
     }
 
 
 
     @Override
-    public UGC newChildUgc(UGC ugc) throws PermissionDeniedException, AttachmentErrorException {
+    public UGC newChildUgc(UGC ugc) throws PermissionDeniedException {
 
         if (!existsUGC(ugc.getParentId())) {
             log.error("Parent for {} does not exist", ugc);
@@ -326,6 +329,10 @@ public class UGCServiceImpl implements UGCService {
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(), ugcWithProfile.getTenant()));
         //Audit call
         auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, ugc.getTenant(), ugc.getProfileId(), null);
+
+        //UGC Hook
+        ugcHook.onNewChildUGC(ugcWithProfile, ugcWithProfile.getProfile());
+
         return ugcWithProfile;
     }
 

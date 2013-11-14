@@ -121,7 +121,13 @@ public class CrafterProfileTest implements CrafterProfile {
 		return createAdminUser();
 	}
 
-	public List<Profile> getProfilesByIds(List<String> profileIds) {
+    @Override
+    public Profile createOrUpdateSubscription(String profileId, String targetId, String targetDescription, String targetUrl) {
+        // TODO createOrUpdateSubscription test implementation
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<Profile> getProfilesByIds(List<String> profileIds) {
 
 		List<Profile> list = new ArrayList();
 		list.add(createAdminUser());

@@ -66,7 +66,7 @@ public interface UGCService {
 	 *            the {@link UGC} to save
 	 * @return the saved {@link UGC}
 	 */
-     UGC newUgc(UGC ugc) throws PermissionDeniedException, AttachmentErrorException;
+     UGC newUgc(UGC ugc) throws PermissionDeniedException;
 
 	/**
 	 * Creates a new child {@link UGC}
@@ -78,7 +78,7 @@ public interface UGCService {
 	 *             if the Parent UGC does not exist
 	 */
 
-	UGC newChildUgc(UGC ugc) throws PermissionDeniedException, AttachmentErrorException;
+	UGC newChildUgc(UGC ugc) throws PermissionDeniedException;
 
 	/**
 	 * Checks if a UGC Exists

@@ -31,4 +31,6 @@ public interface CrafterProfile {
 	void resetAppToken();
 	boolean validateUserToken(String ticket);
 	Profile getUserInformation(String ticket);
+    public Profile createOrUpdateSubscription(String profileId, String targetId, String targetDescription, String targetUrl);
+
 }

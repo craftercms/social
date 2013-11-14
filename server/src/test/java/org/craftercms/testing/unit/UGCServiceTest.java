@@ -63,7 +63,6 @@ public class UGCServiceTest {
 	private CounterService counterService;
 	@Mock
 	private TenantService tenantService;
-	
 	@Mock
 	private CrafterProfile crafterProfileService;
 	@Mock
@@ -74,6 +73,8 @@ public class UGCServiceTest {
 	private ModerationDecision moderationDecisionManager;
 	@Mock
     private SupportDataAccess supportDataAccess;
+    @Mock
+    private UGCHook ugcHook;
 
 	@InjectMocks
 	private UGCServiceImpl ugcServiceImpl;
@@ -279,9 +280,8 @@ public class UGCServiceTest {
 			u = ugcServiceImpl.newUgc(currentUGC);
 		} catch (PermissionDeniedException pde) {
 			fail(pde.getMessage());
-		} catch (AttachmentErrorException dee) {
-            fail(dee.getMessage());
         }
+
         assertNotNull(u);
 		
 	}
@@ -301,9 +301,8 @@ public class UGCServiceTest {
 			u = ugcServiceImpl.newChildUgc(currentUGC);
 		} catch (PermissionDeniedException pde) {
 			fail(pde.getMessage());
-        } catch (AttachmentErrorException dee) {
-            fail(dee.getMessage());
         }
+
 		assertNotNull(u);
 		
 	}
