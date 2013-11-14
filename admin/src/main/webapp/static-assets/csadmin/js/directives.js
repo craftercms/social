@@ -2,15 +2,10 @@
 
 /* Directives */
 angular.module('moderationDashboard.directives', []).
-    directive('appVersion', ['version', function(version) {
-        return function(scope, elm) {
-            elm.text(version);
-        };
-    }]).
-    directive('moderationAction', ['Api', '$http', '$timeout', function (api, http, timeout) {
+    directive('moderationAction', ['$timeout', 'UgcApi', 'PERMANENTLY_DELETE', 'CONFIG', function (timeout, UgcApi, PD, CONFIG) {
         return {
             restrict: "E",
-            templateUrl: "/crafter-social-admin/static-assets/csadmin/templates/moderation_actions.html",
+            templateUrl: CONFIG.TEMPLATES_PATH +  "moderation_actions.html",
 
             scope: {
                 modstatus: '@',
@@ -22,11 +17,27 @@ angular.module('moderationDashboard.directives', []).
                 },
                 post: function (scope, elm) {
                     // updating moderation value
-                    var element = elm;
+                    var element = elm,
+                        showPopover = function (element) {
+                            if (! $(element).next('div.popover:visible').length) {
+                                $(element).popover({
+                                    animation: true,
+                                    placement: 'right',
+                                    trigger: 'manual',
+                                    'html': true,
+                                    title: 'Are you sure ?',
+                                    content: function (){
+                                        var popover = $(element).next('.popover');
+                                        popover.removeClass('hidden');
+                                        return popover.html();
+                                    }
+                                }).popover('show');
+                            }
+                        };
 
                     // handler when a options is selected, changes the status
                     timeout(function () {
-                        elm.find('.btn-group').delegate('.btn', 'click', function (ev) {
+                        elm.find('.mod-actions-btn').delegate('.btn-mod-action', 'click', function (ev) {
                             var currentEl = $(ev.currentTarget),
                                 action = currentEl.val().toUpperCase(),
                                 queryParams = {
@@ -35,31 +46,44 @@ angular.module('moderationDashboard.directives', []).
                                     tenant: scope.$parent.confObj.tenant
                                 };
 
-
-                            http({
-                                method: 'POST',
-                                url: "/crafter-social/api/2/ugc/moderation/" + queryParams.moderationid + "/status.json?moderationStatus=" + queryParams.moderationstatus + "&tenant=" + queryParams.tenant,
-                                data: queryParams,
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                            }).success(function (data) {
-                                angular.forEach(scope.$parent.$parent.ugcList, function (ugc, index) {
-                                    if (ugc.id === data.id) {
-                                        // removing active state of clicked button
-                                        if (currentEl.hasClass('active')) {
-                                            currentEl.removeClass('active');
-                                        }
-                                        scope.$parent.ugcList[index].updated = true;
-                                        scope.$parent.ugcList[index].updateMessage = scope.$parent.ugcList[index].title + " - " + scope.$parent.ugcList[index].dateAdded
-                                        scope.$parent.ugcList[index].alertClass = "success";
-                                        scope.$parent.ugcList[index].undo = true;
-                                    }
+                            // if action selected is delete / other
+                            if (currentEl.val().toUpperCase() === PD.ACTION) {
+                                showPopover(this);
+                            }else{
+                                UgcApi.updateUgc(queryParams).then(function (data) {
+                                    scope.$parent.displayResults(data, currentEl, { undo: true, message: "" });
                                 });
-                            }).error(function (data) {
-                                //TODO error message: data needs to have information about the error
-                                console.log("error trying to update");
-                            });
+                            }
 
                         });
+
+                        // handler when an ugc is going to be deleted
+                        elm.find('.mod-actions-btn').delegate('.delete-btn', 'click', function (ev) {
+                            var currentEl = $(ev.currentTarget);
+
+                            // if user clicked yes / no
+                            if (currentEl.val().toUpperCase() === PD.CONFIRM) {
+                                var conf = {
+                                    tenant: scope.$parent.confObj.tenant,
+                                    ugcids: [element.attr('ugcid')]
+                                };
+
+                                UgcApi.permanentlyDelete(conf).then(function (data) {
+                                    if (data){
+                                        $(this).popover('destroy');
+                                        scope.$parent.displayResults(data, currentEl, { undo: false, message: "Comment successfully deleted" });
+                                    }else {
+                                        console.log("error trying to delete comment");
+                                        //TODO display message explaining the reason
+                                    }
+                                });
+                            }else{
+                                var popover = $(this).parents('.popover').prev('.active');
+                                popover.removeClass('active');
+                                popover.popover('hide');
+                            }
+                        });
+
                     });
                 }
             }

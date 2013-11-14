@@ -1,43 +1,43 @@
 [
     {
-        "moderation": "Unmoderated",
+        "moderation": { "label": "Unmoderated", "value": "Unmoderated" },
         "actions": [
-            { "label": "Approve", "tab": "Approved" },
-            { "label": "Spam", "tab": "Spam" },
-            { "label": "Trash", "tab": "Trash" },
-            { "label": "Edit", "tab": "Edit" }
+            { "label": "Approve", "status": "Approved" },
+            { "label": "Spam", "status": "Spam" },
+            { "label": "Trash", "status": "Trash" },
+            { "label": "Edit", "status": "Edit" }
         ]
     },
     {
-        "moderation": "Approved",
+        "moderation": { "label": "Approved", "value": "Approved" },
         "actions": [
-            { "label": "Spam", "tab": "Spam" },
-            { "label": "Trash", "tab": "Trash" },
-            { "label": "Edit", "tab": "Edit" },
-            { "label": "Unmoderated", "tab": "Unmoderated" }
+            { "label": "Spam", "status": "Spam" },
+            { "label": "Trash", "status": "Trash" },
+            { "label": "Edit", "status": "Edit" },
+            { "label": "Unmoderated", "status": "Unmoderated" }
         ]
     },
     {
-        "moderation": "Pending",
+        "moderation": { "label": "Pending", "value": "Pending" },
         "actions": [
-            { "label": "Approved", "tab": "Approved" },
-            { "label": "Trash", "tab": "Trash" },
-            { "label": "Edit", "tab": "Edit" }
+            { "label": "Approved", "status": "Approved" },
+            { "label": "Trash", "status": "Trash" },
+            { "label": "Edit", "status": "Edit" }
         ]
     },
     {
-        "moderation": "Spam",
+        "moderation": { "label": "Spam", "value": "Spam" },
         "actions": [
-            { "label": "Restore", "tab": "Restore" },
-            { "label": "Permantly delete", "tab": "Permantly delete" },
-            { "label": "Unmoderated", "tab": "Unmoderated" }
+            { "label": "Restore", "status": "Restore" },
+            { "label": "Permantly delete", "status": "delete" },
+            { "label": "Unmoderated", "status": "Unmoderated" }
         ]
     },
     {
-        "moderation": "Trash",
+        "moderation": { "label": "Trash", "value": "Trash" },
         "actions": [
-            { "label": "Restore", "tab": "Restore" },
-            { "label": "Permantly delete", "tab": "Permantly delete" }
+            { "label": "Restore", "status": "Restore" },
+            { "label": "Permantly delete", "status": "delete" }
         ]
     }
 ]
