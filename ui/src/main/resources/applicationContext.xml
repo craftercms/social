@@ -24,6 +24,8 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
             <list>
                 <value>classpath:crafter/profile/ui-plugin/profile.properties</value>
                 <value>classpath*:crafter/profile/ui-plugin/extension/profile.properties</value>
+                <value>classpath:crafter/social/social-auth/security.custom.properties</value>
+                <value>classpath*:crafter/social/social-auth/extension/security.custom.properties</value>
             </list>
         </property>
     </bean>
