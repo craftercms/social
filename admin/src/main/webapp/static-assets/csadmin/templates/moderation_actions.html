@@ -1,5 +1,13 @@
-<div class="btn-group pull-left" data-toggle="buttons-radio">
-    <button class="btn btn-primary" ng-repeat="action in moderationActions" value="{{action.tab}}">
+<div class="btn-group mod-actions-btn pull-left" data-toggle="buttons-radio">
+    <button class="btn btn-mod-action btn-primary" ng-repeat="action in moderationActions" value="{{action.status}}">
         {{action.label}}
     </button>
+
+    <div class="popover hidden">
+        <div class="arrow"></div>
+        <div class="btn-group" data-toggle="buttons-radio">
+            <button class="btn delete-btn" value="yes">Yes</button>
+            <button class="btn delete-btn" value="no">No</button>
+        </div>
+    </div>
 </div>
