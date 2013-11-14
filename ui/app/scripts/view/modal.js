@@ -73,6 +73,13 @@
 
         set: function ( section, content ) {
 
+            if ( arguments.length === 1 ) {
+                var me = this, oSets = section;
+                $.each(oSets, function (section, content) {
+                    me.set(section, content);
+                });
+            }
+
             var $selection = this.$({
                 'header': '.modal-header',
                 'title': '.modal-title',
