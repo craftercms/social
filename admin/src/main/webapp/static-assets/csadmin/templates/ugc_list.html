@@ -4,7 +4,7 @@
         <nav class="span12">
             <ul class="nav nav-tabs">
                 <li ng-repeat="mod in moderationList" class="{{mod.state}}">
-                    <a href="#/status/{{mod.moderation}}">{{mod.moderation}}</a>
+                    <a href="#/status/{{mod.moderation.value}}">{{mod.moderation.label}}</a>
                 </li>
             </ul>
         </nav>
@@ -14,10 +14,17 @@
     <div class="row-fluid">
         <main ng-show="displayUgcs" role="main" class="span12">
             <div class="bulk-actions" ng-controller="BulkActionCtrl">
-                <select id="bulkActions" ng-model="bulkAction" ng-options="action.tab as action.label for action in moderationActions" ng-change="optionSelected()">
+                <select id="bulkActions" ng-model="bulkAction" ng-options="action.status as action.label for action in moderationActions" ng-change="optionSelected()">
                     <option value="">-- Choose Bulk Action --</option>
                 </select>
                 <button id="applyBtn" class="btn entries-list-btn disabled" ng-click="bulkUpdate($event)">Apply</button>
+                <div class="popover ">
+                    <div class="arrow"></div>
+                    <div class="btn-group" >
+                        <button class="btn delete-btn" value="yes">Yes</button>
+                        <button class="btn delete-btn" value="no">No</button>
+                    </div>
+                </div>
             </div>
 
             <div class="heading-wrapper row-fluid">
@@ -43,7 +50,7 @@
                         <div class="span2 col2 author-section">
                             <div class="row-fluid">
                                 <div class="span2">
-                                    <img src="/crafter-social-admin/static-assets/csadmin/img/profile-photo.jpg" alt="user profile image"/>
+                                    <img ng-src="{{ugc.userImg}}" alt="user profile image"/>
                                 </div>
                                 <div class="span10">
                                     <dl>

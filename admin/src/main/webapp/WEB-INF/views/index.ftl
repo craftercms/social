@@ -28,5 +28,6 @@
     <script src="static-assets/csadmin/js/controllers.js"></script>
     <script src="static-assets/csadmin/js/filters.js"></script>
     <script src="static-assets/csadmin/js/directives.js"></script>
+    <script src="static-assets/csadmin/js/constants.js"></script>
 </body>
 </html>

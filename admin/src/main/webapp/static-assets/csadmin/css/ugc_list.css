@@ -201,3 +201,8 @@ select {
     margin: 5px 0;
     height: 26px;
 }
+
+/* popover */
+.popover {
+    min-width: 120px;
+}

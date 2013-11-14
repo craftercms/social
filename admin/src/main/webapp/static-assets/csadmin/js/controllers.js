@@ -12,7 +12,7 @@ angular.module('moderationDashboard.controllers', []).
      * Moderation Dashboard Controller
      * - get UGCs by moderation status
      **/
-    controller('UgcListCtrl', ['$scope', '$routeParams', 'ConfigurationData', 'UgcApi',  function(scope, rp, ConfigurationData, UgcApi) {
+    controller('UgcListCtrl', ['$scope', '$routeParams', 'ConfigurationData', 'UgcApi', 'CONFIG', function(scope, rp, ConfigurationData, UgcApi, CONFIG) {
         scope.ugcList = [];
         scope.status = "";
         scope.moderationActions = [];
@@ -27,7 +27,7 @@ angular.module('moderationDashboard.controllers', []).
         // set the active tab
         var getModerationList = function () {
             angular.forEach(scope.moderationList, function (moderationObj) {
-                if (scope.status.toLowerCase() === moderationObj.moderation.toLowerCase()) {
+                if (scope.status.toLowerCase() === moderationObj.moderation.label.toLowerCase()) {
                     moderationObj.state = 'active';
                 }else{
                     moderationObj.state = '';
@@ -51,6 +51,13 @@ angular.module('moderationDashboard.controllers', []).
 
                     angular.forEach(data, function (ugc){
                         txtContent = angular.fromJson(ugc.textContent);
+
+                        if (ugc.textContent[0] == '{') {
+                            txtContent = angular.fromJson(ugc.textContent);
+                        } else {
+                            txtContent = {content: ugc.textContent, title: 'no title'};
+                        }
+
                         tmpList.push({
                             'title': txtContent.title,
                             'id': ugc.id,
@@ -60,6 +67,7 @@ angular.module('moderationDashboard.controllers', []).
                             'dateAdded': scope.getDateTime(ugc.dateAdded),
                             'userName': ugc.profile.userName,
                             'userMail': ugc.profile.email,
+                            'userImg': CONFIG.IMAGES_PATH + "profile-photo.jpg",
                             'targetUrl': 'target Url',
                             'targetTitle': 'target Title',
                             'updated': false,
@@ -110,7 +118,7 @@ angular.module('moderationDashboard.controllers', []).
         // set list of moderation actions available according status selected
         var moderationActions = function () {
             angular.forEach(scope.moderationList, function (modObject) {
-                if (modObject.moderation.toLowerCase() === scope.status.toLocaleLowerCase()){
+                if (modObject.moderation.value.toLowerCase() === scope.status.toLocaleLowerCase()){
                     scope.moderationActions = modObject.actions;
                 }
             });
@@ -151,6 +159,33 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
+        scope.displayResults = function (data, element, conf) {
+            if (data) {
+                angular.forEach(scope.ugcList, function (ugc, index) {
+                    if (ugc.id === data.id) {
+                        // removing active state of clicked button
+                        var message = "";
+
+                        if (conf.undo) {
+                            if (element.hasClass('active')) {
+                                element.removeClass('active');
+                            }
+                            message = scope.ugcList[index].title + " - " + scope.ugcList[index].dateAdded;
+                        }else {
+                            message = conf.message;
+                        }
+                        scope.ugcList[index].updated = true;
+                        scope.ugcList[index].updateMessage = message;
+                        scope.ugcList[index].alertClass = "success";
+                        scope.ugcList[index].undo = conf.undo;
+                    }
+                });
+            }else {
+                //TODO error message: data needs to have information about the error
+                console.log("error trying to update");
+            }
+        };
+
         setStatus();
         getModerationList();
         scope.getUgcList(1);
@@ -161,19 +196,9 @@ angular.module('moderationDashboard.controllers', []).
     /**
      * bulk action controller
      */
-    controller('BulkActionCtrl', ['$scope', 'UgcApi', function (scope, UgcApi) {
-        //handler for bulk actions update
-        scope.bulkUpdate = function (event) {
-            var optionSelected = scope.bulkAction,
-                listItems = [];
-
-            //check if bulk option is selected
-            if (optionSelected === null || optionSelected === undefined ){
-                $('#bulkActions').focus();
-                return;
-            }
-
-            // check if an item has been selected
+    controller('BulkActionCtrl', ['$scope', 'UgcApi', 'PERMANENTLY_DELETE', function (scope, UgcApi, PD) {
+        var commentsSelected = function () {
+            var listItems = [];
             $('.entries-list input').each(function (index) {
                 if ($(this).prop('checked')){
                     listItems.push($(this).attr('ugcid'));
@@ -189,10 +214,49 @@ angular.module('moderationDashboard.controllers', []).
                 });
                 displayError.tooltip('show');
 
+                return null;
+            }
+
+            return listItems;
+        };
+
+        //handler for bulk actions update
+        scope.bulkUpdate = function (event) {
+            var optionSelected = scope.bulkAction,
+                listItems = [];
+
+            //check if bulk option is selected
+            if (optionSelected === null || optionSelected === undefined ){
+                $('#bulkActions').focus();
+                return;
+            }
+
+            // check if an item has been selected
+            listItems = commentsSelected();
+            if (listItems === null){
                 return;
             }
 
             optionSelected = optionSelected.toUpperCase();
+
+            if (PD.ACTION === optionSelected) {
+                if (! $(event.currentTarget).next('div.popover:visible').length) {
+                    $(event.currentTarget).popover({
+                        animation: true,
+                        placement: 'right',
+                        trigger: 'manual',
+                        'html': true,
+                        title: 'Are you sure ?',
+                        content: function (){
+                            var popover = $(event.currentTarget).next('.popover');
+                            popover.removeClass('hidden');
+                            return popover.html();
+                        }
+                    }).popover('show');
+                }
+
+                return;
+            }
 
             var conf = {
                 moderationstatus: optionSelected,
@@ -201,35 +265,70 @@ angular.module('moderationDashboard.controllers', []).
             };
 
             UgcApi.bulkUpdate(conf).then( function (data) {
-                if (data) {
-                    angular.forEach(data, function (item) {
-                        angular.forEach(scope.ugcList, function(ugc, index){
-                            if (item.id === ugc.id) {
-                                scope.ugcList[index].updated = true;
-                                scope.ugcList[index].updateMessage = scope.ugcList[index].title + " - " + scope.ugcList[index].dateAdded
-                                scope.ugcList[index].alertClass = "success";
-                                scope.ugcList[index].undo = true;
-
-                                return;
-                            }
-                        });
-                    });
-                }else {
-                    console.error("error bulk update");
-                    angular.forEach(data, function (item) {
-                        angular.forEach(scope.ugcList, function(ugc, index){
-                            if (item.id === ugc.id) {
-                                scope.ugcList[index].updated = true;
-                                scope.ugcList[index].updateMessage = "Error trying to update"
-                                scope.ugcList[index].alertClass = "error";
-
-                                return;
-                            }
-                        });
-                    });
-                }
+                scope.displayResults(data, { undo: true, message: "" } );
             })
 
+        };
+
+        scope.validateDelete = function (event) {
+            var elm = $(event.currentTarget);
+            if (elm.val().toUpperCase() === PD.CONFIRM) {
+                var listItems = commentsSelected();
+                if (listItems !== null){
+                    var conf = {
+                        tenant: scope.confObj.tenant,
+                        ugcids: listItems
+                    };
+
+                    UgcApi.permanentlyDelete(conf).then(function (data) {
+                        if (data){
+                            $("#applyBtn").popover('destroy');
+                            //scope.displayResults(data, { undo: false, message: "comment deleted successfully" });
+                            console.log('deleted');
+                        }else {
+                            console.log("error trying to delete comment");
+                            //TODO display message explaining the reason
+                        }
+                    });
+                }
+            }else {
+                var popover = $('#applyBtn');
+                popover.popover('hide');
+            }
+        };
+
+        scope.displayResults = function (data, conf) {
+            if (data) {
+                angular.forEach(data, function (item) {
+                    angular.forEach(scope.ugcList, function(ugc, index){
+                        if (conf.undo) {
+                            conf.message = scope.ugcList[index].title + " - " + scope.ugcList[index].dateAdded;
+                        }
+
+                        if (item.id === ugc.id) {
+                            scope.ugcList[index].updated = true;
+                            scope.ugcList[index].updateMessage = conf.message;
+                            scope.ugcList[index].alertClass = "success";
+                            scope.ugcList[index].undo = conf.undo;
+
+                            return;
+                        }
+                    });
+                });
+            }else {
+                console.error("error bulk update");
+                angular.forEach(data, function (item) {
+                    angular.forEach(scope.ugcList, function(ugc, index){
+                        if (item.id === ugc.id) {
+                            scope.ugcList[index].updated = true;
+                            scope.ugcList[index].updateMessage = "Error trying to update"
+                            scope.ugcList[index].alertClass = "error";
+
+                            return;
+                        }
+                    });
+                });
+            }
         };
 
         // handler for when a select option has been updated
