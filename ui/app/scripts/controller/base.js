@@ -11,7 +11,7 @@
 
         initialize: function ( oConfig ) {
             this.guid = U.guid();
-            this.extendCfg(Base.DEFAULTS, oConfig);
+            this.extendCfg(this.constructor.DEFAULTS, oConfig);
         },
 
         extendCfg: function ( oDefaults, oConfig ) {
@@ -20,11 +20,11 @@
         },
 
         url: function () {
-            return S.component.Director.actionURL('ugc.target');
+            return S.url('ugc.target');
         },
 
         parse: function ( response ) {
-            return response.list;
+            return response.list || response;
         },
 
         getGUID: function () {

@@ -5,8 +5,8 @@
 
     S.define('Editor', CKEDITOR, 'social.Editor');
 
-    CKEDITOR.basePath = S.url('libs/ckeditor/');
+    CKEDITOR.basePath = S.resource('libs/ckeditor/');
 
-    CKEDITOR.config.customConfig = S.url('scripts/component/ckeditor/config.js');
+    CKEDITOR.config.customConfig = S.resource('scripts/component/ckeditor/config.js');
 
 }) (crafter.social);

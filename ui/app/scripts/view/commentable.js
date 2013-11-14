@@ -4,14 +4,14 @@
     var REVEAL_CLASS = 'reveal';
 
     var Commentable,
-        Superclass = S.view.Base,
+        Base = S.view.Base,
         C = S.Constants,
         U = S.util;
 
     var setTimeout = S.window.setTimeout,
         clearTimeout = S.window.clearTimeout;
 
-    Commentable = Superclass.extend({
+    Commentable = Base.extend({
 
         hide: false,
         reveal: false,
@@ -25,11 +25,8 @@
         initialize: function (config) {
 
             this.setElement(config.target);
-
-            var newConfig = $.extend({}, Commentable.DEFAULTS, config);
-            Superclass.prototype.initialize.call(this, newConfig);
-
-            this.initializeActionDelegation(this, this.$options);
+            Base.prototype.initialize.apply(this, arguments);
+            this.delegateActions(this, this.$options);
 
             this.collection.fetch({
                 data : {
@@ -41,7 +38,7 @@
         },
         listen: function () {
             this.listenTo(this.collection, 'sync', this.render);
-            this.listenTo(S.component.Director, C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
+            this.listenTo(S.getDirector(), C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
         },
         createUI: function () {
 
@@ -117,6 +114,10 @@
                 view.render();
             }
             view.show();
+        },
+
+        watch: function () {
+
         },
 
         mouseenter: function (  ) {

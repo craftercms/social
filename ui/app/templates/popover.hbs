@@ -1,13 +1,31 @@
 
 <div class="arrow"></div>
+
 <header>
+    <ul class="list-inline list-unstyled">
+        <li>
+            <a>
+                <i class="crafter-social-icon cs-icon-cog"></i>
+            </a>
+        </li>
+        <li>
+            <a data-action="refresh">
+                <i class="crafter-social-icon cs-icon-refresh"></i>
+            </a>
+        </li>
+    </ul>
     <button class="close">
         <span>&times;</span>
     </button>
 </header>
+
+<div class="crafter-social-popover-status" style="display: none">
+    <a class="pull-right" data-load-more>more</a>
+    <span class="stats">{{from}} - {{to}} of {{of}}</span>
+</div>
+
 <div class="comments crafter-social-comment-thread">
     <div class="no-comments">(no comments)</div>
 </div>
-<footer class="reply-box">
 
-</footer>
+<footer class="reply-box"></footer>

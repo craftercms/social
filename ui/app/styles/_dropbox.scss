@@ -1,0 +1,134 @@
+
+// TODO MOVE THIS OUT OF HERE!
+.#{$app-namespace}-view.#{$app-namespace}-file-view {
+  margin: 0 0 10px 0;
+
+  .cs-file {
+    @include clearfix();
+  }
+
+  .cs-file-upload {
+    margin: 5px 0 0 0;
+  }
+
+  .cs-files-list & {
+
+    .cs-file-upload {
+      display: none;
+    }
+
+  }
+
+  .alert {
+    margin-bottom: 0;
+  }
+
+}
+
+.#{$app-namespace}-dropbox-element {
+
+  padding: 10px;
+  width: 450px;
+  border-radius: 10px;
+  border: 2px dashed #ccc;
+  color: #336699;
+  font-family: 'Josefin Sans Std Light', Helvetica, sans-serif;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 100px;
+
+  &:empty {
+    &:before {
+      content: 'Drop your files here';
+    }
+  }
+
+  .linear {
+    background: -webkit-gradient(linear, left bottom, left top, from(#eee), color-stop(0.25, #fff), to(#eee), color-stop(0.75, #fff));
+  }
+
+  .shadow {
+    -moz-box-shadow: 3px 3px 10px #666666;
+    -webkit-box-shadow: 3px 3px 10px #666666;
+    box-shadow: 3px 3px 10px #666666;
+  }
+
+  .center {
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-box-orient: vertical;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    -moz-box-orient: vertical;
+    -moz-box-pack: center;
+    -moz-box-align: center;
+    box-orient: vertical;
+    box-pack: center;
+    box-align: center;
+  }
+
+  &.dropbox-dragover {
+    -webkit-box-shadow: inset 0px 0px 50px #777;
+    -moz-box-shadow: inset 0px 0px 50px #777;
+    box-shadow: inset 0px 0px 50px #777;
+    border: 1px $gray-light 4px;
+  }
+
+  .dropbox-error {
+    background-color: #EE5F5B;
+    border-radius: 5px;
+    color: #FFFFFF;
+    font-weight: bold;
+    margin-top: 5px;
+    padding: 5px;
+    text-align: center;
+  }
+  .thumbnail {
+    margin-top: 10px;
+
+    img {
+      width: 175px;
+      height: 100px;
+      margin-right: 10px;
+    }
+
+    .image {
+      padding: 10px;
+      background-color: #fff;
+    }
+
+    .title {
+      font-family: Lobster, Helvetica, sans-serif;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .details {
+      font-family: Molengo, Helvetica, sans-serif;
+      font-size: 10pt;
+    }
+
+  }
+
+  .thumbnail,
+  .dropbox-error {
+    width: 97%;
+    margin: auto;
+    text-align: left;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+  }
+
+  .thumbnail:hover,
+  .dropbox-error:hover {
+    -webkit-transform: scale(1.1);
+    -moz-transform: scale(1.1);
+    -o-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+
+}

@@ -7,18 +7,27 @@
     }
 
     var Popover,
-        Superclass = S.view.Discussion,
+        Base = S.view.Discussion,
         $ = S.$;
 
     var prototype = $.extend({}, $.fn.popover.Constructor.prototype, {
 
+        className: [
+            Base.prototype.className,
+            'crafter-social-popover',
+            // TODO get rid of twitter default classes
+            'popover',
+            'fade'
+        ].join(' '),
+
         events: { 'click button.close': 'hide' },
 
-        initialize: function (config) {
+        initialize: function () {
 
-            var newConfig = $.extend(true, {}, Popover.DEFAULTS, config);
-            Superclass.prototype.initialize.call(this, newConfig);
+            Base.prototype.initialize.apply(this, arguments);
+
             this.init('popover', this.cfg.target, this.cfg.popover);
+            this.$tip = this.element();
 
             this.collection.fetch({
                 data : {
@@ -29,18 +38,42 @@
 
         },
         addOne: function () {
-            Superclass.prototype.addOne.apply(this, arguments);
+            Base.prototype.addOne.apply(this, arguments);
             this.replacement();
         },
         listen: function () {
-
-            Superclass.prototype.listen.apply(this, arguments);
+            Base.prototype.listen.apply(this, arguments);
 
             var $tip = this.tip();
+
             $tip.on('hidden.bs.popover', function () {
                 $tip.hide();
             });
 
+        },
+
+        render: function () {
+            Base.prototype.render();
+            // TODO see how this works.
+            // Are users confortable with this behaviour or is it rather irksome?
+            var $bd         = $('body'),
+                overflow    = $bd.css('overflow');
+            this.$('.crafter-social-comment-thread')
+                .mouseenter(function (  ) {
+                    $bd.css('overflow', 'hidden');
+                }).mouseleave(function (  ) {
+                    $bd.css('overflow', overflow);
+                });
+            return this;
+        },
+
+        refresh: function () {
+            this.collection.fetch({
+                data : {
+                    target: this.cfg.target,
+                    tenant: this.cfg.tenant
+                }
+            });
         },
 
         replacement: function () {
@@ -148,19 +181,18 @@
 
     });
 
-    // Constructor casused some trouble with Backbone extends
+    // Constructor cases some trouble with Backbone extends
+    // backbone sort of extends the constructor
     delete(prototype.constructor);
-    Popover = Superclass.extend(prototype);
+    Popover = Base.extend(prototype);
 
-    Popover.DEFAULTS = $.extend({}, {
-        /** @see view.Discussion for more */
-        classes: 'crafter-social-popover popover fade',
+    Popover.DEFAULTS = $.extend({}, Base.DEFAULTS, {
         templates: {
             main: ('%@popover.hbs').fmt(S.Cfg('url.templates')),
             comment: ('%@comment.hbs').fmt(S.Cfg('url.templates'))
         },
         popover: $.extend({}, $.fn.popover.Constructor.DEFAULTS, {
-            placement: 'left',
+            placement: 'auto bottom',
             trigger: 'manual',
             container: 'body',
             content: '(not.empty)'

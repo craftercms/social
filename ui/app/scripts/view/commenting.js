@@ -3,18 +3,21 @@
 
     var Commenting,
         Base = S.view.Base,
-        app = S.component.Director,
+        app = S.getDirector(),
         CKEDITOR = S.Editor,
         $ = S.$;
 
     Commenting = Base.extend({
+
+        className: [
+            Base.prototype.className,
+            'crafter-social-commenting-view'
+        ].join(' '),
+
         events: {
             'click [data-action-comment]': 'comment'
         },
-        initialize: function (config) {
-            var newConfig = $.extend(true, {}, Commenting.DEFAULTS, config);
-            Base.prototype.initialize.call(this, newConfig);
-        },
+
         editor: function () {
             var editor = this.cache('editor');
             if (!editor) {
@@ -22,15 +25,15 @@
                 var $textarea = this.$('textarea'),
                     me = this;
 
-                editor = CKEDITOR.inline($textarea.get(0), $.extend({
+                editor = CKEDITOR[this.cfg.editorMode]($textarea.get(0), $.extend({
                     on: {
                         pluginsLoaded: function () {
-                            this.addCommand('myGreetingCommand', {
+                            this.addCommand('_enterpressed_', {
                                 exec : function( /* editor, data */ ) {
                                     me.comment();
                                 }
                             });
-                            this.keystrokeHandler.keystrokes[CKEDITOR.SHIFT + 13] = 'myGreetingCommand';
+                            this.keystrokeHandler.keystrokes[CKEDITOR.SHIFT + 13] = '_enterpressed_';
                         }
                     }
                 }, this.cfg.editor));
@@ -39,6 +42,7 @@
             }
             return editor;
         },
+
         comment: function () {
 
             var editor = this.editor(),
@@ -46,34 +50,42 @@
 
             if (!content) { return; }
 
-            this.collection.create({
-                textContent: JSON.stringify({ content: content }),
-                content: content,
-                profile: app.getUser(),
+            var data = {
+                profile: app.getProfile().toJSON(),
+                textContent: content,
                 dateAdded: Date.now(),
                 tenant: this.cfg.tenant,
-                target: this.cfg.target
-            });
+                targetId: this.cfg.target
+            };
+
+            console.log(data);
+
+            // TODO temporary, remove.
+            (S.window.tempGetCustomAttributes) && (S.window.tempGetCustomAttributes(data));
+
+            this.collection.create(data);
 
             editor.setData('');
             editor.focus();
 
         },
+
         render: function () {
-
             this.editor();
-
             return this;
-
         }
+
     });
 
-    Commenting.DEFAULTS = $.extend({}, {
-        classes: ['crafter-social-commenting-view'],
+    Commenting.DEFAULTS = $.extend({}, Base.DEFAULTS, {
         templates: {
-            main: ('%@commenting.hbs').fmt(S.Cfg('url.templates'))
+            main: function () {
+                return ('%@commenting.hbs').fmt(S.Cfg('url.templates'));
+            }
         },
+        editorMode: 'inline',
         /* jshint -W106 */
+        // http://docs.ckeditor.com/#!/api/CKEDITOR.config
         editor: {
             'extraPlugins': 'autogrow',
             'autoGrow_maxHeight': 800,
