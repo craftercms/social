@@ -40,7 +40,7 @@
                 evt.stopPropagation();
                 var action = $( this ).data('action');
                 if (action !== '') {
-                    context[action]();
+                    context[action](evt);
                 }
             });
         },
