@@ -4,6 +4,7 @@
     var Lightbox,
         Modal = S.view.Modal,
         Discussion = S.view.Discussion,
+        U = S.util,
         $ = S.$;
 
     var LightboxPrototype = $.extend({}, Discussion.prototype, {
@@ -17,6 +18,11 @@
         initialize: function () {
             Modal.prototype.initialize.apply(this, arguments);
             Discussion.prototype.initialize.apply(this, arguments);
+        },
+
+        listen: function () {
+            Modal.prototype.listen.apply(this, arguments);
+            Discussion.prototype.listen.apply(this, arguments);
         },
 
         createUI: function () {
@@ -37,7 +43,7 @@
 
             var $target = $(this.cfg.target);
             var $clone  = $target.clone();
-            var include = { 'font-size': 'inherit' };
+            var include = { 'font-size': 'inherit', 'text-align': 'inherit' };
             var me      = this;
 
             // styles might get lost based on class declaration and/or
@@ -65,80 +71,82 @@
         },
 
         compileStyles: function ( $elem, include, override ) {
-            if ('getMatchedCSSRules' in S.window) {
+            try {
+                if ('getMatchedCSSRules' in S.window) {
 
-                var styles      = {  };
-                var rules       = S.window.getMatchedCSSRules( $elem instanceof $ ? $elem.get(0) : $elem ),
-                    strRules    = [],
-                    aRules;
+                    var styles      = {  };
+                    var rules       = S.window.getMatchedCSSRules( $elem instanceof $ ? $elem.get(0) : $elem ),
+                        strRules    = [],
+                        aRules;
 
-                $.each(rules, function (i, rule) {
-                    var cssText = rule.cssText;
-                    if (cssText.indexOf('crafter-social') === -1) {
+                    rules && $.each(rules, function (i, rule) {
+                        var cssText = rule.cssText;
+                        if (cssText.indexOf('crafter-social') === -1) {
 
-                        var css = cssText.match(/\{(.+?)\}/g)[0]
-                            .replace(/\{/g, '')
-                            .replace(/\}/g, '') + ';';
+                            var css = cssText.match(/\{(.+?)\}/g)[0]
+                                .replace(/\{/g, '')
+                                .replace(/\}/g, '') + ';';
 
-                        strRules.push(css);
+                            strRules.push(css);
 
-                    }
-                });
+                        }
+                    });
 
-                aRules = strRules.j().split(';');
-                $.each(aRules, function (i, rule) {
-                    if (rule.trim() !== '') {
-                        var split = rule.split(':');
-                        styles[split[0].trim()] = split[1].trim();
-                    }
-                });
+                    aRules = strRules.j().split(';');
+                    $.each(aRules, function (i, rule) {
+                        if (rule.trim() !== '') {
+                            var split = rule.split(':');
+                            styles[split[0].trim()] = split[1].trim();
+                        }
+                    });
 
-                return $.extend({}, include || {}, styles, override || {});
+                    return $.extend({}, include || {}, styles, override || {});
 
-            } else {
+                } else {
 
-                // TODO get a fixed set of styles with jQuery?
-                // eg { margin: $elem.css('margin'), padding: $elem.css('padding') ... }
+                    // TODO get a fixed set of styles with jQuery?
+                    // eg { margin: $elem.css('margin'), padding: $elem.css('padding') ... }
+                    /*
 
-                /*
+                    // http://stackoverflow.com/questions/4781410/jquery-how-to-get-all-styles-css-defined-within-internal-external-document-w
 
-                // http://stackoverflow.com/questions/4781410/jquery-how-to-get-all-styles-css-defined-within-internal-external-document-w
+                    var selector = '#jumbotron'.split(',').map(function(subselector){
+                        return subselector + ',' + subselector + ' *';
+                    }).join(',');
 
-                var selector = '#jumbotron'.split(',').map(function(subselector){
-                    return subselector + ',' + subselector + ' *';
-                }).join(',');
+                    var elts = $(selector);
 
-                var elts = $(selector);
-
-                var rulesUsed = [];
-                // main part: walking through all declared style rules
-                // and checking, whether it is applied to some element
-                var sheets = document.styleSheets;
-                for(var c = 0; c < sheets.length; c++) {
-                    var rules = sheets[c].rules || sheets[c].cssRules;
-                    for(var r = 0; r < rules.length; r++) {
-                        var selectorText = rules[r].selectorText;
-                        var matchedElts = $(selectorText);
-                        for (var i = 0; i < elts.length; i++) {
-                            if (matchedElts.index(elts[i]) != -1) {
-                                rulesUsed.push(rules[r]);
-                                break;
+                    var rulesUsed = [];
+                    // main part: walking through all declared style rules
+                    // and checking, whether it is applied to some element
+                    var sheets = document.styleSheets;
+                    for(var c = 0; c < sheets.length; c++) {
+                        var rules = sheets[c].rules || sheets[c].cssRules;
+                        for(var r = 0; r < rules.length; r++) {
+                            var selectorText = rules[r].selectorText;
+                            var matchedElts = $(selectorText);
+                            for (var i = 0; i < elts.length; i++) {
+                                if (matchedElts.index(elts[i]) != -1) {
+                                    rulesUsed.push(rules[r]);
+                                    break;
+                                }
                             }
                         }
                     }
+
+                    var style = rulesUsed.map(function(cssRule){
+                        var cssText = cssRule.cssText || cssRule.style.cssText.toLowerCase();
+                        // some beautifying of css
+                        return cssText.replace(/(\{|;)\s+/g, "\$1\n  ").replace(/\A\s+}/, "}");
+                        //                 set indent for css here ^
+                    }).join('\n');
+
+                    var stylelem = '<style>\n' + style + '\n</style>\n\n';
+                    */
+                    return {};
                 }
-
-                var style = rulesUsed.map(function(cssRule){
-                    var cssText = cssRule.cssText || cssRule.style.cssText.toLowerCase();
-                    // some beautifying of css
-                    return cssText.replace(/(\{|;)\s+/g, "\$1\n  ").replace(/\A\s+}/, "}");
-                    //                 set indent for css here ^
-                }).join('\n');
-                
-                var stylelem = '<style>\n' + style + '\n</style>\n\n';
-
-                */
-
+            } catch (ex) {
+                U.log(ex.message || ex);
                 return {};
             }
         }
