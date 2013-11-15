@@ -26,13 +26,9 @@ public class UGCHookImpl implements UGCHook {
      */
     @Override
     public void onNewUGC(UGC ugc, Profile profile) {
-
-        boolean autoWatch = profile.getSubscriptions().isAutowatch();
-
-        if(autoWatch){
+        if(profile.getSubscriptions()!=null && profile.getSubscriptions().isAutowatch()) {
             crafterProfile.createOrUpdateSubscription(ugc.getProfileId(), ugc.getTargetId(), ugc.getTargetDescription(), ugc.getTargetUrl());
         }
-
     }
 
     /**

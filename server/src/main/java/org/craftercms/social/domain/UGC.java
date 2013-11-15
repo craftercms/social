@@ -51,7 +51,7 @@ public class UGC implements Hierarchical<UGC> {
 	private ObjectId parentId;
 	private String textContent;
 	@Transient
-	private AttachmentsList attachmentsList;
+	private List<AttachmentModel> attachmentsList;
 	private ObjectId[] attachmentId;
 	private List<Action> actions;
 
@@ -334,11 +334,11 @@ public class UGC implements Hierarchical<UGC> {
         this.tenant = tenant;
     }
 
-	public AttachmentsList getAttachmentsList() {
+	public List<AttachmentModel> getAttachmentsList() {
 		return attachmentsList;
 	}
 
-	public void setAttachmentsList(AttachmentsList attachmentsList) {
+	public void setAttachmentsList(List<AttachmentModel> attachmentsList) {
 		this.attachmentsList = attachmentsList;
 	}
 

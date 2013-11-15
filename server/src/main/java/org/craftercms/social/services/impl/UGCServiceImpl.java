@@ -157,12 +157,28 @@ public class UGCServiceImpl implements UGCService {
             ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             //Audit call
             auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
-            attachmentModel = ugc.getAttachmentsList().getAttachment(attachment.getOriginalFilename());
+            //attachmentModel = ugc.getAttachmentsList().getAttachment(attachment.getOriginalFilename());
+            attachmentModel = findUgcAttachmentModel(ugc.getAttachmentsList(),attachment.getOriginalFilename());
         }
         return attachmentModel;
     }
 
-    @Override
+    private AttachmentModel findUgcAttachmentModel(List<AttachmentModel> modelList,
+			String filename) {
+    	if (modelList == null || modelList.size()==0) {
+    		return null;
+    	}
+    	AttachmentModel result = null;
+    	
+    	AttachmentModel tempModel = new AttachmentModel();
+    	tempModel.setFilename(filename);
+    	if (modelList.contains(tempModel)) {
+		   result =  modelList.get(modelList.indexOf(tempModel));
+		}
+    	return result;
+	}
+
+	@Override
     public void deleteUgc(ObjectId ugcId, String tenant, String profileId) throws PermissionDeniedException{
     	UGC parent = uGCRepository.findOne(ugcId);
         if (parent != null) {
@@ -243,7 +259,12 @@ public class UGCServiceImpl implements UGCService {
     }
 
     private ObjectId getAttachedId(MultipartFile file, UGC ugc) {
-        return ugc.getAttachmentsList().findObjectId(file);
+    	ObjectId result = null;
+        AttachmentModel m = findUgcAttachmentModel(ugc.getAttachmentsList(), file.getOriginalFilename());
+        if (m != null) {
+        	result = new ObjectId(m.getAttachmentId());
+        }
+        return result;
     }
 
     @Override
@@ -781,7 +802,7 @@ public class UGCServiceImpl implements UGCService {
 
     private UGC populateUGCWithProfile(UGC ugc, List<String> attributes) {
     	if (isProfileSetable(ugc)) {
-    		ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
+    		ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
     	} else {
     		Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null,null,null, null, true);
     		ugc.setProfile(anonymousProfile);
@@ -793,20 +814,19 @@ public class UGCServiceImpl implements UGCService {
     	return populateUGCWithProfile(ugc, null);
     }
 
-    private AttachmentsList getAttachmentsList(ObjectId[] attachmentsId, String tenant) {
-    	AttachmentsList data = new AttachmentsList();
+    private List<AttachmentModel> getAttachmentsList(ObjectId[] attachmentsId, String tenant) {
+    	List<AttachmentModel> data = new ArrayList<AttachmentModel>();
         Attachment attachment;
         AttachmentModel a;
         if (attachmentsId != null) {
 	        for (ObjectId id: attachmentsId) {
 	            attachment = supportDataAccess.getAttachment(id);
 	            a = new AttachmentModel(attachment.getFilename(),id,attachment.getContentType(), tenant);
-	            data.addAttachmentModel(a);
+	            data.add(a);
 	        }
         }
         return data;
     }
-
 
     /**
      * Resolve the full set of actions for the new UGC
@@ -936,7 +956,7 @@ public class UGCServiceImpl implements UGCService {
 		UGC ugc = uGCRepository.findOne(objectId);
 		if (ugc!= null) {
 			 ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
-			 result = ugc.getAttachmentsList().flattenAttachments();
+			 result = ugc.getAttachmentsList();
 		}
 		return result;
 	}
