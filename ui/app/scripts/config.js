@@ -1,6 +1,7 @@
 (function (S) {
     'use strict';
 
+    /* jshint -W106 */
     var _ = {
         /**
          * The director class. Path can be relative to the social namespace or global.
@@ -17,14 +18,23 @@
             service: '/fixtures/api/2/',
             templates: 'templates/',
             security: '/login',
+            notifications: {
+                add: '.json?target={target}&title={title}&url={url}',
+                remove: '.json?target={target}'
+            },
             ugc: {
                 target: '.json',
                 create: '.json',
                 like: '/{id}.json',
                 dislike: '/{id}.json',
                 flag: '/{id}.json',
+                file: '{attachmentId}.json',
                 moderation: {
                     update: '/status.json'
+                },
+                '{id}': {
+                    get_attachments: '.json?tenant={tenant}',
+                    add_attachment: '.json'
                 }
             }
         }
