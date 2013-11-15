@@ -117,6 +117,14 @@
 
         url: function ( url, formats ) {
 
+            if ( typeof formats === 'object' ) {
+                for (var key in formats) {
+                    formats[key] = window.encodeURIComponent(formats[key]);
+                }
+            } else if ( formats ) {
+                formats = window.encodeURIComponent(formats);
+            }
+
             var service     = this.Cfg('url.service');
             var protocol    = (service.match(URL_PROTOCOL_REGEXP) || [''])[0];
 
