@@ -76,7 +76,7 @@ $commentable-shadow-color: $brand-primary;
 
     background-color: #FFF6C6 !important;
 
-    overflow: hidden !important;
+    // overflow: hidden !important;
     border-radius: $border-radius-base !important;
     @include box-shadow(1px 1px 5px 5px rgba(
       red($commentable-shadow-color),
