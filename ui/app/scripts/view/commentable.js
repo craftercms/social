@@ -1,4 +1,4 @@
-(function ($, S) {
+(function (S) {
     'use strict';
 
     var REVEAL_CLASS = 'reveal';
@@ -6,7 +6,8 @@
     var Commentable,
         Base = S.view.Base,
         C = S.Constants,
-        U = S.util;
+        U = S.util,
+        $ = S.$;
 
     var setTimeout = S.window.setTimeout,
         clearTimeout = S.window.clearTimeout;
@@ -17,6 +18,7 @@
         reveal: false,
         timeout: null,
         className: 'crafter-social-commentable',
+        revealed: false,
         events: {
             'mouseenter' : 'mouseenter',
             'mouseleave' : 'mouseleave'
@@ -37,6 +39,14 @@
 
         },
         listen: function () {
+
+            var me = this;
+            $(S.window).resize(function () {
+                if ( me.revealed ) {
+                    me.mouseenter();
+                }
+            });
+
             this.listenTo(this.collection, 'sync', this.render);
             this.listenTo(S.getDirector(), C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
         },
@@ -74,12 +84,12 @@
                 case C.get('AREA_VISIBILITY_MODE_REVEAL'):
                     this.hide = false;
                     this.reveal = true;
-                    this.mouseenter();
+                    this.$el.is(':visible') && this.mouseenter();
                     break;
                 case C.get('AREA_VISIBILITY_MODE_HOVER'):
                     this.hide = false;
                     this.reveal = false;
-                    this.mouseleave();
+                    this.$el.is(':visible') && this.mouseleave();
                     break;
                 case C.get('AREA_VISIBILITY_MODE_HIDE'):
                     this.hide = true;
@@ -127,11 +137,12 @@
                 clearTimeout(this.timeout);
 
                 var $elem = this.element(),
-                    $options = this.$options,
-                    offset = $elem.offset(),
-                    width = $elem.outerWidth();
+                    $options = this.$options;
 
                 $elem.addClass(REVEAL_CLASS);
+
+                var offset = $elem.offset(),
+                    width = $elem.outerWidth();
 
                 $options.appendTo('body').show();
                 var optsWidth = $options.outerWidth();
@@ -141,6 +152,8 @@
                     left: (offset.left + width - optsWidth),
                     top: offset.top
                 }).show();
+
+                this.revealed = true;
 
             }
 
@@ -153,11 +166,13 @@
                 me.timeout = setTimeout(function () {
                     me.element().removeClass(REVEAL_CLASS);
                     me.$options.hide().detach();
+                    me.revealed = false;
                 }, 10);
 
             }
 
         }
+
     });
 
     Commentable.DEFAULTS = {
@@ -168,4 +183,4 @@
 
     S.define('view.Commentable', Commentable);
 
-}) (jQuery, crafter.social);
+}) (crafter.social);
