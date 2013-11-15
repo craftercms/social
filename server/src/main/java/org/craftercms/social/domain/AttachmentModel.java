@@ -61,4 +61,21 @@ public class AttachmentModel {
 		return url;
 	}
 	
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (object == null || getClass() != object.getClass()) {
+			return false;
+		}
+		final AttachmentModel model = (AttachmentModel) object;
+
+		if (filename != null ? !filename.equals(model.filename) : model.filename != null) {
+			return false;
+		}
+
+		return true;
+	}
+	
 }
