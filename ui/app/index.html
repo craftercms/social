@@ -17,21 +17,53 @@
         <!-- endbuild -->
 
         <script>
-            var crafterSocial_cfg = {
-                // 'url.base': '...',
-                // 'url.service': '...',
-                // 'url.templates': '...'
-                // ...
-            }
-            function crafterSocial_onAppReady ( Director, CrafterSocial ) {
-                console.log('Crafter Social is Ready!');
 
-                Director.socialise({
+            /*
+             * Social configuration attributes can be overwritten by
+             * declaring this object before the social javascript is
+             * imported into the page
+             */
+            var crafterSocial_cfg = {
+
+                                    'url.base'  : '/',
+                                 'url.service'  : 'http://localhost:8090/crafter-social/api/2/',
+                                'url.security'  : 'http://localhost:8090/social-auth/crafter-security-login',
+                                'url.ugc.file'  : '{attachmentId}.json',
+                'url.ugc.{id}.get_attachments'  : '.json?tenant={tenant}',
+                 'url.ugc.{id}.add_attachment'  : '.json',
+                               'url.templates'  : 'templates/'
+
+                /*
+                'url.base'                      : '/ui/',
+                'url.service'                   : '/crafter-social/api/2/',
+                'url.security'                  : '/social-auth/crafter-security-login',
+                'url.ugc.file'                  : '{attachmentId}.json',
+                'url.ugc.{id}.get_attachments'  : '.json?tenant={tenant}',
+                'url.ugc.{id}.add_attachment'   : '.json',
+                'url.templates'                 : '/ui/templates/'
+                */
+
+            };
+
+            /*
+             * this function needs to be declared before the social javascript
+             * is imported into the page. Other wise it is not necessary to use
+             * a callback and the same can be achieved simply by calling the director
+             * class directly:
+             *
+             *      crafter.social.getDirector().socialise({ ... });
+             *
+             */
+            function crafterSocial_onAppReady ( director, CrafterSocial ) {
+                // console.log('Crafter Social is Ready!');
+
+                director.socialise({
                     target: '#jumbotron',
-                    tenant: 'xyz'
+                    tenant: 'craftercms'
                 });
 
             }
+
         </script>
 
     </head>
@@ -104,15 +136,24 @@
         <script src="libs/sass-bootstrap/js/popover.js"></script>
         <script src="libs/sass-bootstrap/js/modal.js"></script>
 
+        <script src="scripts/constants.js"></script>
+        <script src="scripts/config.js"></script>
         <script src="scripts/api.js"></script>
 
+        <script src="scripts/component/dropbox.js"></script>
         <script src="scripts/component/director.js"></script>
         <script src="scripts/component/editor.js"></script>
         <script src="scripts/component/template-engine.js"></script>
+
+        <script src="scripts/model/profile.js"></script>
+        <script src="scripts/model/file.js"></script>
         <script src="scripts/model/comment.js"></script>
+
         <script src="scripts/controller/base.js"></script>
+        <script src="scripts/controller/files.js"></script>
 
         <script src="scripts/view/base.js"></script>
+        <script src="scripts/view/modal.js"></script>
         <script src="scripts/view/comment.js"></script>
         <script src="scripts/view/commenting.js"></script>
         <script src="scripts/view/discussion.js"></script>
@@ -125,6 +166,9 @@
         <script src="scripts/view/barget/share.js"></script>
         <script src="scripts/view/barget/rate.js"></script>
         <script src="scripts/view/social-bar.js"></script>
+        <script src="scripts/view/auth.js"></script>
+        <script src="scripts/view/file.js"></script>
+        <script src="scripts/view/files.js"></script>
 
         <script src="scripts/starter.js"></script>
 

@@ -6,7 +6,10 @@
         C = S.Constants,
         $ = S.$;
 
-    // TODO make classes configurable
+    // TODO make classes configurable?
+    var STAR_EMPTY_CLASS = 'cs-icon-star-empty',
+        STAR_CLASS = 'cs-icon-star',
+        RATED_CLASS = 'rated';
 
     Class = Superclass.extend({
 
@@ -29,32 +32,33 @@
             if (!$me.hasClass('rated')) {
 
                 $me.parent().find('i:not(.rated)')
-                    .removeClass('glyphicon-star')
-                    .addClass('glyphicon-star-empty');
+                    .removeClass(STAR_CLASS)
+                    .addClass(STAR_EMPTY_CLASS);
                 $me.prevAll().add($me)
-                    .removeClass('glyphicon-star-empty')
-                    .addClass('glyphicon-star');
+                    .removeClass(STAR_EMPTY_CLASS)
+                    .addClass(STAR_CLASS);
             }
         },
         dehighlight: function ( e ) {
             var $me = $(e.target);
             if (!$me.hasClass('rated')) {
-                $me.parent().find('i:not(.rated)').removeClass('glyphicon-star').addClass('glyphicon-star-empty');
+                $me.parent().find('i:not(.rated)').removeClass(STAR_CLASS).addClass(STAR_EMPTY_CLASS);
             }
         },
         select: function ( e ) {
             var $me = $(e.target),
                 $iElements = $me.parent().find('i'),
-                previouslyRatedFirst = ($me.hasClass('rated') && $me.get(0) === $iElements.get(0) && $iElements.filter('.rated').length === 1);
+                previouslyRatedFirst = ($me.hasClass('rated') && $me.get(0) === $iElements.get(0) && $iElements.filter('.rated').length === 1),
+                classes = '%@ %@'.fmt(STAR_CLASS, RATED_CLASS);
 
             $iElements
-                .removeClass('glyphicon-star rated')
-                .addClass('glyphicon-star-empty');
+                .removeClass(classes)
+                .addClass(STAR_EMPTY_CLASS);
 
             if (!previouslyRatedFirst) {
                 $me.prevAll().add($me)
-                    .removeClass('glyphicon-star-empty')
-                    .addClass('rated glyphicon-star');
+                    .removeClass(STAR_EMPTY_CLASS)
+                    .addClass(classes);
             }
         },
         submit: function () {

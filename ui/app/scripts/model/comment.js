@@ -1,44 +1,31 @@
 (function (S) {
     'use strict';
 
-    var U = S.util,
-        SERVICE = S.Cfg('url.service');
+    var $ = S.$,
+        DEFAULT_ROLES = [
+            'SOCIAL_AUTHOR',
+            'SOCIAL_ADMIN',
+            'SOCIAL_MODERATOR',
+            'SOCIAL_USER'
+        ];
 
     var Comment = S.Backbone.Model.extend({
         idAttribute: 'id',
         url: function () {
             if (this.isNew()) {
-                return '%@ugc/create.json'.fmt(SERVICE);
+                return S.url('ugc.create');
             } else {
-                return '%@ugc/like/%@.json'.fmt(SERVICE, this.id);
+                // TODO ... update?
             }
         },
         defaults: {
             'actions' : [
-                {
-                    'name' : 'read',
-                    'roles' : ['SOCIAL_AUTHOR']
-                },
-                {
-                    'name' : 'update',
-                    'roles' : ['SOCIAL_AUTHOR']
-                },
-                {
-                    'name' : 'create',
-                    'roles' : ['SOCIAL_AUTHOR']
-                },
-                {
-                    'name' : 'delete',
-                    'roles' : ['SOCIAL_AUTHOR']
-                },
-                {
-                    'name' : 'act_on',
-                    'roles' : ['SOCIAL_AUTHOR']
-                },
-                {
-                    'name' : 'moderate',
-                    'roles' : ['SOCIAL_AUTHOR']
-                }
+                { 'name' : 'read'       , 'roles' : DEFAULT_ROLES },
+                { 'name' : 'update'     , 'roles' : DEFAULT_ROLES },
+                { 'name' : 'create'     , 'roles' : DEFAULT_ROLES },
+                { 'name' : 'delete'     , 'roles' : DEFAULT_ROLES },
+                { 'name' : 'act_on'     , 'roles' : DEFAULT_ROLES },
+                { 'name' : 'moderate'   , 'roles' : DEFAULT_ROLES }
             ],
             'anonymousFlag' : false,
             'childCount' : 0,
@@ -58,35 +45,31 @@
             'targetId' : '',
             'targetUrl' : '',
             'tenant' : '',
-            'textContent' : '{ "content": "" }',
+            'textContent' : '', // '{ "content": "" }',
             'timesModerated' : 0
         },
-        parse: function (data) {
-            data.content = U.fromJSON(data.textContent).content;
-            return data;
-        },
+//        parse: function (data) {
+//            data.content = U.fromJSON(data.textContent).content;
+//            return data;
+//        },
         like: function () {
             this.save({ likeCount: this.get('likeCount') + 1 }, {
-                url: S.component.Director.actionURL('ugc.like', { id: this.id }),
+                url: S.url('ugc.like', { id: this.get('id') }),
                 type: 'POST', // TODO REMOVE OR ADJUST
-                //data: JSON.stringify({ tenant: this.get('tenant'), reason: 'hello' })
+                data: $.param({ tenant: this.get('tenant') })
             });
         },
-        flag: function () {
+        flag: function ( reason ) {
             this.save({ flagCount: this.get('flagCount') + 1 }, {
-                url: S.component.Director.actionURL('ugc.flag', { id: this.id }),
-                type: 'POST' // TODO REMOVE OR ADJUST
+                url: S.url('ugc.flag', { id: this.get('id') }),
+                type: 'POST', // TODO REMOVE OR ADJUST
+                data: $.param({ tenant: this.get('tenant'), reason: reason })
             });
         },
         reply: function () {
 
         }
     });
-
-    Comment.DEFAULTS = {
-        tenant: null,
-        target: null
-    };
 
     S.define('model.Comment', Comment);
 

@@ -1,14 +1,24 @@
 
 .#{$app-namespace}-view {
 
-  &, div,article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary,button,input,span,strong,em,a,p {
-    width: auto;
-    height: auto;
+  &, #{$html-elements} {
+
     font-size: $font-size-base;
     font-family: $font-family-base;
+    color: $text-color;
     text-shadow: none;
     line-height: 1em;
-    color: #000;
+    text-transform: left;
+
+    width: auto;
+    height: auto;
+
+    background: none;
+
+    border: none;
+    padding: 0;
+    margin: 0;
+
   }
 
   .silhouette {
@@ -29,18 +39,23 @@
   // Core CSS
   @import 'sass-bootstrap/lib/scaffolding';
   @import 'sass-bootstrap/lib/type';
+  h1, h2, h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
   @import 'sass-bootstrap/lib/tables';
   @import 'sass-bootstrap/lib/forms';
   @import 'sass-bootstrap/lib/buttons';
 
   // Components
   @import 'sass-bootstrap/lib/component-animations';
-  @import '../bs/glyphicons';
+  @import '../icons';
   @import 'sass-bootstrap/lib/button-groups';
   @import 'sass-bootstrap/lib/input-groups';
   @import 'sass-bootstrap/lib/badges';
   @import 'sass-bootstrap/lib/alerts';
   @import 'sass-bootstrap/lib/close';
+  @import '../progress-bars';
 
   // Components w/ JavaScript
   @import 'sass-bootstrap/lib/tooltip';
@@ -50,15 +65,20 @@
   @import 'sass-bootstrap/lib/utilities';
 
   a {
+
+    cursor: pointer;
     color: $link-color;
-    &:hover {
-      color: $link-hover-color;
-    }
+    &:hover { color: $link-hover-color; }
+
+    * { color: inherit; }
+
   }
 
   button.close {
     background: transparent;
     border: none;
   }
+
+  @import 'comment-thread';
 
 }

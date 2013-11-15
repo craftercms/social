@@ -8,8 +8,8 @@
     Class = Superclass.extend({
 
         icons: {
-            reveal: 'glyphicon-eye-close',
-            hover: 'glyphicon-eye-open'
+            reveal: 'cs-icon-eye-close',
+            hover: 'cs-icon-eye-open'
         },
 
         icon: 'eye-close',
@@ -22,7 +22,7 @@
         },
 
         listen: function () {
-            this.listenTo(S.component.Director, C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
+            this.listenTo(S.getDirector(), C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
         },
 
         visibilityModeChanged: function (mode) {
@@ -45,10 +45,10 @@
 
         activate: function ( $trigger ) {
 
-            if (S.component.Director.getAreaVisibilityMode() !== C.get('AREA_VISIBILITY_MODE_REVEAL')) {
-                S.component.Director.setAreaVisibilityMode(C.get('AREA_VISIBILITY_MODE_REVEAL'));
+            if (S.getDirector().getAreaVisibilityMode() !== C.get('AREA_VISIBILITY_MODE_REVEAL')) {
+                S.getDirector().setAreaVisibilityMode(C.get('AREA_VISIBILITY_MODE_REVEAL'));
             } else {
-                S.component.Director.setAreaVisibilityMode(C.get('AREA_VISIBILITY_MODE_HOVER'));
+                S.getDirector().setAreaVisibilityMode(C.get('AREA_VISIBILITY_MODE_HOVER'));
             }
 
         }
