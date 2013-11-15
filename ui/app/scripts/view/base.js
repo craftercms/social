@@ -107,6 +107,9 @@
                     success: function (html) {
                         tmplHTML = html.replace(/data-identifyme="(.*?)"/g, 'id="$1_' + me.guid + '"');
                         tmplCache.set(tmpl, tmplHTML);
+                    },
+                    error: function () {
+                        throw new Error('Failed to load template "%@"'.fmt(tmpl));
                     }
                 });
                 return tmplHTML;
