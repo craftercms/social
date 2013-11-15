@@ -39,7 +39,8 @@
         },
         addOne: function () {
             Base.prototype.addOne.apply(this, arguments);
-            this.replacement();
+            // TODO: placement is not working well
+            // this.replacement();
         },
         listen: function () {
             Base.prototype.listen.apply(this, arguments);
@@ -192,7 +193,8 @@
             comment: ('%@comment.hbs').fmt(S.Cfg('url.templates'))
         },
         popover: $.extend({}, $.fn.popover.Constructor.DEFAULTS, {
-            placement: 'auto bottom',
+            // TODO auto placement is not working well
+            placement: 'bottom',
             trigger: 'manual',
             container: 'body',
             content: '(not.empty)'
