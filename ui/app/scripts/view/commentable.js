@@ -126,8 +126,22 @@
             view.show();
         },
 
-        watch: function () {
-
+        watch: function (e) {
+            // TODO: what's backend like?
+            S.request({
+                url: S.url('notifications.add', {
+                    target: this.cfg.target,
+                    title: '',
+                    url: ''
+                }),
+                success: function () {
+                    $(e.target).css('color', 'green');
+                    console.log(arguments);
+                },
+                error: function () {
+                    console.log(arguments);
+                }
+            });
         },
 
         mouseenter: function (  ) {
