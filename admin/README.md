@@ -13,6 +13,16 @@ Manage and moderate comments
 
 ## Installation
 
+### Bundle Installation
+
+Per the requirements, this project is made up of different software components. You may speed up installation by installing the [Crafter Social bundle](http://craftercms.org/downloads) which includes all the necessary software components.
+
+After installing the bundle, you may then replace the wars that come by default with the application by following steps 2, 3, 6 and 7 in the 'Full Installation' section.
+
+### Full Installation
+
+If you're comfortable setting up Tomcat and MongoDB by yourself, please follow
+
 1) Create a root folder for your project:
 
     mkdir ~/moderation-dashboard
@@ -86,3 +96,105 @@ Change the property to:
 Note*: To ask Tomcat for more memory than the value provided by default, create a setenv.sh file in: ~/moderation-dashboard/deploy/tomcat/bin and add the following line: 
 
     export JAVA_OPTS="-Xms1024m -Xmx10246m -XX:NewSize=256m -XX:MaxNewSize=356m -XX:PermSize=256m -XX:MaxPermSize=356m"
+
+
+## Usage
+
+To see the application running locally, go to: http://localhost:8080/crafter-social-admin which should show the moderation dashboard login screen.
+
+Use username "admin" and password "admin" to login.
+
+## Adding Data
+
+When you first log in to the moderation dashboard, you will not see any comments to moderate/manage; however, you can add these manually by using a REST client and the following service calls:
+
+Step 1:
+
+    Method: GET
+    URL: http://localhost:8080/crafter-profile/api/2/auth/app_token.json?username=craftersocial&password=craftersocial
+
+    Returns: AppToken value
+
+***
+
+Step 2:
+
+    Method: GET
+    URL: http://localhost:8080/crafter-profile/api/2/auth/ticket.json?appToken=<AppTokenValue>&username=admin&password=admin&tenantName=craftercms
+
+    *Replace <AppTokenValue> with AppToken value from step 1.
+
+    Returns: Ticket value
+
+***
+
+Step 3: Post new content
+
+    Method: POST
+    URL: http://localhost:8090/crafter-social/api/2/ugc/create.json?ticket=<TicketValue>&tenant=craftercms
+
+    Request Header:
+    Content-Type application/json
+
+    Request Body (sample): 
+    {
+       "id": "525853360364bd7d1c4e6907",
+       "textContent": "{\"title\":\"Test title\",\"content\":\"Test content\"}",
+       "content": "Sample Content",
+       "actions": [{
+           "name": "read",
+           "roles": [
+               "SOCIAL_AUTHOR",
+               "SOCIAL_ADMIN"
+           ]
+       }, {
+           "name": "update",
+           "roles": [
+               "SOCIAL_AUTHOR",
+               "SOCIAL_ADMIN"
+           ]
+       }, {
+           "name": "create",
+           "roles": [
+               "SOCIAL_AUTHOR",
+               "SOCIAL_ADMIN"
+           ]
+       }, {
+           "name": "delete",
+           "roles": [
+               "SOCIAL_AUTHOR",
+               "SOCIAL_ADMIN"
+           ]
+       }, {
+           "name": "act_on",
+           "roles": [
+               "SOCIAL_AUTHOR",
+               "SOCIAL_ADMIN"
+           ]
+       }, {
+           "name": "moderate",
+           "roles": [
+               "SOCIAL_AUTHOR",
+               "SOCIAL_ADMIN"
+           ]
+       }],
+       "moderationStatus": "UNMODERATED",
+       "timesModerated": 0,
+       "likeCount": 0,
+       "offenceCount": 0,
+       "flagCount": 0,
+       "profileId": "52571782036447c56863631a",
+       "tenant": "craftercms",
+       "targetId": "testing",
+       "targetDescription": "mycontent description",
+       "targetUrl": "mycontent.com",
+       "anonymousFlag": false,
+       "extraChildCount": 0,
+       "children": [
+
+       ],
+       "childCount": 0,
+       "dateAdded": 1381520182000
+    }
+   
+    *Replace <TicketValue> with Ticket value from step 2.
