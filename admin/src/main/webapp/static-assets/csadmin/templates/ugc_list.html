@@ -14,7 +14,7 @@
     <div class="row-fluid">
         <main ng-show="displayUgcs" role="main" class="span12">
             <div class="bulk-actions" ng-controller="BulkActionCtrl">
-                <select id="bulkActions" ng-model="bulkAction" ng-options="action.status as action.label for action in moderationActions" ng-change="optionSelected()">
+                <select id="bulkActions" ng-model="bulkAction" ng-options="action.status as action.label for action in bulkActions" ng-change="optionSelected()">
                     <option value="">-- Choose Bulk Action --</option>
                 </select>
                 <button id="applyBtn" class="btn entries-list-btn disabled" ng-click="bulkUpdate($event)">Apply</button>
