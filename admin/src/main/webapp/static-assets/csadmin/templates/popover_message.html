@@ -1,0 +1,11 @@
+<button class="btn btn-primary" ng-click="showPopover($event)" value="{{ugcstatus}}">
+    {{ugclabel}}
+</button>
+
+<div class="popover hidden">
+    <div class="arrow"></div>
+    <div class="btn-group" data-toggle="buttons-radio">
+        <button class="btn delete-btn" value="yes" ng-click="deleteUgc($event)">Yes</button>
+        <button class="btn delete-btn" value="no" ng-click="hidePopover($event)">No</button>
+    </div>
+</div>
