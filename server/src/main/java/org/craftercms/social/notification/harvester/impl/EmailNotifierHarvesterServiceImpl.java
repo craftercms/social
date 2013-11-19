@@ -1,5 +1,6 @@
 package org.craftercms.social.notification.harvester.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +62,13 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	
 	public EmailNotifierHarvesterServiceImpl() {
 		frequency = DEFAULT_FREQUENCY;
-		this.pageSize = DEFAULT_PAGE_SIZE;
+		pageSize = DEFAULT_PAGE_SIZE;
 		transmitedStatus = TransmittedStatus.PENDING;
 		actionToDisplay = initActionsToDisplay();
 		signatureEmail = DEFAULT_SIGNATURE_EMAIL;
 		pageManagement = new PageManagement();
 		emailParameters = new HashMap();
+        actionFilters = new ArrayList<String>();
 	}
 	
 	private Map<String, String> initActionsToDisplay() {
@@ -87,7 +89,8 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		
 		boolean isDone = initPageManagement();
 		while(!isDone) {
-			notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency, transmitedStatus.toString(), EMAIL_ACTION, pageManagement.getStart(), pageManagement.getEnd());
+
+			notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency, transmitedStatus.toString(), EMAIL_ACTION, pageManagement.getStart(), pageManagement.getEnd(), this.getActionFiltersAsStringArray());
 			
 			if (notificationList != null && notificationList.size() > 0) {
 				if (log.isDebugEnabled()) {
@@ -105,7 +108,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	/**
      * Sets the email template that will be used to email
      * 
-     * @param resetEmailTemplate
+     * @param //resetEmailTemplate
      */
     public void setEmailTemplateFtl(String emailTemplateFtl) {
     	this.emailTemplateFtl = emailTemplateFtl;
@@ -166,7 +169,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		
 		pageManagement.setStart(0);
 		pageManagement.setPageSize(this.pageSize);
-		long total = this.notificationRepository.countPendingsByFrequency(this.frequency);
+		long total = this.notificationRepository.countPendingsByFrequency(this.frequency, this.getActionFiltersAsStringArray());
 		pageManagement.setTotal(total);
 		if (total <= 0) {
 			isDone = true;

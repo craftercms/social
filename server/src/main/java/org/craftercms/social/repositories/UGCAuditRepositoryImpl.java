@@ -31,21 +31,32 @@ public class UGCAuditRepositoryImpl implements UGCAuditRepositoryCustom {
 	private MongoTemplate mongoTemplate;
 	
 	private static final String ROW = "row";
+    private static final String ACTION = "action";
 	
 	@Override
-	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve) {
+	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, String[] actionFilters) {
 		Query query = new Query();
 		query.sort().on(ROW, Order.DESCENDING);
 		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
-	
+
+        if(actionFilters != null){
+            for(String actionFilter : actionFilters){
+                query.addCriteria(Criteria.where(ACTION).is(actionFilter));
+            }
+        }
+
 		return mongoTemplate.find(query, UGCAudit.class);
 	}
 	
 	@Override
-	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, int start, int end) {
+	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, int start, int end, String[] actionFilters) {
 		Query query = new Query();
 		
 		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
+
+        if(actionFilters != null && actionFilters.length > 0){
+            query.addCriteria(Criteria.where(ACTION).in(actionFilters));
+        }
 		
 		query.skip(start);
         query.limit(end > start? (end - start + 1): 0);
@@ -56,10 +67,14 @@ public class UGCAuditRepositoryImpl implements UGCAuditRepositoryCustom {
 	}
 	
 	@Override
-	public long count(long lastRowRetrieve) {
+	public long count(long lastRowRetrieve, String[] actionFilters) {
 		Query query = new Query();
 		
 		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
+
+        if(actionFilters != null && actionFilters.length > 0){
+            query.addCriteria(Criteria.where(ACTION).in(actionFilters));
+        }
 		
 		return mongoTemplate.count(query, UGCAudit.class);
 	}
