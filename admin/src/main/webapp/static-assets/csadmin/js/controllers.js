@@ -16,6 +16,7 @@ angular.module('moderationDashboard.controllers', []).
         scope.ugcList = [];
         scope.status = "";
         scope.moderationActions = [];
+        scope.bulkActions = [];
         scope.confObj = ConfigurationData.getConfData();
         scope.moderationList = ConfigurationData.getModerationActions();
 
@@ -27,7 +28,7 @@ angular.module('moderationDashboard.controllers', []).
         // set the active tab
         var getModerationList = function () {
             angular.forEach(scope.moderationList, function (moderationObj) {
-                if (scope.status.toLowerCase() === moderationObj.moderation.label.toLowerCase()) {
+                if (scope.status.toLowerCase() === moderationObj.moderation.value.toLowerCase()) {
                     moderationObj.state = 'active';
                 }else{
                     moderationObj.state = '';
@@ -116,10 +117,17 @@ angular.module('moderationDashboard.controllers', []).
         }
 
         // set list of moderation actions available according status selected
-        var moderationActions = function () {
+        var setScopeActions = function () {
             angular.forEach(scope.moderationList, function (modObject) {
                 if (modObject.moderation.value.toLowerCase() === scope.status.toLocaleLowerCase()){
                     scope.moderationActions = modObject.actions;
+
+                    // Iterate through the action objects to identify the bulk operations
+                    angular.forEach(modObject.actions, function(actionObj) {
+                        if (actionObj.isBulk) {
+                            scope.bulkActions.push(actionObj);
+                        }
+                    })
                 }
             });
         };
@@ -189,7 +197,7 @@ angular.module('moderationDashboard.controllers', []).
         setStatus();
         getModerationList();
         scope.getUgcList(1);
-        moderationActions();
+        setScopeActions();
 
     }]).
 
