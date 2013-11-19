@@ -16,6 +16,7 @@
  */
 package org.craftercms.social.services;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -123,7 +124,7 @@ public interface UGCService {
 
 	List<UGC> findByProfileAction(String profileId, AuditAction action);
 
-	void streamAttachment(ObjectId attachmentId, HttpServletResponse response);
+	void streamAttachment(ObjectId attachmentId, HttpServletResponse response) throws IOException;
 
 	UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId, String sortField, String sortOrder);
 
@@ -152,5 +153,7 @@ public interface UGCService {
 			String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException;
 
 	UGC findById(ObjectId ugcId, List<String> attributes);
+
+	int getModerationStatusCount(String moderationStatus, String tenant, String targetId, boolean isOnlyRoot);
 	
 }

@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpStatus;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
@@ -45,6 +46,7 @@ import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
 import org.craftercms.social.services.*;
+import org.craftercms.social.util.UGCConstants;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.support.CrafterProfile;
@@ -447,8 +449,22 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public void streamAttachment(ObjectId attachmentId, HttpServletResponse response) {
-        supportDataAccess.streamAttachment(attachmentId, response);
+    public void streamAttachment(ObjectId attachmentId, HttpServletResponse response) throws IOException {
+    	try {
+    		Attachment file = supportDataAccess.getAttachment(attachmentId);
+    		if (file !=null) {
+	    		response.setContentType(file.getContentType());
+				response.setContentLength((int) file.getLength());
+				response.setHeader("Content-Disposition", "attachment; filename="
+						+ file.getFilename());
+	    		supportDataAccess.streamAttachment(attachmentId, response.getOutputStream());
+    		} else {
+    			throw new Exception("Attachment with id {} does not exist " + attachmentId);
+    		}
+    	} catch (Exception e) {
+    		log.error(e.getMessage());
+    		response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+    	}
     }
 
     @Override
@@ -500,6 +516,11 @@ public class UGCServiceImpl implements UGCService {
     	return uGCRepository.findTenantAndTargetIdAndParentIsNull(tenant, target, ActionEnum.READ).size();
     	
     }
+	
+	@Override
+	public int getModerationStatusCount(String moderationStatus, String tenant, String targetId, boolean isOnlyRoot) {
+		return uGCRepository.findByModerationStatusAndTenantAndTargetId(new String[]{moderationStatus}, tenant, targetId, isOnlyRoot).size();
+	}
 
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, String sortField, String sortOrder) {
@@ -960,6 +981,8 @@ public class UGCServiceImpl implements UGCService {
 		}
 		return result;
 	}
+
+	
 
 
 }

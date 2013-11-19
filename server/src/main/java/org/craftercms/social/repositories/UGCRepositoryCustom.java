@@ -40,4 +40,8 @@ public interface UGCRepositoryCustom {
 
 	List<UGC> findByTenantAndSort(String tenant, ActionEnum action, String sortField, String sortOrder);
 
+	List<UGC> findByModerationStatusAndTenantAndTargetId(
+			String[] moderationStatus, String tenant, String targetId,
+			boolean isOnlyRoot);
+
 }

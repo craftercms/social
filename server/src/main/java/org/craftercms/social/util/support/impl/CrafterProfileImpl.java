@@ -199,7 +199,7 @@ public class CrafterProfileImpl implements CrafterProfile {
 		if (profileId == null || profileId.equals("") || profileId.equalsIgnoreCase("anonymous")) {
 			return ProfileConstants.ANONYMOUS;
 		} else if (attributes==null) {
-			attributes = new ArrayList<String>();
+			return getProfile(profileId);
 		}
 
 		try {

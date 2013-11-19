@@ -7,15 +7,19 @@ import java.util.Map;
 
 import org.craftercms.social.domain.Notification;
 import org.craftercms.social.domain.Notification.TransmittedStatus;
-import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.exceptions.MailException;
 import org.craftercms.social.notification.harvester.BaseHarvesterService;
 import org.craftercms.social.repositories.NotificationRepository;
 import org.craftercms.social.services.MailService;
-import org.craftercms.social.util.PageManagement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Order;
 
 public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
+	private static final HashMap<String, Order> DEFAULT_SORT = new HashMap<String, Order>(){
+		{
+			put("createdDate", Order.DESCENDING); 
+		}
+	};
 	
 	private static final String DEFAULT_FREQUENCY = "instant";
 	private static final String EMAIL_ACTION = "email";
@@ -31,6 +35,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	private static final String EVENT_USER_EMAIL = "eventUserEmail";
 	private static final String EVENT_DATE = "eventDate";
 	
+	private Map<String,Order> notificationQuerySort;
 	
 	private String frequency;
 	
@@ -54,7 +59,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	
 	private String signatureEmail;
 	
-	private PageManagement pageManagement;
+	//private PageManagement pageManagement;
 	
 	private int pageSize;
 	
@@ -64,45 +69,27 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		frequency = DEFAULT_FREQUENCY;
 		pageSize = DEFAULT_PAGE_SIZE;
 		transmitedStatus = TransmittedStatus.PENDING;
-		actionToDisplay = initActionsToDisplay();
+		
 		signatureEmail = DEFAULT_SIGNATURE_EMAIL;
-		pageManagement = new PageManagement();
-		emailParameters = new HashMap();
+		
+		emailParameters = new HashMap<String, String>();
         actionFilters = new ArrayList<String>();
+        notificationQuerySort = DEFAULT_SORT;
 	}
 	
-	private Map<String, String> initActionsToDisplay() {
-		Map<String, String> actionToDisplay = new HashMap<String, String>();
-		actionToDisplay.put(AuditAction.LIKE.toString(), "liked");
-		actionToDisplay.put(AuditAction.DISLIKE.toString(), "disliked");
-		actionToDisplay.put(AuditAction.FLAG.toString(), "flaged");
-		actionToDisplay.put(AuditAction.CREATE.toString(), "created");
-		actionToDisplay.put(AuditAction.UPDATE.toString(), "updated");
-		actionToDisplay.put(AuditAction.DELETE.toString(), "deleted");
-		actionToDisplay.put(AuditAction.MODERATE.toString(), "moderated");
-		return actionToDisplay;
-	}
-
 	@Override
 	public void doHarvestInternal(Map<String, ?> harvesterProperties) {
 		List<Notification> notificationList;
+		notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency, transmitedStatus.toString(), EMAIL_ACTION, 
+				getActionFiltersAsStringArray(), notificationQuerySort);
 		
-		boolean isDone = initPageManagement();
-		while(!isDone) {
-
-			notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency, transmitedStatus.toString(), EMAIL_ACTION, pageManagement.getStart(), pageManagement.getEnd(), this.getActionFiltersAsStringArray());
-			
-			if (notificationList != null && notificationList.size() > 0) {
-				if (log.isDebugEnabled()) {
-					log.debug("Email Notifier Harvester found notifications: " + notificationList.size());
-				}
-				emailNotifications(notificationList);
-				
-				isDone = updatePageManagement();
-			} else {
-				isDone = true;
+		if (notificationList != null && notificationList.size() > 0) {
+			if (log.isDebugEnabled()) {
+				log.debug("Email Notifier Harvester found notifications: " + notificationList.size());
 			}
-		}
+			emailNotifications(notificationList);
+			
+		} 
 	}
 	
 	/**
@@ -164,32 +151,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		this.signatureEmail = signatureEmail;
 	}
 	
-	private boolean initPageManagement() {
-		boolean isDone = false;
-		
-		pageManagement.setStart(0);
-		pageManagement.setPageSize(this.pageSize);
-		long total = this.notificationRepository.countPendingsByFrequency(this.frequency, this.getActionFiltersAsStringArray());
-		pageManagement.setTotal(total);
-		if (total <= 0) {
-			isDone = true;
-		}
-		
-		return isDone;
-	}
-	
-	private boolean updatePageManagement() {
-		boolean isDone = false;
-		if (pageManagement.isLastPage()) {
-			isDone = true;
-		} else {
-			
-			pageManagement.next();
-		}
-		return isDone;
-	}
-
-	private void emailNotifications(List<Notification> notificationList) {
+	protected void emailNotifications(List<Notification> notificationList) {
 		TransmittedStatus trasmittedStatus;
 		for (Notification notification: notificationList) {
 			trasmittedStatus = TransmittedStatus.PROCESSING;
@@ -209,37 +171,46 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		}
 	}
 	
-	private void updateNotification(Notification notification, TransmittedStatus transmitedStatus) {
+	protected void updateNotification(Notification notification, TransmittedStatus transmitedStatus) {
 		notification.setTransmitedStatus(transmitedStatus);
 		this.notificationRepository.save(notification);
 	}
 
 	private void emailNotification(Notification notification) throws MailException {
-		
-		Map<String, Object> templateArgs = getTemplateArguments(notification);
-		mailService.sendMailTLS(emailSubject, emailBody, this.emailTemplateFtl, templateArgs, notification.getSubscriberEmail(),
-	            fromAddress);
-	}
+        Map<String, Object> templateArgs = getNotificationTemplateArguments(notification);
+        templateArgs.putAll(getGlobalTemplateArguments(notification));
+        sendEmail(templateArgs, notification.getSubscriberEmail());
+    }
+
+    protected void sendEmail(Map<String, Object> templateArgs, String subscriberEmail) throws MailException {
+        mailService.sendMailTLS(emailSubject, emailBody, this.emailTemplateFtl, templateArgs, subscriberEmail,
+                fromAddress);
+    }
+
+    protected Map<String, Object> getGlobalTemplateArguments(Notification notification) {
+        Map<String, Object> templateArgs = new HashMap<String, Object>();
+
+        templateArgs.put(SIGNATURE_EMAIL, this.signatureEmail);
+        templateArgs.put(SUBSCRIBER_USER_NAME, notification.getSubscriberUsername());
+        templateArgs.put(SUBSCRIBER_EMAIL, notification.getSubscriberEmail());
+
+        templateArgs.putAll(this.emailParameters);
+
+        return templateArgs;
+    }
+
+    protected Map<String, Object> getNotificationTemplateArguments(Notification notification) {
+        Map<String, Object> templateArgs = new HashMap<String, Object>();
+
+        templateArgs.put(EVENT_ACTION, notification.getEvent().getAction());
+        templateArgs.put(EVENT_TARGET, notification.getEvent().getTarget());
+        templateArgs.put(EVENT_USERNAME, notification.getEvent().getProfile().getUserName());
+        templateArgs.put(EVENT_USER_EMAIL, notification.getEvent().getProfile().getEmail());
+        templateArgs.put(EVENT_DATE, notification.getEvent().getAuditDate());
+
+        return templateArgs;
+    }
 	
-	private Map<String, Object> getTemplateArguments(Notification notification) {
-		Map<String, Object> templateArgs = new HashMap<String, Object>();
-		
-		templateArgs.put(SIGNATURE_EMAIL,this.signatureEmail);
-		templateArgs.put(SUBSCRIBER_USER_NAME,notification.getSubscriberUsername());
-		templateArgs.put(SUBSCRIBER_EMAIL,notification.getSubscriberEmail());
-		
-		
-		templateArgs.put(EVENT_ACTION,notification.getEvent().getAction());
-		templateArgs.put(EVENT_TARGET,notification.getEvent().getTarget());
-		templateArgs.put(EVENT_USERNAME,notification.getEvent().getProfile().getUserName());
-		templateArgs.put(EVENT_USER_EMAIL,notification.getEvent().getProfile().getEmail());
-		templateArgs.put(EVENT_DATE,notification.getEvent().getAuditDate());
-		
-		templateArgs.putAll(this.emailParameters);
-
-		return templateArgs;
-	}
-
 	public int getPageSize() {
 		return pageSize;
 	}
@@ -256,6 +227,14 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		if (emailParameters!=null) {
 			this.emailParameters = emailParameters;
 		}
+	}
+
+	public Map<String,Order> getNotificationQuerySort() {
+		return notificationQuerySort;
+	}
+
+	public void setNotificationQuerySort(Map<String,Order> notificationQuerySort) {
+		this.notificationQuerySort = notificationQuerySort;
 	}
 
 }
