@@ -58,9 +58,10 @@ angular.module('moderationDashboard.controllers', []).
 
                     angular.forEach(data, function (ugc){
 
-                        if (ugc.textContent[0] == '{') {
+                        if (ugc.textContent && ugc.textContent[0] == '{') {
                             txtContent = angular.fromJson(ugc.textContent);
                         } else {
+                            ugc.textContent = ugc.textContent || '';
                             txtContent = {content: ugc.textContent, title: 'no title'};
                         }
 
@@ -114,7 +115,7 @@ angular.module('moderationDashboard.controllers', []).
 
                     // Iterate through the action objects to identify the bulk operations
                     angular.forEach(modObject.actions, function(actionObj) {
-                        if (actionObj.isBulk) {
+                        if (!actionObj.notBulk) {
                             scope.bulkActions.push(actionObj);
                         }
                     })
