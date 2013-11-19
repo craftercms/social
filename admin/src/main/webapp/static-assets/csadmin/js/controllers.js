@@ -38,6 +38,12 @@ angular.module('moderationDashboard.controllers', []).
 
         // get ugc list by status from rest call
         scope.getUgcList = function (page) {
+
+            //TODO if text is less than 'upperLimit' then no arrow nor red corner has to appear
+            function cropText(text, upperLimit) {
+                return (text.length > upperLimit) ? text.substring(0, upperLimit) + " [...]" : text;
+            }
+            
             var conf = {
                 tenant: scope.confObj.tenant,
                 moderation: scope.status + ".json",
@@ -51,7 +57,6 @@ angular.module('moderationDashboard.controllers', []).
                         tmpList = [];
 
                     angular.forEach(data, function (ugc){
-                        txtContent = angular.fromJson(ugc.textContent);
 
                         if (ugc.textContent[0] == '{') {
                             txtContent = angular.fromJson(ugc.textContent);
@@ -62,15 +67,15 @@ angular.module('moderationDashboard.controllers', []).
                         tmpList.push({
                             'title': txtContent.title,
                             'id': ugc.id,
-                            'textContent': scope.getTextFromhtml(txtContent.content),
+                            'textContent': cropText(txtContent.content, 200),
                             'moderationStatus': ugc.moderationStatus,
                             'completeContent': txtContent.content,
                             'dateAdded': scope.getDateTime(ugc.dateAdded),
                             'userName': ugc.profile.userName,
                             'userMail': ugc.profile.email,
                             'userImg': CONFIG.IMAGES_PATH + "profile-photo.jpg",
-                            'targetUrl': 'target Url',
-                            'targetTitle': 'target Title',
+                            'targetUrl': ugc.targetUrl,
+                            'targetTitle': ugc.targetDescription,
                             'updated': false,
                             'updateMessage': "",
                             'alertClass': "",
@@ -92,21 +97,6 @@ angular.module('moderationDashboard.controllers', []).
                     scope.infoMessage = "error, Comments were not found";
                 }
             });
-        };
-
-        // get text snippet from html
-        //TODO if text is less than 200 then no arrow nor red corner has to appear
-        scope.getTextFromhtml = function (html) {
-            var elmText = $(html).text(),
-                snippet;
-            if (elmText.length > 200) {
-                snippet = elmText.substring(0, 200);
-                snippet += " [...]";
-            }else{
-                snippet = elmText;
-            }
-
-            return snippet;
         };
 
         // get date and hour of last update

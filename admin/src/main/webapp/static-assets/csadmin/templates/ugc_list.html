@@ -67,7 +67,7 @@
                                     Submitted on: <span class="date">{{ugc.dateAdded}}</span>
                                 </span>
 
-                                <a class="target-url" ng-href="ugc.targetUrl">{{ugc.targetTitle}}</a>
+                                <a class="target-url" ng-if="ugc.targetTitle && ugc.targetUrl" ng-href="{{ugc.targetUrl}}">{{ugc.targetTitle}}</a>
                                 <h4>{{ugc.title}}</h4>
                                 <div class="ugc-content">
                                     {{ugc.textContent}}
