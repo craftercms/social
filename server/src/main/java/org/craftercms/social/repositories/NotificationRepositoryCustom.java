@@ -6,9 +6,9 @@ import org.craftercms.social.domain.*;
 
 public interface NotificationRepositoryCustom {
 	
-	long countPendingsByFrequency(String frequency);
+	long countPendingsByFrequency(String frequency, String[] eventActionFilters);
 
 	List<Notification> findNotificationByFrequencyAndTransmitedStatus(
-			String frequency, String transmittedStatus, String action, int start, int end);
+			String frequency, String transmittedStatus, String action, int start, int end, String[] eventActionFilters);
 
 }

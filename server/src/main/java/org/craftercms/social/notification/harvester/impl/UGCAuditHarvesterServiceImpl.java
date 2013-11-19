@@ -59,7 +59,8 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 	
 	public UGCAuditHarvesterServiceImpl() {
 		this.pageSize = DEFAULT_PAGE_SIZE;
-		pageManagement = new PageManagement();
+		this.pageManagement = new PageManagement();
+        this.actionFilters = new ArrayList<String>();
 	}
 
 	@Override
@@ -164,7 +165,7 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 		
 		pageManagement.setStart(0);
 		pageManagement.setPageSize(this.pageSize);
-		long total = this.ugcAuditRepository.count(lastRowRetrieve);
+		long total = this.ugcAuditRepository.count(lastRowRetrieve,this.getActionFiltersAsStringArray());
 		pageManagement.setTotal(total);
 		if (total == 0) {
 			isDone = true;
@@ -249,7 +250,7 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 
 	private List<UGCAudit> findUGCAuditList(long lastRowRetrieved, int page, int pageSize) {
 		List<UGCAudit> listUGCAudit = null;
-		listUGCAudit = ugcAuditRepository.findByLastRetrievedRow(lastRowRetrieved, page, pageSize);
+		listUGCAudit = ugcAuditRepository.findByLastRetrievedRow(lastRowRetrieved, page, pageSize, this.getActionFiltersAsStringArray());
 		return  listUGCAudit;
 	}
 

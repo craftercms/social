@@ -22,11 +22,11 @@ import org.craftercms.social.domain.UGCAudit;
 
 public interface UGCAuditRepositoryCustom {
 
-	List<UGCAudit> findByLastRetrievedRow(long lastRetrievedRow);
+	List<UGCAudit> findByLastRetrievedRow(long lastRetrievedRow, String[] actionFilters);
 
 	List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, int page,
-			int pageSize);
+			int pageSize, String[] actionFilters);
 
-	long count(long lastRowRetrieve);
+	long count(long lastRowRetrieve, String[] actionFilters);
 
 }
