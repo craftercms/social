@@ -51,7 +51,7 @@ public interface SupportDataAccess {
 
 	Attachment getAttachment(ObjectId attachmentId);
 
-	void streamAttachment(ObjectId attachmentId, HttpServletResponse response);
+	void streamAttachment(ObjectId attachmentId, OutputStream output) throws Exception;
 
 	void removeAttachment(ObjectId attachmentId);
 

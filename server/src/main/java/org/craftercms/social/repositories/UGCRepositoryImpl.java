@@ -58,6 +58,27 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 		return mongoTemplate.find(query, UGC.class);
 	}
 	
+	
+	@Override
+	public List<UGC> findByModerationStatusAndTenantAndTargetId(String[] moderationStatus, String tenant, String targetId, boolean isOnlyRoot) {
+		Query query = new Query();
+		if (tenant!=null) {
+			query.addCriteria(Criteria.where(TENANT).is(tenant));
+		}
+		if (targetId!=null) {
+			query.addCriteria(Criteria.where(TARGET_ID).is(targetId));
+		}
+		if (isOnlyRoot) { 
+			query.addCriteria(Criteria.where(PARENT_ID).is(null));
+		}
+		if (moderationStatus !=null) {
+        	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatus));
+        }
+		
+		
+		return mongoTemplate.find(query, UGC.class);
+	}
+	
 	@Override
 	public List<UGC> findUGCs(String tenant, String target,
 			String[] moderationStatusArr, ActionEnum action, int page, int pageSize, String sortField, String sortOrder) {

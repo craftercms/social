@@ -134,6 +134,15 @@ public class UGCRestController {
 		return ugcService.getTenantTargetCount(tenant, target);
 	}
 	
+	@RequestMapping(value = "/moderation/{moderationStatus}/count", method = RequestMethod.GET)
+	@ModelAttribute
+	public int getCountByModerationStatus(@PathVariable final String moderationStatus,
+			@RequestParam final String tenant,
+			@RequestParam(required=false) String targetId,
+			@RequestParam(required=false,defaultValue="false") boolean rootOnly){
+		return ugcService.getModerationStatusCount(moderationStatus, tenant, targetId, rootOnly);
+	}
+	
 	@RequestMapping(value = "/moderation/{ugcId}/status", method = RequestMethod.POST)
 	@ModelAttribute
 	public UGC updateModerationStatus(@PathVariable final String ugcId,
