@@ -28,7 +28,7 @@ angular.module('moderationDashboard.controllers', []).
         // set the active tab
         var getModerationList = function () {
             angular.forEach(scope.moderationList, function (moderationObj) {
-                if (scope.status.toLowerCase() === moderationObj.moderation.label.toLowerCase()) {
+                if (scope.status.toLowerCase() === moderationObj.moderation.value.toLowerCase()) {
                     moderationObj.state = 'active';
                 }else{
                     moderationObj.state = '';
