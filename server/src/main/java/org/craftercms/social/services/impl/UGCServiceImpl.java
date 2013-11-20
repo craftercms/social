@@ -17,6 +17,8 @@
 package org.craftercms.social.services.impl;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -102,9 +104,7 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
-                         String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, AttachmentErrorException {
-
-        attachments = scanFilesForVirus(attachments);
+                         String textContent, String targetUrl, String targetDescription, Map<String, Object> attributes) throws PermissionDeniedException, AttachmentErrorException {
 
         UGC ugc = null;
         if (existsUGC(ugcId)) {
@@ -112,10 +112,17 @@ public class UGCServiceImpl implements UGCService {
             ugc.setTargetId(targetId);
             ugc.setParentId(parentId);
             ugc.setTextContent(textContent);
-            ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
+            //ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
             ugc.setTargetUrl(targetUrl);
             ugc.setTargetDescription(targetDescription);
             ugc.setLastModifiedDate(new Date());
+            Map<String, Object> currentAttributes = ugc.getAttributes();
+            if (currentAttributes != null && attributes != null) {
+                currentAttributes.putAll(attributes);
+            } else {
+                currentAttributes = attributes;
+            }
+            ugc.setAttributes(currentAttributes);
             this.uGCRepository.save(ugc);
             ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             //Audit call
@@ -159,7 +166,6 @@ public class UGCServiceImpl implements UGCService {
             ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             //Audit call
             auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
-            //attachmentModel = ugc.getAttachmentsList().getAttachment(attachment.getOriginalFilename());
             attachmentModel = findUgcAttachmentModel(ugc.getAttachmentsList(),attachment.getOriginalFilename());
         }
         return attachmentModel;
@@ -449,21 +455,12 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public void streamAttachment(ObjectId attachmentId, HttpServletResponse response) throws IOException {
+    public void streamAttachment(ObjectId attachmentId, OutputStream outputStream)  throws Exception {
     	try {
-    		Attachment file = supportDataAccess.getAttachment(attachmentId);
-    		if (file !=null) {
-	    		response.setContentType(file.getContentType());
-				response.setContentLength((int) file.getLength());
-				response.setHeader("Content-Disposition", "attachment; filename="
-						+ file.getFilename());
-	    		supportDataAccess.streamAttachment(attachmentId, response.getOutputStream());
-    		} else {
-    			throw new Exception("Attachment with id {} does not exist " + attachmentId);
-    		}
+	    	supportDataAccess.streamAttachment(attachmentId, outputStream);
     	} catch (Exception e) {
     		log.error(e.getMessage());
-    		response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+    		throw e;
     	}
     }
 
