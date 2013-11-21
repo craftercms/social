@@ -201,7 +201,7 @@ public class UGCRestController {
 
         return ugcService.updateUgc(new ObjectId(ugcRequest.getUgcId()), ugcRequest.getTenant(), ugcRequest.getTargetId(), getProfileId(),
                 ugcRequest.getParentId()==null?null:new ObjectId(ugcRequest.getParentId()), ugcRequest.getTextContent(),
-                ugcRequest.getAttachments(), ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription());
+                		ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription(), ugcRequest.getAttributes());
 
 	}
 

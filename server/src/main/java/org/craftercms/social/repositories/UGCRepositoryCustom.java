@@ -43,5 +43,4 @@ public interface UGCRepositoryCustom {
 	List<UGC> findByModerationStatusAndTenantAndTargetId(
 			String[] moderationStatus, String tenant, String targetId,
 			boolean isOnlyRoot);
-
 }

@@ -17,6 +17,7 @@
 package org.craftercms.social.notification.harvester;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,10 @@ public abstract class BaseHarvesterService implements HarvesterService {
     protected MongoTemplate mongoTemplate;
 
     protected List<String> actionFilters;
+    
+    public BaseHarvesterService() {
+    	actionFilters = new ArrayList<String>();
+    }
 
 
     /**

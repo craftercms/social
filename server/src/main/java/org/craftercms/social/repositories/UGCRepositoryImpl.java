@@ -19,7 +19,6 @@ package org.craftercms.social.repositories;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.PermissionService;
@@ -83,6 +82,7 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	public List<UGC> findUGCs(String tenant, String target,
 			String[] moderationStatusArr, ActionEnum action, int page, int pageSize, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		query.fields().include(UGCConstants.ATTRIBUTES);
 		if (tenant !=null) {
 			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
@@ -112,6 +112,7 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	public UGC findUGC(ObjectId id, ActionEnum action, String[] moderationStatusArr) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		query.addCriteria(Criteria.where(ID).is(id));
+		query.fields().include(UGCConstants.ATTRIBUTES);
 		if (moderationStatusArr !=null) {
         	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatusArr));
         }
@@ -126,6 +127,7 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	public List<UGC> findByTenantTargetPaging(String tenant, String target,
 			int page, int pageSize, ActionEnum action, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		query.fields().include(UGCConstants.ATTRIBUTES);
 		if(tenant!=null) {
 			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
@@ -148,6 +150,7 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	@Override
 	public List<UGC> findByTenantAndSort(String tenant, ActionEnum action, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		query.fields().include(UGCConstants.ATTRIBUTES);
 		if(tenant!=null) {
 			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
@@ -163,6 +166,7 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	public List<UGC> findByParentIdWithReadPermission(ObjectId parentId, ActionEnum action, String[] moderationStatus, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		query.addCriteria(Criteria.where(PARENT_ID).is(parentId));
+		query.fields().include(UGCConstants.ATTRIBUTES);
 		if (moderationStatus !=null) {
         	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatus));
         }
@@ -173,7 +177,6 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
         }
 		return mongoTemplate.find(query, UGC.class);
 	}
-	
 	
 	private int getStart(int page, int pageSize) {
 		if (page <=0) {
