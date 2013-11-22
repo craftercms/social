@@ -59,12 +59,7 @@
             $container.html('');
             $container.append($clone);
 
-            this.collection.fetch({
-                data : {
-                    target: this.cfg.target,
-                    tenant: this.cfg.tenant
-                }
-            });
+            this.addAll();
 
             return Modal.prototype.render.apply(this, arguments);
 
