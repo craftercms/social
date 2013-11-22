@@ -24,14 +24,19 @@
 
             Base.prototype.createUI.call(this);
 
-            var view = new S.util.instance('view.Commenting', $.extend({
-                collection: this.collection,
-                tenant: this.cfg.tenant,
-                target: this.cfg.target
-            }, this.cfg.commenting));
+            var $replies = this.$('.reply-box');
+            if ($replies.size()) {
 
-            this.$('.reply-box').append(view.render().el);
-            this.cache('commentingView', view);
+                var view = new S.util.instance('view.Commenting', $.extend({
+                    collection: this.collection,
+                    tenant: this.cfg.tenant,
+                    target: this.cfg.target
+                }, this.cfg.commenting));
+
+                $replies.append(view.render().el);
+                this.cache('commentingView', view);
+
+            }
 
         },
 
