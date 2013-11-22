@@ -54,17 +54,23 @@
         },
 
         render: function () {
+
             Base.prototype.render();
             // TODO see how this works.
-            // Are users confortable with this behaviour or is it rather irksome?
-            var $bd         = $('body'),
-                overflow    = $bd.css('overflow');
-            this.$('.crafter-social-comment-thread')
-                .mouseenter(function (  ) {
-                    $bd.css('overflow', 'hidden');
-                }).mouseleave(function (  ) {
-                    $bd.css('overflow', overflow);
-                });
+            // Are users comfortable with this behaviour or is it rather irksome?
+            var $elem = this.$('.crafter-social-comment-thread');
+            $elem.on('mousewheel DOMMouseScroll', function (e) {
+                var top     = this.scrollTop;
+                var delta   = (e.originalEvent.detail < 0) || (e.originalEvent.wheelDelta > 0) ? 1 : -1;
+
+                if (delta < 0 && ($elem.outerHeight() + this.scrollTop) === this.scrollHeight) {
+                    e.preventDefault();
+                } else if (delta >= 0 && top === 0) {
+                    e.preventDefault();
+                }
+
+            });
+
             return this;
         },
 
