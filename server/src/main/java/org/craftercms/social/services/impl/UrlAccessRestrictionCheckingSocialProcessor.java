@@ -11,10 +11,8 @@ import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCService;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 public class UrlAccessRestrictionCheckingSocialProcessor extends
 		UrlAccessRestrictionCheckingProcessor {
@@ -28,7 +26,7 @@ public class UrlAccessRestrictionCheckingSocialProcessor extends
 	private TenantService tenantService;
 
 	@Autowired
-	private CrafterProfile crafterProfileService;
+	private CrafterProfileService crafterProfileService;
 	
 	private static final Log logger = LogFactory.getLog(UrlAccessRestrictionCheckingSocialProcessor.class);
 	

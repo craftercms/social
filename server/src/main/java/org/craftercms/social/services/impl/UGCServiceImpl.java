@@ -32,7 +32,6 @@ import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.AttachmentModel;
-import org.craftercms.social.domain.AttachmentsList;
 import org.craftercms.social.domain.Target;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
@@ -47,7 +46,7 @@ import org.craftercms.social.repositories.UGCRepository;
 import org.craftercms.social.services.*;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.craftercms.social.util.support.ResultParser;
 import org.craftercms.social.util.web.Attachment;
 import org.slf4j.Logger;
@@ -77,7 +76,7 @@ public class UGCServiceImpl implements UGCService {
     private PermissionService permissionService;
 
     @Autowired
-    private CrafterProfile crafterProfileService;
+    private CrafterProfileService crafterProfileService;
     
     @Autowired
     private CounterService counterService;

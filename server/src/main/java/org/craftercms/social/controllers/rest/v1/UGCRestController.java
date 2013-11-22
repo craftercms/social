@@ -272,6 +272,8 @@ public class UGCRestController {
 		ugcService.setAttributes(new ObjectId(ugcId), attributeMap, tenant, getProfileId());
 	}
 
+
+
 	private String getProfileId(){
 		return RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
 	}

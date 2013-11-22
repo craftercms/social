@@ -2,21 +2,20 @@ package org.craftercms.social.services.impl;
 
 
 import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.impl.domain.Target;
 import org.craftercms.social.domain.Subscriptions;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.services.SubscriptionService;
 import org.craftercms.social.services.UGCHook;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.SocialUtils;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
 
 @Component
 public class UGCHookImpl implements UGCHook {
 
     @Autowired
-    private CrafterProfile crafterProfile;
+    private SubscriptionService subscriptionService;
 
     /**
      * If auto watch is enable the profile will be subscript to the new UGC,
@@ -26,8 +25,9 @@ public class UGCHookImpl implements UGCHook {
      */
     @Override
     public void onNewUGC(UGC ugc, Profile profile) {
-        if(profile.getSubscriptions()!=null && profile.getSubscriptions().isAutowatch()) {
-            crafterProfile.createOrUpdateSubscription(ugc.getProfileId(), ugc.getTargetId(), ugc.getTargetDescription(), ugc.getTargetUrl());
+        Subscriptions subscriptions = SocialUtils.getSubscriptions(profile);
+        if(subscriptions != null && subscriptions.isAutoWatch()) {
+            subscriptionService.createSubscription(profile, ugc.getTargetId());
         }
     }
 

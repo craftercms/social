@@ -46,7 +46,7 @@
         </property>
     </bean>
     
-    <bean id="crafterProfileService" class="org.craftercms.social.util.support.impl.CrafterProfileImpl"/>
+    <bean id="crafterProfileService" class="org.craftercms.social.util.support.impl.CrafterProfileServiceImpl"/>
 	
 	<bean id="crafterProfile" class="org.craftercms.profile.impl.ProfileRestClientImpl">
 		<property name="port" value="${profile.port}"/>

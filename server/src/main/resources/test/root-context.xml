@@ -45,7 +45,7 @@
 		<property name="scheme" value="${profile.scheme}"/>
 		<property name="profileAppPath" value="${profile.profileAppPath}"/>
 	</bean>
-	<bean id="crafterProfileService" class="org.craftercms.social.util.support.impl.CrafterProfileTest"/>
+	<bean id="crafterProfileService" class="org.craftercms.social.util.support.impl.CrafterProfileServiceTest"/>
 	
 	<context:component-scan
 		base-package="org.craftercms.social.dao, org.craftercms.social.services,org.craftercms.social.util.support" />

@@ -1,11 +1,11 @@
 <%@page import="org.craftercms.profile.httpclient.ProfileRestClientImpl"%>
 <%@page import="org.craftercms.profile.httpclient.ProfileRestClient"%>
-<%@page import="org.craftercms.social.util.support.CrafterProfile"%>
+<%@page import="org.craftercms.social.util.support.CrafterProfileService"%>
 <%@page import="org.springframework.web.context.ContextLoader"%>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
 <%
 WebApplicationContext webAppContext = ContextLoader.getCurrentWebApplicationContext();
-CrafterProfile crafterProfileService = webAppContext.getBean("crafterProfileService", CrafterProfile.class);
+CrafterProfileService crafterProfileService = webAppContext.getBean("crafterProfileService", CrafterProfileService.class);
 
 ProfileRestClient crafterProfileRestClient = webAppContext.getBean("crafterProfile", ProfileRestClientImpl.class);
 

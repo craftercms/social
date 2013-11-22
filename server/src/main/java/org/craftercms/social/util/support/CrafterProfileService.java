@@ -16,12 +16,14 @@
  */
 package org.craftercms.social.util.support;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.impl.domain.Tenant;
 
-public interface CrafterProfile {
+public interface CrafterProfileService {
 	Profile authenticateAnonymous();
 	String getAppToken();
 	Profile getProfile(String profileId);
@@ -31,6 +33,6 @@ public interface CrafterProfile {
 	void resetAppToken();
 	boolean validateUserToken(String ticket);
 	Profile getUserInformation(String ticket);
-    public Profile createOrUpdateSubscription(String profileId, String targetId, String targetDescription, String targetUrl);
+    void updateAttributes(String profileId, Map<String, Serializable> attributes);
 
 }

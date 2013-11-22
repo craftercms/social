@@ -31,15 +31,15 @@ import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.action.ActionEnum;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import clover.retrotranslator.edu.emory.mathcs.backport.java.util.Arrays;
 
-public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot { 
-	
+public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
+
 	private static final String ADMIN = "ADMIN";
 	private static final String AUDITOR = "AUDITOR";
 
@@ -51,13 +51,13 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 	private UGCService ugcService;
 
 	private TenantService tenantService;
-	
+
 	private static final String APPLICATION_JSON = "application/json";
 	private static final String CONTENT_TYPE = "Content-Type";
 	private static final String UPDATE_URI = "update";
 
 	@Autowired
-	private CrafterProfile crafterProfileService;
+	private CrafterProfileService crafterProfileService;
 
 	public UgcSecurityExpressionRoot(UserProfile profile) {
 		super(profile);
@@ -70,7 +70,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		UGC parent = null;
 		if (parentId == null || parentId.length == 0) {
 			String tenantName = getTenantName();
-			
+
 			List<String> createRoles = this.tenantService
 					.getRootCreateRoles(tenantName);
 			ArrayList<Action> actions = new ArrayList<Action>();
@@ -91,13 +91,11 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 			}
 		} catch(Exception e1) {
 			log.error("Error when was checking for permissions: " + e1.getMessage(), parent);
-			
+
 			return false;
 		}
 		return true;
 	}
-
-	
 
 	public boolean hasUpdatePermission() {
 		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
@@ -114,7 +112,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 			}
 		} catch(Exception e1) {
 			log.error("Error when was checking for permissions: " + e1.getMessage(), ugcId);
-			
+
 			return false;
 		}
 		return true;
@@ -140,7 +138,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 			}
 		} catch(Exception e1) {
 			log.error("Error when was checking for permissions: " + e1.getMessage(), ugcId);
-			
+
 			return false;
 		}
 		return true;
@@ -163,10 +161,10 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	public boolean hasDeletePermissions() {
 		String ugcId = getUgcIdFromDeleteUri() ;
 		//String ugcId = getUgcIdFromModerationUri();
@@ -180,11 +178,11 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		}
 		return result;
 	}
-	
+
 	private boolean hasDeletePermissions(ObjectId id, String profileId) {
 		if (!permissionService.allowed(ActionEnum.DELETE, id, profileId)) {
 			log.error("Delete permission not granted", id);
-			return false; 
+			return false;
 		 }
 		boolean result = true;
 		List<UGC> children = this.ugcService.findByParentId(id);
@@ -194,10 +192,10 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
         		break;
         	}
         }
-		
+
 		return result;
 	}
-	
+
 	private boolean hasDeletePermissions(List<String> ids, String profileId) {
 		if (ids==null || ids.size() == 0) {
 			return false;
@@ -207,7 +205,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 			if (id == null || id.length() == 0) {
 				result = false;
 				break;
-			} 
+			}
 			try {
 				result = hasDeletePermissions(new ObjectId(id), profileId);
 			} catch(Exception e1) {
@@ -253,7 +251,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 			}
 		} catch(Exception e1) {
 			log.error("Error when was checking for permissions: " + e1.getMessage(), ugcId);
-			
+
 			return false;
 		}
 		return true;
@@ -267,7 +265,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 			profile = this.crafterProfileService.getProfile(id);
 		} catch(Exception e1) {
 			log.error("Error when was getting profile: " + e1.getMessage(), id);
-			
+
 			return false;
 		}
 		if (profile == null) {
@@ -294,7 +292,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 			profile = this.crafterProfileService.getProfile(id);
 		} catch(Exception e1) {
 			log.error("Error when was getting profile: " + e1.getMessage(), id);
-			
+
 			return false;
 		}
 		if (profile == null) {
@@ -345,7 +343,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		}
 		return ugcId;
 	}
-	
+
 	private String getUgcIdFromDeleteUri() {
 		String ugcId = RequestContext.getCurrent().getRequest().getRequestURI().replaceAll(
 				".*api/2/ugc/[^\\/]*/([^\\/\\.]*).*", "$1");
@@ -365,7 +363,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		}
 		return null;
 	}
-	
+
 	private String getMiddleModerationUri() {
 		String interceptedUri = "moderation/";
 		String endPath = RequestContext.getCurrent().getRequest().getRequestURI().substring(
@@ -377,7 +375,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		return null;
 	}
 
-	public void setCrafterProfileService(CrafterProfile crafterProfileService) {
+	public void setCrafterProfileService(CrafterProfileService crafterProfileService) {
 		this.crafterProfileService = crafterProfileService;
 	}
 	
