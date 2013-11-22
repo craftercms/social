@@ -117,7 +117,8 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	public List<UGC> findUGCs(String tenant, String target,
 			String[] moderationStatusArr, ActionEnum action, int page, int pageSize, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
-		query.fields().include(UGCConstants.ATTRIBUTES);
+		
+		includeDefaultUGCFields(query);
 		if (tenant !=null) {
 			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
@@ -147,7 +148,8 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	public UGC findUGC(ObjectId id, ActionEnum action, String[] moderationStatusArr) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		query.addCriteria(Criteria.where(ID).is(id));
-		query.fields().include(UGCConstants.ATTRIBUTES);
+		includeDefaultUGCFields(query);
+		
 		if (moderationStatusArr !=null) {
         	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatusArr));
         }
@@ -158,11 +160,43 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 		return null;
 	}
 	
+	private void includeDefaultUGCFields(Query query) {
+		query.fields().include(UGCConstants.ATTRIBUTES);
+		query.fields().include(UGCConstants.FIELD_ID);
+		query.fields().include(UGCConstants.PARENT_ID);
+		query.fields().include(UGCConstants.TEXT_CONTENT);
+		query.fields().include(UGCConstants.ATTACHMENT_ID);
+		query.fields().include(UGCConstants.ACTIONS);
+		
+		query.fields().include(UGCConstants.CREATED_BY);
+		query.fields().include(UGCConstants.LAST_MODIFIED_BY);
+		query.fields().include(UGCConstants.OWNER);
+		query.fields().include(UGCConstants.CREATED_DATE);
+		query.fields().include(UGCConstants.LAST_MODIFIED_DATE);
+		query.fields().include(UGCConstants.MODERATION_STATUS);
+		
+		query.fields().include(UGCConstants.PROFILE_ID);
+		query.fields().include(UGCConstants.TENANT);
+		query.fields().include(UGCConstants.TARGET_ID);
+		query.fields().include(UGCConstants.TARGET_URL);
+		query.fields().include(UGCConstants.TARGET_DESCRIPTION);
+		query.fields().include(UGCConstants.ANONYMOUS_FLAG);
+		
+		query.fields().include(UGCConstants.TIMES_MODERATED);
+		query.fields().include(UGCConstants.LIKE_COUNT);
+		query.fields().include(UGCConstants.OFFENCE_COUNT);
+		query.fields().include(UGCConstants.FLAG_COUNT);
+		
+		
+	}
+
+
 	@Override
 	public List<UGC> findByTenantTargetPaging(String tenant, String target,
 			int page, int pageSize, ActionEnum action, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
-		query.fields().include(UGCConstants.ATTRIBUTES);
+		
+		includeDefaultUGCFields(query);
 		if(tenant!=null) {
 			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
@@ -185,7 +219,8 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	@Override
 	public List<UGC> findByTenantAndSort(String tenant, ActionEnum action, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
-		query.fields().include(UGCConstants.ATTRIBUTES);
+		
+		includeDefaultUGCFields(query);
 		if(tenant!=null) {
 			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
@@ -201,7 +236,8 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	public List<UGC> findByParentIdWithReadPermission(ObjectId parentId, ActionEnum action, String[] moderationStatus, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		query.addCriteria(Criteria.where(PARENT_ID).is(parentId));
-		query.fields().include(UGCConstants.ATTRIBUTES);
+		
+		includeDefaultUGCFields(query);
 		if (moderationStatus !=null) {
         	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatus));
         }
