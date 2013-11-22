@@ -19,7 +19,7 @@
 
                 // Initialise UI actions
                 this.delegateActions(this, this.element());
-                this.listen();
+                this.listen && this.listen();
 
                 // Create the UI
                 this.createUI && this.createUI();
@@ -48,10 +48,6 @@
             ( !this.cfg ) && ( this.cfg = {} );
             return $.extend(true, this.cfg, oDefaults, oConfig);
         },
-        extendCls: function ( sub, sup ) {
-            // Use false as the first item on the classes array to fully override the superclass classes
-            return (sub) && (sub[0] === false) ? (sub) : (S.util.isArray(sub) ? sub : sub.split(' ')).concat(sup);
-        },
         parseEvents: function ( data ) {
             var evts = { };
             data = $.extend(data || {}, { guid: this.guid });
@@ -69,9 +65,14 @@
             });
         },
 
+        cmpID: function (componentName, asSelector) {
+            (arguments.length === 1) && (asSelector = true);
+            return '%@%@_%@'.fmt(asSelector ? '#' : '', componentName, this.guid);
+        },
         identify: function ( elem, prefix ) {
-            var id = '%@_%@'.fmt( (prefix || ('elem' + counter++)), this.guid );
-            $(elem).attr({ 'id': id });
+            $(elem).attr({
+                'id': this.cmpID((prefix || ('elem' + counter++)), false)
+            });
         },
         createUI: function () {
             if (!this.cache('created')) {
@@ -84,6 +85,11 @@
         },
         getTemplate: function ( tmplName ) {
 
+            // This replacement should match the form
+            // in which cmpID function generates IDs
+            var REPLACEMENT = 'id="$1_' + this.guid + '"';
+
+            var tmplHTML;
             var tmpl = this.cfg.templates[tmplName];
             if (typeof tmpl === 'function') {
                 tmpl = tmpl.call(this, tmplName);
@@ -92,28 +98,26 @@
             var cache = tmplCache.get(tmpl);
 
             if (typeof tmpl === 'undefined' || tmpl === null) {
-                // TODO what to do?
-                return '';
+                tmplHTML = ''; // TODO what to do?
             } else if (U.isHTML(tmpl)) {
-                return tmpl;
+                tmplHTML = tmpl;
             } else if (cache !== null) {
-                return cache;
+                tmplHTML = cache;
             } else {
-                var tmplHTML;
-                var me = this;
                 S.request({
                     async: false,
                     url: tmpl,
                     success: function (html) {
-                        tmplHTML = html.replace(/data-identifyme="(.*?)"/g, 'id="$1_' + me.guid + '"');
+                        tmplHTML = html;
                         tmplCache.set(tmpl, tmplHTML);
                     },
                     error: function () {
                         throw new Error('Failed to load template "%@"'.fmt(tmpl));
                     }
                 });
-                return tmplHTML;
             }
+
+            return tmplHTML.replace(IDENTIFYME_REGEX, REPLACEMENT);
 
         },
 
@@ -127,6 +131,8 @@
             }
         }
     });
+
+    var IDENTIFYME_REGEX = /data-identifyme="(.*?)"/g;
 
     Base.DEFAULTS = {
         /*
