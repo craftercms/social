@@ -1,24 +1,28 @@
 'use strict';
 
 angular.module('moderationDashboard.controllers', []).
-    /**
-     * AppCtrl
-     * main controller
-     **/
-    controller('AppCtrl', ['$scope', function (scope) {
-
-    }]).
+    
     /**
      * Moderation Dashboard Controller
      * - get UGCs by moderation status
      **/
-    controller('UgcListCtrl', ['$scope', '$routeParams', 'ConfigurationData', 'UgcApi', 'CONFIG', function(scope, rp, ConfigurationData, UgcApi, CONFIG) {
+    controller('UgcListCtrl', 
+        ['$scope', 
+         '$routeParams',
+         '$timeout',
+         'ConfigurationData', 
+         'UgcApi', 
+         'CONFIG', function(scope, rp, $timeout, ConfigurationData, UgcApi, CONFIG) {
         scope.ugcList = [];
         scope.status = "";
         scope.moderationActions = [];
         scope.bulkActions = [];
         scope.confObj = ConfigurationData.getConfData();
         scope.moderationList = ConfigurationData.getModerationActions();
+
+        function cropText (text, upperLimit) {
+            return (text.length > upperLimit) ? text.substring(0, upperLimit) + " [...]" : text;
+        }
 
         //set actual status
         var setStatus = function () {
@@ -36,13 +40,32 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
+        scope.updateUGCContent = function (originalUGC, ugcTitle, ugcContent) {            
+            var callConfig, ugcData;
+
+            $timeout( function() {
+                scope.$apply( function() {
+                    originalUGC.teaser = cropText(ugcContent, 200);
+                    originalUGC.isExpandable = (originalUGC.teaser == ugcContent) ? false : true;
+                });
+            });
+
+            callConfig = {
+                ugcId: originalUGC.id,
+                tenant: scope.confObj.tenant
+            };
+            ugcData = {
+                ugcId: originalUGC.id,
+                textContent: JSON.stringify({
+                    title: ugcTitle,
+                    content: ugcContent
+                })
+            };
+            UgcApi.updateUGCContent(ugcData, callConfig);
+        };        
+
         // get ugc list by status from rest call
         scope.getUgcList = function (page) {
-
-            //TODO if text is less than 'upperLimit' then no arrow nor red corner has to appear
-            function cropText(text, upperLimit) {
-                return (text.length > upperLimit) ? text.substring(0, upperLimit) + " [...]" : text;
-            }
             
             var conf = {
                 tenant: scope.confObj.tenant,
@@ -54,7 +77,8 @@ angular.module('moderationDashboard.controllers', []).
             UgcApi.getUgcList(conf).then(function (data) {
                 if (data) {
                     var txtContent = {},
-                        tmpList = [];
+                        tmpList = [],
+                        teaser, isExpandable;
 
                     angular.forEach(data, function (ugc){
 
@@ -65,10 +89,15 @@ angular.module('moderationDashboard.controllers', []).
                             txtContent = {content: ugc.textContent, title: 'no title'};
                         }
 
+                        teaser = cropText(txtContent.content, 200);
+                        isExpandable = (teaser == txtContent.content) ? false : true;
+
                         tmpList.push({
                             'title': txtContent.title,
                             'id': ugc.id,
-                            'textContent': cropText(txtContent.content, 200),
+                            'teaser': teaser,
+                            'isExpandable': isExpandable,
+                            'textContent': txtContent.content,
                             'moderationStatus': ugc.moderationStatus,
                             'completeContent': txtContent.content,
                             'dateAdded': scope.getDateTime(ugc.dateAdded),
@@ -142,7 +171,7 @@ angular.module('moderationDashboard.controllers', []).
                 tenant: scope.confObj.tenant
             };
 
-            UgcApi.updateUgc(conf).then(function (data) {
+            UgcApi.updateUGCStatus(conf).then(function (data) {
                 if (data) {
                     angular.forEach(scope.ugcList, function (ugc, index) {
                         if (ugc.id === data.id) {

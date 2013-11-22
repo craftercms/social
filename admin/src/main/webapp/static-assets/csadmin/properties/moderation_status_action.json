@@ -5,7 +5,7 @@
             { "label": "Approve", "status": "Approved" },
             { "label": "Spam", "status": "Spam" },
             { "label": "Trash", "status": "Trash" },
-            { "label": "Edit", "status": "Edit", "notBulk": true }
+            { "label": "Edit", "status": "Edit", "notBulk": true, "type": "edit" }
         ]
     },
     {
@@ -13,7 +13,7 @@
         "actions": [
             { "label": "Spam", "status": "Spam" },
             { "label": "Trash", "status": "Trash" },
-            { "label": "Edit", "status": "Edit", "notBulk": true },
+            { "label": "Edit", "status": "Edit", "notBulk": true, "type": "edit" },
             { "label": "Unmoderated", "status": "Unmoderated" }
         ]
     },
@@ -22,14 +22,14 @@
         "actions": [
             { "label": "Approved", "status": "Approved" },
             { "label": "Trash", "status": "Trash" },
-            { "label": "Edit", "status": "Edit" }
+            { "label": "Edit", "status": "Edit", "notBulk": true, "type": "edit" }
         ]
     },
     {
         "moderation": { "label": "Spam", "value": "Spam" },
         "actions": [
             { "label": "Restore", "status": "Restore" },
-            { "label": "Permantly delete", "status": "delete" },
+            { "label": "Permanently delete", "status": "delete" },
             { "label": "Unmoderated", "status": "Unmoderated" }
         ]
     },
@@ -37,7 +37,7 @@
         "moderation": { "label": "Trash", "value": "Trash" },
         "actions": [
             { "label": "Restore", "status": "Restore" },
-            { "label": "Permantly delete", "status": "delete" }
+            { "label": "Permanently delete", "status": "delete" }
         ]
     }
 ]

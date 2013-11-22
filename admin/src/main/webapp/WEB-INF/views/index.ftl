@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="static-assets/csadmin/css/ugc_list.css"/>
 </head>
 <body>
-    <div class="moderation-dashboard-wrapper" ng-app="moderationDashboard" ng-controller="AppCtrl">
+    <div class="moderation-dashboard-wrapper" ng-app="moderationDashboard">
         <div ng-view></div>
     </div>
 
