@@ -14,8 +14,10 @@
 
         listen: function () {
             var collection = this.collection;
-            this.listenTo(collection, 'add', this.addOne);
-            this.listenTo(collection, 'sync', this.addAll);
+            if (collection) {
+                this.listenTo(collection, 'add', this.addOne);
+                this.listenTo(collection, 'sync', this.addAll);
+            }
         },
 
         createUI: function () {
