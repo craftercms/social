@@ -75,7 +75,7 @@ angular.module('moderationDashboard.services', []).
 
                 return deferred.promise;
             },
-            updateUgc: function (conf) {
+            updateUGCStatus: function (conf) {
                 var deferred = $q.defer();
 
                 $http.post(
@@ -86,6 +86,31 @@ angular.module('moderationDashboard.services', []).
                     }),
                     {
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    }
+                ).success(
+                    function (data) {
+                        deferred.resolve(data);
+                    }
+                ).error(
+                    function (errorData) {
+                        deferred.reject(errorData);
+                    }
+                );
+
+                return deferred.promise;
+            },
+            updateUGCContent: function (ugcData, config) {
+                var deferred = $q.defer();
+
+                $http.post(
+                    CONFIG.API_PATH + "update.json",
+                    ugcData,
+                    {
+                        params: {
+                            ugcId: config.ugcId,
+                            tenant: config.tenant
+                        },
+                        headers: { 'Content-Type': 'application/json' }
                     }
                 ).success(
                     function (data) {

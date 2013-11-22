@@ -21,16 +21,28 @@ angular.module('moderationDashboard.directives', []).
 
                 elm.find('.mod-actions-btn').delegate('.btn-mod-action', 'click', function (ev) {
                     var currentEl = $(ev.currentTarget),
-                        action = currentEl.val().toUpperCase(),
-                        queryParams = {
-                            moderationid: scope.ugcid,
-                            moderationstatus : action,
-                            tenant: scope.confObj.tenant
-                        };
+                        actionAttr = currentEl.attr('data-action-type'),
+                        newStatus, queryParams;
 
-                    UgcApi.updateUgc(queryParams).then(function (data) {
-                        scope.displayResults(data, currentEl, { undo: true, message: "" });
-                    });
+                    switch (actionAttr) {
+                        case 'edit':
+                            scope.$apply( function () {
+                                scope.editMode = !scope.editMode;
+                            });
+                            break;
+                        default:
+                            // If no action.type is defined (in the actions config file) then the default 
+                            // action is to update the comment's status
+                            newStatus = currentEl.val().toUpperCase(),
+                            queryParams = {
+                                moderationid: scope.ugcid,
+                                moderationstatus : newStatus,
+                                tenant: scope.confObj.tenant
+                            };
+                            UgcApi.updateUGCStatus(queryParams).then(function (data) {
+                                scope.displayResults(data, currentEl, { undo: true, message: "" });
+                            });       
+                    }
                 });
             }
         };
@@ -51,47 +63,6 @@ angular.module('moderationDashboard.directives', []).
                 }
             });
         };
-    }]).
-    directive('detailInformation', ['$sanitize', function (sanitize) {
-        return {
-            restrict: "A",
-            link: function (scope, elm, attrs) {
-                attrs.$observe('detailInformation', function (val) {
-                    var down = elm.find(".icon-chevron-down"),
-                        up = elm.find(".icon-chevron-up");
-
-                    elm.bind('click', function (ev) {
-                        if (elm.hasClass('collapsed')){
-                            angular.forEach(scope.$parent.ugcList, function (ugc) {
-                                if (ugc.id === val) {
-                                    var wholeContent = sanitize(ugc.completeContent);
-                                    elm.find(".ugc-content").html(wholeContent);
-
-                                    elm.toggleClass("collapsed");
-                                    elm.toggleClass("expanded");
-
-                                    up.toggleClass('hide');
-                                    down.toggleClass('hide');
-                                }
-                            });
-                        }else if (elm.hasClass('expanded')) {
-                            angular.forEach(scope.$parent.ugcList, function (ugc) {
-                                if (ugc.id === val) {
-                                    var partialContent = ugc.textContent;
-                                    elm.find(".ugc-content").html(partialContent);
-
-                                    elm.toggleClass("collapsed");
-                                    elm.toggleClass("expanded");
-
-                                    down.toggleClass('hide');
-                                    up.toggleClass('hide');
-                                }
-                            });
-                        }
-                    });
-                });
-            }
-        }
     }]).
 
     directive('popoverMessage', ['CONFIG', '$timeout', 'PERMANENTLY_DELETE', 'UgcApi', function (CONFIG, timeout, PD, UgcApi) {

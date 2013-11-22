@@ -2,42 +2,42 @@
     {
         "moderation": { "label": "Unmoderated", "value": "Unmoderated" },
         "actions": [
-            { "label": "Approve", "status": "Approved", "isBulk": true },
-            { "label": "Spam", "status": "Spam", "isBulk": true },
-            { "label": "Trash", "status": "Trash", "isBulk": true },
-            { "label": "Edit", "status": "Edit" }
+            { "label": "Approve", "status": "Approved" },
+            { "label": "Spam", "status": "Spam" },
+            { "label": "Trash", "status": "Trash" },
+            { "label": "Edit", "status": "Edit", "notBulk": true, "type": "edit" }
         ]
     },
     {
         "moderation": { "label": "Approved", "value": "Approved" },
         "actions": [
-            { "label": "Spam", "status": "Spam", "isBulk": true },
-            { "label": "Trash", "status": "Trash", "isBulk": true },
-            { "label": "Edit", "status": "Edit" },
-            { "label": "Unmoderated", "status": "Unmoderated", "isBulk": true }
+            { "label": "Spam", "status": "Spam" },
+            { "label": "Trash", "status": "Trash" },
+            { "label": "Edit", "status": "Edit", "notBulk": true, "type": "edit" },
+            { "label": "Unmoderated", "status": "Unmoderated" }
         ]
     },
     {
         "moderation": { "label": "Pending", "value": "Pending" },
         "actions": [
-            { "label": "Approved", "status": "Approved", "isBulk": true },
-            { "label": "Trash", "status": "Trash", "isBulk": true },
-            { "label": "Edit", "status": "Edit" }
+            { "label": "Approved", "status": "Approved" },
+            { "label": "Trash", "status": "Trash" },
+            { "label": "Edit", "status": "Edit", "notBulk": true, "type": "edit" }
         ]
     },
     {
         "moderation": { "label": "Spam", "value": "Spam" },
         "actions": [
-            { "label": "Restore", "status": "Restore", "isBulk": true },
-            { "label": "Permantly delete", "status": "delete", "isBulk": true },
-            { "label": "Unmoderated", "status": "Unmoderated", "isBulk": true }
+            { "label": "Restore", "status": "Restore" },
+            { "label": "Permanently delete", "status": "delete" },
+            { "label": "Unmoderated", "status": "Unmoderated" }
         ]
     },
     {
         "moderation": { "label": "Trash", "value": "Trash" },
         "actions": [
-            { "label": "Restore", "status": "Restore", "isBulk": true },
-            { "label": "Permantly delete", "status": "delete", "isBulk": true }
+            { "label": "Restore", "status": "Restore" },
+            { "label": "Permanently delete", "status": "delete" }
         ]
     }
 ]
