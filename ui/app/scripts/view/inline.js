@@ -3,7 +3,6 @@
 
     var Inline,
         Discussion = S.view.Discussion,
-        U = S.util,
         $ = S.$;
 
     Inline = Discussion.extend({
