@@ -18,12 +18,15 @@ package org.craftercms.social.repositories;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.util.UGCConstants;
 import org.craftercms.social.util.action.ActionEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -36,6 +39,7 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	private static final String TARGET_ID = "targetId";
 	private static final String PARENT_ID = "parentId";
 	private static final String MODERATION_STATUS = "moderationStatus";
+    private Logger log = LoggerFactory.getLogger(UGCRepository.class);
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -56,6 +60,7 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 		
 		return mongoTemplate.find(query, UGC.class);
 	}
+
 	
 	
 	@Override
@@ -77,8 +82,38 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 		
 		return mongoTemplate.find(query, UGC.class);
 	}
-	
-	@Override
+
+    @Override
+    public List<UGC> findByTenantAndTargetIdRegex(String tenant, String targetIdRegex, int page, int pageSize,
+                                                  ActionEnum action, String sortField, String sortOrder) {
+        Query q = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken()
+            .getProfile());
+        if (StringUtils.isBlank(targetIdRegex)) {
+            throw new IllegalArgumentException("Regex can't be null or empty");
+        }
+        if (StringUtils.isBlank(tenant)) {
+            throw new IllegalArgumentException("Tenant can't be null or empty");
+        }
+        if (page > 0 && pageSize > 0) {
+            int start = getStart(page, pageSize);
+            int end = pageSize;
+            q.skip(start);
+            q.limit(end);
+
+        }
+        q.addCriteria(Criteria.where(TARGET_ID).regex(targetIdRegex,"ig"));
+        q.addCriteria(Criteria.where(TENANT).is(tenant));
+        if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
+            q.sort().on(sortField, Order.DESCENDING);
+        } else {
+            q.sort().on(sortField, Order.ASCENDING);
+        }
+        log.debug("Getting UGC using {}", q.toString());
+        return mongoTemplate.find(q, UGC.class);
+    }
+
+
+    @Override
 	public List<UGC> findUGCs(String tenant, String target,
 			String[] moderationStatusArr, ActionEnum action, int page, int pageSize, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
