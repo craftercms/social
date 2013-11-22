@@ -27,6 +27,8 @@ public class UGCRequest {
     private String targetDescription;
 
     private String textContent;
+    private String subject;
+
     //private String content;
 
     private MultipartFile[] attachments;
@@ -122,5 +124,13 @@ public class UGCRequest {
 
     public void setActions(List<Action> actions) {
         this.actions = actions;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(final String subject) {
+        this.subject = subject;
     }
 }

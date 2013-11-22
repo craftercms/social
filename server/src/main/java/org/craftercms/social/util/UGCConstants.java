@@ -26,5 +26,5 @@ public interface UGCConstants {
 	String LIKE_COUNT = "likeCount";
 	String OFFENCE_COUNT = "offenceCount";
 	String FLAG_COUNT = "flagCount";
-	
+    String SUBJECT = "subject";
 }

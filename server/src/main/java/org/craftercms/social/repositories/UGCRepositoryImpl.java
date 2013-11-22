@@ -167,6 +167,7 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 		query.fields().include(UGCConstants.TEXT_CONTENT);
 		query.fields().include(UGCConstants.ATTACHMENT_ID);
 		query.fields().include(UGCConstants.ACTIONS);
+        query.fields().include(UGCConstants.SUBJECT);
 		
 		query.fields().include(UGCConstants.CREATED_BY);
 		query.fields().include(UGCConstants.LAST_MODIFIED_BY);

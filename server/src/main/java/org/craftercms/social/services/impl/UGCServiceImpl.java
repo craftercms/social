@@ -106,7 +106,7 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
                          String textContent, String targetUrl, String targetDescription, Map<String,
-        Object> attributes) throws PermissionDeniedException, AttachmentErrorException {
+        Object> attributes, String subject) throws PermissionDeniedException, AttachmentErrorException {
 
         UGC ugc = null;
         if (existsUGC(ugcId)) {
@@ -118,6 +118,7 @@ public class UGCServiceImpl implements UGCService {
             ugc.setTargetUrl(targetUrl);
             ugc.setTargetDescription(targetDescription);
             ugc.setLastModifiedDate(new Date());
+            ugc.setSubject(subject);
             Map<String, Object> currentAttributes = ugc.getAttributes();
             if (currentAttributes != null && attributes != null) {
                 currentAttributes.putAll(attributes);

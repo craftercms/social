@@ -337,7 +337,8 @@ public class UGCServiceTest {
 		attributeMap.put("article", "Content");
 		UGC ugc = null;
 		try {
-			ugc = ugcServiceImpl.updateUgc(currentUGC.getId(), "test", "testing", PROFILE_ID, null, "Content", null, null, null);
+			ugc = ugcServiceImpl.updateUgc(currentUGC.getId(), "test", "testing", PROFILE_ID, null, "Content", null,
+                null, null, null);
 		} catch(PermissionDeniedException pde) {
 			fail(pde.getMessage());
         } catch (AttachmentErrorException dee) {
