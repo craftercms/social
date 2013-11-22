@@ -58,15 +58,19 @@
                 targetId: this.cfg.target
             };
 
-            console.log(data);
+            // TODO evaluate if this should stay. Might not be great for security.
+            app.trigger('social.view.Commenting.beforecreate', data);
 
-            // TODO temporary, remove.
-            (S.window.tempGetCustomAttributes) && (S.window.tempGetCustomAttributes(data));
-
-            this.collection.create(data);
+            var collection = this.collection;
+            collection.create(data, {
+                error: function (model) {
+                    collection.remove(model);
+                    editor.setData(model.get('textContent'));
+                }
+            });
 
             editor.setData('');
-            editor.focus();
+            this.$('button.reply').focus();
 
         },
 
