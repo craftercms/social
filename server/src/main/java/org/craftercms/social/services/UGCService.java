@@ -156,5 +156,6 @@ public interface UGCService {
 	UGC findById(ObjectId ugcId, List<String> attributes);
 
 	int getModerationStatusCount(String moderationStatus, String tenant, String targetId, boolean isOnlyRoot);
-	
+
+    List<UGC> findByTargetRegex(String tenantName, String regex, String profileId, int page, int pageSize, String sortField, String sortOrder);
 }

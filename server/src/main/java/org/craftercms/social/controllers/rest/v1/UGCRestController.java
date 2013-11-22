@@ -112,6 +112,23 @@ public class UGCRestController {
 			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder),null,rootCount,childCount);
 		}
 	}
+
+    @RequestMapping(value = "/target/regex", method = RequestMethod.GET)
+    @ModelAttribute
+    public HierarchyList<UGC> getUgcByTargetRegex(@RequestParam final String regex,
+                                                  @RequestParam(required = false, defaultValue = "99") int rootCount,
+                                                  @RequestParam(required = false, defaultValue = "99") int childCount,
+                                                  @RequestParam(required = false, defaultValue = "0") int page,
+                                                  @RequestParam(required = false, defaultValue = "0") int pageSize,
+                                                  @RequestParam(required = false,
+                                                      defaultValue = "createdDate") String sortField,
+                                                  @RequestParam(required = false,
+                                                      defaultValue = "DESC") String sortOrder) {
+        List<UGC> list = ugcService.findByTargetRegex(getTenantName(), regex, getProfileId(), page, pageSize,
+            sortField, sortOrder);
+        log.debug("Found {} ugs using {} regex",list.size(),regex);
+        return HierarchyGenerator.generateHierarchy(list,null,rootCount,childCount);
+    }
 	
 	@RequestMapping(value = "/moderation/{tenantName}/all", method = RequestMethod.GET)
 	@ModelAttribute
@@ -182,6 +199,7 @@ public class UGCRestController {
 			HttpServletRequest request) throws PermissionDeniedException {
 
 		/** Pre validations **/
+
 		if (ugcRequest.getTargetId() == null) {
 			throw new IllegalArgumentException(
 					"Target must a valid not empty String");
@@ -314,4 +332,12 @@ public class UGCRestController {
 		}
 		return (attributeMap.size() > 0) ? attributeMap : null;
 	}
+
+    /**
+     * Returns the tenant of the current Ticket owner.
+     * @return   Tenant Name, Null if user is anonymous
+     */
+    public String getTenantName() {
+        return RequestContext.getCurrent().getAuthenticationToken().getProfile().getTenantName();
+    }
 }
