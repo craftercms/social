@@ -98,42 +98,105 @@
             }
         },
 
-        showFullView: function () {
-            var view = this.cache('view.lightbox');
+        inline: function () {
+            var view = this.cache('view.Inline');
+            if (!view) {
+                view = new S.view.Inline({
+                    target: this.cfg.target,
+                    tenant: this.cfg.tenant,
+                    collection: this.collection
+                });
+                this.cache('view.Inline', view);
+                this.listenTo(view, 'view.change.request', this.viewChangeRequest);
+                view.render();
+            }
+            view.show();
+            this.setActiveView(view);
+        },
+        lightbox: function () {
+            var view = this.cache('view.Lightbox');
             if (!view) {
                 view = new S.view.Lightbox({
                     target: this.cfg.target,
                     tenant: this.cfg.tenant,
                     collection: this.collection
                 });
-                this.cache('view.lightbox', view);
+                this.cache('view.Lightbox', view);
+                this.listenTo(view, 'view.change.request', this.viewChangeRequest);
                 view.render();
             }
             view.show();
+            this.setActiveView(view);
         },
-
-        showDiscussionBubble: function () {
-            var view = this.cache('view.popover');
+        popover: function () {
+            var view = this.cache('view.Popover');
             if (!view) {
                 view = new S.view.Popover({
                     target: this.cfg.target,
                     tenant: this.cfg.tenant,
                     collection: this.collection
                 });
-                this.cache('view.popover', view);
+                this.cache('view.Popover', view);
+                this.listenTo(view, 'visibility.change', this.popoverVisibilityDidChange);
+                this.listenTo(view, 'view.change.request', this.viewChangeRequest);
                 view.render();
             }
             view.show();
+            this.setActiveView(view);
+        },
+        setActiveView: function ( view ) {
+            this.activeView = view;
+        },
+
+        popoverVisibilityDidChange: function ( visible ) {
+            this.$el[visible ? 'addClass' : 'removeClass']('revealed-by-view');
+        },
+
+        revealDiscussion: function () {
+            // App.trigger(C.get('EVENT_REVEAL_DISCUSSIONS', this.cfg.target));
+            this.viewChangeRequest(this.cfg.discussionView);
+        },
+        viewChangeRequest: function ( requested ) {
+
+            var me = this;
+            $.each(['view.Popover','view.Lightbox','view.Inline'], function (i, v) {
+                var view = me.cache(v);
+                (view) && view.hide();
+            });
+
+            /* jshint -W086 */
+            switch (requested) {
+                case 'view.Popover': {
+                    this.popover();
+                    break;
+                }
+                case 'view.Lightbox': {
+                    this.lightbox();
+                    break;
+                }
+                case 'view.Inline': {
+                    this.inline();
+                    break;
+                }
+            }
+
+            this.cfg.discussionView = requested;
+
         },
 
         watch: function (e) {
             // TODO: what's backend like?
             S.request({
-                url: S.url('notifications.add', {
+                /*url: S.url('notifications.add', {
                     target: this.cfg.target,
                     title: '',
                     url: ''
-                }),
+                }),*/
+                /*url: '/api/1/notifications/add.json?target=%@&title=%@&url=%@'.fmt(
+                    encodeURIComponent(this.cfg.target),
+                    toc.getCommentTitleById(this.cfg.target),
+                    toc.getCommentUrlById(this.cfg.target)
+                ),*/
                 success: function () {
                     $(e.target).css('color', 'green');
                     console.log(arguments);
@@ -192,7 +255,8 @@
     Commentable.DEFAULTS = {
         templates: {
             main: ('%@commentable.hbs').fmt(S.Cfg('url.templates'))
-        }
+        },
+        discussionView: 'view.Popover'
     };
 
     S.define('view.Commentable', Commentable);
