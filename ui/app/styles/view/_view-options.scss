@@ -1,0 +1,18 @@
+
+ul.#{$app-namespace}-view-options-view {
+
+  margin-bottom: 0;
+  list-style: none;
+
+  #{$html-elements} {
+    font-size: $font-size-small;
+  }
+
+  >li {
+    list-style-type: none;
+    > a {
+      display: block;
+    }
+  }
+
+}

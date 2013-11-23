@@ -25,6 +25,7 @@
             if (this.model) {
                 this.listenTo(this.model, 'change', this.render);
                 this.listenTo(this.model, 'destroy', this.remove);
+                this.listenTo(this.model, 'remove', this.remove);
             }
         },
         render: function () {
@@ -149,7 +150,8 @@
         },
 
         remove: function () {
-
+            this.$el.remove();
+            this.trigger('remove', this.model);
         }
 
     });

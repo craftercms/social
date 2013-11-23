@@ -8,7 +8,7 @@
     color: $text-color;
     text-shadow: none;
     line-height: 1em;
-    text-transform: left;
+    text-align: left;
 
     width: auto;
     height: auto;
@@ -50,6 +50,48 @@
   // Components
   @import 'sass-bootstrap/lib/component-animations';
   @import '../icons';
+  @import "sass-bootstrap/lib/dropdowns";
+
+  .dropdown-menu {
+    &.tip {
+      &:before {
+        position: absolute;
+        top: -7px;
+        left: 9px;
+        display: inline-block;
+        border-right: 7px solid transparent;
+        border-bottom: 7px solid #ccc;
+        border-left: 7px solid transparent;
+        border-bottom-color: rgba(0, 0, 0, 0.2);
+        content: '';
+      }
+      &::after {
+        position: absolute;
+        top: -6px;
+        left: 10px;
+        display: inline-block;
+        border-right: 6px solid transparent;
+        border-bottom: 6px solid #ffffff;
+        border-left: 6px solid transparent;
+        content: '';
+      }
+    }
+    &.has-icons {
+      > li {
+        > a {
+          position: relative;
+          padding-left: 30px;
+          i {
+            top: 5px;
+            left: 10px;
+            line-height: 1;
+            position: absolute;
+          }
+        }
+      }
+    }
+  }
+
   @import 'sass-bootstrap/lib/button-groups';
   @import 'sass-bootstrap/lib/input-groups';
   @import 'sass-bootstrap/lib/badges';
