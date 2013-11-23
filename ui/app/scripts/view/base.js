@@ -34,14 +34,25 @@
         },
         listen: function () {},
         delegateActions: function (context, $elem) {
-            $elem.delegate('[data-action]', 'click', function (evt) {
-                evt.preventDefault();
-                evt.stopImmediatePropagation();
-                evt.stopPropagation();
+            $elem.delegate('[data-action]', 'click', function (e) {
+
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+
                 var action = $( this ).data('action');
                 if (action !== '') {
-                    context[action](evt);
+
+                    var params = action.match(/\(([\s\S]+?)\)/) || [];
+
+                    params.length && (params = params[1].split(','));
+                    params.splice(0, 0, e);
+
+                    action = action.replace(/\(([\s\S]+?)\)/, '');
+                    context[action] && context[action].apply(context, params);
+
                 }
+
             });
         },
         extendCfg: function ( oDefaults, oConfig ) {
