@@ -29,7 +29,14 @@
 
             Modal.prototype.createUI.apply(this, arguments);
 
-            this.$('.modal-title').text('Full Thread View');
+            this.$('.modal-header')
+                .prepend('<div class="options-view-container pull-right"></div>')
+                .find('.modal-title')
+                    .text('Full Thread View')
+                    .end()
+                .find('.close')
+                    .remove();
+
             this.$('.modal-body')
                 .after(this.getTemplate('comment-box'));
 
@@ -151,7 +158,11 @@
     Lightbox = Modal.extend(LightboxPrototype);
 
     /** @see view.Modal & view.Discussion for more */
-    Lightbox.DEFAULTS = {  };
+    Lightbox.DEFAULTS = {
+        viewOptions: {
+            hidden: ['lightbox.request']
+        }
+    };
     $.extend(true, Lightbox.DEFAULTS, Modal.DEFAULTS);
     $.extend(true, Lightbox.DEFAULTS, Discussion.DEFAULTS);
     $.extend(true, Lightbox.DEFAULTS, {
@@ -160,10 +171,10 @@
             /* jshint -W015 */
             'comment-box': [
                 '<div class="modal-comment-box">',
-                        '<h4 class="comment-box-title">Comments</h4>',
-                        '<div class="comments crafter-social-comment-thread">',
-                            '<div class="no-comments">(no comments)</div>',
-                        '</div>',
+                    '<h4 class="comment-box-title">Comments</h4>',
+                    '<div class="comments crafter-social-comment-thread">',
+                        '<div class="no-comments">(no comments)</div>',
+                    '</div>',
                 '</div>'
             ].join('')
         }

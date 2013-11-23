@@ -3,6 +3,10 @@
 
   @import "sass-bootstrap/lib/panels";
 
+  &, .panel-heading {
+    overflow: visible;
+  }
+
   .panel-heading {
     padding: 0;
 
@@ -42,6 +46,21 @@
 
   .panel-body {
     padding: 5px;
+  }
+
+  .panel-collapse, .collapse {
+    width: 100%
+  }
+
+  .options-view-container {
+    ul.#{$app-namespace}-view-options-view {
+      > li {
+        > a {
+          padding: 12px 5px;
+          display: block;
+        }
+      }
+    }
   }
 
 }

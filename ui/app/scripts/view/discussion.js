@@ -38,6 +38,27 @@
 
             }
 
+            var $opts = this.$('.options-view-container');
+            if ($opts.size()) {
+
+                var options = new S.view.Options($.extend({
+                    target: this.cfg.target,
+                    tenant: this.cfg.tenant,
+                    collection: this.collection
+                }, this.cfg.viewOptions || {}));
+
+                options.render();
+                $opts.append(options.el);
+
+                this.listenTo(options, 'view.change.request', this.changeView);
+                this.listenTo(options, 'view.close.request', this.hide || S.util.emptyFn);
+
+            }
+
+        },
+
+        changeView: function ( view ) {
+            this.trigger('view.change.request', view);
         },
 
         addAll: function () {

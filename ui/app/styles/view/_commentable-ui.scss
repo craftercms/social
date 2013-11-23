@@ -8,6 +8,11 @@ $commentable-shadow-color: $brand-primary;
   position: absolute;
 
   > ul {
+    @include opacity(.7);
+    &:hover {
+      @include opacity(1);
+    }
+
     border: 2px solid rgba(
       red($commentable-shadow-color),
       green($commentable-shadow-color),
@@ -66,7 +71,8 @@ $commentable-shadow-color: $brand-primary;
   }
 
   &.reveal,
-  &.revealed-by-options {
+  &.revealed-by-options,
+  &.revealed-by-view {
 
     -webkit-transition: background 1s ease !important;
     -moz-transition: background 1s ease !important;
