@@ -6,6 +6,7 @@
         $ = S.$;
 
     Inline = Discussion.extend({
+
         className: [Discussion.prototype.className, 'crafter-social-inline-view', 'panel-group'].join(' '),
 
         render: function () {
@@ -27,14 +28,28 @@
                 .addClass('opened');
 
             return this;
+        },
+
+        show: function () {
+            this.$el.insertAfter(this.cfg.target);
+            this.addAll();
+        },
+
+        hide: function () {
+            this.$el.detach();
         }
+
     });
 
     Inline.DEFAULTS = {
+        viewOptions: {
+            hidden: ['inline.request']
+        },
         templates: {
             /* jshint -W015 */
             main: [
                 '<div class="panel panel-default">',
+                '<div class="options-view-container pull-right"></div>',
                     '<div class="panel-heading">',
                         '<h4 class="panel-title">',
                             '<a data-indentifyme="toggler">',
