@@ -24,17 +24,14 @@
 
         initialize: function () {
 
+            this.visible = false;
+
             Base.prototype.initialize.apply(this, arguments);
 
             this.init('popover', this.cfg.target, this.cfg.popover);
             this.$tip = this.element();
 
-            this.collection.fetch({
-                data : {
-                    target: this.cfg.target,
-                    tenant: this.cfg.tenant
-                }
-            });
+            this.addAll();
 
         },
         addOne: function () {
@@ -45,11 +42,16 @@
         listen: function () {
             Base.prototype.listen.apply(this, arguments);
 
-            var $tip = this.tip();
-
-            $tip.on('hidden.bs.popover', function () {
-                $tip.hide();
-            });
+            var me = this;
+            $(this.cfg.target)
+                .on('hidden.bs.popover', function () {
+                    me.trigger('visibility.change', false);
+                    me.visible = false;
+                })
+                .on('shown.bs.popover', function () {
+                    me.trigger('visibility.change', true);
+                    me.visible = true;
+                });
 
         },
 
@@ -164,6 +166,22 @@
          * Popover overrides
          */
 
+        hide: function () {
+
+            var e = $.Event('hide.bs.' + this.type);
+
+            this.$tip.removeClass('in');
+            if (this.hoverState !== 'in') {
+                this.$tip.detach();
+            }
+
+            this.$element.trigger(e);
+            this.$element.trigger('hidden.bs.' + this.type);
+
+            return this;
+
+        },
+
         getDefaults: function () {
             return Popover.DEFAULTS;
         },
@@ -204,7 +222,10 @@
             trigger: 'manual',
             container: 'body',
             content: '(not.empty)'
-        })
+        }),
+        viewOptions: {
+            hidden: ['close', 'popover.request']
+        }
     });
 
     S.define('view.Popover', Popover);
