@@ -28,3 +28,9 @@ Thumbs.db
 
 # Maven build overlays #
 overlays
+
+# Editor and Testing
+atlassian-ide-plugin.xml
+${crafter.security.authentication.cookie.encryptionKey.file}
+encryption-keys/
+.vimrc
