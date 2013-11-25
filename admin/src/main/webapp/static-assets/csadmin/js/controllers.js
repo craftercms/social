@@ -6,13 +6,16 @@ angular.module('moderationDashboard.controllers', []).
      * Moderation Dashboard Controller
      * - get UGCs by moderation status
      **/
-    controller('UgcListCtrl', 
-        ['$scope', 
+    controller('UgcListCtrl',
+        ['$rootScope',
+         '$scope', 
          '$routeParams',
          '$timeout',
          'ConfigurationData', 
-         'UgcApi', 
-         'CONFIG', function(scope, rp, $timeout, ConfigurationData, UgcApi, CONFIG) {
+         'UgcApi',
+         'DeletePopupService', 
+         'CONFIG', function($rootScope, scope, rp, $timeout, ConfigurationData, UgcApi, DeletePopupService, CONFIG) {
+
         scope.ugcList = [];
         scope.status = "";
         scope.moderationActions = [];
@@ -153,13 +156,14 @@ angular.module('moderationDashboard.controllers', []).
         };
 
         // handler when input checkbox is clicked. Hide error message if is displayed
-        scope.hideCheckUgcError = function (event) {
+        scope.bulkItemsUpdate = function (event) {
             if ($(event.currentTarget).prop('checked')) {
                 // hiding error message
                 var applyBtn = $('#applyBtn');
                 if (applyBtn.next('div.tooltip:visible').length){
                     applyBtn.tooltip('hide');
                 }
+                DeletePopupService.destroy();
             }
         }
 
@@ -219,12 +223,20 @@ angular.module('moderationDashboard.controllers', []).
         scope.getUgcList(1);
         setScopeActions();
 
+        $rootScope.$on('$ugcUpdate', function(){
+            scope.getUgcList(1);
+        });
     }]).
 
     /**
      * bulk action controller
      */
-    controller('BulkActionCtrl', ['$scope', 'UgcApi', 'PERMANENTLY_DELETE', function (scope, UgcApi, PD) {
+    controller('BulkActionCtrl', 
+        ['$scope', 
+         'UgcApi',
+         'DeletePopupService',
+         'ACTIONS', function (scope, UgcApi, DeletePopupService, ACTIONS) {
+
         var commentsSelected = function () {
             var listItems = [];
             $('.entries-list input').each(function (index) {
@@ -267,61 +279,21 @@ angular.module('moderationDashboard.controllers', []).
 
             optionSelected = optionSelected.toUpperCase();
 
-            if (PD.ACTION === optionSelected) {
-                if (! $(event.currentTarget).next('div.popover:visible').length) {
-                    $(event.currentTarget).popover({
-                        animation: true,
-                        placement: 'right',
-                        trigger: 'manual',
-                        'html': true,
-                        title: 'Are you sure ?',
-                        content: function (){
-                            var popover = $(event.currentTarget).next('.popover');
-                            popover.removeClass('hidden');
-                            return popover.html();
-                        }
-                    }).popover('show');
-                }
+            if (ACTIONS.DELETE.toUpperCase() === optionSelected) {
+                DeletePopupService.open(event.currentTarget, {
+                    tenant: scope.confObj.tenant, 
+                    items: listItems
+                });
+            } else {
+                var conf = {
+                    moderationstatus: optionSelected,
+                    tenant: scope.confObj.tenant,
+                    ids: listItems
+                };
 
-                return;
-            }
-
-            var conf = {
-                moderationstatus: optionSelected,
-                tenant: scope.confObj.tenant,
-                ids: listItems
-            };
-
-            UgcApi.bulkUpdate(conf).then( function (data) {
-                scope.displayResults(data, { undo: true, message: "" } );
-            })
-
-        };
-
-        scope.validateDelete = function (event) {
-            var elm = $(event.currentTarget);
-            if (elm.val().toUpperCase() === PD.CONFIRM) {
-                var listItems = commentsSelected();
-                if (listItems !== null){
-                    var conf = {
-                        tenant: scope.confObj.tenant,
-                        ugcids: listItems
-                    };
-
-                    UgcApi.permanentlyDelete(conf).then(function (data) {
-                        if (data){
-                            $("#applyBtn").popover('destroy');
-                            //scope.displayResults(data, { undo: false, message: "comment deleted successfully" });
-                            console.log('deleted');
-                        }else {
-                            console.log("error trying to delete comment");
-                            //TODO display message explaining the reason
-                        }
-                    });
-                }
-            }else {
-                var popover = $('#applyBtn');
-                popover.popover('hide');
+                UgcApi.bulkUpdate(conf).then( function (data) {
+                    scope.displayResults(data, { undo: true, message: "" } );
+                });
             }
         };
 
@@ -360,7 +332,7 @@ angular.module('moderationDashboard.controllers', []).
         };
 
         // handler for when a select option has been updated
-        scope.optionSelected = function () {
+        scope.bulkOptionSelected = function () {
             var applyBtn = $('#applyBtn');
             if (this.bulkAction !== null) {
                 applyBtn.removeClass('disabled');
@@ -372,6 +344,7 @@ angular.module('moderationDashboard.controllers', []).
                     applyBtn.tooltip('hide');
                 }
             }
+            DeletePopupService.destroy();
         };
     }]).
 
