@@ -24,46 +24,55 @@
 
         initialize: function () {
 
+            this.visible = false;
+
             Base.prototype.initialize.apply(this, arguments);
 
             this.init('popover', this.cfg.target, this.cfg.popover);
             this.$tip = this.element();
 
-            this.collection.fetch({
-                data : {
-                    target: this.cfg.target,
-                    tenant: this.cfg.tenant
-                }
-            });
+            this.addAll();
 
         },
         addOne: function () {
             Base.prototype.addOne.apply(this, arguments);
-            this.replacement();
+            // TODO: placement is not working well
+            // this.replacement();
         },
         listen: function () {
             Base.prototype.listen.apply(this, arguments);
 
-            var $tip = this.tip();
-
-            $tip.on('hidden.bs.popover', function () {
-                $tip.hide();
-            });
+            var me = this;
+            $(this.cfg.target)
+                .on('hidden.bs.popover', function () {
+                    me.trigger('visibility.change', false);
+                    me.visible = false;
+                })
+                .on('shown.bs.popover', function () {
+                    me.trigger('visibility.change', true);
+                    me.visible = true;
+                });
 
         },
 
         render: function () {
+
             Base.prototype.render();
             // TODO see how this works.
-            // Are users confortable with this behaviour or is it rather irksome?
-            var $bd         = $('body'),
-                overflow    = $bd.css('overflow');
-            this.$('.crafter-social-comment-thread')
-                .mouseenter(function (  ) {
-                    $bd.css('overflow', 'hidden');
-                }).mouseleave(function (  ) {
-                    $bd.css('overflow', overflow);
-                });
+            // Are users comfortable with this behaviour or is it rather irksome?
+            var $elem = this.$('.crafter-social-comment-thread');
+            $elem.on('mousewheel DOMMouseScroll', function (e) {
+                var top     = this.scrollTop;
+                var delta   = (e.originalEvent.detail < 0) || (e.originalEvent.wheelDelta > 0) ? 1 : -1;
+
+                if (delta < 0 && ($elem.outerHeight() + this.scrollTop) === this.scrollHeight) {
+                    e.preventDefault();
+                } else if (delta >= 0 && top === 0) {
+                    e.preventDefault();
+                }
+
+            });
+
             return this;
         },
 
@@ -157,6 +166,22 @@
          * Popover overrides
          */
 
+        hide: function () {
+
+            var e = $.Event('hide.bs.' + this.type);
+
+            this.$tip.removeClass('in');
+            if (this.hoverState !== 'in') {
+                this.$tip.detach();
+            }
+
+            this.$element.trigger(e);
+            this.$element.trigger('hidden.bs.' + this.type);
+
+            return this;
+
+        },
+
         getDefaults: function () {
             return Popover.DEFAULTS;
         },
@@ -192,11 +217,15 @@
             comment: ('%@comment.hbs').fmt(S.Cfg('url.templates'))
         },
         popover: $.extend({}, $.fn.popover.Constructor.DEFAULTS, {
-            placement: 'auto bottom',
+            // TODO auto placement is not working well
+            placement: 'bottom',
             trigger: 'manual',
             container: 'body',
             content: '(not.empty)'
-        })
+        }),
+        viewOptions: {
+            hidden: ['close', 'popover.request']
+        }
     });
 
     S.define('view.Popover', Popover);

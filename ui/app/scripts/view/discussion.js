@@ -14,23 +14,51 @@
 
         listen: function () {
             var collection = this.collection;
-            this.listenTo(collection, 'add', this.addOne);
-            this.listenTo(collection, 'sync', this.addAll);
+            if (collection) {
+                this.listenTo(collection, 'add', this.addOne);
+                this.listenTo(collection, 'sync', this.addAll);
+            }
         },
 
         createUI: function () {
 
             Base.prototype.createUI.call(this);
 
-            var view = new S.util.instance('view.Commenting', $.extend({
-                collection: this.collection,
-                tenant: this.cfg.tenant,
-                target: this.cfg.target
-            }, this.cfg.commenting));
+            var $replies = this.$('.reply-box');
+            if ($replies.size()) {
 
-            this.$('.reply-box').append(view.render().el);
-            this.cache('commentingView', view);
+                var view = new S.util.instance('view.Commenting', $.extend({
+                    collection: this.collection,
+                    tenant: this.cfg.tenant,
+                    target: this.cfg.target
+                }, this.cfg.commenting));
 
+                $replies.append(view.render().el);
+                this.cache('commentingView', view);
+
+            }
+
+            var $opts = this.$('.options-view-container');
+            if ($opts.size()) {
+
+                var options = new S.view.Options($.extend({
+                    target: this.cfg.target,
+                    tenant: this.cfg.tenant,
+                    collection: this.collection
+                }, this.cfg.viewOptions || {}));
+
+                options.render();
+                $opts.append(options.el);
+
+                this.listenTo(options, 'view.change.request', this.changeView);
+                this.listenTo(options, 'view.close.request', this.hide || S.util.emptyFn);
+
+            }
+
+        },
+
+        changeView: function ( view ) {
+            this.trigger('view.change.request', view);
         },
 
         addAll: function () {
