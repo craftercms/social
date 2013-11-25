@@ -40,4 +40,11 @@ angular.module('moderationDashboard',
                     }
                 }
             );
+    }]).
+
+    run(['$rootScope', 'DeletePopupService', function($rootScope, DeletePopupService) {
+        $rootScope.$on('$routeChangeStart', function(event) {
+            // Destroy the delete confirmation dialog (if it's open)
+            DeletePopupService.destroy();
+        });
     }]);

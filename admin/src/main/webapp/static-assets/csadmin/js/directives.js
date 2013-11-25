@@ -2,7 +2,12 @@
 
 /* Directives */
 angular.module('moderationDashboard.directives', []).
-    directive('moderationAction', ['PERMANENTLY_DELETE', 'CONFIG', 'UgcApi', function (PD, CONFIG, UgcApi) {
+    directive('moderationAction', 
+        ['ACTIONS', 
+         'CONFIG', 
+         'UgcApi',
+         'DeletePopupService', function (ACTIONS, CONFIG, UgcApi, DeletePopupService) {
+
         return {
             restrict: "E",
             templateUrl: CONFIG.TEMPLATES_PATH +  "moderation_actions.html",
@@ -10,24 +15,21 @@ angular.module('moderationDashboard.directives', []).
             link: function (scope, elm, attrs) {
                 scope.ugcid = attrs.ugcid;
 
-                var actions = scope.moderationActions;
-                angular.forEach(actions, function (action, i) {
-                    if (action.status.toUpperCase() === PD.ACTION){
-                        action.isDelete = true;
-                    }else{
-                        action.isDelete = false;
-                    }
-                });
-
                 elm.find('.mod-actions-btn').delegate('.btn-mod-action', 'click', function (ev) {
                     var currentEl = $(ev.currentTarget),
                         actionAttr = currentEl.attr('data-action-type'),
                         newStatus, queryParams;
 
                     switch (actionAttr) {
-                        case 'edit':
+                        case ACTIONS.EDIT:
                             scope.$apply( function () {
                                 scope.editMode = !scope.editMode;
+                            });
+                            break;
+                        case ACTIONS.DELETE:
+                            DeletePopupService.open(ev.currentTarget, {
+                                tenant: scope.confObj.tenant, 
+                                items: [scope.ugcid]
                             });
                             break;
                         default:
@@ -47,6 +49,7 @@ angular.module('moderationDashboard.directives', []).
             }
         };
     }]).
+
     directive('selectallugcs', [function () {
         return function (scope, elm) {
             elm.change(function (ev) {
@@ -62,61 +65,5 @@ angular.module('moderationDashboard.directives', []).
                     $('.entries-list input').prop('checked', false);
                 }
             });
-        };
-    }]).
-
-    directive('popoverMessage', ['CONFIG', '$timeout', 'PERMANENTLY_DELETE', 'UgcApi', function (CONFIG, timeout, PD, UgcApi) {
-        return {
-            restrict: 'E',
-            templateUrl: CONFIG.TEMPLATES_PATH +  "popover_message.html",
-            link: function (scope, elm, attrs) {
-                scope.ugcid = attrs.ugcid;
-                scope.ugclabel = attrs.ugclabel;
-
-                scope.showPopover = function (event) {
-                    if (! $(event.currentTarget).next('div.popover:visible').length) {
-                        $(event.currentTarget).popover({
-                            animation: true,
-                            placement: 'right',
-                            trigger: 'manual',
-                            'html': true,
-                            title: 'Are you sure ?',
-                            content: function (){
-                                var popover = $(event.currentTarget).next('.popover');
-                                popover.removeClass('hidden');
-                                return popover.html();
-                            }
-                        }).popover('show');
-                    }
-                };
-
-                timeout(function () {
-                    elm.delegate('.delete-btn', 'click', function (ev) {
-                        var target = $(ev.currentTarget);
-                        var popover = $(ev.currentTarget).parents('.popover').prev('.active');
-
-                        if (target.val().toUpperCase() === PD.CONFIRM) {
-                            var conf = {
-                                tenant: scope.confObj.tenant,
-                                ugcids: [scope.ugcid]
-                            };
-
-                            UgcApi.permanentlyDelete(conf).then(function (data) {
-                                if (data){
-
-                                    popover.popover('destroy');
-                                    scope.displayResults(data, currentEl, { undo: false, message: "Comment successfully deleted" });
-                                }else {
-                                    console.log("error trying to delete comment");
-                                    //TODO display message explaining the reason
-                                }
-                            });
-                        }else{
-                            popover.removeClass('active');
-                            popover.popover('hide');
-                        }
-                    });
-                });
-            }
         };
     }]);
