@@ -277,6 +277,12 @@ public class UGCRestController {
 		return ugcService.likeUGC(new ObjectId(ugcId), tenant, getProfileId());
 	}
 
+    @RequestMapping(value = "/unlike/{ugcId}", method = RequestMethod.POST)
+    @ModelAttribute
+    public UGC unLikeUGC(@PathVariable() String ugcId) {
+        return ugcService.unLikeUGC(new ObjectId(ugcId), getTenantName(), getProfileId());
+    }
+
 	@RequestMapping(value = "/flag/{ugcId}", method = RequestMethod.POST)
 	@ModelAttribute
 	public UGC flagUGC(@PathVariable() String ugcId,
@@ -284,13 +290,26 @@ public class UGCRestController {
                        @RequestParam final String reason) {
 		return ugcService.flagUGC(new ObjectId(ugcId), reason, tenant, getProfileId());
 	}
+
+    @RequestMapping(value = "/unflag/{ugcId}", method = RequestMethod.POST)
+    @ModelAttribute
+    public UGC unflagUGC(@PathVariable() String ugcId,
+                       @RequestParam final String reason) {
+        return ugcService.unflagUGC(new ObjectId(ugcId), reason, getTenantName(), getProfileId());
+    }
 	
 	@RequestMapping(value = "/dislike/{ugcId}", method = RequestMethod.POST)
 	@ModelAttribute
-	public UGC dislikeUGC(@PathVariable() String ugcId,
+	public UGC unDislikeUGC(@PathVariable() String ugcId,
               @RequestParam final String tenant) {
 		return ugcService.dislikeUGC(new ObjectId(ugcId), tenant, getProfileId());
 	}
+
+    @RequestMapping(value = "/undislike/{ugcId}", method = RequestMethod.POST)
+    @ModelAttribute
+    public UGC dislikeUGC(@PathVariable() String ugcId) {
+        return ugcService.unDislikeUGC(new ObjectId(ugcId), getTenantName(), getProfileId());
+    }
 
 	@RequestMapping(value = "/{ugcId}/set_attibutes", method = RequestMethod.POST)
 	@ModelAttribute

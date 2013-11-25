@@ -31,7 +31,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class UGCAudit {
 
 	public enum AuditAction {
-		LIKE("like"), DISLIKE("dislike"), FLAG("flag"), CREATE("create"), UPDATE("update"), DELETE("delete"), MODERATE("moderate");
+		LIKE("like"), DISLIKE("dislike"), FLAG("flag"), CREATE("create"), UPDATE("update"),
+        DELETE("delete"), MODERATE("moderate"), UNFLAG("un-flag"), UNLIKE("unlike"), UNDISLIKE("undislike");
+
 		private String name;
 
 		private AuditAction(String name) {
@@ -51,7 +53,9 @@ public class UGCAudit {
 	private String profileId;
 	
 	private Target target;
-	
+
+
+
 	private Date createdDate;
 
 	private AuditAction action;

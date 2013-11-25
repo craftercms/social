@@ -59,7 +59,7 @@ public class ModerationDecisionImpl implements ModerationDecision {
 
 	@Override
 	public boolean isTrash(UGC ugc) {
-		return ugc.getFlagCount() >= maxFlagsBeforeTrash;
+		return ugc.getFlags().size() >= maxFlagsBeforeTrash;
 	}
 	
 	@Override

@@ -287,6 +287,9 @@ public class UGCServiceImpl implements UGCService {
             ugc.setModerationStatus(newStatus);
             ugc.setLastModifiedDate(new Date());
             //Audit call
+            if(newStatus==ModerationStatus.APPROVED){
+                ugc.getFlags().clear();//Clear all flags is UGC is approve
+            }
             auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
             return populateUGCWithProfile(save(ugc));
         } else {
@@ -309,6 +312,9 @@ public class UGCServiceImpl implements UGCService {
                 UGC ugc = uGCRepository.findOne(uGCId); //TODO: performance improvement. ONLY one call to DB
                 ugc.setModerationStatus(newStatus);
                 ugc.setLastModifiedDate(new Date());
+                if(newStatus==ModerationStatus.APPROVED){
+                    ugc.getFlags().clear();//Clear all flags is UGC is approve
+                }
                 //Audit call
                 auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
                 result.add(populateUGCWithProfile(save(ugc)));
@@ -398,27 +404,84 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC likeUGC(ObjectId ugcId, String tenant, String profileId) {
-        if (existsUGC(ugcId)) {
-            UGC ugc = uGCRepository.findOne(ugcId);
+        UGC ugc = uGCRepository.findOne(ugcId);
+        if (ugc!=null) {
             if (userCan(AuditAction.LIKE, ugc, profileId)) {
-                ugc.setLikeCount(ugc.getLikeCount() + 1);
+                ugc.getLikes().add(profileId);
                 auditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
                 checkForModeration(ugc);
                 if (!userCan(AuditAction.DISLIKE, ugc, profileId)) {
-                    ugc.setOffenceCount(ugc.getOffenceCount() - 1);
+                    ugc.getDislikes().remove(profileId);
                     removeAuditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
                 }
-                return populateUGCWithProfile(save(ugc));
-            } else {
-                ugc.setLikeCount(ugc.getLikeCount() - 1);
-                removeAuditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
-                return populateUGCWithProfile(save(ugc));
             }
+            return populateUGCWithProfile(save(ugc));
         } else {
             log.debug("UGC Id {} does not exist", ugcId);
             throw new DataIntegrityViolationException("UGC does not exist");
         }
     }
+
+    @Override
+    public UGC unLikeUGC(ObjectId ugcId, String tenant, String profileId) {
+        UGC ugc = uGCRepository.findOne(ugcId);
+        if (ugc != null) {
+            if (ugc.getLikes().contains(profileId)) {
+                ugc.getLikes().remove(profileId);
+                uGCRepository.save(ugc);
+                auditUGC(ugcId, AuditAction.UNLIKE, tenant, profileId, "");
+            } else {
+                log.debug("Profile ID {} has not like UGC {} ", profileId, ugcId);
+            }
+            return populateUGCWithProfile(save(ugc));
+        } else {
+            log.debug("UGC Id {} does not exist", ugcId);
+            throw new DataIntegrityViolationException("UGC does not exist");
+        }
+    }
+
+
+    @Override
+    public UGC unDislikeUGC(ObjectId ugcId, String tenant, String profileId) {
+        UGC ugc = uGCRepository.findOne(ugcId);
+        if (ugc != null) {
+            if (ugc.getDislikes().contains(profileId)) {
+                ugc.getDislikes().remove(profileId);
+                uGCRepository.save(ugc);
+                auditUGC(ugcId, AuditAction.UNDISLIKE, tenant, profileId, "");
+            } else {
+                log.debug("Profile ID {} has not dislike UGC {} ", profileId, ugcId);
+            }
+            return populateUGCWithProfile(save(ugc));
+        } else {
+            log.debug("UGC Id {} does not exist", ugcId);
+            throw new DataIntegrityViolationException("UGC does not exist");
+        }
+    }
+
+
+
+    @Override
+    public UGC unflagUGC(final ObjectId ugcId, final String reason, final String tenant, final String profileId) {
+        UGC ugc = uGCRepository.findOne(ugcId);
+        if (ugc != null) {
+            if (ugc.getFlags().contains(profileId)) {
+                ugc.getFlags().remove(profileId);
+                uGCRepository.save(ugc);
+                removeAuditUGC(ugcId, AuditAction.FLAG, tenant, profileId, null);    //NOT GOOD,
+                // Its not an audit table.(not using it as one)
+                auditUGC(ugcId, AuditAction.UNFLAG, tenant, profileId, reason);
+            } else {
+                log.debug("Profile ID {} has not flag UGC {} ", profileId, ugcId);
+            }
+            return populateUGCWithProfile(save(ugc));
+        } else {
+            log.debug("UGC Id {} does not exist", ugcId);
+            throw new DataIntegrityViolationException("UGC does not exist");
+        }
+    }
+
+
 
     private boolean userCan(AuditAction like, UGC ugc, String profileId) {
         UGCAudit r = uGCAuditRepository.findByProfileIdAndUgcIdAndAction(profileId, ugc.getId(), like);
@@ -427,27 +490,26 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC dislikeUGC(ObjectId ugcId, String tenant, String profileId) {
-        if (existsUGC(ugcId)) {
-            UGC ugc = uGCRepository.findOne(ugcId);
+        UGC ugc = uGCRepository.findOne(ugcId);
+        if (ugc!=null) { //save us a trip to mongo
             if (userCan(AuditAction.DISLIKE, ugc, profileId)) {
-                ugc.setOffenceCount(ugc.getOffenceCount() + 1);
+                ugc.getDislikes().add(profileId);
                 auditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
                 checkForModeration(ugc);
                 if (!userCan(AuditAction.LIKE, ugc, profileId)) {
-                    ugc.setLikeCount(ugc.getLikeCount() - 1);
-                    removeAuditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
+                    ugc.getLikes().remove(profileId);
+                    removeAuditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);    // :(
                 }
-                return populateUGCWithProfile(save(ugc));
-            } else {
-                ugc.setOffenceCount(ugc.getOffenceCount() - 1);
-                removeAuditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
-                return populateUGCWithProfile(save(ugc));
             }
+            return populateUGCWithProfile(save(ugc));
         } else {
             log.debug("UGC Id {} does not exist", ugcId);
             throw new DataIntegrityViolationException("UGC does not exist");
         }
     }
+
+
+
 
     @SuppressWarnings("unchecked")
     @Override
@@ -540,6 +602,8 @@ public class UGCServiceImpl implements UGCService {
             sortOrder);
     }
 
+
+
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize,
                                           String sortField, String sortOrder) {
@@ -551,8 +615,8 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public UGC flagUGC(ObjectId ugcId, String reason, String tenant, String profileId) {
         UGC ugc = uGCRepository.findOne(ugcId);
-        if (userCan(AuditAction.FLAG, ugc, profileId)) {
-            ugc.setFlagCount(ugc.getFlagCount() + 1);
+        if (!ugc.getFlags().contains(profileId)) {  //Don't flag twice.
+            ugc.getFlags().add(profileId);
             auditUGC(ugcId, AuditAction.FLAG, tenant, profileId, reason);
             checkForModeration(ugc);
             return populateUGCWithProfile(save(ugc));
