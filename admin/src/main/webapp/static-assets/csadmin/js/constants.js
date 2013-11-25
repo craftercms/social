@@ -9,7 +9,8 @@ angular.module('moderationDashboard.constants', []).
         IMAGES_PATH: "/crafter-social-admin/static-assets/csadmin/img/"
     }).
 
-    constant('PERMANENTLY_DELETE', {
-        ACTION: "DELETE",
-        CONFIRM: "YES"
+    constant('ACTIONS', {
+        DELETE: 'delete',
+        EDIT: 'edit',
+        UPDATE: 'update_status'
     });

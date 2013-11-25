@@ -14,17 +14,12 @@
     <div class="row-fluid">
         <main ng-show="displayUgcs" role="main" class="span12">
             <div class="bulk-actions" ng-controller="BulkActionCtrl">
-                <select id="bulkActions" ng-model="bulkAction" ng-options="action.status as action.label for action in bulkActions" ng-change="optionSelected()">
+                <select id="bulkActions" ng-model="bulkAction" ng-options="action.status as action.label for action in bulkActions" ng-change="bulkOptionSelected()">
                     <option value="">-- Choose Bulk Action --</option>
                 </select>
-                <button id="applyBtn" class="btn entries-list-btn disabled" ng-click="bulkUpdate($event)">Apply</button>
-                <div class="popover ">
-                    <div class="arrow"></div>
-                    <div class="btn-group" >
-                        <button class="btn delete-btn" value="yes">Yes</button>
-                        <button class="btn delete-btn" value="no">No</button>
-                    </div>
-                </div>
+                <button id="applyBtn" 
+                        class="btn entries-list-btn disabled" 
+                        ng-click="bulkUpdate($event)">Apply</button>
             </div>
 
             <div class="heading-wrapper row-fluid">
@@ -44,7 +39,7 @@
 
                     <div class="row-fluid hide-element" ng-show="!ugc.updated">
                         <div class="span1 col1">
-                            <input ng-click="hideCheckUgcError($event)" ugcid="{{ugc.id}}" type="checkbox" />
+                            <input ng-click="bulkItemsUpdate($event)" ugcid="{{ugc.id}}" type="checkbox" />
                         </div>
 
                         <div class="span2 col2 author-section">
@@ -62,20 +57,51 @@
                         </div>
 
                         <article class="span9 col9 comment-section">
-                            <div class="entry-wrapper collapsed" detail-information="{{ugc.id}}">
+
+                            <div class="entry-wrapper" 
+                                 ng-class="{ expandable: ugc.isExpandable && !editMode }">
+
                                 <span class="last-update">
                                     Submitted on: <span class="date">{{ugc.dateAdded}}</span>
                                 </span>
 
-                                <a class="target-url" ng-href="ugc.targetUrl">{{ugc.targetTitle}}</a>
-                                <h4>{{ugc.title}}</h4>
-                                <div class="ugc-content">
-                                    {{ugc.textContent}}
-                                </div>
+                                <a class="target-url" ng-if="ugc.targetTitle && ugc.targetUrl" ng-href="{{ugc.targetUrl}}">{{ugc.targetTitle}}</a>
 
-                                <div class="expand-collapse">
-                                    <i class="icon-chevron-down"></i>
-                                    <i class="hide icon-chevron-up"></i>
+                                <form novalidate ng-submit="updateUGCContent(ugc, ugc.title, ugc.textContent)">
+                                    <div class="read-mode" ng-hide="editMode">
+                                        <h4>{{ugc.title}}</h4>
+
+                                        <div class="ugc-content summary" 
+                                             ng-hide="fullContent">{{ugc.teaser}}</div>
+
+                                        <div class="ugc-content full" 
+                                             ng-show="fullContent">{{ugc.textContent}}</div>
+                                    </div>
+                                    <div class="edit-mode" ng-show="editMode">
+
+                                        <input  class="title" 
+                                                ng-model="ugc.title" 
+                                                ng-show="editMode" 
+                                                type="text" />
+                                        <textarea   class="content"
+                                                    ng-model="ugc.textContent" 
+                                                    ng-show="editMode" />
+                                        <button type="submit" 
+                                                class="btn btn-primary btn-sm" 
+                                                ng-show="editMode"
+                                                ng-click="editMode=!editMode">Done</button>
+                                    </div> 
+                                </form>
+
+                                <div class="expand-collapse" 
+                                     ng-show="ugc.isExpandable" 
+                                     ng-click="fullContent=!fullContent">
+                                    
+                                    <i  class="icon-chevron-down" 
+                                        ng-hide="fullContent"></i>
+
+                                    <i  class="icon-chevron-up" 
+                                        ng-show="fullContent"></i>
                                 </div>
                             </div>
 
@@ -119,4 +145,5 @@
                 max-size="maxSize" class="pagination-small" boundary-links="true" rotate="false" ></pagination>
         </div>
     </div>
+
 </div>

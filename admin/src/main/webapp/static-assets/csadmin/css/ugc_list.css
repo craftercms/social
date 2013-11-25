@@ -88,15 +88,15 @@ select {
     padding: 5px;
     background: #f6f6f6;
     margin: 0;
-    border-radius: 10px;
+    border-radius: 6px;
     border: 1px solid #ddd;
-    cursor: pointer;
     position: relative;
 }
 
-.entry-wrapper:hover {
+.entry-wrapper.expandable:hover {
     /*background: #ddd;*/
     border: 1px solid #d35400;
+    cursor: pointer;
 }
 
 /* expand collapse */
@@ -107,17 +107,34 @@ select {
     text-align: center;
     height: 14px;
 }
-.entry-wrapper:hover .expand-collapse {
+.entry-wrapper.expandable:hover .expand-collapse {
     visibility: visible;
+}
+
+.comment-section .edit-mode .title { width: 60%; }
+.comment-section .edit-mode .content { width: 70%; height: 80px; }
+
+.comment-section .edit-mode .title,
+.comment-section .edit-mode .content {
+    display: block;
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 12px;
+    padding: 2px 4px;
+}
+.comment-section .edit-mode .btn {
+    margin-left: 10px;
 }
 
 .moderation-buttons {
     margin: 5px 0 0;
 }
 
-.moderation-buttons .btn {
-    padding: 0 8px;
+.moderation-buttons .btn,
+.comment-section .edit-mode .btn {
+    padding: 2px 10px;
     font-size: 12px;
+    margin-right: 5px;
 }
 .comment-section .btn-group {
     margin-top: 5px;
@@ -205,4 +222,7 @@ select {
 /* popover */
 .popover {
     min-width: 120px;
+}
+.popover .popover-content .btn {
+    margin-right: 0;
 }

@@ -1,24 +1,31 @@
 'use strict';
 
 angular.module('moderationDashboard.controllers', []).
-    /**
-     * AppCtrl
-     * main controller
-     **/
-    controller('AppCtrl', ['$scope', function (scope) {
-
-    }]).
+    
     /**
      * Moderation Dashboard Controller
      * - get UGCs by moderation status
      **/
-    controller('UgcListCtrl', ['$scope', '$routeParams', 'ConfigurationData', 'UgcApi', 'CONFIG', function(scope, rp, ConfigurationData, UgcApi, CONFIG) {
+    controller('UgcListCtrl',
+        ['$rootScope',
+         '$scope', 
+         '$routeParams',
+         '$timeout',
+         'ConfigurationData', 
+         'UgcApi',
+         'DeletePopupService', 
+         'CONFIG', function($rootScope, scope, rp, $timeout, ConfigurationData, UgcApi, DeletePopupService, CONFIG) {
+
         scope.ugcList = [];
         scope.status = "";
         scope.moderationActions = [];
         scope.bulkActions = [];
         scope.confObj = ConfigurationData.getConfData();
         scope.moderationList = ConfigurationData.getModerationActions();
+
+        function cropText (text, upperLimit) {
+            return (text.length > upperLimit) ? text.substring(0, upperLimit) + " [...]" : text;
+        }
 
         //set actual status
         var setStatus = function () {
@@ -36,8 +43,33 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
+        scope.updateUGCContent = function (originalUGC, ugcTitle, ugcContent) {            
+            var callConfig, ugcData;
+
+            $timeout( function() {
+                scope.$apply( function() {
+                    originalUGC.teaser = cropText(ugcContent, 200);
+                    originalUGC.isExpandable = (originalUGC.teaser == ugcContent) ? false : true;
+                });
+            });
+
+            callConfig = {
+                ugcId: originalUGC.id,
+                tenant: scope.confObj.tenant
+            };
+            ugcData = {
+                ugcId: originalUGC.id,
+                textContent: JSON.stringify({
+                    title: ugcTitle,
+                    content: ugcContent
+                })
+            };
+            UgcApi.updateUGCContent(ugcData, callConfig);
+        };        
+
         // get ugc list by status from rest call
         scope.getUgcList = function (page) {
+            
             var conf = {
                 tenant: scope.confObj.tenant,
                 moderation: scope.status + ".json",
@@ -48,29 +80,35 @@ angular.module('moderationDashboard.controllers', []).
             UgcApi.getUgcList(conf).then(function (data) {
                 if (data) {
                     var txtContent = {},
-                        tmpList = [];
+                        tmpList = [],
+                        teaser, isExpandable;
 
                     angular.forEach(data, function (ugc){
-                        txtContent = angular.fromJson(ugc.textContent);
 
-                        if (ugc.textContent[0] == '{') {
+                        if (ugc.textContent && ugc.textContent[0] == '{') {
                             txtContent = angular.fromJson(ugc.textContent);
                         } else {
+                            ugc.textContent = ugc.textContent || '';
                             txtContent = {content: ugc.textContent, title: 'no title'};
                         }
+
+                        teaser = cropText(txtContent.content, 200);
+                        isExpandable = (teaser == txtContent.content) ? false : true;
 
                         tmpList.push({
                             'title': txtContent.title,
                             'id': ugc.id,
-                            'textContent': scope.getTextFromhtml(txtContent.content),
+                            'teaser': teaser,
+                            'isExpandable': isExpandable,
+                            'textContent': txtContent.content,
                             'moderationStatus': ugc.moderationStatus,
                             'completeContent': txtContent.content,
                             'dateAdded': scope.getDateTime(ugc.dateAdded),
                             'userName': ugc.profile.userName,
                             'userMail': ugc.profile.email,
                             'userImg': CONFIG.IMAGES_PATH + "profile-photo.jpg",
-                            'targetUrl': 'target Url',
-                            'targetTitle': 'target Title',
+                            'targetUrl': ugc.targetUrl,
+                            'targetTitle': ugc.targetDescription,
                             'updated': false,
                             'updateMessage': "",
                             'alertClass': "",
@@ -94,21 +132,6 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
-        // get text snippet from html
-        //TODO if text is less than 200 then no arrow nor red corner has to appear
-        scope.getTextFromhtml = function (html) {
-            var elmText = $(html).text(),
-                snippet;
-            if (elmText.length > 200) {
-                snippet = elmText.substring(0, 200);
-                snippet += " [...]";
-            }else{
-                snippet = elmText;
-            }
-
-            return snippet;
-        };
-
         // get date and hour of last update
         scope.getDateTime = function (dateLong) {
             var date = new Date(dateLong);
@@ -124,7 +147,7 @@ angular.module('moderationDashboard.controllers', []).
 
                     // Iterate through the action objects to identify the bulk operations
                     angular.forEach(modObject.actions, function(actionObj) {
-                        if (actionObj.isBulk) {
+                        if (!actionObj.notBulk) {
                             scope.bulkActions.push(actionObj);
                         }
                     })
@@ -133,13 +156,14 @@ angular.module('moderationDashboard.controllers', []).
         };
 
         // handler when input checkbox is clicked. Hide error message if is displayed
-        scope.hideCheckUgcError = function (event) {
+        scope.bulkItemsUpdate = function (event) {
             if ($(event.currentTarget).prop('checked')) {
                 // hiding error message
                 var applyBtn = $('#applyBtn');
                 if (applyBtn.next('div.tooltip:visible').length){
                     applyBtn.tooltip('hide');
                 }
+                DeletePopupService.destroy();
             }
         }
 
@@ -151,7 +175,7 @@ angular.module('moderationDashboard.controllers', []).
                 tenant: scope.confObj.tenant
             };
 
-            UgcApi.updateUgc(conf).then(function (data) {
+            UgcApi.updateUGCStatus(conf).then(function (data) {
                 if (data) {
                     angular.forEach(scope.ugcList, function (ugc, index) {
                         if (ugc.id === data.id) {
@@ -199,12 +223,20 @@ angular.module('moderationDashboard.controllers', []).
         scope.getUgcList(1);
         setScopeActions();
 
+        $rootScope.$on('$ugcUpdate', function(){
+            scope.getUgcList(1);
+        });
     }]).
 
     /**
      * bulk action controller
      */
-    controller('BulkActionCtrl', ['$scope', 'UgcApi', 'PERMANENTLY_DELETE', function (scope, UgcApi, PD) {
+    controller('BulkActionCtrl', 
+        ['$scope', 
+         'UgcApi',
+         'DeletePopupService',
+         'ACTIONS', function (scope, UgcApi, DeletePopupService, ACTIONS) {
+
         var commentsSelected = function () {
             var listItems = [];
             $('.entries-list input').each(function (index) {
@@ -247,61 +279,21 @@ angular.module('moderationDashboard.controllers', []).
 
             optionSelected = optionSelected.toUpperCase();
 
-            if (PD.ACTION === optionSelected) {
-                if (! $(event.currentTarget).next('div.popover:visible').length) {
-                    $(event.currentTarget).popover({
-                        animation: true,
-                        placement: 'right',
-                        trigger: 'manual',
-                        'html': true,
-                        title: 'Are you sure ?',
-                        content: function (){
-                            var popover = $(event.currentTarget).next('.popover');
-                            popover.removeClass('hidden');
-                            return popover.html();
-                        }
-                    }).popover('show');
-                }
+            if (ACTIONS.DELETE.toUpperCase() === optionSelected) {
+                DeletePopupService.open(event.currentTarget, {
+                    tenant: scope.confObj.tenant, 
+                    items: listItems
+                });
+            } else {
+                var conf = {
+                    moderationstatus: optionSelected,
+                    tenant: scope.confObj.tenant,
+                    ids: listItems
+                };
 
-                return;
-            }
-
-            var conf = {
-                moderationstatus: optionSelected,
-                tenant: scope.confObj.tenant,
-                ids: listItems
-            };
-
-            UgcApi.bulkUpdate(conf).then( function (data) {
-                scope.displayResults(data, { undo: true, message: "" } );
-            })
-
-        };
-
-        scope.validateDelete = function (event) {
-            var elm = $(event.currentTarget);
-            if (elm.val().toUpperCase() === PD.CONFIRM) {
-                var listItems = commentsSelected();
-                if (listItems !== null){
-                    var conf = {
-                        tenant: scope.confObj.tenant,
-                        ugcids: listItems
-                    };
-
-                    UgcApi.permanentlyDelete(conf).then(function (data) {
-                        if (data){
-                            $("#applyBtn").popover('destroy');
-                            //scope.displayResults(data, { undo: false, message: "comment deleted successfully" });
-                            console.log('deleted');
-                        }else {
-                            console.log("error trying to delete comment");
-                            //TODO display message explaining the reason
-                        }
-                    });
-                }
-            }else {
-                var popover = $('#applyBtn');
-                popover.popover('hide');
+                UgcApi.bulkUpdate(conf).then( function (data) {
+                    scope.displayResults(data, { undo: true, message: "" } );
+                });
             }
         };
 
@@ -340,7 +332,7 @@ angular.module('moderationDashboard.controllers', []).
         };
 
         // handler for when a select option has been updated
-        scope.optionSelected = function () {
+        scope.bulkOptionSelected = function () {
             var applyBtn = $('#applyBtn');
             if (this.bulkAction !== null) {
                 applyBtn.removeClass('disabled');
@@ -352,6 +344,7 @@ angular.module('moderationDashboard.controllers', []).
                     applyBtn.tooltip('hide');
                 }
             }
+            DeletePopupService.destroy();
         };
     }]).
 

@@ -49,6 +49,78 @@ angular.module('moderationDashboard.services', []).
         };
     }).
 
+    factory('DeletePopupService', ['$rootScope', 'UgcApi', function ($rootScope, UgcApi) {
+        var popupEl = null;
+
+        function processDelete(config) {
+            UgcApi.deleteUGCList(config).then( function(data) {
+                if (data) {
+                    // TODO: Move model out to a service
+                    // UgcListCtrl is in control of the model so we're going to broadcast an event
+                    // that will let UgcListCtrl know that the model has been updated.
+                    $rootScope.$broadcast('$ugcUpdate');
+                } else {
+                    console.log("Unable to delete UGCs");
+                }
+                $(popupEl).popover('destroy');
+                popupEl = null;
+            })
+        }
+
+        function cancelDelete() {
+            $(popupEl).popover('destroy');
+            popupEl = null;
+        }
+
+        function getControls(config) {
+            var controlsStr, $controls;
+
+            controlsStr =   '  <div class="btn-group" >' +
+                            '    <button class="btn delete-btn accept" value="yes">Yes</button>' +
+                            '    <button class="btn delete-btn cancel" value="no">No</button>' +
+                            '  </div>';
+            $controls = $(controlsStr);
+
+            // Attach the event handlers to the buttons
+            $controls.find('.accept').click(function(){
+                processDelete(config);
+            });
+            $controls.find('.cancel').click(function(){
+                cancelDelete();
+            });
+
+            return $controls;
+        }
+
+        function open(srcEl, config) {
+
+            if(!popupEl) {
+                // Only allow one delete popup open at a time
+                popupEl = srcEl;
+
+                $(srcEl).popover({
+                    animation: true,
+                    placement: 'right',
+                    trigger: 'manual',
+                    'html': true,
+                    title: 'Are you sure ?',
+                    content: function (){
+                        return getControls(config);
+                    }
+                }).popover('show');
+            }
+        }
+
+        function destroy() {
+            popupEl && cancelDelete();
+        }
+
+        return {
+            open: open,
+            destroy: destroy
+        }
+    }]).
+
     factory('UgcApi', function ($http, $q, CONFIG) {
         return {
             getUgcList: function (conf) {
@@ -75,7 +147,7 @@ angular.module('moderationDashboard.services', []).
 
                 return deferred.promise;
             },
-            updateUgc: function (conf) {
+            updateUGCStatus: function (conf) {
                 var deferred = $q.defer();
 
                 $http.post(
@@ -86,6 +158,31 @@ angular.module('moderationDashboard.services', []).
                     }),
                     {
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    }
+                ).success(
+                    function (data) {
+                        deferred.resolve(data);
+                    }
+                ).error(
+                    function (errorData) {
+                        deferred.reject(errorData);
+                    }
+                );
+
+                return deferred.promise;
+            },
+            updateUGCContent: function (ugcData, config) {
+                var deferred = $q.defer();
+
+                $http.post(
+                    CONFIG.API_PATH + "update.json",
+                    ugcData,
+                    {
+                        params: {
+                            ugcId: config.ugcId,
+                            tenant: config.tenant
+                        },
+                        headers: { 'Content-Type': 'application/json' }
                     }
                 ).success(
                     function (data) {
@@ -124,20 +221,17 @@ angular.module('moderationDashboard.services', []).
 
                 return deferred.promise;
             },
-            permanentlyDelete: function (conf) {
-                var deferred = $q.defer(),
-                    params = $.param({
-                        tenant: conf.tenant,
-                        ugcids: conf.ugcids
-                    }, true);
+            deleteUGCList: function (config) {
+                var deferred = $q.defer();
 
                 $http.post(
-                    CONFIG.API_PATH + "delete.json?" + params,
-                    $.param({
-                        tenant: conf.tenant,
-                        ugcids: conf.ugcids
-                    }, true),
+                    CONFIG.API_PATH + "delete.json",
+                    '',
                     {
+                        params: {
+                            tenant: config.tenant,
+                            ugcIds: config.items,
+                        },
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                     }
                 ).success(
