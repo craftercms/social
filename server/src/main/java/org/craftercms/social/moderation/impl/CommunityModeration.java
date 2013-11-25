@@ -26,8 +26,8 @@ public class CommunityModeration implements ModerationFilter {
 	@Override
 	public boolean needModeration(UGC ugc) {
 		    //To prevent division by 0
-		    int likes = (ugc.getLikeCount() == 0)?1:ugc.getLikeCount();
-			int percentage = ((ugc.getOffenceCount() * 100) / (likes + ugc.getOffenceCount()));
+		    int likes = (ugc.getLikes().size() == 0)?1:ugc.getLikes().size();
+			int percentage = ((ugc.getDislikes().size() * 100) / (likes + ugc.getDislikes().size()));
 			return percentage >= comunityOffenceMaxPercentage;
 	}
 

@@ -59,9 +59,20 @@ public class UGC implements Hierarchical<UGC> {
 
     private ModerationStatus moderationStatus;
     private int timesModerated;
-    private int likeCount;
-    private int offenceCount;
-    private int flagCount;
+    /**
+     * List of profiles that like this.
+     */
+    private List<String> likes;
+
+    /**
+     * List of profiles that like dislike.
+     */
+    private List<String> dislikes;
+
+    /**
+     * List of profiles that flag this.
+     */
+    private List<String> flags;
     private String profileId;
     private String tenant;
     private String targetId;
@@ -105,6 +116,9 @@ public class UGC implements Hierarchical<UGC> {
         this.targetDescription = targetDescription;
         this.targetUrl = targetUrl;
         this.subject = subject;
+        this.likes=new ArrayList<String>();
+        this.dislikes=new ArrayList<String>();
+        this.flags=new ArrayList<String>();
 
     }
 
@@ -214,21 +228,7 @@ public class UGC implements Hierarchical<UGC> {
         this.timesModerated = timesModerated;
     }
 
-    public int getLikeCount() {
-        return likeCount;
-    }
 
-    public void setLikeCount(int likeCount) {
-        this.likeCount = likeCount;
-    }
-
-    public int getOffenceCount() {
-        return offenceCount;
-    }
-
-    public void setOffenceCount(int offenceCount) {
-        this.offenceCount = offenceCount;
-    }
 
     public String getProfileId() {
         return profileId;
@@ -251,13 +251,6 @@ public class UGC implements Hierarchical<UGC> {
         return new Date(id.getTime());
     }
 
-    public int getFlagCount() {
-        return flagCount;
-    }
-
-    public void setFlagCount(int flagCount) {
-        this.flagCount = flagCount;
-    }
 
     public Map<String, Object> getAttributes() {
         return attributes;
@@ -275,13 +268,7 @@ public class UGC implements Hierarchical<UGC> {
         this.profile = profile;
     }
 
-    @Override
-    public String toString() {
-        return String.format("UGC [id=%s, parentId=%s, textContent=%s, attachmentId=%s, moderationStatus=%s," +
-            "" + " timesModerated=%s, likeCount=%s, offenceCount=%s, profileId=%s, targetId=%s]", id, parentId,
-            textContent, attachmentId != null? attachmentId.length: 0, moderationStatus, timesModerated, likeCount,
-            offenceCount, profileId, targetId);
-    }
+
 
     public List<Action> getActions() {
         return actions;
@@ -377,5 +364,29 @@ public class UGC implements Hierarchical<UGC> {
 
     public void setSubject(final String subject) {
         this.subject = subject;
+    }
+
+    public List<String> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(final List<String> likes) {
+        this.likes = likes;
+    }
+
+    public List<String> getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(final List<String> dislikes) {
+        this.dislikes = dislikes;
+    }
+
+    public List<String> getFlags() {
+        return flags;
+    }
+
+    public void setFlags(final List<String> flags) {
+        this.flags = flags;
     }
 }

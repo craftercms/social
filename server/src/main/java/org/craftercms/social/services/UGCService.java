@@ -159,4 +159,18 @@ public interface UGCService {
 	int getModerationStatusCount(String moderationStatus, String tenant, String targetId, boolean isOnlyRoot);
 
     List<UGC> findByTargetRegex(String tenantName, String regex, String profileId, int page, int pageSize, String sortField, String sortOrder);
+
+    /**
+     *  Uflags the given UGC
+     * @param objectId  Object Id of the Ugc to unflag
+     * @param reason Why its been unflag
+     * @param tenant Tenant name
+     * @param profileId Profile Id of who's doing the action.
+     * @return The updated UGC.
+     */
+    UGC unflagUGC(ObjectId objectId, String reason, String tenant, String profileId);
+
+    UGC unLikeUGC(ObjectId objectId, String tenant, String profileId);
+
+    UGC unDislikeUGC(ObjectId objectId, String tenant, String profileId);
 }

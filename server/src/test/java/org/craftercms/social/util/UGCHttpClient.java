@@ -69,10 +69,10 @@ public class UGCHttpClient {
 				qparams.add(new BasicNameValuePair("parentId", parentId));
 			}
 			qparams.add(new BasicNameValuePair("textContent", textContent));
-			
-			
+
+
 			URI uri = URIUtils.createURI(scheme, host, port, appPath + "/api/2/ugc/" + "create.json",
-					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+                URLEncodedUtils.format(qparams, HTTP.UTF_8  ), null);
 			httppost = new HttpPost(uri);
 		} else {
 			//if (fileAttachments!=null) {
