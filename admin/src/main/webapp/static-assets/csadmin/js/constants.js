@@ -9,6 +9,10 @@ angular.module('moderationDashboard.constants', []).
         IMAGES_PATH: "/crafter-social-admin/static-assets/csadmin/img/"
     }).
 
+    constant('ERROR', {
+        '401': 'Your session has expired. Please log in and try this operation again.'
+    }).
+
     constant('ACTIONS', {
         DELETE: 'delete',
         EDIT: 'edit',

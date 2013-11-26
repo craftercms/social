@@ -121,7 +121,7 @@ angular.module('moderationDashboard.services', []).
         }
     }]).
 
-    factory('UgcApi', function ($http, $q, CONFIG) {
+    factory('UgcApi', function ($http, $q, CONFIG, ERROR) {
         return {
             getUgcList: function (conf) {
                 var deferred = $q.defer();
@@ -140,8 +140,11 @@ angular.module('moderationDashboard.services', []).
                         deferred.resolve(data);
                     }
                 ).error(
-                    function(errorData) {
-                        deferred.reject(errorData);
+                    function (data, status) {
+                        if (status == 401) {
+                            alert(ERROR['401']);
+                        }
+                        deferred.reject(data);
                     }
                 );
 
@@ -164,8 +167,11 @@ angular.module('moderationDashboard.services', []).
                         deferred.resolve(data);
                     }
                 ).error(
-                    function (errorData) {
-                        deferred.reject(errorData);
+                    function (data, status) {
+                        if (status == 401) {
+                            alert(ERROR['401']);
+                        }
+                        deferred.reject(data);
                     }
                 );
 
@@ -189,8 +195,11 @@ angular.module('moderationDashboard.services', []).
                         deferred.resolve(data);
                     }
                 ).error(
-                    function (errorData) {
-                        deferred.reject(errorData);
+                    function (data, status) {
+                        if (status == 401) {
+                            alert(ERROR['401']);
+                        }
+                        deferred.reject(data);
                     }
                 );
 
@@ -214,8 +223,11 @@ angular.module('moderationDashboard.services', []).
                         deferred.resolve(data);
                     }
                 ).error(
-                    function (errorData) {
-                        deferred.reject(errorData);
+                    function (data, status) {
+                        if (status == 401) {
+                            alert(ERROR['401']);
+                        }
+                        deferred.reject(data);
                     }
                 );
 
@@ -239,8 +251,11 @@ angular.module('moderationDashboard.services', []).
                         deferred.resolve(data);
                     }
                 ).error(
-                    function (errorData) {
-                        deferred.reject(errorData);
+                    function (data, status) {
+                        if (status == 401) {
+                            alert(ERROR['401']);
+                        }
+                        deferred.reject(data);
                     }
                 );
 
