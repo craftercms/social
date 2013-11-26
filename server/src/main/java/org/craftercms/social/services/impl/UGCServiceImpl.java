@@ -51,6 +51,7 @@ import org.craftercms.social.services.UGCService;
 import org.craftercms.social.services.VirusScannerService;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
+import org.craftercms.social.util.serialization.ObjectIdDeSerializer;
 import org.craftercms.social.util.support.CrafterProfile;
 import org.craftercms.social.util.support.ResultParser;
 import org.craftercms.social.util.web.Attachment;
@@ -284,12 +285,12 @@ public class UGCServiceImpl implements UGCService {
     public UGC updateModerationStatus(ObjectId uGCId, ModerationStatus newStatus, String tenant, String profileId) {
         if (existsUGC(uGCId)) {
             UGC ugc = uGCRepository.findOne(uGCId);
+            if (newStatus == ModerationStatus.APPROVED || pendingToUnmoderated(ugc.getModerationStatus(), newStatus)) {
+                ugc.getFlags().clear();//Clear all flags is UGC is approve or old=PENDING,new=UNMODERATED
+            }
             ugc.setModerationStatus(newStatus);
             ugc.setLastModifiedDate(new Date());
             //Audit call
-            if(newStatus==ModerationStatus.APPROVED){
-                ugc.getFlags().clear();//Clear all flags is UGC is approve
-            }
             auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
             return populateUGCWithProfile(save(ugc));
         } else {
@@ -298,29 +299,31 @@ public class UGCServiceImpl implements UGCService {
         }
     }
 
+    private boolean pendingToUnmoderated(final ModerationStatus currentStatus, final ModerationStatus newStatus) {
+        return (currentStatus == ModerationStatus.PENDING) && (newStatus == ModerationStatus.UNMODERATED);
+    }
+
     @Override
     public List<UGC> updateModerationStatus(List<String> ids, ModerationStatus newStatus, String tenant) {
         List<UGC> result = new ArrayList<UGC>();
         if (ids == null) {
             return result;
         }
-        ObjectId uGCId;
         String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
         for (String id : ids) {
-            uGCId = new ObjectId(id);
-            if (existsUGC(uGCId)) {
-                UGC ugc = uGCRepository.findOne(uGCId); //TODO: performance improvement. ONLY one call to DB
-                ugc.setModerationStatus(newStatus);
-                ugc.setLastModifiedDate(new Date());
-                if(newStatus==ModerationStatus.APPROVED){
+            UGC ugc = uGCRepository.findOne(new ObjectId(id));
+            if (ugc!=null) {
+                if (newStatus == ModerationStatus.APPROVED || pendingToUnmoderated(ugc.getModerationStatus(),
+                    newStatus)) {
                     ugc.getFlags().clear();//Clear all flags is UGC is approve
                 }
+                ugc.setModerationStatus(newStatus);
+                ugc.setLastModifiedDate(new Date());
                 //Audit call
-                auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
+                auditUGC(ugc.getId(), AuditAction.MODERATE, tenant, profileId, null);
                 result.add(populateUGCWithProfile(save(ugc)));
             } else {
-                log.error("UGC {} does not exist", uGCId);
-                //throw new DataIntegrityViolationException("UGC does not exist");
+                log.error("UGC {} does not exist", id);
             }
         }
         return result;
@@ -405,7 +408,7 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public UGC likeUGC(ObjectId ugcId, String tenant, String profileId) {
         UGC ugc = uGCRepository.findOne(ugcId);
-        if (ugc!=null) {
+        if (ugc != null) {
             if (userCan(AuditAction.LIKE, ugc, profileId)) {
                 ugc.getLikes().add(profileId);
                 auditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
@@ -460,7 +463,6 @@ public class UGCServiceImpl implements UGCService {
     }
 
 
-
     @Override
     public UGC unflagUGC(final ObjectId ugcId, final String reason, final String tenant, final String profileId) {
         UGC ugc = uGCRepository.findOne(ugcId);
@@ -482,7 +484,6 @@ public class UGCServiceImpl implements UGCService {
     }
 
 
-
     private boolean userCan(AuditAction like, UGC ugc, String profileId) {
         UGCAudit r = uGCAuditRepository.findByProfileIdAndUgcIdAndAction(profileId, ugc.getId(), like);
         return (r == null);
@@ -491,7 +492,7 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public UGC dislikeUGC(ObjectId ugcId, String tenant, String profileId) {
         UGC ugc = uGCRepository.findOne(ugcId);
-        if (ugc!=null) { //save us a trip to mongo
+        if (ugc != null) { //save us a trip to mongo
             if (userCan(AuditAction.DISLIKE, ugc, profileId)) {
                 ugc.getDislikes().add(profileId);
                 auditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
@@ -507,8 +508,6 @@ public class UGCServiceImpl implements UGCService {
             throw new DataIntegrityViolationException("UGC does not exist");
         }
     }
-
-
 
 
     @SuppressWarnings("unchecked")
@@ -601,7 +600,6 @@ public class UGCServiceImpl implements UGCService {
         return uGCRepository.findByTenantAndTargetIdRegex(tenant, regex, page, pageSize, ActionEnum.READ, sortField,
             sortOrder);
     }
-
 
 
     @Override
