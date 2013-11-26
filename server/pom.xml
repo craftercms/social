@@ -68,14 +68,7 @@
 		<clover.version>3.1.8</clover.version>
 		<test.port>8080</test.port>
 	</properties>
-	<repositories>
-		<repository>
-			<id>oss.sonatype.central</id>
-			<name>OSS Sonatype nexus central repository</name>
-			<url>https://oss.sonatype.org/content/repositories/central</url>
-		</repository>
-	</repositories>
-	<dependencies>
+    <dependencies>
 		<!-- TODO: IF WE PULL THE FILTER OUT, REMOVE THIS -->
 		<!--dependency>
             <groupId>org.craftercms</groupId>
