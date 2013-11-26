@@ -6,8 +6,7 @@ import org.craftercms.social.domain.Subscriptions;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.SubscriptionService;
 import org.craftercms.social.services.UGCHook;
-import org.craftercms.social.util.SocialUtils;
-import org.craftercms.social.util.support.CrafterProfileService;
+import org.craftercms.social.util.ProfileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +24,7 @@ public class UGCHookImpl implements UGCHook {
      */
     @Override
     public void onNewUGC(UGC ugc, Profile profile) {
-        Subscriptions subscriptions = SocialUtils.getSubscriptions(profile);
+        Subscriptions subscriptions = Subscriptions.getFromAttributes(profile.getAttributes());
         if(subscriptions != null && subscriptions.isAutoWatch()) {
             subscriptionService.createSubscription(profile, ugc.getTargetId());
         }

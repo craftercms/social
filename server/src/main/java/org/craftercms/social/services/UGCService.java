@@ -16,6 +16,8 @@
  */
 package org.craftercms.social.services;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -123,12 +125,13 @@ public interface UGCService {
 
 	List<UGC> findByProfileAction(String profileId, AuditAction action);
 
-	void streamAttachment(ObjectId attachmentId, HttpServletResponse response);
+	void streamAttachment(ObjectId attachmentId, OutputStream outputStream) throws Exception;
 
 	UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId, String sortField, String sortOrder);
 
 	UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
-			String textContent, MultipartFile[] attachments, String targetUrl, String targetDescription) throws PermissionDeniedException, AttachmentErrorException;
+			String textContent, String string, String targetUrl, Map<String, Object> map,String subject
+            ) throws PermissionDeniedException, AttachmentErrorException;
 
     UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException;
 
@@ -152,5 +155,8 @@ public interface UGCService {
 			String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException;
 
 	UGC findById(ObjectId ugcId, List<String> attributes);
-	
+
+	int getModerationStatusCount(String moderationStatus, String tenant, String targetId, boolean isOnlyRoot);
+
+    List<UGC> findByTargetRegex(String tenantName, String regex, String profileId, int page, int pageSize, String sortField, String sortOrder);
 }

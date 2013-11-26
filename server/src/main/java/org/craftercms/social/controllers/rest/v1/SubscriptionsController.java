@@ -5,7 +5,7 @@ import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.Subscriptions;
 
 import org.craftercms.social.services.SubscriptionService;
-import org.craftercms.social.util.SocialUtils;
+import org.craftercms.social.util.ProfileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,17 +27,17 @@ public class SubscriptionsController {
     @RequestMapping(method = RequestMethod.GET)
     @ModelAttribute
     public Subscriptions getSubscriptions()  {
-        return SocialUtils.getSubscriptions(SocialUtils.getCurrentProfile());
+        return Subscriptions.getFromAttributes(ProfileUtils.getCurrentProfile().getAttributes());
     }
 
     @RequestMapping(value = "/update_settings", method = RequestMethod.POST)
     @ModelAttribute
-    public void updateSettings(@RequestParam(value = "frequency", required = false) String frequency,
-                               @RequestParam(value = "action", required = false) String action,
-                               @RequestParam(value = "format", required = false) String format,
-                               @RequestParam(value = "autoWatch", required = false) Boolean autoWatch) {
-        Profile profile = SocialUtils.getCurrentProfile();
-        Subscriptions subscriptions = SocialUtils.getSubscriptions(profile);
+    public Subscriptions updateSettings(@RequestParam(value = "frequency", required = false) String frequency,
+                                        @RequestParam(value = "action", required = false) String action,
+                                        @RequestParam(value = "format", required = false) String format,
+                                        @RequestParam(value = "autoWatch", required = false) Boolean autoWatch) {
+        Profile profile = ProfileUtils.getCurrentProfile();
+        Subscriptions subscriptions = Subscriptions.getFromAttributes(profile.getAttributes());
 
         if (subscriptions == null) {
             subscriptions = new Subscriptions();
@@ -57,18 +57,28 @@ public class SubscriptionsController {
         }
 
         subscriptionService.updateSubscriptions(profile, subscriptions);
+
+        return subscriptions;
     }
 
     @RequestMapping(value = "/subscribe/{targetId}", method = RequestMethod.POST)
     @ModelAttribute
-    public void subscribe(@PathVariable String targetId) {
-        subscriptionService.createSubscription(SocialUtils.getCurrentProfile(), targetId);
+    public Subscriptions subscribe(@PathVariable String targetId) {
+        Profile profile = ProfileUtils.getCurrentProfile();
+
+        subscriptionService.createSubscription(profile, targetId);
+
+        return Subscriptions.getFromAttributes(profile.getAttributes());
     }
 
     @RequestMapping(value = "/unsubscribe/{targetId}", method = RequestMethod.POST)
     @ModelAttribute
-    public void unsubscribe(@PathVariable String targetId) {
-        subscriptionService.deleteSubscription(SocialUtils.getCurrentProfile(), targetId);
+    public Subscriptions unsubscribe(@PathVariable String targetId) {
+        Profile profile = ProfileUtils.getCurrentProfile();
+
+        subscriptionService.deleteSubscription(profile, targetId);
+
+        return Subscriptions.getFromAttributes(profile.getAttributes());
     }
 
 }

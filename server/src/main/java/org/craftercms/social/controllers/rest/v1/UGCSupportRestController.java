@@ -20,7 +20,9 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpStatus;
 import org.bson.types.ObjectId;
+import org.craftercms.social.services.SupportDataAccess;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.web.Attachment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +39,30 @@ public class UGCSupportRestController {
 
 	@Autowired
 	private transient UGCService ugcService;
+	
+	@Autowired
+    private SupportDataAccess supportDataAccess;
 
 	@RequestMapping(value = "/get_attachment/{attachmentId}", method = RequestMethod.GET)
 	public void getAttachment(@PathVariable String attachmentId,
 			HttpServletResponse response) throws IOException {
-			ugcService.streamAttachment(new ObjectId(attachmentId), response);
+		try {
+    		ObjectId id = new ObjectId(attachmentId); 
+			Attachment file = supportDataAccess.getAttachment(id);
+			if (file !=null) {
+	    		response.setContentType(file.getContentType());
+				response.setContentLength((int) file.getLength());
+				response.setHeader("Content-Disposition", "attachment; filename="
+						+ file.getFilename());
+				ugcService.streamAttachment(id, response.getOutputStream());
+	    		
+			} else {
+				response.sendError(HttpStatus.SC_NOT_FOUND, "Attachment id{} not found: " + attachmentId);
+			}
+		} catch (Exception e) {
+			
+			response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR,e.getMessage());
+		}
 	}
 	
 }

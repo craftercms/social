@@ -1,15 +1,19 @@
 package org.craftercms.social.services.impl;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.Subscriptions;
 import org.craftercms.social.services.SubscriptionService;
-import org.craftercms.social.util.SocialUtils;
+import org.craftercms.social.util.ProfileUtils;
 import org.craftercms.social.util.support.CrafterProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,49 +31,48 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void updateSubscriptions(Profile profile, Subscriptions subscriptions) {
-        SocialUtils.setSubscriptions(profile, subscriptions);
+        Map attributes = Subscriptions.setInAttributes(subscriptions, profile.getAttributes());
 
-        crafterProfileService.updateAttributes(profile.getId(), convertToSerializableMap(profile.getAttributes()));
+        profile.setAttributes(attributes);
+
+        crafterProfileService.updateAttributes(profile.getId(), attributes);
     }
 
     @Override
     public void createSubscription(Profile profile, String targetId) {
-        Subscriptions subscriptions = SocialUtils.getSubscriptions(profile);
-
-        if (subscriptions == null) {
-            subscriptions = new Subscriptions();
-
-            SocialUtils.setSubscriptions(profile, subscriptions);
+        Map attributes = profile.getAttributes();
+        if (attributes == null) {
+            attributes = new HashMap<String, Object>();
+            profile.setAttributes(attributes);
         }
 
-        if (!subscriptions.getTargets().contains(targetId)) {
-            subscriptions.getTargets().add(targetId);
+        List<String> targets = Subscriptions.getTargets(attributes);
+        if (targets == null) {
+            targets = new ArrayList<String>();
         }
 
-        crafterProfileService.updateAttributes(profile.getId(), convertToSerializableMap(profile.getAttributes()));
+        if (!targets.contains(targetId)) {
+            targets.add(targetId);
+        }
+
+        Subscriptions.setTargets(targets, attributes);
+
+        crafterProfileService.updateAttributes(profile.getId(), attributes);
     }
 
     @Override
     public void deleteSubscription(Profile profile, String targetId) {
-        Subscriptions subscriptions = SocialUtils.getSubscriptions(profile);
+        Map attributes = profile.getAttributes();
+        if (MapUtils.isNotEmpty(attributes)) {
+            List<String> targets = Subscriptions.getTargets(attributes);
+            if (CollectionUtils.isNotEmpty(targets)) {
+                if (targets.remove(targetId)) {
+                    Subscriptions.setTargets(targets, attributes);
 
-        if (subscriptions == null) {
-            subscriptions.getTargets().remove(targetId);
+                    crafterProfileService.updateAttributes(profile.getId(), attributes);
+                }
+            }
         }
-
-        crafterProfileService.updateAttributes(profile.getId(), convertToSerializableMap(profile.getAttributes()));
-    }
-
-    // TODO: Remove this piece of HORRIBLE code. Right now it's here because I didn't find another way to convert a map
-    // of objects to a map of serializable
-    private Map<String, Serializable> convertToSerializableMap(Map<String, Object> map) {
-        Map<String, Serializable> serializableMap = new HashMap<String, Serializable>();
-
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            serializableMap.put(entry.getKey(), (Serializable) entry.getValue());
-        }
-
-        return serializableMap;
     }
 
 }

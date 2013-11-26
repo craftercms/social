@@ -18,13 +18,15 @@ package org.craftercms.social.repositories;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
-import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.util.UGCConstants;
 import org.craftercms.social.util.action.ActionEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -37,6 +39,7 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	private static final String TARGET_ID = "targetId";
 	private static final String PARENT_ID = "parentId";
 	private static final String MODERATION_STATUS = "moderationStatus";
+    private Logger log = LoggerFactory.getLogger(UGCRepository.class);
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -57,11 +60,65 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 		
 		return mongoTemplate.find(query, UGC.class);
 	}
+
+	
 	
 	@Override
+	public List<UGC> findByModerationStatusAndTenantAndTargetId(String[] moderationStatus, String tenant, String targetId, boolean isOnlyRoot) {
+		Query query = new Query();
+		if (tenant!=null) {
+			query.addCriteria(Criteria.where(TENANT).is(tenant));
+		}
+		if (targetId!=null) {
+			query.addCriteria(Criteria.where(TARGET_ID).is(targetId));
+		}
+		if (isOnlyRoot) { 
+			query.addCriteria(Criteria.where(PARENT_ID).is(null));
+		}
+		if (moderationStatus !=null) {
+        	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatus));
+        }
+		
+		
+		return mongoTemplate.find(query, UGC.class);
+	}
+
+    @Override
+    public List<UGC> findByTenantAndTargetIdRegex(String tenant, String targetIdRegex, int page, int pageSize,
+                                                  ActionEnum action, String sortField, String sortOrder) {
+        Query q = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken()
+            .getProfile());
+        if (StringUtils.isBlank(targetIdRegex)) {
+            throw new IllegalArgumentException("Regex can't be null or empty");
+        }
+        if (StringUtils.isBlank(tenant)) {
+            throw new IllegalArgumentException("Tenant can't be null or empty");
+        }
+        if (page > 0 && pageSize > 0) {
+            int start = getStart(page, pageSize);
+            int end = pageSize;
+            q.skip(start);
+            q.limit(end);
+
+        }
+        q.addCriteria(Criteria.where(TARGET_ID).regex(targetIdRegex,"ig"));
+        q.addCriteria(Criteria.where(TENANT).is(tenant));
+        if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
+            q.sort().on(sortField, Order.DESCENDING);
+        } else {
+            q.sort().on(sortField, Order.ASCENDING);
+        }
+        log.debug("Getting UGC using {}", q.toString());
+        return mongoTemplate.find(q, UGC.class);
+    }
+
+
+    @Override
 	public List<UGC> findUGCs(String tenant, String target,
 			String[] moderationStatusArr, ActionEnum action, int page, int pageSize, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		
+		includeDefaultUGCFields(query);
 		if (tenant !=null) {
 			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
@@ -91,6 +148,8 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	public UGC findUGC(ObjectId id, ActionEnum action, String[] moderationStatusArr) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		query.addCriteria(Criteria.where(ID).is(id));
+		includeDefaultUGCFields(query);
+		
 		if (moderationStatusArr !=null) {
         	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatusArr));
         }
@@ -101,10 +160,44 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 		return null;
 	}
 	
+	private void includeDefaultUGCFields(Query query) {
+		query.fields().include(UGCConstants.ATTRIBUTES);
+		query.fields().include(UGCConstants.FIELD_ID);
+		query.fields().include(UGCConstants.PARENT_ID);
+		query.fields().include(UGCConstants.TEXT_CONTENT);
+		query.fields().include(UGCConstants.ATTACHMENT_ID);
+		query.fields().include(UGCConstants.ACTIONS);
+        query.fields().include(UGCConstants.SUBJECT);
+		
+		query.fields().include(UGCConstants.CREATED_BY);
+		query.fields().include(UGCConstants.LAST_MODIFIED_BY);
+		query.fields().include(UGCConstants.OWNER);
+		query.fields().include(UGCConstants.CREATED_DATE);
+		query.fields().include(UGCConstants.LAST_MODIFIED_DATE);
+		query.fields().include(UGCConstants.MODERATION_STATUS);
+		
+		query.fields().include(UGCConstants.PROFILE_ID);
+		query.fields().include(UGCConstants.TENANT);
+		query.fields().include(UGCConstants.TARGET_ID);
+		query.fields().include(UGCConstants.TARGET_URL);
+		query.fields().include(UGCConstants.TARGET_DESCRIPTION);
+		query.fields().include(UGCConstants.ANONYMOUS_FLAG);
+		
+		query.fields().include(UGCConstants.TIMES_MODERATED);
+		query.fields().include(UGCConstants.LIKE_COUNT);
+		query.fields().include(UGCConstants.OFFENCE_COUNT);
+		query.fields().include(UGCConstants.FLAG_COUNT);
+		
+		
+	}
+
+
 	@Override
 	public List<UGC> findByTenantTargetPaging(String tenant, String target,
 			int page, int pageSize, ActionEnum action, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		
+		includeDefaultUGCFields(query);
 		if(tenant!=null) {
 			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
@@ -127,6 +220,8 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	@Override
 	public List<UGC> findByTenantAndSort(String tenant, ActionEnum action, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
+		
+		includeDefaultUGCFields(query);
 		if(tenant!=null) {
 			query.addCriteria(Criteria.where(TENANT).is(tenant));
 		}
@@ -142,6 +237,8 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
 	public List<UGC> findByParentIdWithReadPermission(ObjectId parentId, ActionEnum action, String[] moderationStatus, String sortField, String sortOrder) {
 		Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken().getProfile());
 		query.addCriteria(Criteria.where(PARENT_ID).is(parentId));
+		
+		includeDefaultUGCFields(query);
 		if (moderationStatus !=null) {
         	query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatus));
         }
@@ -152,7 +249,6 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
         }
 		return mongoTemplate.find(query, UGC.class);
 	}
-	
 	
 	private int getStart(int page, int pageSize) {
 		if (page <=0) {

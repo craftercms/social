@@ -11,8 +11,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-import org.craftercms.social.util.SocialConstants;
-import org.craftercms.social.util.SocialUtils;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -172,10 +170,11 @@ public class Profile implements Serializable {
     }
 
 	public Subscriptions getSubscriptions() {
-		return (Subscriptions) attributes.get(SocialConstants.ATTRIBUTE_SUBSCRIPTIONS);
+		return Subscriptions.getFromAttributes((Map) attributes);
 	}
 
 	public void setSubscriptions(Subscriptions subscriptions) {
-        attributes.put(SocialConstants.ATTRIBUTE_SUBSCRIPTIONS, subscriptions);
+        Subscriptions.setInAttributes(subscriptions, (Map) attributes);
 	}
+
 }

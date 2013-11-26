@@ -16,7 +16,10 @@
  */
 package org.craftercms.social.notification.harvester;
 
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.craftercms.social.domain.HarvestStatus;
@@ -45,6 +48,12 @@ public abstract class BaseHarvesterService implements HarvesterService {
 
     @Autowired
     protected MongoTemplate mongoTemplate;
+
+    protected List<String> actionFilters;
+    
+    public BaseHarvesterService() {
+    	actionFilters = new ArrayList<String>();
+    }
 
 
     /**
@@ -134,4 +143,15 @@ public abstract class BaseHarvesterService implements HarvesterService {
      */
     protected abstract void doHarvestInternal(Map<String, ?> harvesterProperties);
 
+    public List<String> getActionFilters() {
+        return actionFilters;
+    }
+
+    public String[] getActionFiltersAsStringArray() {
+        return actionFilters.toArray(new String[actionFilters.size()]);
+    }
+
+    public void setActionFilters(List<String> actionFilters) {
+        this.actionFilters = actionFilters;
+    }
 }

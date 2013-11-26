@@ -1,9 +1,13 @@
 package org.craftercms.social.util;
 
+import org.apache.commons.collections.MapUtils;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.authentication.AuthenticationToken;
 import org.craftercms.social.domain.Subscriptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,7 +16,7 @@ import org.craftercms.social.domain.Subscriptions;
  * Time: 17:06
  * To change this template use File | Settings | File Templates.
  */
-public class SocialUtils {
+public class ProfileUtils {
 
     public static Profile getCurrentProfile() {
         RequestContext requestContext = RequestContext.getCurrent();
@@ -26,21 +30,13 @@ public class SocialUtils {
         return null;
     }
 
-    public static String getCurentProfileId() {
+    public static String getCurrentProfileId() {
         Profile profile = getCurrentProfile();
         if (profile != null) {
             return profile.getId();
         } else {
             return null;
         }
-    }
-
-    public static final Subscriptions getSubscriptions(Profile profile) {
-        return (Subscriptions) profile.getAttributes().get(SocialConstants.ATTRIBUTE_SUBSCRIPTIONS);
-    }
-
-    public static final void setSubscriptions(Profile profile, Subscriptions subscriptions) {
-        profile.getAttributes().put(SocialConstants.ATTRIBUTE_SUBSCRIPTIONS, subscriptions);
     }
 
 }

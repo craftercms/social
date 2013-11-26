@@ -112,6 +112,23 @@ public class UGCRestController {
 			return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder),null,rootCount,childCount);
 		}
 	}
+
+    @RequestMapping(value = "/target/regex", method = RequestMethod.GET)
+    @ModelAttribute
+    public HierarchyList<UGC> getUgcByTargetRegex(@RequestParam final String regex,
+                                                  @RequestParam(required = false, defaultValue = "99") int rootCount,
+                                                  @RequestParam(required = false, defaultValue = "99") int childCount,
+                                                  @RequestParam(required = false, defaultValue = "0") int page,
+                                                  @RequestParam(required = false, defaultValue = "0") int pageSize,
+                                                  @RequestParam(required = false,
+                                                      defaultValue = "createdDate") String sortField,
+                                                  @RequestParam(required = false,
+                                                      defaultValue = "DESC") String sortOrder) {
+        List<UGC> list = ugcService.findByTargetRegex(getTenantName(), regex, getProfileId(), page, pageSize,
+            sortField, sortOrder);
+        log.debug("Found {} ugs using {} regex",list.size(),regex);
+        return HierarchyGenerator.generateHierarchy(list,null,rootCount,childCount);
+    }
 	
 	@RequestMapping(value = "/moderation/{tenantName}/all", method = RequestMethod.GET)
 	@ModelAttribute
@@ -132,6 +149,15 @@ public class UGCRestController {
 	public int getCount(@RequestParam final String tenant,
                         @RequestParam final String target){
 		return ugcService.getTenantTargetCount(tenant, target);
+	}
+	
+	@RequestMapping(value = "/moderation/{moderationStatus}/count", method = RequestMethod.GET)
+	@ModelAttribute
+	public int getCountByModerationStatus(@PathVariable final String moderationStatus,
+			@RequestParam final String tenant,
+			@RequestParam(required=false) String targetId,
+			@RequestParam(required=false,defaultValue="false") boolean rootOnly){
+		return ugcService.getModerationStatusCount(moderationStatus, tenant, targetId, rootOnly);
 	}
 	
 	@RequestMapping(value = "/moderation/{ugcId}/status", method = RequestMethod.POST)
@@ -173,6 +199,7 @@ public class UGCRestController {
 			HttpServletRequest request) throws PermissionDeniedException {
 
 		/** Pre validations **/
+
 		if (ugcRequest.getTargetId() == null) {
 			throw new IllegalArgumentException(
 					"Target must a valid not empty String");
@@ -192,7 +219,8 @@ public class UGCRestController {
 
         return ugcService.updateUgc(new ObjectId(ugcRequest.getUgcId()), ugcRequest.getTenant(), ugcRequest.getTargetId(), getProfileId(),
                 ugcRequest.getParentId()==null?null:new ObjectId(ugcRequest.getParentId()), ugcRequest.getTextContent(),
-                ugcRequest.getAttachments(), ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription());
+                		ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription(), ugcRequest.getAttributes(),
+            ugcRequest.getSubject());
 
 	}
 
@@ -307,4 +335,12 @@ public class UGCRestController {
 		}
 		return (attributeMap.size() > 0) ? attributeMap : null;
 	}
+
+    /**
+     * Returns the tenant of the current Ticket owner.
+     * @return   Tenant Name, Null if user is anonymous
+     */
+    public String getTenantName() {
+        return RequestContext.getCurrent().getAuthenticationToken().getProfile().getTenantName();
+    }
 }

@@ -1,23 +1,28 @@
 'use strict';
 
 angular.module('moderationDashboard.controllers', []).
-    /**
-     * AppCtrl
-     * main controller
-     **/
-    controller('AppCtrl', ['$scope', function (scope) {
-
-    }]).
+    
     /**
      * Moderation Dashboard Controller
      * - get UGCs by moderation status
      **/
-    controller('UgcListCtrl', ['$scope', '$routeParams', 'ConfigurationData', 'UgcApi', 'CONFIG', function(scope, rp, ConfigurationData, UgcApi, CONFIG) {
+    controller('UgcListCtrl', 
+        ['$scope', 
+         '$routeParams',
+         '$timeout',
+         'ConfigurationData', 
+         'UgcApi', 
+         'CONFIG', function(scope, rp, $timeout, ConfigurationData, UgcApi, CONFIG) {
         scope.ugcList = [];
         scope.status = "";
         scope.moderationActions = [];
+        scope.bulkActions = [];
         scope.confObj = ConfigurationData.getConfData();
         scope.moderationList = ConfigurationData.getModerationActions();
+
+        function cropText (text, upperLimit) {
+            return (text.length > upperLimit) ? text.substring(0, upperLimit) + " [...]" : text;
+        }
 
         //set actual status
         var setStatus = function () {
@@ -27,7 +32,7 @@ angular.module('moderationDashboard.controllers', []).
         // set the active tab
         var getModerationList = function () {
             angular.forEach(scope.moderationList, function (moderationObj) {
-                if (scope.status.toLowerCase() === moderationObj.moderation.label.toLowerCase()) {
+                if (scope.status.toLowerCase() === moderationObj.moderation.value.toLowerCase()) {
                     moderationObj.state = 'active';
                 }else{
                     moderationObj.state = '';
@@ -35,8 +40,33 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
+        scope.updateUGCContent = function (originalUGC, ugcTitle, ugcContent) {            
+            var callConfig, ugcData;
+
+            $timeout( function() {
+                scope.$apply( function() {
+                    originalUGC.teaser = cropText(ugcContent, 200);
+                    originalUGC.isExpandable = (originalUGC.teaser == ugcContent) ? false : true;
+                });
+            });
+
+            callConfig = {
+                ugcId: originalUGC.id,
+                tenant: scope.confObj.tenant
+            };
+            ugcData = {
+                ugcId: originalUGC.id,
+                textContent: JSON.stringify({
+                    title: ugcTitle,
+                    content: ugcContent
+                })
+            };
+            UgcApi.updateUGCContent(ugcData, callConfig);
+        };        
+
         // get ugc list by status from rest call
         scope.getUgcList = function (page) {
+            
             var conf = {
                 tenant: scope.confObj.tenant,
                 moderation: scope.status + ".json",
@@ -47,29 +77,35 @@ angular.module('moderationDashboard.controllers', []).
             UgcApi.getUgcList(conf).then(function (data) {
                 if (data) {
                     var txtContent = {},
-                        tmpList = [];
+                        tmpList = [],
+                        teaser, isExpandable;
 
                     angular.forEach(data, function (ugc){
-                        txtContent = angular.fromJson(ugc.textContent);
 
-                        if (ugc.textContent[0] == '{') {
+                        if (ugc.textContent && ugc.textContent[0] == '{') {
                             txtContent = angular.fromJson(ugc.textContent);
                         } else {
+                            ugc.textContent = ugc.textContent || '';
                             txtContent = {content: ugc.textContent, title: 'no title'};
                         }
+
+                        teaser = cropText(txtContent.content, 200);
+                        isExpandable = (teaser == txtContent.content) ? false : true;
 
                         tmpList.push({
                             'title': txtContent.title,
                             'id': ugc.id,
-                            'textContent': scope.getTextFromhtml(txtContent.content),
+                            'teaser': teaser,
+                            'isExpandable': isExpandable,
+                            'textContent': txtContent.content,
                             'moderationStatus': ugc.moderationStatus,
                             'completeContent': txtContent.content,
                             'dateAdded': scope.getDateTime(ugc.dateAdded),
                             'userName': ugc.profile.userName,
                             'userMail': ugc.profile.email,
                             'userImg': CONFIG.IMAGES_PATH + "profile-photo.jpg",
-                            'targetUrl': 'target Url',
-                            'targetTitle': 'target Title',
+                            'targetUrl': ugc.targetUrl,
+                            'targetTitle': ugc.targetDescription,
                             'updated': false,
                             'updateMessage': "",
                             'alertClass': "",
@@ -93,21 +129,6 @@ angular.module('moderationDashboard.controllers', []).
             });
         };
 
-        // get text snippet from html
-        //TODO if text is less than 200 then no arrow nor red corner has to appear
-        scope.getTextFromhtml = function (html) {
-            var elmText = $(html).text(),
-                snippet;
-            if (elmText.length > 200) {
-                snippet = elmText.substring(0, 200);
-                snippet += " [...]";
-            }else{
-                snippet = elmText;
-            }
-
-            return snippet;
-        };
-
         // get date and hour of last update
         scope.getDateTime = function (dateLong) {
             var date = new Date(dateLong);
@@ -116,10 +137,17 @@ angular.module('moderationDashboard.controllers', []).
         }
 
         // set list of moderation actions available according status selected
-        var moderationActions = function () {
+        var setScopeActions = function () {
             angular.forEach(scope.moderationList, function (modObject) {
                 if (modObject.moderation.value.toLowerCase() === scope.status.toLocaleLowerCase()){
                     scope.moderationActions = modObject.actions;
+
+                    // Iterate through the action objects to identify the bulk operations
+                    angular.forEach(modObject.actions, function(actionObj) {
+                        if (!actionObj.notBulk) {
+                            scope.bulkActions.push(actionObj);
+                        }
+                    })
                 }
             });
         };
@@ -143,7 +171,7 @@ angular.module('moderationDashboard.controllers', []).
                 tenant: scope.confObj.tenant
             };
 
-            UgcApi.updateUgc(conf).then(function (data) {
+            UgcApi.updateUGCStatus(conf).then(function (data) {
                 if (data) {
                     angular.forEach(scope.ugcList, function (ugc, index) {
                         if (ugc.id === data.id) {
@@ -189,7 +217,7 @@ angular.module('moderationDashboard.controllers', []).
         setStatus();
         getModerationList();
         scope.getUgcList(1);
-        moderationActions();
+        setScopeActions();
 
     }]).
 

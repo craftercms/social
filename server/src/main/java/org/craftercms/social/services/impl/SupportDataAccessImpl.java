@@ -68,24 +68,14 @@ public class SupportDataAccessImpl implements SupportDataAccess {
 	}
 	
 	@Override
-	public void streamAttachment(ObjectId attachmentId, HttpServletResponse response) {
-		try {
-			GridFS gFS = new GridFS(mongoTemplate.getDb());
-			GridFSDBFile file = gFS.find(attachmentId);
-			if (file != null) {
-				response.setContentType(file.getContentType());
-				response.setContentLength((int) file.getLength());
-				response.setHeader("Content-Disposition", "attachment; filename="
-						+ file.getFilename());
-				file.writeTo(response.getOutputStream());
-				
-			} else {
-				log.error("Attachment with id {} does not exist", attachmentId);
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
-			
-		} catch (Exception e) {
-			log.error("Can not stream file.", e);
+	public void streamAttachment(ObjectId attachmentId, OutputStream output) throws Exception {
+		GridFS gFS = new GridFS(mongoTemplate.getDb());
+		GridFSDBFile file = gFS.find(attachmentId);
+		if (file != null) {
+			file.writeTo(output);
+		} else {
+			log.error("Attachment with id {} does not exist " + attachmentId);
+			throw new Exception("Attachment with id {} does not exist " + attachmentId);
 		}
 	}
 	
