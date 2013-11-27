@@ -147,7 +147,9 @@ public interface UGCService {
 	List<UGC> updateModerationStatus(List<String> ids, ModerationStatus status,
 			String tenant);
 
-	List<UGC> findByParentId(ObjectId id);
+    List<String> findPossibleActionsForUGC(String ugcId, List<String> roles);
+
+    List<UGC> findByParentId(ObjectId id);
 
 	List<AttachmentModel> getAttachments(ObjectId objectId, String tenant);
 

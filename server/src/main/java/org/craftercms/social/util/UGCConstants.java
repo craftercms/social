@@ -1,7 +1,8 @@
 package org.craftercms.social.util;
 
 public interface UGCConstants {
-	
+
+    String UGC_COLLECTION_NAME="uGC";
 	String SORT_ORDER_DESC = "DESC";
 	String ATTRIBUTES = "attributes";
 	String FIELD_ID = "_id";
@@ -27,4 +28,7 @@ public interface UGCConstants {
 	String OFFENCE_COUNT = "offenceCount";
 	String FLAG_COUNT = "flagCount";
     String SUBJECT = "subject";
+    String LIKES = "likes";
+    String DISLIKES = "dislikes";
+    String FLAGS = "flags";
 }

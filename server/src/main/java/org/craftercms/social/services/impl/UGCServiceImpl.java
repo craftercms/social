@@ -29,6 +29,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
+import org.craftercms.social.controllers.rest.v1.to.PublicUGC;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.Target;
@@ -713,7 +714,10 @@ public class UGCServiceImpl implements UGCService {
         return initUGCAndChildren(ugc, p, moderationStatus, sortField, sortOrder);
 
     }
-
+    @Override
+    public List<String> findPossibleActionsForUGC(final String ugcId, final List<String> roles){
+        return uGCRepository.findPossibleActionsForUGC(ugcId,roles);
+    }
     public UGC initUGCAndChildren(UGC ugc, Profile p, String[] moderationStatus, String sortField, String sortOrder) {
         ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         UGC populatedUgc = populateUGCWithProfile(ugc);
@@ -1072,6 +1076,8 @@ public class UGCServiceImpl implements UGCService {
         }
         return result;
     }
+
+
 
 
 }

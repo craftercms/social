@@ -29,12 +29,16 @@ import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.controllers.rest.v1.to.UGCRequest;
 import org.craftercms.social.util.Hierarchical;
+import org.craftercms.social.util.UGCConstants;
 import org.craftercms.social.util.serialization.StringObjectMapConverter;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @XStreamAlias("ugc")
 @XmlRootElement
+@Document(collection = UGCConstants.UGC_COLLECTION_NAME)
 public class UGC implements Hierarchical<UGC> {
+
     public enum ModerationStatus {
         UNMODERATED, PENDING, APPROVED, SPAM, TRASH
     }
