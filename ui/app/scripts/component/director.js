@@ -16,12 +16,14 @@
 
     var privates = {};
 
-    function Director () {
+    function Director (cfg) {
 
         var me = this;
 
         var guid = this.guid = U.guid();
         privates[guid] = { CACHE: {} };
+
+        this.cfg = $.extend({}, Director.DEFAULTS, cfg || {});
 
         this.cache('profile', new S.model.Profile());
 
@@ -36,7 +38,28 @@
 
     }
 
-    Director.DEFAULTS = {};
+    Director.DEFAULTS = {
+        socialbar: {
+            cls: 'view.SocialBar',
+            cfg: {  }
+        },
+        view: {
+            discussion: {
+                cls: 'view.Popover',
+                cfg: { /* target: null, tenant: null, collection: null */ }
+            },
+            parasite: {
+                cls: 'view.Commentable',
+                cfg: { /* target: null, tenant: null, collection: null */ }
+            }
+        },
+        ctrl: {
+            main: {
+                cls: 'controller.Base',
+                cfg: { /* target: null, tenant: null */ }
+            }
+        }
+    };
 
     Director.prototype = $.extend({}, S.EventProvider, {
 
@@ -78,6 +101,34 @@
             this.trigger(C.get('EVENT_AREAS_VISIBILITY_CHANGE'), mode);
         },
 
+        setActiveDiscussionViewer: function ( viewPath, cfg ) {
+
+            var view = this.cache(viewPath);
+            if ( !view ) {
+                view = new (S.get(viewPath))(cfg || {});
+                this.cache(viewPath, view);
+            }
+
+            this.cache('activeView', viewPath);
+
+            return view;
+
+        },
+        getActiveDiscussionViewer: function ( /*render*/ ) {
+
+            // Active view contains a string that that tells what the active discussion
+            // displaying view is at the moment. It is also the view class package that
+            // can be used to retrieve the view class in the run time, whether that is
+            // relative to the "social" namespace or to the global (window) namespace
+
+            if ( !this.cache('activeView') ) {
+                this.setActiveDiscussionViewer(this.cfg.view.discussion.cls, this.cfg.view.discussion.cfg);
+            }
+
+            return this.cache('activeView');
+
+        },
+
         /**
          *
          * @param {Object} oConfig an object of configuration of the social target
@@ -90,30 +141,29 @@
          */
         socialise: function ( oConfig ) {
 
-            var oCfg = $.extend({
-                // set a default view class
-                viewClass: 'view.Commentable',
-                socialbar: true,
-                viewCfg: { }
-            }, oConfig);
+            var oCfg = $.extend(true, {}, Director.DEFAULTS, oConfig);
 
-            var Ctrl = S.get('controller.Base'),
-                View = S.get(oCfg.viewClass) || S.get(oCfg.viewClass, window),
-                Bar = S.get('view.SocialBar');
+            var Ctrl    = S.get(oCfg.ctrl.main.cls)      || S.get(oCfg.ctrl.main.cls, window),
+                View    = S.get(oCfg.view.parasite.cls)  || S.get(oCfg.view.parasite.cls, window),
+                Bar     = oCfg.socialbar ? S.get(oCfg.socialbar.cls) : false;
 
             var controller = new Ctrl({
                 target: oCfg.target,
                 tenant: oCfg.tenant
             });
 
-            new View($.extend({
+            this.cache(S.string.fmt('controller.%@.%@', oCfg.tenant, oCfg.target), controller);
+
+            var parasite = new View($.extend({
                 target: oCfg.target,
                 tenant: oCfg.tenant,
                 collection: controller
-            }, oCfg.viewCfg));
+            }, oCfg.view.parasite.cfg));
 
-            if (oCfg.socialbar && !socialbar) {
-                socialbar = new Bar();
+            this.cache(S.string.fmt('parasite.%@.%@', oCfg.tenant, oCfg.target), parasite);
+
+            if (Bar && !socialbar) {
+                socialbar = new Bar(oCfg.socialbar.cfg);
                 socialbar.$el.appendTo('body');
             }
 

@@ -1,43 +1,87 @@
-[
-    {
-        "moderation": { "label": "Unmoderated", "value": "Unmoderated" },
-        "actions": [
-            { "label": "Approve", "status": "Approved" },
-            { "label": "Spam", "status": "Spam" },
-            { "label": "Trash", "status": "Trash" },
-            { "label": "Edit", "status": "Edit", "notBulk": true, "type": "edit" }
-        ]
+[{
+    "moderation": {
+        "label": "Unmoderated",
+        "value": "Unmoderated"
     },
-    {
-        "moderation": { "label": "Approved", "value": "Approved" },
-        "actions": [
-            { "label": "Spam", "status": "Spam" },
-            { "label": "Trash", "status": "Trash" },
-            { "label": "Edit", "status": "Edit", "notBulk": true, "type": "edit" },
-            { "label": "Unmoderated", "status": "Unmoderated" }
-        ]
+    "actions": [{
+        "label": "Approve",
+        "status": "Approved"
+    }, {
+        "label": "Spam",
+        "status": "Spam"
+    }, {
+        "label": "Trash",
+        "status": "Trash"
+    }, {
+        "label": "Edit",
+        "status": "Edit",
+        "notBulk": true,
+        "type": "edit"
+    }]
+}, {
+    "moderation": {
+        "label": "Approved",
+        "value": "Approved"
     },
-    {
-        "moderation": { "label": "Pending", "value": "Pending" },
-        "actions": [
-            { "label": "Approved", "status": "Approved" },
-            { "label": "Trash", "status": "Trash" },
-            { "label": "Edit", "status": "Edit", "notBulk": true, "type": "edit" }
-        ]
+    "actions": [{
+        "label": "Spam",
+        "status": "Spam"
+    }, {
+        "label": "Trash",
+        "status": "Trash"
+    }, {
+        "label": "Edit",
+        "status": "Edit",
+        "notBulk": true,
+        "type": "edit"
+    }, {
+        "label": "Unmoderated",
+        "status": "Unmoderated"
+    }]
+}, {
+    "moderation": {
+        "label": "Pending",
+        "value": "Pending"
     },
-    {
-        "moderation": { "label": "Spam", "value": "Spam" },
-        "actions": [
-            { "label": "Restore", "status": "Restore" },
-            { "label": "Permanently delete", "status": "delete" },
-            { "label": "Unmoderated", "status": "Unmoderated" }
-        ]
+    "actions": [{
+        "label": "Approved",
+        "status": "Approved"
+    }, {
+        "label": "Trash",
+        "status": "Trash"
+    }, {
+        "label": "Edit",
+        "status": "Edit",
+        "notBulk": true,
+        "type": "edit"
+    }]
+}, {
+    "moderation": {
+        "label": "Spam",
+        "value": "Spam"
     },
-    {
-        "moderation": { "label": "Trash", "value": "Trash" },
-        "actions": [
-            { "label": "Restore", "status": "Restore" },
-            { "label": "Permanently delete", "status": "delete" }
-        ]
-    }
-]
+    "actions": [{
+        "label": "Restore",
+        "status": "Restore"
+    }, {
+        "label": "Permanently delete",
+        "status": "delete",
+        "type": "delete"
+    }, {
+        "label": "Unmoderated",
+        "status": "Unmoderated"
+    }]
+}, {
+    "moderation": {
+        "label": "Trash",
+        "value": "Trash"
+    },
+    "actions": [{
+        "label": "Restore",
+        "status": "Restore"
+    }, {
+        "label": "Permanently delete",
+        "status": "delete",
+        "type": "delete"
+    }]
+}]

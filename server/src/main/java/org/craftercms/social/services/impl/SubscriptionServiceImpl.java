@@ -46,7 +46,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             profile.setAttributes(attributes);
         }
 
-        List<String> targets = Subscriptions.getTargets(attributes);
+        List<String> targets = (List<String>) attributes.get(Subscriptions.ATTRIBUTE_TARGETS);
         if (targets == null) {
             targets = new ArrayList<String>();
         }
@@ -55,7 +55,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             targets.add(targetId);
         }
 
-        Subscriptions.setTargets(targets, attributes);
+        attributes.put(Subscriptions.ATTRIBUTE_TARGETS, targets);
 
         crafterProfileService.updateAttributes(profile.getId(), attributes);
     }
@@ -64,10 +64,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void deleteSubscription(Profile profile, String targetId) {
         Map attributes = profile.getAttributes();
         if (MapUtils.isNotEmpty(attributes)) {
-            List<String> targets = Subscriptions.getTargets(attributes);
+            List<String> targets = (List<String>) attributes.get(Subscriptions.ATTRIBUTE_TARGETS);
             if (CollectionUtils.isNotEmpty(targets)) {
                 if (targets.remove(targetId)) {
-                    Subscriptions.setTargets(targets, attributes);
+                    attributes.put(Subscriptions.ATTRIBUTE_TARGETS, targets);
 
                     crafterProfileService.updateAttributes(profile.getId(), attributes);
                 }

@@ -14,17 +14,12 @@
     <div class="row-fluid">
         <main ng-show="displayUgcs" role="main" class="span12">
             <div class="bulk-actions" ng-controller="BulkActionCtrl">
-                <select id="bulkActions" ng-model="bulkAction" ng-options="action.status as action.label for action in bulkActions" ng-change="optionSelected()">
+                <select id="bulkActions" ng-model="bulkAction" ng-options="action.status as action.label for action in bulkActions" ng-change="bulkOptionSelected()">
                     <option value="">-- Choose Bulk Action --</option>
                 </select>
-                <button id="applyBtn" class="btn entries-list-btn disabled" ng-click="bulkUpdate($event)">Apply</button>
-                <div class="popover ">
-                    <div class="arrow"></div>
-                    <div class="btn-group" >
-                        <button class="btn delete-btn" value="yes">Yes</button>
-                        <button class="btn delete-btn" value="no">No</button>
-                    </div>
-                </div>
+                <button id="applyBtn" 
+                        class="btn entries-list-btn disabled" 
+                        ng-click="bulkUpdate($event)">Apply</button>
             </div>
 
             <div class="heading-wrapper row-fluid">
@@ -44,7 +39,7 @@
 
                     <div class="row-fluid hide-element" ng-show="!ugc.updated">
                         <div class="span1 col1">
-                            <input ng-click="hideCheckUgcError($event)" ugcid="{{ugc.id}}" type="checkbox" />
+                            <input ng-click="bulkItemsUpdate($event)" ugcid="{{ugc.id}}" type="checkbox" />
                         </div>
 
                         <div class="span2 col2 author-section">
@@ -70,7 +65,7 @@
                                     Submitted on: <span class="date">{{ugc.dateAdded}}</span>
                                 </span>
 
-                                <a class="target-url" ng-if="ugc.targetTitle && ugc.targetUrl" ng-href="{{ugc.targetUrl}}">{{ugc.targetTitle}}</a>
+                                <a class="target-url" ng-if="ugc.targetTitle && ugc.targetUrl" target="_blank" ng-href="{{ugc.targetUrl}}">{{ugc.targetTitle}}</a>
 
                                 <form novalidate ng-submit="updateUGCContent(ugc, ugc.title, ugc.textContent)">
                                     <div class="read-mode" ng-hide="editMode">
@@ -139,7 +134,7 @@
     </div>
 
     <!-- pagination -->
-    <div class="row-flui">
+    <div class="row-fluid">
         <div ng-controller="PaginationCtrl" class="well well-small">
             <pagination
                 total-items="totalItems"
@@ -150,4 +145,5 @@
                 max-size="maxSize" class="pagination-small" boundary-links="true" rotate="false" ></pagination>
         </div>
     </div>
+
 </div>

@@ -19,6 +19,14 @@
           margin: 0;
         }
 
+        ul.#{$app-namespace}-view-options-view {
+          > li {
+            > a {
+              padding: 5px;
+            }
+          }
+        }
+
       }
 
       > .modal-comment-box {

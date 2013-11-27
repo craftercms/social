@@ -222,7 +222,7 @@ public class CrafterProfileServiceImpl implements CrafterProfileService {
         }
 
         try {
-            client.setAttributesForProfile(getAppToken(), profileId, attributes);
+            client.updateAttributesForProfile(getAppToken(), profileId, attributes);
         } catch (AppAuthenticationException e) {
             try {
                 synchronized (lock) {

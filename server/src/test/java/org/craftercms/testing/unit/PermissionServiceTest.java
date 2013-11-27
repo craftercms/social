@@ -112,13 +112,10 @@ public class PermissionServiceTest {
 		UGC ugc= new UGC();
 		ugc.setCreatedBy("test");
 		ugc.setCreatedDate(new Date());
-		ugc.setFlagCount(0);
 		ugc.setId(new ObjectId(UGC_ID));
 		ugc.setLastModifiedBy("test");
 		ugc.setLastModifiedDate(new Date());
-		ugc.setLikeCount(0);
 		ugc.setModerationStatus(ModerationStatus.UNMODERATED);
-		ugc.setOffenceCount(0);
 		ugc.setOwner("test");
 		ugc.setProfile(getProfile());
 		ugc.setProfileId(PROFILE_ID);

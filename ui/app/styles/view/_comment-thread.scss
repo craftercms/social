@@ -78,12 +78,16 @@ $popover-font-size: 12px;
 
         .comment-body {
           p {
-            margin-bottom: 0;
+            margin-bottom: 5px;
 
             &:last-child {
               margin-bottom: 0;
             }
 
+          }
+          ul {
+            padding-left: 20px;
+            margin-bottom: 5px;
           }
         }
 

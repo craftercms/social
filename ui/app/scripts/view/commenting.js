@@ -58,15 +58,28 @@
                 targetId: this.cfg.target
             };
 
-            console.log(data);
+            // TODO evaluate if this should stay. Might not be great for security.
+            app.trigger('social.view.Commenting.beforecreate', data);
 
-            // TODO temporary, remove.
-            (S.window.tempGetCustomAttributes) && (S.window.tempGetCustomAttributes(data));
+            var collection = this.collection;
+            collection.create(data, {
+                error: function (model) {
 
-            this.collection.create(data);
+                    // Put back the comment that didn't get posted.
+                    // Attach any text that could have been written while request completed.
+                    editor.setData('<div>' + model.get('textContent') + '</div>' + editor.getData());
+                    // Put the cursor position to the end of the editor, where it is likely that it will be
+                    var range = editor.createRange();
+                    range.moveToPosition(range.root, CKEDITOR.POSITION_BEFORE_END);
+                    editor.getSelection().selectRanges([ range ]);
+                    // Remove the un-posted comment from the controller
+                    collection.remove(model);
+
+                }
+            });
 
             editor.setData('');
-            editor.focus();
+            // this.$('button.reply').focus();
 
         },
 

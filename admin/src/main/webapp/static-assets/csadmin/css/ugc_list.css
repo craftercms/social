@@ -223,3 +223,6 @@ select {
 .popover {
     min-width: 120px;
 }
+.popover .popover-content .btn {
+    margin-right: 0;
+}

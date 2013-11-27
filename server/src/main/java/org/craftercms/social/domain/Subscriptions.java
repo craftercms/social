@@ -28,7 +28,7 @@ public class Subscriptions implements Serializable {
             subscriptions.setAction((String) attributes.get(ATTRIBUTE_ACTION));
             subscriptions.setFormat((String) attributes.get(ATTRIBUTE_FORMAT));
             subscriptions.setAutoWatch(Boolean.parseBoolean((String) attributes.get(ATTRIBUTE_AUTO_WATCH)));
-            subscriptions.setTargets(getTargets(attributes));
+            subscriptions.setTargets((List<String>) attributes.get(ATTRIBUTE_TARGETS));
 
             return subscriptions;
         } else {
@@ -45,23 +45,9 @@ public class Subscriptions implements Serializable {
         attributes.put(ATTRIBUTE_ACTION, subscriptions.getAction());
         attributes.put(ATTRIBUTE_FORMAT, subscriptions.getFormat());
         attributes.put(ATTRIBUTE_AUTO_WATCH, Boolean.toString(subscriptions.isAutoWatch()));
-        attributes.put(ATTRIBUTE_TARGETS, StringUtils.join(subscriptions.getTargets(), ','));
+        attributes.put(ATTRIBUTE_TARGETS, subscriptions.getTargets());
 
         return attributes;
-    }
-
-    public static List<String> getTargets(Map<String, Object> attributes) {
-        if (attributes.containsKey(ATTRIBUTE_TARGETS)) {
-            String[] targetsArray = StringUtils.split((String) attributes.get(ATTRIBUTE_TARGETS), ',');
-
-            return new ArrayList<String>(Arrays.asList(targetsArray));
-        } else {
-            return null;
-        }
-    }
-
-    public static void setTargets(List<String>targets, Map<String, Object> attributes) {
-        attributes.put(ATTRIBUTE_TARGETS, StringUtils.join(targets, ','));
     }
 	
 	public Subscriptions() {

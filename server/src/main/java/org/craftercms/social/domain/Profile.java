@@ -75,6 +75,9 @@ public class Profile implements Serializable {
     @Field(ATTRIBUTES)
     private Map<String, Serializable> attributes;
 
+    public Profile() {
+    }
+
     public ObjectId getId() {
         return id;
     }
