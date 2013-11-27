@@ -33,4 +33,5 @@ overlays
 atlassian-ide-plugin.xml
 ${crafter.security.authentication.cookie.encryptionKey.file}
 encryption-keys/
+.swp
 .vimrc

@@ -35,8 +35,10 @@ public interface UGCRepositoryCustom {
 
 	List<UGC> findByTenantTargetPaging(String tenant, String target,
 			int page, int pageSize, ActionEnum action, String sortField, String sortOrder);
-	
-	List<UGC> findByParentIdWithReadPermission(ObjectId parentId, ActionEnum action, String[] moderationStatus, String sortField, String sortOrder);
+
+    List<String> findPossibleActionsForUGC(String ugcId, List<String> roles);
+
+    List<UGC> findByParentIdWithReadPermission(ObjectId parentId, ActionEnum action, String[] moderationStatus, String sortField, String sortOrder);
 
 	List<UGC> findByTenantAndSort(String tenant, ActionEnum action, String sortField, String sortOrder);
 
