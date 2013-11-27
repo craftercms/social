@@ -17,6 +17,7 @@
 package org.craftercms.social.services;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
@@ -54,6 +55,7 @@ public interface PermissionService {
 	List<UGC> checkGrantedPermission(ActionEnum action, List<UGC> list, String profileId);
 
     boolean excludeProfileInfo(UGC ugc, ActionEnum action, List<String> roles);
-	
-	
+
+
+    Set<String> getActionsForUser(List<String> profileRoles);
 }

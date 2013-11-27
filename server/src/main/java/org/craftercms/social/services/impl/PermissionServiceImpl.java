@@ -19,6 +19,7 @@ package org.craftercms.social.services.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
@@ -28,6 +29,7 @@ import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.action.ActionConstants;
 import org.craftercms.social.util.action.ActionEnum;
+import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.support.CrafterProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -140,7 +142,12 @@ public class PermissionServiceImpl implements PermissionService {
          }
          return exclude;
     }
-    
+
+    @Override
+    public Set<String> getActionsForUser(final List<String> profileRoles) {
+        return ActionUtil.getActionForRoles(profileRoles);
+    }
+
     private boolean excludeProfileInfo(Action currentAction, List<String> roles) {
     	boolean exclude = true;
     	if (roles == null) {

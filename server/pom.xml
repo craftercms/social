@@ -1,78 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< Updated upstream
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.craftercms</groupId>
-	<artifactId>crafter-social</artifactId>
-	<version>2.2.4-SNAPSHOT</version>
-	<name>Crafter Social</name>
-	<description>Crafter Social</description>
-	<url>https://github.com/craftercms/social/tree/master/server</url>
-	<packaging>war</packaging>
-	<parent>
-		<groupId>org.craftercms</groupId>
-		<artifactId>crafter-social-parent</artifactId>
-		<version>2.2.4-SNAPSHOT</version>
-	</parent>
-	<organization>
-		<name>CrafterCMS</name>
-		<url>http://craftercms.org</url>
-	</organization>
-	<licenses>
-		<license>
-			<name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
-			<url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<developers>
-		<developer>
-			<id>sumerjabri</id>
-			<name>Sumer Jabri</name>
-			<email>sumer.jabri@craftercms.org</email>
-		</developer>
-	</developers>
-	<scm>
-		<connection>scm:git:git://github.com/craftercms/social/tree/master/server</connection>
-		<developerConnection>scm:git:git://github.com/craftercms/social/tree/master/server</developerConnection>
-		<url>scm:git:git://github.com/craftercms/social/tree/master/server</url>
-	</scm>
-	<properties>
-		<java.version>1.6</java.version>
-		<org.springframework.version>3.1.1.RELEASE</org.springframework.version>
-		<!-- org.springframework.version>3.2.3.RELEASE</org.springframework.version-->
-		<org.spring-security.version>3.1.0.RELEASE</org.spring-security.version>
-		<org.aspectj.version>1.6.9</org.aspectj.version>
-		<cglib.version>2.2</cglib.version>
-		<org.slf4j.version>1.5.10</org.slf4j.version>
-		<log4j.version>1.2.15</log4j.version>
-		<javax.inject.version>1</javax.inject.version>
-		<servlet.api.version>2.5</servlet.api.version>
-		<servlet.jsp.api.version>2.1</servlet.jsp.api.version>
-		<servlet.jstl.version>1.2</servlet.jstl.version>
-		<junit.version>4.7</junit.version>
-		<ehcache.version>2.7.0</ehcache.version>
-		<org.hibernate.version>4.2.0.Final</org.hibernate.version>
-		<org.apache.tiles.version>2.2.2</org.apache.tiles.version>
-		<org.quartz-scheduler>1.8.6</org.quartz-scheduler>
-		<!-- Spring 3 is not compatible with newer versions. -->
-		<org.apache.commons.fileupload.version>1.2.2</org.apache.commons.fileupload.version>
-		<org.apache.commons.io.version>2.1</org.apache.commons.io.version>
-		<org.apache.commons.codec.version>1.6</org.apache.commons.codec.version>
-		<org.spring-data.mongodb.version>1.0.1.RELEASE</org.spring-data.mongodb.version>
-		<org.spring-social.version>1.0.1.RELEASE</org.spring-social.version>
-		<org.codehaus.jackson.version>1.9.5</org.codehaus.jackson.version>
-		<com.thoughtworks.xstream.version>1.4.2</com.thoughtworks.xstream.version>
-		<org.mongodb.java-driver.version>2.7.3</org.mongodb.java-driver.version>
-		<org.craftercms.profile.client.version>2.2.4-SNAPSHOT</org.craftercms.profile.client.version>
-		<org.apache.httpcomponents.version>4.2.2</org.apache.httpcomponents.version>
-		<clover.version>3.1.8</clover.version>
-		<test.port>8080</test.port>
-	</properties>
-    <dependencies>
-		<!-- TODO: IF WE PULL THE FILTER OUT, REMOVE THIS -->
-		<!--dependency>
-=======
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -153,7 +79,6 @@
     <dependencies>
         <!-- TODO: IF WE PULL THE FILTER OUT, REMOVE THIS -->
         <!--dependency>
->>>>>>> Stashed changes
             <groupId>org.craftercms</groupId>
             <artifactId>commons</artifactId>
             <version>1.0.0</version>
@@ -410,7 +335,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>2.11.3</version>
+            <version>${org.mongodb.java-driver.version}</version>
         </dependency>
         <!-- JSON & XML marshallers -->
         <dependency>

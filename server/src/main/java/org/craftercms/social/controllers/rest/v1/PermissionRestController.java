@@ -18,6 +18,7 @@ package org.craftercms.social.controllers.rest.v1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
@@ -25,6 +26,7 @@ import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.TenantService;
+import org.craftercms.social.util.action.ActionConstants;
 import org.craftercms.social.util.action.ActionEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,9 +79,23 @@ public class PermissionRestController {
 			return false;
 		}
 	}
+    @RequestMapping(value ="/actions", method = RequestMethod.GET)
+    @ModelAttribute
+    public Set<String> getActionsForUser(){
+       return permissionService.getActionsForUser(getProfileRoles());
+    } 
 	
 	private String getProfileId() {
 		return RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
 	}
+
+    private List<String> getProfileRoles() {
+        List<String> roles = RequestContext.getCurrent().getAuthenticationToken().getProfile().getRoles();
+        if(roles==null){
+            roles=new ArrayList<String>();
+            roles.add(ActionConstants.ANONYMOUS);
+        }
+        return roles;
+    }
 
 }

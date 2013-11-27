@@ -17,12 +17,16 @@
 package org.craftercms.social.util.action;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.craftercms.social.domain.Action;
+
 
 public class ActionUtil {
 	
@@ -40,11 +44,11 @@ public class ActionUtil {
 	private static final List<String> CREATE_ROLES = new ArrayList<String>(){
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
-			add(ActionConstants.SOCIAL_AUTHOR);
+            add(ActionConstants.SOCIAL_AUTHOR);
             add(ActionConstants.OWNER);
 		}
 	};
-	private static final List<String> UPDATE_ROLES = new ArrayList<String>(){
+        private static final List<String> UPDATE_ROLES = new ArrayList<String>(){
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
 			add(ActionConstants.OWNER);
@@ -92,6 +96,45 @@ public class ActionUtil {
 	public static final List<Action> getDefaultActions() {
 		return DEFAULT_ACTION;
 	}
+
+
+   public static Set<String> getActionForRoles(final List<String>roles){
+       Set<String> result = new HashSet<String>();
+       for (String role : roles) {
+           if(!result.contains(UPDATE_ACTION.getName())){
+              if(UPDATE_ACTION.getRoles().contains(role)){
+                result.add(UPDATE_ACTION.getName());
+              }
+           }
+           if(!result.contains(CREATE_ACTION.getName())){
+               if(CREATE_ACTION.getRoles().contains(role)){
+                   result.add(CREATE_ACTION.getName());
+               }
+           }
+           if(!result.contains(DELETE_ACTION.getName())){
+               if(DELETE_ACTION.getRoles().contains(role)){
+                   result.add(DELETE_ACTION.getName());
+               }
+           }
+           if(!result.contains(READ_ACTION.getName())){
+               if(READ_ACTION.getRoles().contains(role)){
+                   result.add(READ_ACTION.getName());
+               }
+           }
+           if(!result.contains(ACT_ON_ACTION.getName())){
+               if(ACT_ON_ACTION.getRoles().contains(role)){
+                   result.add(ACT_ON_ACTION.getName());
+               }
+           }
+           if(!result.contains(MODERATE_ACTION.getName())){
+               if(MODERATE_ACTION.getRoles().contains(role)){
+                   result.add(MODERATE_ACTION.getName());
+               }
+           }
+       }
+       return Collections.unmodifiableSet(result);
+   }
+
 
    public static List<Action> getActions(HttpServletRequest request) {
 		List<Action> list = new ArrayList<Action>();
