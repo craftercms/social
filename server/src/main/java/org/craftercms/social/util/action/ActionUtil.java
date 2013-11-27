@@ -26,7 +26,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.craftercms.social.domain.Action;
-import org.openqa.selenium.interactions.Actions;
+
 
 public class ActionUtil {
 	
@@ -44,7 +44,7 @@ public class ActionUtil {
 	private static final List<String> CREATE_ROLES = new ArrayList<String>(){
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
-			add(ActionConstants.SOCIAL_AUTHOR);
+            add(ActionConstants.SOCIAL_AUTHOR);
             add(ActionConstants.OWNER);
 		}
 	};
