@@ -53,7 +53,7 @@ import org.craftercms.social.services.VirusScannerService;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.serialization.ObjectIdDeSerializer;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.craftercms.social.util.support.ResultParser;
 import org.craftercms.social.util.web.Attachment;
 import org.slf4j.Logger;
@@ -83,7 +83,7 @@ public class UGCServiceImpl implements UGCService {
     private PermissionService permissionService;
 
     @Autowired
-    private CrafterProfile crafterProfileService;
+    private CrafterProfileService crafterProfileService;
 
     @Autowired
     private CounterService counterService;

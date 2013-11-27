@@ -33,7 +33,16 @@
 	<!-- THIS IS FOR THE SUBSCRIPTION SERVICE  -->
 	<bean id="profileTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg ref="profileDBFactory"/>
+        <constructor-arg ref="profileMappingConverter"/>
 	</bean>
+
+    <mongo:mapping-converter id="profileMappingConverter" db-factory-ref="profileDBFactory">
+        <mongo:custom-converters>
+            <mongo:converter>
+                <bean class="org.craftercms.social.util.support.spring.data.AttributesConverter"/>
+            </mongo:converter>
+        </mongo:custom-converters>
+    </mongo:mapping-converter>
 
 	<!-- mongo:repositories base-package="org.craftercms.social.repositories" create-query-indexes="true" mongo-template-ref="mongoTemplate"/-->
 	<mongo:repositories  base-package="org.craftercms.social.repositories">	

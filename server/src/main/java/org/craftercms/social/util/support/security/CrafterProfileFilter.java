@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.impl.domain.Tenant;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.filter.GenericFilterBean;
-import org.springframework.web.multipart.MultipartResolver;
 import org.craftercms.social.util.support.security.crypto.SimpleDesCipher;
 
 import javax.crypto.BadPaddingException;
@@ -60,7 +59,7 @@ public class CrafterProfileFilter extends GenericFilterBean {
     //@Autowired
 
     // not autowiring this because we want the cache version
-    private CrafterProfile profile;
+    private CrafterProfileService profile;
 
     @Value("#{socialSettings['security.token.tokenRequestParamKey']}")
     private String tokenRequestParamKey;
@@ -457,7 +456,7 @@ public class CrafterProfileFilter extends GenericFilterBean {
         }
     }
 
-    public void setProfile(CrafterProfile profile) {
+    public void setProfile(CrafterProfileService profile) {
         this.profile = profile;
     }
 }

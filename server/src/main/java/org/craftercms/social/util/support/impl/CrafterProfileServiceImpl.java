@@ -1,28 +1,25 @@
 package org.craftercms.social.util.support.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
 
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.impl.domain.Subscriptions;
-import org.craftercms.profile.impl.domain.Target;
 import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
-public class CrafterProfileImpl implements CrafterProfile {
+public class CrafterProfileServiceImpl implements CrafterProfileService {
 	private Object lock = new Object();
 
-	private Logger log = LoggerFactory.getLogger(CrafterProfile.class);
+	private Logger log = LoggerFactory.getLogger(CrafterProfileService.class);
 	
 	private static final String NOT_GET_APP_TOKEN = "could not get an AppToken";
 	
@@ -45,7 +42,7 @@ public class CrafterProfileImpl implements CrafterProfile {
 	private static final String ANONYMOUS_USER = "anonymous";
 	private static final String ANONYMOUS_PASSWORD = "anonymous";
 
-	public CrafterProfileImpl() {
+	public CrafterProfileServiceImpl() {
 		super();
 	}
 
@@ -102,7 +99,7 @@ public class CrafterProfileImpl implements CrafterProfile {
 		}
 	}
 
-	public List<Profile> getProfilesByIds(List<String> profileIds) {
+    public List<Profile> getProfilesByIds(List<String> profileIds) {
 		if (profileIds == null || profileIds.size() == 0) {
 			return null;
 		}
@@ -217,9 +214,25 @@ public class CrafterProfileImpl implements CrafterProfile {
 	}
 
     @Override
-    public Profile createOrUpdateSubscription(String profileId, String targetId, String targetDescription, String targetUrl) {
-        return client.createOrUpdateSubscription(getAppToken(), profileId, targetId, targetDescription, targetUrl);
-    }
+    public void updateAttributes(String profileId, Map<String, Serializable> attributes) {
+        if (profileId == null || profileId.equals("") || profileId.equalsIgnoreCase("anonymous")) {
+            return;
+        } else if (attributes == null) {
+            attributes = new HashMap<String, Serializable>();
+        }
 
+        try {
+            client.updateAttributesForProfile(getAppToken(), profileId, attributes);
+        } catch (AppAuthenticationException e) {
+            try {
+                synchronized (lock) {
+                    init();
+                }
+            } catch (AppAuthenticationFailedException e1) {
+                log.error(NOT_GET_APP_TOKEN, e);
+            }
+            client.setAttributesForProfile(getAppToken(), profileId, attributes);
+        }
+    }
 
 }

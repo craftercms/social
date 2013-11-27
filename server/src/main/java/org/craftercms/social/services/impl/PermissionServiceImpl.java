@@ -30,7 +30,7 @@ import org.craftercms.social.services.UGCService;
 import org.craftercms.social.util.action.ActionConstants;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -43,7 +43,7 @@ public class PermissionServiceImpl implements PermissionService {
 	private UGCService uGCService;
 	
 	@Autowired
-	private CrafterProfile crafterProfileService;
+	private CrafterProfileService crafterProfileService;
 	
 	public static final String SUPER_ADMIN = "SUPERADMIN";
 

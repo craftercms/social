@@ -25,7 +25,8 @@
     	<entry key="/api/2/ugc/like/**" value="hasActOnPermission()"/>
     	<entry key="/api/2/ugc/dislike/**" value="hasActOnPermission()"/>
     	<entry key="/api/2/ugc/flag/**" value="hasActOnPermission()"/>
-    	
+        <entry key="/api/2/subscriptions" value="isAuthenticated()"/>
+        <entry key="/api/2/subscriptions/**" value="isAuthenticated()"/>
     </util:map>
     
     

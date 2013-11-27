@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import org.craftercms.social.services.impl.PermissionServiceImpl;
 import org.craftercms.social.util.action.ActionConstants;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +41,7 @@ public class PermissionServiceTest {
 	private UGCService ugcService;
 	
 	@Mock
-	private CrafterProfile crafterProfileService;
+	private CrafterProfileService crafterProfileService;
 	
 	@InjectMocks
 	private PermissionServiceImpl permissionServiceImpl;

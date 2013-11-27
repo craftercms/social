@@ -17,10 +17,9 @@ import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
 import org.craftercms.social.services.*;
 import org.craftercms.social.services.impl.UGCServiceImpl;
-import org.craftercms.social.services.impl.VirusScannerServiceImpl;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.craftercms.social.util.web.Attachment;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,13 +31,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,7 +58,7 @@ public class UGCServiceTest {
 	@Mock
 	private TenantService tenantService;
 	@Mock
-	private CrafterProfile crafterProfileService;
+	private CrafterProfileService crafterProfileService;
 	@Mock
 	private UGCAuditRepository auditRepository;
 	@Mock

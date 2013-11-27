@@ -74,9 +74,9 @@ public class Profile implements Serializable {
 
     @Field(ATTRIBUTES)
     private Map<String, Serializable> attributes;
-    
-    @Field("subscriptions")
-    private Subscriptions subscriptions;
+
+    public Profile() {
+    }
 
     public ObjectId getId() {
         return id;
@@ -173,10 +173,11 @@ public class Profile implements Serializable {
     }
 
 	public Subscriptions getSubscriptions() {
-		return subscriptions;
+		return Subscriptions.getFromAttributes((Map) attributes);
 	}
 
 	public void setSubscriptions(Subscriptions subscriptions) {
-		this.subscriptions = subscriptions;
+        Subscriptions.setInAttributes(subscriptions, (Map) attributes);
 	}
+
 }

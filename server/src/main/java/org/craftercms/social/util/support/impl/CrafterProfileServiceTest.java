@@ -1,5 +1,6 @@
 package org.craftercms.social.util.support.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -16,14 +17,14 @@ import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.util.action.ActionConstants;
 import org.craftercms.social.util.action.ActionEnum;
-import org.craftercms.social.util.support.CrafterProfile;
+import org.craftercms.social.util.support.CrafterProfileService;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class CrafterProfileTest implements CrafterProfile {
+public class CrafterProfileServiceTest implements CrafterProfileService {
 
 	protected static final String TENANT_TEST = "craftercms";
 	protected static final String TENANT_TEST_EMAIL = "craftercms@email.com";
@@ -100,7 +101,7 @@ public class CrafterProfileTest implements CrafterProfile {
 	private String appToken = null;
 	private static final String APP_TOKEN = "testing";
 
-	public CrafterProfileTest() {
+	public CrafterProfileServiceTest() {
 		super();
 
 	}
@@ -122,9 +123,8 @@ public class CrafterProfileTest implements CrafterProfile {
 	}
 
     @Override
-    public Profile createOrUpdateSubscription(String profileId, String targetId, String targetDescription, String targetUrl) {
-        // TODO createOrUpdateSubscription test implementation
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public void updateAttributes(String profileId, Map<String, Serializable> attributes) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public List<Profile> getProfilesByIds(List<String> profileIds) {

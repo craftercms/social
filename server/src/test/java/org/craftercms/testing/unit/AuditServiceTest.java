@@ -9,32 +9,12 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.types.ObjectId;
-import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
-import org.craftercms.security.api.UserProfile;
-import org.craftercms.security.authentication.AuthenticationToken;
-import org.craftercms.social.domain.UGC;
-import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
-import org.craftercms.social.exceptions.PermissionDeniedException;
-import org.craftercms.social.moderation.ModerationDecision;
-import org.craftercms.social.repositories.UGCAuditRepository;
-import org.craftercms.social.repositories.UGCRepository;
-import org.craftercms.social.services.PermissionService;
-import org.craftercms.social.services.SupportDataAccess;
-import org.craftercms.social.services.TenantService;
-import org.craftercms.social.services.impl.UGCServiceImpl;
-import org.craftercms.social.util.action.ActionEnum;
-import org.craftercms.social.util.action.ActionUtil;
-import org.craftercms.social.util.support.CrafterProfile;
-import org.craftercms.social.util.web.Attachment;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,8 +23,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.craftercms.social.services.impl.AuditServicesImpl;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( { RequestContext.class})
