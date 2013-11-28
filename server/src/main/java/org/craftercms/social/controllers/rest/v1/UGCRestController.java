@@ -102,7 +102,7 @@ public class UGCRestController {
 
     @RequestMapping(value = "/target", method = RequestMethod.GET)
     @ModelAttribute
-    public HierarchyList<UGC> getTargetUgcs(@RequestParam final String tenant, @RequestParam final String target,
+    public HierarchyList<PublicUGC> getTargetUgcs(@RequestParam final String tenant, @RequestParam final String target,
                                             @RequestParam(required = false, defaultValue = "99") int rootCount,
                                             @RequestParam(required = false, defaultValue = "99") int childCount,
                                             @RequestParam(required = false, defaultValue = "0") int page,
@@ -110,18 +110,20 @@ public class UGCRestController {
                                             @RequestParam(required = false, defaultValue = "createdDate") String
                                                 sortField, @RequestParam(required = false,
         defaultValue = "DESC") String sortOrder) {
+
+
         if (page >= 0 && pageSize > 0) {
-            return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target,
-                getProfileId(), page, pageSize, sortField, sortOrder), null, rootCount, childCount);
+            List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page, pageSize, sortField, sortOrder);
+            return HierarchyGenerator.generateHierarchy(toPublicUGC(ugcs), null, rootCount, childCount);
         } else {
-            return HierarchyGenerator.generateHierarchy(ugcService.findByTargetValidUGC(tenant, target,
-                getProfileId(), sortField, sortOrder), null, rootCount, childCount);
+            List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder);
+            return HierarchyGenerator.generateHierarchy(toPublicUGC(ugcs), null, rootCount, childCount);
         }
     }
 
     @RequestMapping(value = "/target/regex", method = RequestMethod.GET)
     @ModelAttribute
-    public HierarchyList<UGC> getUgcByTargetRegex(@RequestParam final String regex, @RequestParam(required = false,
+    public HierarchyList<PublicUGC> getUgcByTargetRegex(@RequestParam final String regex, @RequestParam(required = false,
         defaultValue = "99") int rootCount, @RequestParam(required = false, defaultValue = "99") int childCount,
                                                   @RequestParam(required = false, defaultValue = "0") int page,
                                                   @RequestParam(required = false, defaultValue = "0") int pageSize,
@@ -131,7 +133,7 @@ public class UGCRestController {
         List<UGC> list = ugcService.findByTargetRegex(getTenantName(), regex, getProfileId(), page, pageSize,
             sortField, sortOrder);
         log.debug("Found {} ugs using {} regex", list.size(), regex);
-        return HierarchyGenerator.generateHierarchy(list, null, rootCount, childCount);
+        return HierarchyGenerator.generateHierarchy(toPublicUGC(list), null, rootCount, childCount);
     }
 
     @RequestMapping(value = "/moderation/{tenantName}/all", method = RequestMethod.GET)
@@ -177,11 +179,13 @@ public class UGCRestController {
 
     @RequestMapping(value = "/moderation/update/status", method = RequestMethod.POST)
     @ModelAttribute
-    public List<UGC> updateModerationStatus(@RequestParam(required = false) List<String> ids,
+    public List<PublicUGC> updateModerationStatus(@RequestParam(required = false) List<String> ids,
                                             @RequestParam final String moderationStatus,
                                             @RequestParam final String tenant, final HttpServletResponse response)
         throws IOException, PermissionDeniedException {
-        return ugcService.updateModerationStatus(ids, ModerationStatus.valueOf(moderationStatus.toUpperCase()), tenant);
+        List<UGC> list = ugcService.updateModerationStatus(ids, ModerationStatus.valueOf(moderationStatus.toUpperCase
+            ()), tenant);
+        return toPublicUGC(list);
     }
 
     @RequestMapping(value = "/get_ugc/{ugcId}", method = RequestMethod.GET)
