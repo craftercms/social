@@ -8,10 +8,14 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.util.Hierarchical;
 
-public class PublicUGC {
+public class PublicUGC implements Hierarchical<PublicUGC> {
 
 
+    private final ObjectId parentId;
+    private final ArrayList<PublicUGC> children;
+    private  int extraChildCount;
     private String id;
     private String tenant;
     private String textContent;
@@ -52,10 +56,48 @@ public class PublicUGC {
                 this.attachments.add(objectId.toString());
             }
         }
+        this.parentId=templateUGC.getParentId();
+        this.children=new ArrayList<PublicUGC>();
+        this.extraChildCount=0;
     }
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    public Object getParentId() {
+        return parentId;
+    }
+
+    @Override
+    public void addChild(final PublicUGC child) {
+       children.add(child);
+    }
+
+    @Override
+    public List<PublicUGC> getChildren() {
+        return children;
+    }
+
+    @Override
+    public int getChildCount() {
+        return children.size();
+    }
+
+    @Override
+    public void incExtraChildCount() {
+        this.extraChildCount=+1;
+    }
+
+    @Override
+    public void incExtraChildCountBy(final int count) {
+        this.extraChildCount+=count;
+    }
+
+    @Override
+    public int getExtraChildCount() {
+        return this.extraChildCount;
     }
 
     public String getTenant() {
@@ -105,6 +147,7 @@ public class PublicUGC {
     public List<String> getAttachments() {
         return attachments;
     }
+
 
 
 
