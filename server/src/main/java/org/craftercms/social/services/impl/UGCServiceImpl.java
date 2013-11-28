@@ -29,7 +29,6 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
-import org.craftercms.social.controllers.rest.v1.to.PublicUGC;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.Target;
@@ -52,7 +51,6 @@ import org.craftercms.social.services.UGCService;
 import org.craftercms.social.services.VirusScannerService;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
-import org.craftercms.social.util.serialization.ObjectIdDeSerializer;
 import org.craftercms.social.util.support.CrafterProfileService;
 import org.craftercms.social.util.support.ResultParser;
 import org.craftercms.social.util.web.Attachment;
@@ -110,9 +108,8 @@ public class UGCServiceImpl implements UGCService {
                          String textContent, String targetUrl, String targetDescription, Map<String,
         Object> attributes, String subject) throws PermissionDeniedException, AttachmentErrorException {
 
-        UGC ugc = null;
-        if (existsUGC(ugcId)) {
-            ugc = uGCRepository.findOne(ugcId);
+        UGC ugc = uGCRepository.findOne(ugcId);
+        if (ugc != null && canEditUgc(ugc)) {
             ugc.setTargetId(targetId);
             ugc.setParentId(parentId);
             ugc.setTextContent(textContent);
@@ -121,6 +118,11 @@ public class UGCServiceImpl implements UGCService {
             ugc.setTargetDescription(targetDescription);
             ugc.setLastModifiedDate(new Date());
             ugc.setSubject(subject);
+            // http://issues.craftercms.org/browse/CRAFTERCMS-478
+            if (ugc.getModerationStatus() == ModerationStatus.APPROVED) {
+                ugc.setModerationStatus(ModerationStatus.UNMODERATED);
+            }
+
             Map<String, Object> currentAttributes = ugc.getAttributes();
             if (currentAttributes != null && attributes != null) {
                 currentAttributes.putAll(attributes);
@@ -134,6 +136,11 @@ public class UGCServiceImpl implements UGCService {
             auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
         }
         return ugc;
+    }
+
+    private boolean canEditUgc(final UGC ugc) {
+        return !((ugc.getModerationStatus() == ModerationStatus.SPAM) || (ugc.getModerationStatus() ==
+            ModerationStatus.TRASH));
     }
 
     @Override
@@ -313,7 +320,7 @@ public class UGCServiceImpl implements UGCService {
         String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
         for (String id : ids) {
             UGC ugc = uGCRepository.findOne(new ObjectId(id));
-            if (ugc!=null) {
+            if (ugc != null) {
                 if (newStatus == ModerationStatus.APPROVED || pendingToUnmoderated(ugc.getModerationStatus(),
                     newStatus)) {
                     ugc.getFlags().clear();//Clear all flags is UGC is approve
@@ -714,10 +721,12 @@ public class UGCServiceImpl implements UGCService {
         return initUGCAndChildren(ugc, p, moderationStatus, sortField, sortOrder);
 
     }
+
     @Override
-    public List<String> findPossibleActionsForUGC(final String ugcId, final List<String> roles){
-        return uGCRepository.findPossibleActionsForUGC(ugcId,roles);
+    public List<String> findPossibleActionsForUGC(final String ugcId, final List<String> roles) {
+        return uGCRepository.findPossibleActionsForUGC(ugcId, roles);
     }
+
     public UGC initUGCAndChildren(UGC ugc, Profile p, String[] moderationStatus, String sortField, String sortOrder) {
         ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         UGC populatedUgc = populateUGCWithProfile(ugc);
@@ -1076,8 +1085,6 @@ public class UGCServiceImpl implements UGCService {
         }
         return result;
     }
-
-
 
 
 }
