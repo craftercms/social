@@ -54,6 +54,7 @@ public class UGCAuditRepositoryImpl implements UGCAuditRepositoryCustom {
 		
 		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
 
+
         if(actionFilters != null && actionFilters.length > 0){
             query.addCriteria(Criteria.where(ACTION).in(actionFilters));
         }

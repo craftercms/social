@@ -34,8 +34,9 @@
         <property name="triggers">
             <list>
             	<!-- -  JOB to HEARVEST data from UGCAudit table and produces notifications   - -->
-                <bean class="org.springframework.scheduling.quartz.CronTriggerBean">
-                    <property name="cronExpression" value="${social.harvester.instant.cronexpression}"/>
+                <bean class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+                    <property name="startDelay" value="${social.harvester.audit.frequency}"/>
+                    <property name="repeatInterval" value="${social.harvester.audit.frequency}"/>
                     <property name="jobDetail">
                         <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
                             <property name="targetBeanName" value="ugcAuditHarvesterService"/>
@@ -53,8 +54,9 @@
                     </property>
                 </bean>
                 <!-- -  JOB to Consume the notifications via email   - -->
-                <bean class="org.springframework.scheduling.quartz.CronTriggerBean">
-                    <property name="cronExpression" value="${social.harvester.notifier.instant.cronexpression}"/>
+                <bean class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+                    <property name="startDelay" value="${social.harvester.notifier.frequency}"/>
+                    <property name="repeatInterval" value="${social.harvester.notifier.frequency}"/>
                     <property name="jobDetail">
                         <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
                             <property name="targetBeanName" value="emailInstantService"/>
