@@ -79,13 +79,12 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	
 	@Override
 	public void doHarvestInternal(Map<String, ?> harvesterProperties) {
-		List<Notification> notificationList;
-		notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency, transmitedStatus.toString(), EMAIL_ACTION, 
-				getActionFiltersAsStringArray(), notificationQuerySort);
+		List<Notification> notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency,
+                transmitedStatus.toString(), EMAIL_ACTION, getActionFiltersAsStringArray(), notificationQuerySort);
 		
 		if (notificationList != null && notificationList.size() > 0) {
 			if (log.isDebugEnabled()) {
-				log.debug("Email Notifier Harvester found notifications: " + notificationList.size());
+				log.debug("Email notifier harvester found notifications: " + notificationList.size());
 			}
 			emailNotifications(notificationList);
 			
@@ -160,11 +159,11 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 				emailNotification(notification);
 				trasmittedStatus = TransmittedStatus.PROCESSED;
 			} catch(MailException e) {
-				log.error("Email Notifier Harvester error:" + e.getMessage());
+				log.error("Email notifier harvester error:" + e.getMessage());
 				trasmittedStatus = TransmittedStatus.PENDING;
 			} finally {
 				if (log.isDebugEnabled()) {
-					log.debug("Email Notifier Harvester updating notification" + notification.getId()  +" status: " + trasmittedStatus);
+					log.debug("Email notifier harvester updating notification " + notification.getId()  +" status: " + trasmittedStatus);
 				}
 				updateNotification(notification, trasmittedStatus);
 			}

@@ -25,15 +25,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
-import org.craftercms.social.domain.Event;
-import org.craftercms.social.domain.Notification;
+import org.craftercms.social.domain.*;
 import org.craftercms.social.domain.Notification.TransmittedStatus;
-import org.craftercms.social.domain.Profile;
-import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.notification.harvester.BaseHarvesterService;
 import org.craftercms.social.repositories.NotificationRepository;
 import org.craftercms.social.repositories.ProfileRepository;
 import org.craftercms.social.repositories.UGCAuditRepository;
+import org.craftercms.social.repositories.UGCRepository;
 import org.craftercms.social.util.PageManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,6 +50,8 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 	private ProfileRepository profileRepository;
 	@Autowired
 	private UGCAuditRepository ugcAuditRepository;
+    @Autowired
+    private UGCRepository ugcRepository;
 	
 	private int pageSize;
 	
@@ -65,7 +65,6 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 
 	@Override
 	public void doHarvestInternal(Map<String, ?> harvesterProperties) {
-		
 		long lastRowRetrieved = getLastRowRetrieved((Map<String, ? super Serializable>)harvesterProperties);
 
         // GET Audits using last retrieved row
@@ -78,7 +77,10 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 		while(!isDone) {
 			listUGCAudit = findUGCAuditList(lastRowRetrieved, pageManagement.getStart(), pageManagement.getEnd());
 			if (listUGCAudit != null && listUGCAudit.size() > 0) {
-				log.debug("Harvester JOB found audits " + listUGCAudit.size());
+				if (log.isDebugEnabled()) {
+                    log.debug("Audit harvester found audits: " + listUGCAudit.size());
+                }
+
 				// Sets audits into a map -> target / Audits
 				targetIdUGCAuditMap = flatAuditsByTarget(listUGCAudit);
 				
@@ -110,7 +112,10 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 		for (String target: targets) {
 			// Gets subscribers by a target, an action, a frequency and format
 			pl = this.profileRepository.findProfilesBySubscriptions(target);
-			log.debug("Harvester JOB found " + pl.size() + " subscribers for target " + target);
+
+            if (log.isDebugEnabled()) {
+			    log.debug("Audit harvester found " + pl.size() + " subscribers for target " + target);
+            }
 			
 			// saves notifications
 			createNotifications(pl, targetIdUGCAuditMap.get(target), actionOwnersCache);
@@ -185,11 +190,22 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 		if (pl == null || pl.size() == 0) {
 			return;
 		}
+
 		for (UGCAudit currentAudit: audits) {
-			for (Profile profile: pl) {
-				log.debug("Harvester JOB creating notification event ROW " + currentAudit.getRow() + " for the subscriber: " + profile.getUserName());
-				createNotification(profile, currentAudit, actionOwnersCache);
-			}
+            UGC ugc = ugcRepository.findOne(currentAudit.getUgcId());
+            if (ugc != null) {
+                UGC.ModerationStatus modStatus = ugc.getModerationStatus();
+                if (modStatus != UGC.ModerationStatus.SPAM && modStatus != UGC.ModerationStatus.TRASH) {
+                    for (Profile profile: pl) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Audit harvester creating notification event ROW " + currentAudit.getRow() +
+                                    " for the subscriber: " + profile.getUserName());
+                        }
+
+                        createNotification(profile, currentAudit, actionOwnersCache);
+                    }
+                }
+            }
 		}
 	}
 
