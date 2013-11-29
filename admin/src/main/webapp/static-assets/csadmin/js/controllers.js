@@ -8,40 +8,25 @@ angular.module('moderationDashboard.controllers', []).
      **/
     controller('UgcListCtrl',
         ['$rootScope',
-         '$scope', 
+         '$scope',
          '$routeParams',
          '$timeout',
-         'ConfigurationData', 
          'UgcApi',
-         'DeletePopupService', 
-         'CONFIG', function($rootScope, scope, rp, $timeout, ConfigurationData, UgcApi, DeletePopupService, CONFIG) {
+         'DeletePopupService',
+         'PaginationService',
+         'ENV', 
+         'CONFIG', function($rootScope, scope, $routeParams, $timeout, UgcApi, DeletePopupService, PaginationService, ENV, CONFIG) {
 
+        // moderationStatus will always be in the URL
+        scope.status = $routeParams.moderationStatus.toUpperCase();
         scope.ugcList = [];
-        scope.status = "";
         scope.moderationActions = [];
         scope.bulkActions = [];
-        scope.confObj = ConfigurationData.getConfData();
-        scope.moderationList = ConfigurationData.getModerationActions();
+        scope.sections = ENV.sections;
 
         function cropText (text, upperLimit) {
             return (text.length > upperLimit) ? text.substring(0, upperLimit) + " [...]" : text;
         }
-
-        //set actual status
-        var setStatus = function () {
-            scope.status = rp.moderationStatus ? rp.moderationStatus.toUpperCase() : scope.confObj.moderation;
-        };
-
-        // set the active tab
-        var getModerationList = function () {
-            angular.forEach(scope.moderationList, function (moderationObj) {
-                if (scope.status.toLowerCase() === moderationObj.moderation.value.toLowerCase()) {
-                    moderationObj.state = 'active';
-                }else{
-                    moderationObj.state = '';
-                }
-            });
-        };
 
         scope.updateUGCContent = function (originalUGC, ugcTitle, ugcContent) {            
             var callConfig, ugcData;
@@ -55,7 +40,7 @@ angular.module('moderationDashboard.controllers', []).
 
             callConfig = {
                 ugcId: originalUGC.id,
-                tenant: scope.confObj.tenant
+                tenant: ENV.config.tenant
             };
             ugcData = {
                 ugcId: originalUGC.id,
@@ -71,10 +56,10 @@ angular.module('moderationDashboard.controllers', []).
         scope.getUgcList = function (page) {
             
             var conf = {
-                tenant: scope.confObj.tenant,
+                tenant: ENV.config.tenant,
                 moderation: scope.status + ".json",
                 page: page,
-                pageSize: scope.confObj.pagination.commentsPerPage
+                pageSize: ENV.config.pagination.itemsPerPage
             };
 
             UgcApi.getUgcList(conf).then(function (data) {
@@ -141,12 +126,12 @@ angular.module('moderationDashboard.controllers', []).
 
         // set list of moderation actions available according status selected
         var setScopeActions = function () {
-            angular.forEach(scope.moderationList, function (modObject) {
-                if (modObject.moderation.value.toLowerCase() === scope.status.toLocaleLowerCase()){
-                    scope.moderationActions = modObject.actions;
+            angular.forEach(ENV.sections, function (section) {
+                if (section.moderation.value.toUpperCase() === scope.status) {
+                    scope.moderationActions = section.actions;
 
                     // Iterate through the action objects to identify the bulk operations
-                    angular.forEach(modObject.actions, function(actionObj) {
+                    angular.forEach(section.actions, function(actionObj) {
                         if (!actionObj.notBulk) {
                             scope.bulkActions.push(actionObj);
                         }
@@ -172,7 +157,7 @@ angular.module('moderationDashboard.controllers', []).
             var conf = {
                 moderationid : id,
                 moderationstatus: scope.status,
-                tenant: scope.confObj.tenant
+                tenant: ENV.config.tenant
             };
 
             UgcApi.updateUGCStatus(conf).then(function (data) {
@@ -218,13 +203,12 @@ angular.module('moderationDashboard.controllers', []).
             }
         };
 
-        setStatus();
-        getModerationList();
         scope.getUgcList(1);
         setScopeActions();
 
         $rootScope.$on('$ugcUpdate', function(){
-            scope.getUgcList(1);
+            var currentPage = PaginationService.getCurrentPage();
+            scope.getUgcList(currentPage);
         });
     }]).
 
@@ -235,7 +219,9 @@ angular.module('moderationDashboard.controllers', []).
         ['$scope', 
          'UgcApi',
          'DeletePopupService',
-         'ACTIONS', function (scope, UgcApi, DeletePopupService, ACTIONS) {
+         'PaginationService',
+         'ACTIONS',
+         'ENV', function (scope, UgcApi, DeletePopupService, PaginationService, ACTIONS, ENV) {
 
         var commentsSelected = function () {
             var listItems = [];
@@ -266,7 +252,7 @@ angular.module('moderationDashboard.controllers', []).
                 listItems = [];
 
             //check if bulk option is selected
-            if (optionSelected === null || optionSelected === undefined ){
+            if (optionSelected === null || typeof optionSelected === 'undefined' ){
                 $('#bulkActions').focus();
                 return;
             }
@@ -281,17 +267,18 @@ angular.module('moderationDashboard.controllers', []).
 
             if (ACTIONS.DELETE.toUpperCase() === optionSelected) {
                 DeletePopupService.open(event.currentTarget, {
-                    tenant: scope.confObj.tenant, 
+                    tenant: ENV.config.tenant, 
                     items: listItems
                 });
             } else {
                 var conf = {
                     moderationstatus: optionSelected,
-                    tenant: scope.confObj.tenant,
+                    tenant: ENV.config.tenant,
                     ids: listItems
                 };
 
                 UgcApi.bulkUpdate(conf).then( function (data) {
+                    PaginationService.removeItems(listItems.length);
                     scope.displayResults(data, { undo: true, message: "" } );
                 });
             }
@@ -351,30 +338,17 @@ angular.module('moderationDashboard.controllers', []).
     /**
      * pagination controller
      */
-    controller('PaginationCtrl', ['$scope', function (scope) {
-        scope.currentPage = 1;
-        scope.totalItems = 10;
+    controller('PaginationCtrl', 
+        ['$scope',
+         '$route',
+         'PaginationService', function ($scope, $route, PaginationService) {
 
-        // if no pagination configuration was detected
-        if (scope.confObj.pagination === undefined) {
-            // default values
-            scope.itemsPerPage = 10;
-            scope.maxSize = 5;
-        }else{
-            scope.itemsPerPage = scope.confObj.pagination.commentsPerPage;
-            scope.maxSize = scope.confObj.pagination.maxNumberPagItem;
-        }
+        PaginationService.init($route.current.locals.totalItems);
+        $scope.pagination = PaginationService.data;
 
-        // change page when user click pagination
-        scope.pageChanged = function (page) {
-            scope.$parent.getUgcList(page);
-        }
-
-        // set pagination data
-        var setPaginationData = function () {
-            scope.numPages = Math.ceil(scope.totalItems / scope.itemsPerPage);
+        // change page when user clicks the page button
+        $scope.changePage = function (pageNumber) {
+            $scope.$parent.getUgcList(pageNumber);
+            PaginationService.setCurrentPage(pageNumber);
         };
-
-        setPaginationData();
-
     }]);

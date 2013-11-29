@@ -1,7 +1,8 @@
 [{
     "moderation": {
         "label": "Unmoderated",
-        "value": "Unmoderated"
+        "value": "Unmoderated",
+        "default": true
     },
     "actions": [{
         "label": "Approve",
@@ -74,7 +75,7 @@
 }, {
     "moderation": {
         "label": "Trash",
-        "value": "Trash"
+        "value": "Trash" 
     },
     "actions": [{
         "label": "Restore",
