@@ -29,6 +29,8 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
     private Map<String, Object> attributes;
     private Map<String, Object> profile;
     private UserInfo userInfo;
+    private String moderationStatus;
+
 
 
     public PublicUGC(final UGC templateUGC, final String profileId, final List<String> actions,boolean watchedByUser) {
@@ -59,6 +61,7 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
         this.parentId=templateUGC.getParentId();
         this.children=new ArrayList<PublicUGC>();
         this.extraChildCount=0;
+        this.moderationStatus=templateUGC.getModerationStatus().toString();
     }
 
     public String getId() {
@@ -148,8 +151,9 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
         return attachments;
     }
 
-
-
+    public String getModerationStatus() {
+        return moderationStatus;
+    }
 
     class UserInfo {
 
