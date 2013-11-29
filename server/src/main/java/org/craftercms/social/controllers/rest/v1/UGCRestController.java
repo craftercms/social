@@ -28,11 +28,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
-import org.craftercms.profile.impl.domain.Role;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.controllers.rest.v1.to.PublicUGC;
 import org.craftercms.social.controllers.rest.v1.to.UGCRequest;
 import org.craftercms.social.domain.AttachmentModel;
+import org.craftercms.social.domain.Subscriptions;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.exceptions.AttachmentErrorException;
@@ -102,18 +102,20 @@ public class UGCRestController {
 
     @RequestMapping(value = "/target", method = RequestMethod.GET)
     @ModelAttribute
-    public HierarchyList<PublicUGC> getTargetUgcs(@RequestParam final String tenant, @RequestParam final String target,
-                                            @RequestParam(required = false, defaultValue = "99") int rootCount,
-                                            @RequestParam(required = false, defaultValue = "99") int childCount,
-                                            @RequestParam(required = false, defaultValue = "0") int page,
-                                            @RequestParam(required = false, defaultValue = "0") int pageSize,
-                                            @RequestParam(required = false, defaultValue = "createdDate") String
-                                                sortField, @RequestParam(required = false,
+    public HierarchyList<PublicUGC> getTargetUgcs(@RequestParam final String tenant,
+                                                  @RequestParam final String target, @RequestParam(required = false,
+        defaultValue = "99") int rootCount, @RequestParam(required = false, defaultValue = "99") int childCount,
+                                                  @RequestParam(required = false, defaultValue = "0") int page,
+                                                  @RequestParam(required = false, defaultValue = "0") int pageSize,
+                                                  @RequestParam(required = false,
+                                                      defaultValue = "createdDate") String sortField,
+                                                  @RequestParam(required = false,
         defaultValue = "DESC") String sortOrder) {
 
 
         if (page >= 0 && pageSize > 0) {
-            List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page, pageSize, sortField, sortOrder);
+            List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page, pageSize,
+                sortField, sortOrder);
             return HierarchyGenerator.generateHierarchy(toPublicUGC(ugcs), null, rootCount, childCount);
         } else {
             List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder);
@@ -123,11 +125,13 @@ public class UGCRestController {
 
     @RequestMapping(value = "/target/regex", method = RequestMethod.GET)
     @ModelAttribute
-    public HierarchyList<PublicUGC> getUgcByTargetRegex(@RequestParam final String regex, @RequestParam(required = false,
+    public HierarchyList<PublicUGC> getUgcByTargetRegex(@RequestParam final String regex,
+                                                        @RequestParam(required = false,
         defaultValue = "99") int rootCount, @RequestParam(required = false, defaultValue = "99") int childCount,
-                                                  @RequestParam(required = false, defaultValue = "0") int page,
-                                                  @RequestParam(required = false, defaultValue = "0") int pageSize,
-                                                  @RequestParam(required = false,
+                                                        @RequestParam(required = false, defaultValue = "0") int page,
+                                                        @RequestParam(required = false,
+                                                            defaultValue = "0") int pageSize,
+                                                        @RequestParam(required = false,
         defaultValue = "createdDate") String sortField, @RequestParam(required = false,
         defaultValue = "DESC") String sortOrder) {
         List<UGC> list = ugcService.findByTargetRegex(getTenantName(), regex, getProfileId(), page, pageSize,
@@ -174,15 +178,16 @@ public class UGCRestController {
         throws IOException, PermissionDeniedException {
         UGC u = ugcService.updateModerationStatus(new ObjectId(ugcId), ModerationStatus.valueOf(moderationStatus
             .toUpperCase()), tenant, getProfileId());
-        return new PublicUGC(u, getProfileId(),getPossibleActionsForUGC(ugcId));
+        return new PublicUGC(u, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(u.getTargetId()));
     }
 
     @RequestMapping(value = "/moderation/update/status", method = RequestMethod.POST)
     @ModelAttribute
     public List<PublicUGC> updateModerationStatus(@RequestParam(required = false) List<String> ids,
-                                            @RequestParam final String moderationStatus,
-                                            @RequestParam final String tenant, final HttpServletResponse response)
-        throws IOException, PermissionDeniedException {
+                                                  @RequestParam final String moderationStatus,
+                                                  @RequestParam final String tenant,
+                                                  final HttpServletResponse response) throws IOException,
+        PermissionDeniedException {
         List<UGC> list = ugcService.updateModerationStatus(ids, ModerationStatus.valueOf(moderationStatus.toUpperCase
             ()), tenant);
         return toPublicUGC(list);
@@ -193,8 +198,8 @@ public class UGCRestController {
                                  @RequestParam(required = false, defaultValue = "createdDate") String sortField,
                                  @RequestParam(required = false, defaultValue = "DESC") String sortOrder,
                                  HttpServletResponse response) throws IOException {
-        return new PublicUGC(ugcService.findUGCAndChildren(new ObjectId(ugcId), tenant, getProfileId(), sortField,
-            sortOrder), getProfileId(), getPossibleActionsForUGC(ugcId));
+        UGC ugc = ugcService.findUGCAndChildren(new ObjectId(ugcId), tenant, getProfileId(), sortField, sortOrder);
+        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST,
@@ -215,7 +220,8 @@ public class UGCRestController {
         } else {
             newUgc = ugcService.newChildUgc(new UGC(ugcRequest, getProfileId()));
         }
-        return new PublicUGC(newUgc, getProfileId(), getPossibleActionsForUGC(newUgc.getId().toString()));
+        return new PublicUGC(newUgc, getProfileId(), getPossibleActionsForUGC(newUgc.getId().toString()),
+            userWatchTarget(newUgc.getTargetId()));
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -228,7 +234,8 @@ public class UGCRestController {
             .getParentId()), ugcRequest.getTextContent(), ugcRequest.getTargetUrl(),
             ugcRequest.getTargetDescription(), ugcRequest.getAttributes(), ugcRequest.getSubject());
 
-        return new PublicUGC(updatedUgc, getProfileId(), getPossibleActionsForUGC(ugcRequest.getUgcId()));
+        return new PublicUGC(updatedUgc, getProfileId(), getPossibleActionsForUGC(ugcRequest.getUgcId()),
+            userWatchTarget(updatedUgc.getTargetId()));
 
     }
 
@@ -239,7 +246,7 @@ public class UGCRestController {
         attachments) throws PermissionDeniedException, AttachmentErrorException {
 
         UGC ugc = ugcService.addAttachments(new ObjectId(ugcId), attachments, tenant, getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId));
+        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
     }
 
     @RequestMapping(value = "/{ugcId}/add_attachment", method = RequestMethod.POST)
@@ -278,14 +285,14 @@ public class UGCRestController {
     @ModelAttribute
     public PublicUGC likeUGC(@PathVariable() String ugcId, @RequestParam(required = true) final String tenant) {
         UGC ugc = ugcService.likeUGC(new ObjectId(ugcId), tenant, getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId));
+        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
     }
 
     @RequestMapping(value = "/unlike/{ugcId}", method = RequestMethod.POST)
     @ModelAttribute
     public PublicUGC unLikeUGC(@PathVariable() String ugcId) {
         UGC ugc = ugcService.unLikeUGC(new ObjectId(ugcId), getTenantName(), getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId));
+        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
     }
 
     @RequestMapping(value = "/flag/{ugcId}", method = RequestMethod.POST)
@@ -293,28 +300,28 @@ public class UGCRestController {
     public PublicUGC flagUGC(@PathVariable() String ugcId, @RequestParam final String tenant,
                              @RequestParam final String reason) {
         UGC ugc = ugcService.flagUGC(new ObjectId(ugcId), reason, tenant, getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId));
+        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
     }
 
     @RequestMapping(value = "/unflag/{ugcId}", method = RequestMethod.POST)
     @ModelAttribute
     public PublicUGC unflagUGC(@PathVariable() String ugcId, @RequestParam final String reason) {
         UGC ugc = ugcService.unflagUGC(new ObjectId(ugcId), reason, getTenantName(), getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId));
+        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
     }
 
     @RequestMapping(value = "/dislike/{ugcId}", method = RequestMethod.POST)
     @ModelAttribute
     public PublicUGC unDislikeUGC(@PathVariable() String ugcId, @RequestParam final String tenant) {
         UGC ugc = ugcService.dislikeUGC(new ObjectId(ugcId), tenant, getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId));
+        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
     }
 
     @RequestMapping(value = "/undislike/{ugcId}", method = RequestMethod.POST)
     @ModelAttribute
     public PublicUGC dislikeUGC(@PathVariable() String ugcId) {
         UGC ugc = ugcService.unDislikeUGC(new ObjectId(ugcId), getTenantName(), getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId));
+        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
     }
 
     @RequestMapping(value = "/{ugcId}/set_attibutes", method = RequestMethod.POST)
@@ -329,10 +336,23 @@ public class UGCRestController {
         return RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
     }
 
+    private boolean userWatchTarget(String ugcTargetId) {
+        Object profileAttributes = RequestContext.getCurrent().getAuthenticationToken().getProfile().getAttribute
+            (Subscriptions.ATTRIBUTE_TARGETS);
+        if (profileAttributes == null) {
+            return false;
+        }
+        if (profileAttributes instanceof List) {
+            return ((List)profileAttributes).contains(ugcTargetId);
+        } else {
+            return false;
+        }
+    }
+
     private List<String> getProfileRoles() {
         List<String> roles = RequestContext.getCurrent().getAuthenticationToken().getProfile().getRoles();
-        if(roles==null){
-            roles=new ArrayList<String>();
+        if (roles == null) {
+            roles = new ArrayList<String>();
             roles.add(ActionConstants.ANONYMOUS);
         }
         return roles;
@@ -384,7 +404,9 @@ public class UGCRestController {
     private List<PublicUGC> toPublicUGC(final List<UGC> ugs) {
         List<PublicUGC> toReturn = new ArrayList<PublicUGC>();
         for (UGC ugc : ugs) {
-            toReturn.add(new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugc.getId().toString())));
+            PublicUGC publicUGC = new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugc.getId().toString())
+                , userWatchTarget(ugc.getTargetId()));
+            toReturn.add(publicUGC);
         }
         return toReturn;
     }

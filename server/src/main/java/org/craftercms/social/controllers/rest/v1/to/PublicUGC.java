@@ -31,7 +31,7 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
     private UserInfo userInfo;
 
 
-    public PublicUGC(final UGC templateUGC, final String profileId, final List<String> actions) {
+    public PublicUGC(final UGC templateUGC, final String profileId, final List<String> actions,boolean watchedByUser) {
         profile=new HashMap<String, Object>();
         this.attachments = new ArrayList<String>();
         this.id = templateUGC.getId().toString();
@@ -50,7 +50,7 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
         this.flags = templateUGC.getFlags().size();
         this.attributes = templateUGC.getAttributes();
         userInfo = new UserInfo( templateUGC.getLikes().contains(profileId),templateUGC.getDislikes().contains
-            (profileId),templateUGC.getFlags().contains(profileId),actions);
+            (profileId),templateUGC.getFlags().contains(profileId),actions,watchedByUser);
         if (templateUGC.getAttachmentId() != null) {
             for (ObjectId objectId : templateUGC.getAttachmentId()) {
                 this.attachments.add(objectId.toString());
@@ -152,18 +152,23 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
 
 
     class UserInfo {
+
         private boolean liked;
         private boolean disliked;
         private boolean flaged;
         private List<String> actions;
+        private final boolean watched;
 
         UserInfo(final boolean userLiked, final boolean userDisliked, final boolean userFlaged,
-                 final List<String> actions) {
+                 final List<String> actions,final boolean watchedByUser) {
             this.liked = userLiked;
             this.disliked = userDisliked;
             this.flaged = userFlaged;
             this.actions = actions;
+            this.watched = watchedByUser;
         }
+
+
 
         public boolean isLiked() {
             return liked;
@@ -179,6 +184,10 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
 
         public List<String> getActions() {
             return actions;
+        }
+
+        public boolean isWatched() {
+            return watched;
         }
     }
 }
