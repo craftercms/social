@@ -8,38 +8,25 @@ angular.module('moderationDashboard',
             'moderationDashboard.constants',
             'ngSanitize', 'ngRoute', 'ngAnimate', 'ui.bootstrap'
         ]).
-    config(['$routeProvider', function($routeProvider) {
+
+    config(['$routeProvider', 'ENV', function($routeProvider, ENV) {
+
         $routeProvider.
-            when(
-                '/',
-                {
-                    templateUrl: 'static-assets/csadmin/templates/ugc_list.html',
-                    controller: 'UgcListCtrl',
-                    resolve: {
-                        'appData' : function (ConfigurationData) {
-                            return ConfigurationData.appDataPromise();
-                        },
-                        'moderationActions': function (ConfigurationData) {
-                            return ConfigurationData.moderationStatusPromise();
-                        }
-                    }
-                }
-            ).
             when(
                 '/status/:moderationStatus',
                 {
                     templateUrl: 'static-assets/csadmin/templates/ugc_list.html',
                     controller: 'UgcListCtrl',
                     resolve: {
-                        'appData' : function (ConfigurationData) {
-                            return ConfigurationData.appDataPromise();
-                        },
-                        'moderationActions': function (ConfigurationData) {
-                            return ConfigurationData.moderationStatusPromise();
+                        totalItems : function totalItems ($route, UgcApi) {
+                            return UgcApi.getItemsNumber($route.current.params.moderationStatus);
                         }
                     }
                 }
-            );
+            ).
+            when('/', {
+                redirectTo: '/status/' + ENV.defaultSection
+            });
     }]).
 
     run(['$rootScope', 'DeletePopupService', function($rootScope, DeletePopupService) {

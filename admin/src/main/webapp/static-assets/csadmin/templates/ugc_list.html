@@ -3,11 +3,31 @@
     <div class="row-fluid">
         <nav class="span12">
             <ul class="nav nav-tabs">
-                <li ng-repeat="mod in moderationList" class="{{mod.state}}">
-                    <a href="#/status/{{mod.moderation.value}}">{{mod.moderation.label}}</a>
+                <li ng-repeat="section in sections"
+                    ng-class="{ active: (section.moderation.value | uppercase) == status }">
+                    <a href="#/status/{{section.moderation.value | uppercase }}">{{section.moderation.label}}</a>
                 </li>
             </ul>
         </nav>
+    </div>
+
+    <!-- pagination -->
+    <div class="row-fluid pagination-container" 
+         ng-show="pagination.showPagination" 
+         ng-controller="PaginationCtrl">
+
+        <div class="well well-small">
+            <pagination
+                total-items="pagination.totalItems"
+                items-per-page="pagination.itemsPerPage"
+                page="pagination.currentPage"
+                num-pages="pagination.numPages"
+                on-select-page="changePage(page)"
+                max-size="pagination.maxPageNumber" 
+                class="pagination-small" 
+                boundary-links="true" 
+                rotate="false" ></pagination>
+        </div>
     </div>
 
     <!-- main section displayed when results are available -->
@@ -134,15 +154,21 @@
     </div>
 
     <!-- pagination -->
-    <div class="row-fluid">
-        <div ng-controller="PaginationCtrl" class="well well-small">
+    <div class="row-fluid pagination-container bottom" 
+         ng-show="pagination.showPagination" 
+         ng-controller="PaginationCtrl">
+
+        <div class="well well-small">
             <pagination
-                total-items="totalItems"
-                items-per-page="itemsPerPage"
-                page="currentPage"
-                num-pages="numPages"
-                on-select-page="pageChanged(page)"
-                max-size="maxSize" class="pagination-small" boundary-links="true" rotate="false" ></pagination>
+                total-items="pagination.totalItems"
+                items-per-page="pagination.itemsPerPage"
+                page="pagination.currentPage"
+                num-pages="pagination.numPages"
+                on-select-page="changePage(page)"
+                max-size="pagination.maxPageNumber" 
+                class="pagination-small" 
+                boundary-links="true" 
+                rotate="false" ></pagination>
         </div>
     </div>
 
