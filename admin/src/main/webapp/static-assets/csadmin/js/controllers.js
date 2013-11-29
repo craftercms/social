@@ -225,7 +225,7 @@ angular.module('moderationDashboard.controllers', []).
 
         var commentsSelected = function () {
             var listItems = [];
-            $('.entries-list input').each(function (index) {
+            $('.entries-list .selector').each(function (index) {
                 if ($(this).prop('checked')){
                     listItems.push($(this).attr('ugcid'));
                 }

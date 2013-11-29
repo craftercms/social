@@ -60,7 +60,7 @@ angular.module('moderationDashboard.directives', []).
         return function (scope, elm) {
             elm.change(function (ev) {
                 if (elm.is(":checked")) {
-                    $('.entries-list input').prop('checked', true);
+                    $('.entries-list .selector').prop('checked', true);
 
                     // hiding error message
                     var applyBtn = $('#applyBtn');
@@ -68,7 +68,7 @@ angular.module('moderationDashboard.directives', []).
                         applyBtn.tooltip('hide');
                     }
                 }else {
-                    $('.entries-list input').prop('checked', false);
+                    $('.entries-list .selector').prop('checked', false);
                 }
             });
         };
