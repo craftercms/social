@@ -44,10 +44,8 @@ angular.module('moderationDashboard.controllers', []).
             };
             ugcData = {
                 ugcId: originalUGC.id,
-                textContent: JSON.stringify({
-                    title: ugcTitle,
-                    content: ugcContent
-                })
+                textContent: ugcContent,
+                subject: ugcTitle
             };
             UgcApi.updateUGCContent(ugcData, callConfig);
         };        
@@ -64,30 +62,21 @@ angular.module('moderationDashboard.controllers', []).
 
             UgcApi.getUgcList(conf).then(function (data) {
                 if (data) {
-                    var txtContent = {},
-                        tmpList = [],
+                    var tmpList = [],
                         teaser, isExpandable;
 
                     angular.forEach(data, function (ugc){
 
-                        if (ugc.textContent && ugc.textContent[0] == '{') {
-                            txtContent = angular.fromJson(ugc.textContent);
-                        } else {
-                            ugc.textContent = ugc.textContent || '';
-                            txtContent = {content: ugc.textContent, title: 'no title'};
-                        }
-
-                        teaser = cropText(txtContent.content, 200);
-                        isExpandable = (teaser == txtContent.content) ? false : true;
+                        teaser = cropText(ugc.textContent, 200);
+                        isExpandable = (teaser == ugc.textContent) ? false : true;
 
                         tmpList.push({
-                            'title': txtContent.title,
+                            'title': ugc.subject,
                             'id': ugc.id,
                             'teaser': teaser,
                             'isExpandable': isExpandable,
-                            'textContent': txtContent.content,
+                            'textContent': ugc.textContent,
                             'moderationStatus': ugc.moderationStatus,
-                            'completeContent': txtContent.content,
                             'dateAdded': scope.getDateTime(ugc.dateAdded),
                             'userName': ugc.profile.userName,
                             'userMail': ugc.profile.email,
@@ -225,7 +214,7 @@ angular.module('moderationDashboard.controllers', []).
 
         var commentsSelected = function () {
             var listItems = [];
-            $('.entries-list input').each(function (index) {
+            $('.entries-list .selector').each(function (index) {
                 if ($(this).prop('checked')){
                     listItems.push($(this).attr('ugcid'));
                 }
