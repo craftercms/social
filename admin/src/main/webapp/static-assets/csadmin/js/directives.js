@@ -3,10 +3,12 @@
 /* Directives */
 angular.module('moderationDashboard.directives', []).
     directive('moderationAction', 
-        ['ACTIONS', 
+        ['ENV',
+         'ACTIONS', 
          'CONFIG', 
          'UgcApi',
-         'DeletePopupService', function (ACTIONS, CONFIG, UgcApi, DeletePopupService) {
+         'DeletePopupService',
+         'PaginationService', function (ENV, ACTIONS, CONFIG, UgcApi, DeletePopupService, PaginationService) {
 
         return {
             restrict: "E",
@@ -28,7 +30,7 @@ angular.module('moderationDashboard.directives', []).
                             break;
                         case ACTIONS.DELETE:
                             DeletePopupService.open(ev.currentTarget, {
-                                tenant: scope.confObj.tenant, 
+                                tenant: ENV.config.tenant, 
                                 items: [scope.ugcid]
                             });
                             break;
@@ -39,9 +41,13 @@ angular.module('moderationDashboard.directives', []).
                             queryParams = {
                                 moderationid: scope.ugcid,
                                 moderationstatus : newStatus,
-                                tenant: scope.confObj.tenant
+                                tenant: ENV.config.tenant
                             };
                             UgcApi.updateUGCStatus(queryParams).then(function (data) {
+                                // Reduce total number of items in the pagination by 1; however,
+                                // page reduction won't actually take place until we click on the 
+                                // page button 
+                                PaginationService.removeItems(1);
                                 scope.displayResults(data, currentEl, { undo: true, message: "" });
                             });       
                     }
@@ -54,7 +60,7 @@ angular.module('moderationDashboard.directives', []).
         return function (scope, elm) {
             elm.change(function (ev) {
                 if (elm.is(":checked")) {
-                    $('.entries-list input').prop('checked', true);
+                    $('.entries-list .selector').prop('checked', true);
 
                     // hiding error message
                     var applyBtn = $('#applyBtn');
@@ -62,7 +68,7 @@ angular.module('moderationDashboard.directives', []).
                         applyBtn.tooltip('hide');
                     }
                 }else {
-                    $('.entries-list input').prop('checked', false);
+                    $('.entries-list .selector').prop('checked', false);
                 }
             });
         };

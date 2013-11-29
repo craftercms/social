@@ -2,58 +2,23 @@
 
 /* Services */
 angular.module('moderationDashboard.services', []).
-    /**
-     * rest calls for get the configuration properties
-     */
-    factory('ConfigurationData', function ($http, $q, CONFIG) {
-        var confObj = {};
-        var moderationActions = [];
 
-        return {
-            appDataPromise: function () {
-                var deferred = $q.defer();
+    factory('DeletePopupService', 
+        ['$rootScope',
+         'PaginationService',
+         'UgcApi', 
+         function ($rootScope, PaginationService, UgcApi) {
 
-                $http.get(CONFIG.PROPERTIES_PATH + "app_conf.json", { cache: true }).
-                    success(function (data) {
-                        confObj = data;
-                        deferred.resolve(data);
-                    }).
-                    error(function (errorMsg) {
-                        confObj = null;
-                        deferred.reject(null);
-                    });
-
-                return deferred.promise;
-            },
-            getConfData: function () {
-                return confObj;
-            },
-            moderationStatusPromise: function () {
-                var deferred = $q.defer();
-
-                $http.get(CONFIG.PROPERTIES_PATH + "moderation_status_action.json", { cache: true }).
-                    success(function (data) {
-                        moderationActions = data;
-                        deferred.resolve(data);
-                    }).
-                    error(function (errorMsg) {
-                        moderationActions = null;
-                        deferred.reject(null);
-                    });
-
-                return deferred.promise;
-            },
-            getModerationActions: function () {
-                return moderationActions;
-            }
-        };
-    }).
-
-    factory('DeletePopupService', ['$rootScope', 'UgcApi', function ($rootScope, UgcApi) {
         var popupEl = null;
 
         function processDelete(config) {
             UgcApi.deleteUGCList(config).then( function(data) {
+                var currentPage = PaginationService.getCurrentPage();
+                // Because there's no undo operation to delete, we update the 
+                // pagination right away
+                PaginationService.removeItems(config.items.length);
+                PaginationService.setCurrentPage(currentPage);
+
                 if (data) {
                     // TODO: Move model out to a service
                     // UgcListCtrl is in control of the model so we're going to broadcast an event
@@ -121,7 +86,79 @@ angular.module('moderationDashboard.services', []).
         }
     }]).
 
-    factory('UgcApi', function ($http, $q, CONFIG, ERROR) {
+    factory('PaginationService', 
+        ['$rootScope',
+         '$timeout', 
+         'ENV', function($rootScope, $timeout, ENV) {
+
+        var paginationConfig = ENV.config.pagination,
+            itemsPerPage, maxPageNumber, itemsToRemove;
+
+            itemsPerPage = paginationConfig && paginationConfig.itemsPerPage ? 
+                                paginationConfig.itemsPerPage : 10;
+            maxPageNumber = paginationConfig && paginationConfig.maxPageNumber ? 
+                                paginationConfig.maxPageNumber : 5;
+            itemsToRemove = 0;
+
+        return {
+            data: {
+                currentPage: 1,
+                itemsPerPage: itemsPerPage,
+                maxPageNumber: maxPageNumber,
+                totalItems: 0,
+                numPages: 0,
+                showPagination: false
+            },
+            init: function (numItems) {
+                itemsToRemove = 0;
+                this.setCurrentPage(1);
+                this.setTotalItems(numItems);
+            },
+            removeItems: function (number) {
+                itemsToRemove = itemsToRemove + number;
+            },
+            getCurrentPage: function () {
+                return this.data.currentPage;
+            }, 
+            setCurrentPage: function (pageNumber) {
+                var data = this.data,
+                    totalItems;
+
+                if (itemsToRemove) {
+                    totalItems = this.data.totalItems - itemsToRemove;
+                    this.setTotalItems(totalItems);
+                    // Reset number of items to remove
+                    itemsToRemove = 0;
+                }
+
+                $timeout( function() {
+                    $rootScope.$apply( function() {
+                        data.currentPage = (pageNumber <= data.numPages) ?
+                                                    pageNumber : data.numPages;
+                    });
+                });
+            },
+            setTotalItems: function (numItems) {
+                var data = this.data;
+
+                $timeout( function() {
+                    $rootScope.$apply( function() {
+                        data.totalItems = numItems;
+                        data.numPages = Math.ceil(data.totalItems / itemsPerPage);
+                        data.showPagination = (data.numPages > 1) ? true : false;
+                    });
+                });  
+            }
+        };
+    }]).
+
+    factory('UgcApi', 
+        ['$http', 
+         '$q', 
+         'CONFIG', 
+         'ENV', 
+         'ERROR', function ($http, $q, CONFIG, ENV, ERROR) {
+
         return {
             getUgcList: function (conf) {
                 var deferred = $q.defer();
@@ -260,6 +297,31 @@ angular.module('moderationDashboard.services', []).
                 );
 
                 return deferred.promise;
+            },
+            getItemsNumber: function (moderationStatus) {
+                var deferred = $q.defer();
+
+                $http.get(
+                    CONFIG.API_PATH + "moderation/" + moderationStatus + "/count.json",
+                    {
+                        params: {
+                            tenant: ENV.config.tenant,
+                        },
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    }
+                ).success(
+                    function (data) {
+                        deferred.resolve(data);
+                    }
+                ).error(
+                    function (data, status) {
+                        if (status == 401) {
+                            alert(ERROR['401']);
+                        }
+                        deferred.reject(data);
+                    }
+                );
+                return deferred.promise;
             }
         };
-    });
+    }]);
