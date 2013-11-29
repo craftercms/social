@@ -932,14 +932,14 @@ public class UGCServiceImpl implements UGCService {
 
 
 
-//        if (isProfileSetable(ugc)) {
-//            ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
-//        } else {
-//            Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null,
-//                null, null, true);
-//            ugc.setProfile(anonymousProfile);
-//            ugc.setProfileId(null);
-//        }
+        if (isProfileSetable(ugc)) {
+            ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
+        } else {
+            Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null,
+                null, null, true);
+            ugc.setProfile(anonymousProfile);
+            ugc.setProfileId(null);
+        }
         return ugc;
     }
 
