@@ -77,12 +77,11 @@ angular.module('moderationDashboard.controllers', []).
                             'isExpandable': isExpandable,
                             'textContent': ugc.textContent,
                             'moderationStatus': ugc.moderationStatus,
-                            'dateAdded': scope.getDateTime(ugc.dateAdded),
-                            'userName': ugc.profile.userName,
-                            'userMail': ugc.profile.email,
+                            'creationDate': scope.getDateTime(ugc.creationDate),
+                            'displayName': ugc.profile.displayName,
                             'userImg': CONFIG.IMAGES_PATH + "profile-photo.jpg",
-                            'targetUrl': ugc.targetUrl,
-                            'targetTitle': ugc.targetDescription,
+                            // 'targetUrl': ugc.targetUrl,
+                            // 'targetTitle': ugc.targetDescription,
                             'updated': false,
                             'updateMessage': "",
                             'alertClass': "",
@@ -176,7 +175,7 @@ angular.module('moderationDashboard.controllers', []).
                             if (element.hasClass('active')) {
                                 element.removeClass('active');
                             }
-                            message = scope.ugcList[index].title + " - " + scope.ugcList[index].dateAdded;
+                            message = scope.ugcList[index].title + " - " + scope.ugcList[index].creationDate;
                         }else {
                             message = conf.message;
                         }
@@ -278,7 +277,7 @@ angular.module('moderationDashboard.controllers', []).
                 angular.forEach(data, function (item) {
                     angular.forEach(scope.ugcList, function(ugc, index){
                         if (conf.undo) {
-                            conf.message = scope.ugcList[index].title + " - " + scope.ugcList[index].dateAdded;
+                            conf.message = scope.ugcList[index].title + " - " + scope.ugcList[index].creationDate;
                         }
 
                         if (item.id === ugc.id) {

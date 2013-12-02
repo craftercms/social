@@ -68,10 +68,7 @@
                                     <img ng-src="{{ugc.userImg}}" alt="user profile image"/>
                                 </div>
                                 <div class="span10">
-                                    <dl>
-                                        <dt>{{ugc.userName}}</dt>
-                                        <dd>{{ugc.userMail}}</dd>
-                                    </dl>
+                                    <span>{{ugc.displayName}}</span>
                                 </div>
                             </div>
                         </div>
@@ -82,10 +79,10 @@
                                  ng-class="{ expandable: ugc.isExpandable && !editMode }">
 
                                 <span class="last-update">
-                                    Submitted on: <span class="date">{{ugc.dateAdded}}</span>
+                                    Submitted on: <span class="date">{{ugc.creationDate}}</span>
                                 </span>
 
-                                <a class="target-url" ng-if="ugc.targetTitle && ugc.targetUrl" target="_blank" ng-href="{{ugc.targetUrl}}">{{ugc.targetTitle}}</a>
+                                <!-- <a class="target-url" ng-if="ugc.targetTitle && ugc.targetUrl" target="_blank" ng-href="{{ugc.targetUrl}}">{{ugc.targetTitle}}</a> -->
 
                                 <form novalidate ng-submit="updateUGCContent(ugc, ugc.title, ugc.textContent)">
                                     <div class="read-mode" ng-hide="editMode">
