@@ -65,6 +65,9 @@ public class DigestEmailNotifierHarvesterServiceImpl extends EmailNotifierHarves
                 if (needToFlush(subscriberId)) {
                     processNotifications(currentProfileNotifications);
                     currentProfileNotifications.clear();
+                    if (profileChanged(subscriberId)) {
+                        currentPage = 0;
+                    }
                 }
                 currentProfileId = notification.getSubscriberId();
                 currentProfileEmail = notification.getSubscriberEmail();
@@ -153,7 +156,7 @@ public class DigestEmailNotifierHarvesterServiceImpl extends EmailNotifierHarves
         if (ugc == null) {
             log.warn("Could not find ugc with id'" + ugcId + "'");
         } else {
-            ugc.isAnonymousFlag();
+            anonymous = ugc.isAnonymousFlag();
         }
 
         templateArgs.put(ANONYMOUS, anonymous);
@@ -166,8 +169,9 @@ public class DigestEmailNotifierHarvesterServiceImpl extends EmailNotifierHarves
     }
 
     private void end() {
-        if (currentProfileNotifications.size() > 0)
+        if (currentProfileNotifications.size() > 0) {
             processNotifications(currentProfileNotifications);
+        }
     }
 
     private void start() {
