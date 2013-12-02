@@ -21,13 +21,15 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.social.exceptions.MailException;
 import org.craftercms.social.services.MailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MailServiceImpl implements MailService {
 
-    //private static final Logger log = Logger.getLogger(MailServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(MailServiceImpl.class.getName());
 
     private String mailSmtpAuth;
     private String mailSmtpStarttlsEnable;
@@ -65,7 +67,7 @@ public class MailServiceImpl implements MailService {
             //		+ subject + ", and text " + text);
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(fromAddress == null? mailFrom: fromAddress));
+            message.setFrom(new InternetAddress(fromAddress == null ? mailFrom : fromAddress));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toAddress));
             message.setSubject(subject);
 
@@ -101,7 +103,7 @@ public class MailServiceImpl implements MailService {
 
         // get the template as a string
         InputStream inputStream = this.getClass().getResourceAsStream(new StringBuilder("/").append(pathToTemplates)
-            .append("/").append(template).toString());
+                .append("/").append(template).toString());
 
         StringWriter writer = new StringWriter();
         try {
@@ -132,7 +134,7 @@ public class MailServiceImpl implements MailService {
             rc = out.toString();
             out.close();
         } catch (final Exception e) {
-            //log.error("Problem",e);
+            log.error("PROBLEM",e);
         }
 
         return rc;
