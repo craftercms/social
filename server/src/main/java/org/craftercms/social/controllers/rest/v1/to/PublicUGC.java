@@ -15,11 +15,13 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
 
     private final ObjectId parentId;
     private final ArrayList<PublicUGC> children;
-    private  int extraChildCount;
+    private int extraChildCount;
     private String id;
     private String tenant;
     private String textContent;
     private String targetId;
+    private String targetDesc;
+    private String targetUrl;
     private String subject;
     private Date creationDate;
     private int likes;
@@ -32,9 +34,8 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
     private String moderationStatus;
 
 
-
-    public PublicUGC(final UGC templateUGC, final String profileId, final List<String> actions,boolean watchedByUser) {
-        profile=new HashMap<String, Object>();
+    public PublicUGC(final UGC templateUGC, final String profileId, final List<String> actions, boolean watchedByUser) {
+        profile = new HashMap<String, Object>();
         this.attachments = new ArrayList<String>();
         this.id = templateUGC.getId().toString();
         this.tenant = templateUGC.getTenant();
@@ -51,17 +52,19 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
         this.dislikes = templateUGC.getDislikes().size();
         this.flags = templateUGC.getFlags().size();
         this.attributes = templateUGC.getAttributes();
-        userInfo = new UserInfo( templateUGC.getLikes().contains(profileId),templateUGC.getDislikes().contains
-            (profileId),templateUGC.getFlags().contains(profileId),actions,watchedByUser);
+        userInfo = new UserInfo(templateUGC.getLikes().contains(profileId), templateUGC.getDislikes().contains
+            (profileId), templateUGC.getFlags().contains(profileId), actions, watchedByUser);
         if (templateUGC.getAttachmentId() != null) {
             for (ObjectId objectId : templateUGC.getAttachmentId()) {
                 this.attachments.add(objectId.toString());
             }
         }
-        this.parentId=templateUGC.getParentId();
-        this.children=new ArrayList<PublicUGC>();
-        this.extraChildCount=0;
-        this.moderationStatus=templateUGC.getModerationStatus().toString();
+        this.parentId = templateUGC.getParentId();
+        this.children = new ArrayList<PublicUGC>();
+        this.extraChildCount = 0;
+        this.moderationStatus = templateUGC.getModerationStatus().toString();
+        this.targetDesc = templateUGC.getTargetDescription();
+        this.targetUrl = templateUGC.getTargetUrl();
     }
 
     public String getId() {
@@ -75,7 +78,7 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
 
     @Override
     public void addChild(final PublicUGC child) {
-       children.add(child);
+        children.add(child);
     }
 
     @Override
@@ -90,12 +93,12 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
 
     @Override
     public void incExtraChildCount() {
-        this.extraChildCount=+1;
+        this.extraChildCount = +1;
     }
 
     @Override
     public void incExtraChildCountBy(final int count) {
-        this.extraChildCount+=count;
+        this.extraChildCount += count;
     }
 
     @Override
@@ -155,6 +158,14 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
         return moderationStatus;
     }
 
+    public String getTargetDesc() {
+        return targetDesc;
+    }
+
+    public String getTargetUrl() {
+        return targetUrl;
+    }
+
     class UserInfo {
 
         private boolean liked;
@@ -164,14 +175,13 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
         private final boolean watched;
 
         UserInfo(final boolean userLiked, final boolean userDisliked, final boolean userFlaged,
-                 final List<String> actions,final boolean watchedByUser) {
+                 final List<String> actions, final boolean watchedByUser) {
             this.liked = userLiked;
             this.disliked = userDisliked;
             this.flaged = userFlaged;
             this.actions = actions;
             this.watched = watchedByUser;
         }
-
 
 
         public boolean isLiked() {
