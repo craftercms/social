@@ -138,63 +138,12 @@ Step 3: Post new content
 
     Request Body (sample): 
     {
-       "id": "525853360364bd7d1c4e6907",
-       "textContent": "{\"title\":\"Test title\",\"content\":\"Test content\"}",
-       "content": "Sample Content",
-       "actions": [{
-           "name": "read",
-           "roles": [
-               "SOCIAL_AUTHOR",
-               "SOCIAL_ADMIN"
-           ]
-       }, {
-           "name": "update",
-           "roles": [
-               "SOCIAL_AUTHOR",
-               "SOCIAL_ADMIN"
-           ]
-       }, {
-           "name": "create",
-           "roles": [
-               "SOCIAL_AUTHOR",
-               "SOCIAL_ADMIN"
-           ]
-       }, {
-           "name": "delete",
-           "roles": [
-               "SOCIAL_AUTHOR",
-               "SOCIAL_ADMIN"
-           ]
-       }, {
-           "name": "act_on",
-           "roles": [
-               "SOCIAL_AUTHOR",
-               "SOCIAL_ADMIN"
-           ]
-       }, {
-           "name": "moderate",
-           "roles": [
-               "SOCIAL_AUTHOR",
-               "SOCIAL_ADMIN"
-           ]
-       }],
-       "moderationStatus": "UNMODERATED",
-       "timesModerated": 0,
-       "likeCount": 0,
-       "offenceCount": 0,
-       "flagCount": 0,
-       "profileId": "52571782036447c56863631a",
-       "tenant": "craftercms",
-       "targetId": "testing",
-       "targetDescription": "mycontent description",
-       "targetUrl": "mycontent.com",
-       "anonymousFlag": false,
-       "extraChildCount": 0,
-       "children": [
-
-       ],
-       "childCount": 0,
-       "dateAdded": 1381520182000
+        "tenant": "craftercms",
+        "targetId": "test-123323TI",
+        "targetUrl": "http://google.com",
+        "targetDescription": "Don Quijote",
+        "textContent": "Quieren decir que tenía el sobrenombre de Quijada, o Quesada, que en esto hay alguna diferencia en los autores que deste caso escriben; aunque, por conjeturas verosímiles, se deja entender que se llamaba Quejana. Pero esto importa poco a nuestro cuento; basta que en la narración dél no se salga un punto de la verdad.",
+        "subject": "Ingenioso Hidalgo"
     }
    
     *Replace <TicketValue> with Ticket value from step 2.

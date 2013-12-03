@@ -3,11 +3,31 @@
     <div class="row-fluid">
         <nav class="span12">
             <ul class="nav nav-tabs">
-                <li ng-repeat="mod in moderationList" class="{{mod.state}}">
-                    <a href="#/status/{{mod.moderation.value}}">{{mod.moderation.label}}</a>
+                <li ng-repeat="section in sections"
+                    ng-class="{ active: (section.moderation.value | uppercase) == status }">
+                    <a href="#/status/{{section.moderation.value | uppercase }}">{{section.moderation.label}}</a>
                 </li>
             </ul>
         </nav>
+    </div>
+
+    <!-- pagination -->
+    <div class="row-fluid pagination-container" 
+         ng-show="pagination.showPagination" 
+         ng-controller="PaginationCtrl">
+
+        <div class="well well-small">
+            <pagination
+                total-items="pagination.totalItems"
+                items-per-page="pagination.itemsPerPage"
+                page="pagination.currentPage"
+                num-pages="pagination.numPages"
+                on-select-page="changePage(page)"
+                max-size="pagination.maxPageNumber" 
+                class="pagination-small" 
+                boundary-links="true" 
+                rotate="false" ></pagination>
+        </div>
     </div>
 
     <!-- main section displayed when results are available -->
@@ -39,7 +59,7 @@
 
                     <div class="row-fluid hide-element" ng-show="!ugc.updated">
                         <div class="span1 col1">
-                            <input ng-click="bulkItemsUpdate($event)" ugcid="{{ugc.id}}" type="checkbox" />
+                            <input class="selector" ng-click="bulkItemsUpdate($event)" ugcid="{{ugc.id}}" type="checkbox" />
                         </div>
 
                         <div class="span2 col2 author-section">
@@ -48,10 +68,7 @@
                                     <img ng-src="{{ugc.userImg}}" alt="user profile image"/>
                                 </div>
                                 <div class="span10">
-                                    <dl>
-                                        <dt>{{ugc.userName}}</dt>
-                                        <dd>{{ugc.userMail}}</dd>
-                                    </dl>
+                                    <span>{{ugc.displayName}}</span>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +79,7 @@
                                  ng-class="{ expandable: ugc.isExpandable && !editMode }">
 
                                 <span class="last-update">
-                                    Submitted on: <span class="date">{{ugc.dateAdded}}</span>
+                                    Submitted on: <span class="date">{{ugc.creationDate}}</span>
                                 </span>
 
                                 <a class="target-url" ng-if="ugc.targetTitle && ugc.targetUrl" target="_blank" ng-href="{{ugc.targetUrl}}">{{ugc.targetTitle}}</a>
@@ -134,15 +151,21 @@
     </div>
 
     <!-- pagination -->
-    <div class="row-fluid">
-        <div ng-controller="PaginationCtrl" class="well well-small">
+    <div class="row-fluid pagination-container bottom" 
+         ng-show="pagination.showPagination" 
+         ng-controller="PaginationCtrl">
+
+        <div class="well well-small">
             <pagination
-                total-items="totalItems"
-                items-per-page="itemsPerPage"
-                page="currentPage"
-                num-pages="numPages"
-                on-select-page="pageChanged(page)"
-                max-size="maxSize" class="pagination-small" boundary-links="true" rotate="false" ></pagination>
+                total-items="pagination.totalItems"
+                items-per-page="pagination.itemsPerPage"
+                page="pagination.currentPage"
+                num-pages="pagination.numPages"
+                on-select-page="changePage(page)"
+                max-size="pagination.maxPageNumber" 
+                class="pagination-small" 
+                boundary-links="true" 
+                rotate="false" ></pagination>
         </div>
     </div>
 

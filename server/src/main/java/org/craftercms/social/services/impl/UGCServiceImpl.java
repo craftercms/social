@@ -621,14 +621,13 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public UGC flagUGC(ObjectId ugcId, String reason, String tenant, String profileId) {
         UGC ugc = uGCRepository.findOne(ugcId);
-        if (!ugc.getFlags().contains(profileId)) {  //Don't flag twice.
+        if (!ugc.getFlags().contains(profileId) && canEditUgc(ugc)) {//Don't flag twice or  flag spam or thrash |m|
             ugc.getFlags().add(profileId);
             auditUGC(ugcId, AuditAction.FLAG, tenant, profileId, reason);
             checkForModeration(ugc);
-            return populateUGCWithProfile(save(ugc));
-        } else {
-            return null;
+            save(ugc);
         }
+        return  populateUGCWithProfile(ugc);
     }
 
     private void auditUGC(ObjectId ugcId, AuditAction auditAction, String tenant, String profileId, String reason) {
@@ -921,7 +920,18 @@ public class UGCServiceImpl implements UGCService {
         return ugcList;
     }
 
+    /**
+     *
+     * @param ugc
+     * @param attributes
+     * @return
+     * @deprecated  Not not use this , it will be remove at UGCController
+     */
+    @Deprecated
     private UGC populateUGCWithProfile(UGC ugc, List<String> attributes) {
+
+
+
         if (isProfileSetable(ugc)) {
             ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
         } else {
@@ -933,6 +943,12 @@ public class UGCServiceImpl implements UGCService {
         return ugc;
     }
 
+    /**
+     * @param ugc
+     * @return
+     * @deprecated  Not not use this , it will be remove at UGCController
+     */
+    @Deprecated
     private UGC populateUGCWithProfile(UGC ugc) {
         return populateUGCWithProfile(ugc, null);
     }
