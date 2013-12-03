@@ -111,14 +111,14 @@ public class PublicUGC {
     class UserInfo {
         private boolean liked;
         private boolean disliked;
-        private boolean flaged;
+        private boolean flagged;
         private List<String> actions;
 
         UserInfo(final boolean userLiked, final boolean userDisliked, final boolean userFlaged,
                  final List<String> actions) {
             this.liked = userLiked;
             this.disliked = userDisliked;
-            this.flaged = userFlaged;
+            this.flagged = userFlaged;
             this.actions = actions;
         }
 
@@ -130,8 +130,8 @@ public class PublicUGC {
             return disliked;
         }
 
-        public boolean isFlaged() {
-            return flaged;
+        public boolean isFlagged() {
+            return flagged;
         }
 
         public List<String> getActions() {
