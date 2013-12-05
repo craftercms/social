@@ -171,7 +171,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,SORT_FIELD,SORT_ORDER);
+		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,SORT_FIELD,SORT_ORDER, null);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -182,7 +182,7 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,1,10,SORT_FIELD,SORT_ORDER);
+		List<UGC> l = ugcServiceImpl.findByTargetValidUGC("test","testing",PROFILE_ID,1,10,SORT_FIELD,SORT_ORDER, null);
 		assertNotNull(l);
 		assertNotNull(l.size() > 0);
 		
@@ -194,7 +194,8 @@ public class UGCServiceTest {
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		when(repository.findUGC(new ObjectId(VALID_ID), ActionEnum.READ, new String[] {
 			ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(),
-			ModerationStatus.PENDING.toString(), ModerationStatus.TRASH.toString()})).thenReturn(currentUGC);
+			ModerationStatus.PENDING.toString(), ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()}))
+                .thenReturn(currentUGC);
 		UGC ugc = ugcServiceImpl.findUGCAndChildren(new ObjectId(VALID_ID), "test", PROFILE_ID, SORT_FIELD,SORT_ORDER);
 		assertNotNull(ugc);
 		
