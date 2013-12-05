@@ -105,7 +105,7 @@ public class CrafterProfileServiceImpl implements CrafterProfileService {
 		}
 		List<Profile> list = null;
 		try {
-			list = client.getProfiles(getAppToken(), profileIds);
+			list = client.getProfilesWithAllAttributes(getAppToken(), profileIds);
 		} catch (AppAuthenticationException e) {
 			try {
 				synchronized (lock) {
