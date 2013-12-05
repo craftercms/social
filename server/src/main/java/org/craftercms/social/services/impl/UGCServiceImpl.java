@@ -50,6 +50,7 @@ import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCHook;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.services.VirusScannerService;
+import org.craftercms.social.util.UGCConstants;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.support.CrafterProfileService;
@@ -647,7 +648,7 @@ public class UGCServiceImpl implements UGCService {
             checkForModeration(ugc);
             save(ugc);
         }
-        return  populateUGCWithProfile(ugc);
+        return populateUGCWithProfile(ugc);
     }
 
     private void auditUGC(ObjectId ugcId, AuditAction auditAction, String tenant, String profileId, String reason) {
@@ -941,15 +942,13 @@ public class UGCServiceImpl implements UGCService {
     }
 
     /**
-     *
      * @param ugc
      * @param attributes
      * @return
-     * @deprecated  Not not use this , it will be remove at UGCController
+     * @deprecated Not not use this , it will be remove at UGCController
      */
     @Deprecated
     private UGC populateUGCWithProfile(UGC ugc, List<String> attributes) {
-
 
 
         if (isProfileSetable(ugc)) {
@@ -966,11 +965,13 @@ public class UGCServiceImpl implements UGCService {
     /**
      * @param ugc
      * @return
-     * @deprecated  Not not use this , it will be remove at UGCController
+     * @deprecated Not not use this , it will be remove at UGCController
      */
     @Deprecated
     private UGC populateUGCWithProfile(UGC ugc) {
-        return populateUGCWithProfile(ugc, null);
+        //** Min Attr needed is displayName.
+
+        return populateUGCWithProfile(ugc, Arrays.asList(UGCConstants.UGC_PROFILE_DISPLAY_NAME));
     }
 
     private List<AttachmentModel> getAttachmentsList(ObjectId[] attachmentsId, String tenant) {

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.util.Hierarchical;
+import org.craftercms.social.util.UGCConstants;
 
 public class PublicUGC implements Hierarchical<PublicUGC> {
 
@@ -43,10 +44,16 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
         this.targetId = templateUGC.getTargetId();
         this.subject = templateUGC.getSubject();
         this.creationDate = templateUGC.getCreatedDate();
-        if (templateUGC.getProfile() == null || templateUGC.getAttributes() == null) {
-            this.profile.put("displayName", "User");
+        if (templateUGC.getProfile() == null || templateUGC.getProfile().getAttributes() == null) {
+            this.profile.put(UGCConstants.UGC_PROFILE_DISPLAY_NAME, "User");
         } else {
-            this.profile.put("displayName", templateUGC.getProfile().getAttributes().get("DISPLAY_NAME").toString());
+            if (templateUGC.getProfile().getAttributes().get(UGCConstants.UGC_PROFILE_DISPLAY_NAME) != null) {
+                this.profile.put(UGCConstants.UGC_PROFILE_DISPLAY_NAME, templateUGC.getProfile().getAttributes().get
+                    (UGCConstants.UGC_PROFILE_DISPLAY_NAME).toString());
+            } else {
+                this.profile.put(UGCConstants.UGC_PROFILE_DISPLAY_NAME, "User");
+            }
+
         }
         this.likes = templateUGC.getLikes().size();
         this.dislikes = templateUGC.getDislikes().size();
