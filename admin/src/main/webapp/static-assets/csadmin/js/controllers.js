@@ -28,6 +28,46 @@ angular.module('moderationDashboard.controllers', []).
             return (text.length > upperLimit) ? text.substring(0, upperLimit) + " [...]" : text;
         }
 
+        // Transforms a target url to a new url based on the patterns specified in 'urlsArray'.
+        // 'urlsArray' will be an array of the form:
+        // [
+        //     {
+        //         "matching": "somepattern.com",
+        //         "searchFor": ".com",
+        //         "replaceWith": ".net"
+        //     }
+        // ]
+        // If the target url matches several of the patterns in the array then it will undergo 
+        // a transformation for each one of the patterns matched. Therefore, the patterns are
+        // cumulative and the order in which they're specified *will* matter.
+        function getTargetUrl (targetUrl, urlsArray) {
+            var res;
+
+            if (!urlsArray) {
+                return targetUrl;
+            } else {
+                res = targetUrl;
+
+                angular.forEach(urlsArray, function(urlObj) {
+                    var re, searchStr, replaceStr;
+
+                    re = new RegExp(urlObj.matching, "g");
+
+                    if (re.test(targetUrl)) {
+                        searchStr = urlObj.searchFor;
+                        replaceStr = urlObj.replaceWith;
+
+                        if (searchStr && replaceStr) {
+                            res = res.replace(searchStr, replaceStr);
+                        } else {
+                            throw new Error ('Url \'searchFor\' and/or \'replaceWith\' values in configuration are incorrect');
+                        }
+                    }
+                });
+                return res;
+            }
+        }
+
         scope.updateUGCContent = function (originalUGC, ugcTitle, ugcContent) {            
             var callConfig, ugcData;
 
@@ -80,8 +120,8 @@ angular.module('moderationDashboard.controllers', []).
                             'creationDate': scope.getDateTime(ugc.creationDate),
                             'displayName': ugc.profile.displayName,
                             'userImg': CONFIG.IMAGES_PATH + "profile-photo.jpg",
-                            'targetUrl': ugc.targetUrl,
-                            'targetTitle': ugc.targetDescription,
+                            'targetUrl': getTargetUrl(ugc.targetUrl, ENV.config.targetUrls),
+                            'targetTitle': ugc.targetDesc,
                             'updated': false,
                             'updateMessage': "",
                             'alertClass': "",
