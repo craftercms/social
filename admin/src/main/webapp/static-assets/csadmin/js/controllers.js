@@ -68,24 +68,27 @@ angular.module('moderationDashboard.controllers', []).
             }
         }
 
-        scope.updateUGCContent = function (originalUGC, ugcTitle, ugcContent) {            
+        scope.updateUGCContent = function (ugc) {            
             var callConfig, ugcData;
 
             $timeout( function() {
                 scope.$apply( function() {
-                    originalUGC.teaser = cropText(ugcContent, 200);
-                    originalUGC.isExpandable = (originalUGC.teaser == ugcContent) ? false : true;
+                    ugc.teaser = cropText(ugc.textContent, 200);
+                    ugc.isExpandable = (ugc.teaser == ugc.textContent) ? false : true;
                 });
             });
 
             callConfig = {
-                ugcId: originalUGC.id,
+                ugcId: ugc.id,
                 tenant: ENV.config.tenant
             };
             ugcData = {
-                ugcId: originalUGC.id,
-                textContent: ugcContent,
-                subject: ugcTitle
+                ugcId: ugc.id,
+                targetId: ugc.targetId,
+                targetUrl: ugc.targetUrl,
+                targetDescription: ugc.targetText,
+                textContent: ugc.textContent,
+                subject: ugc.title
             };
             UgcApi.updateUGCContent(ugcData, callConfig);
         };        
@@ -120,8 +123,10 @@ angular.module('moderationDashboard.controllers', []).
                             'creationDate': scope.getDateTime(ugc.creationDate),
                             'displayName': ugc.profile.displayName,
                             'userImg': CONFIG.IMAGES_PATH + "profile-photo.jpg",
-                            'targetUrl': getTargetUrl(ugc.targetUrl, ENV.config.targetUrls),
-                            'targetTitle': ugc.targetDesc,
+                            'targetId': ugc.targetId,
+                            'targetUrl': ugc.targetUrl,
+                            'targetUrlMod': getTargetUrl(ugc.targetUrl, ENV.config.targetUrls),
+                            'targetText': ugc.targetDesc,
                             'updated': false,
                             'updateMessage': "",
                             'alertClass': "",
