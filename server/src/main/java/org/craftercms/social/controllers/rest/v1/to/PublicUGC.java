@@ -177,7 +177,7 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
 
         private boolean liked;
         private boolean disliked;
-        private boolean flaged;
+        private boolean flagged;
         private List<String> actions;
         private final boolean watched;
 
@@ -185,7 +185,7 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
                  final List<String> actions, final boolean watchedByUser) {
             this.liked = userLiked;
             this.disliked = userDisliked;
-            this.flaged = userFlaged;
+            this.flagged = userFlaged;
             this.actions = actions;
             this.watched = watchedByUser;
         }
@@ -199,8 +199,8 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
             return disliked;
         }
 
-        public boolean isFlaged() {
-            return flaged;
+        public boolean isFlagged() {
+            return flagged;
         }
 
         public List<String> getActions() {

@@ -112,13 +112,15 @@ public class UGCRestController {
                                                   @RequestParam(required = false,
         defaultValue = "DESC") String sortOrder) {
 
-
         if (page >= 0 && pageSize > 0) {
             List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page, pageSize,
-                sortField, sortOrder);
+                sortField, sortOrder, new String[] {ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()});
+
             return HierarchyGenerator.generateHierarchy(toPublicUGC(ugcs), null, rootCount, childCount);
         } else {
-            List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder);
+            List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder,
+                    new String[] {ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()});
+
             return HierarchyGenerator.generateHierarchy(toPublicUGC(ugcs), null, rootCount, childCount);
         }
     }
@@ -360,20 +362,6 @@ public class UGCRestController {
 
     private List<String> getPossibleActionsForUGC(String ugcId) {
         return ugcService.findPossibleActionsForUGC(ugcId, getProfileRoles());
-    }
-
-    @ExceptionHandler(PermissionDeniedException.class)
-    public String handlePermissionException(PermissionDeniedException ex, HttpServletResponse response) {
-        response.setHeader("Content-Type", "application/json");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(AttachmentErrorException.class)
-    public String handleDataErrorException(AttachmentErrorException ex, HttpServletResponse response) {
-        response.setHeader("Content-Type", "application/json");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
-        return ex.getMessage();
     }
 
     private Map<String, Object> parseAttibutes(HttpServletRequest request) {
