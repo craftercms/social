@@ -31,4 +31,5 @@ public interface UGCConstants {
     String LIKES = "likes";
     String DISLIKES = "dislikes";
     String FLAGS = "flags";
+    String UGC_PROFILE_DISPLAY_NAME="displayName";
 }
