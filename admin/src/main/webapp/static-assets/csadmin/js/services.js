@@ -1,7 +1,7 @@
 'use strict';
 
 /* Services */
-angular.module('moderationDashboard.services', []).
+angular.module('moderationDashboard.services', ['ui.bootstrap.modal']).
 
     factory('DeletePopupService', 
         ['$rootScope',
@@ -157,7 +157,43 @@ angular.module('moderationDashboard.services', []).
          '$q', 
          'CONFIG', 
          'ENV', 
-         'ERROR', function ($http, $q, CONFIG, ENV, ERROR) {
+         'ERROR',
+         '$modal', function ($http, $q, CONFIG, ENV, ERROR, $modal) {
+
+        function getModelContent (message) {
+            return  '<div class="modal-header">' +
+                    '  <h3>Error Found</h3>' +
+                    '</div>' +
+                    '<div class="modal-body">' + message + '</div>' +
+                    '<div class="modal-footer">' +
+                    '  <button class="btn btn-primary" ng-click="ok()">OK</button>' +
+                    '</div>';
+        }
+
+        function showErrorModal (errorCode) {
+            var errorMessage = '';
+
+            switch (errorCode) {
+                case 401: 
+                    errorMessage = ERROR['401'];
+                    break;
+                case 403:
+                    errorMessage = ERROR['403'];
+                    break;
+                default:
+                    errorMessage = ERROR['ALL'];
+            }
+
+            $modal.open({
+                template: getModelContent(errorMessage),
+                controller: function($scope, $modalInstance) {
+                    $scope.ok = function() {
+                        $modalInstance.close();
+                    }
+                },
+                windowClass:'error',
+            });
+        }
 
         return {
             getUgcList: function (conf) {
@@ -178,9 +214,7 @@ angular.module('moderationDashboard.services', []).
                     }
                 ).error(
                     function (data, status) {
-                        if (status == 401) {
-                            alert(ERROR['401']);
-                        }
+                        showErrorModal(status);
                         deferred.reject(data);
                     }
                 );
@@ -205,9 +239,7 @@ angular.module('moderationDashboard.services', []).
                     }
                 ).error(
                     function (data, status) {
-                        if (status == 401) {
-                            alert(ERROR['401']);
-                        }
+                        showErrorModal(status);
                         deferred.reject(data);
                     }
                 );
@@ -233,9 +265,7 @@ angular.module('moderationDashboard.services', []).
                     }
                 ).error(
                     function (data, status) {
-                        if (status == 401) {
-                            alert(ERROR['401']);
-                        }
+                        showErrorModal(status);
                         deferred.reject(data);
                     }
                 );
@@ -261,9 +291,7 @@ angular.module('moderationDashboard.services', []).
                     }
                 ).error(
                     function (data, status) {
-                        if (status == 401) {
-                            alert(ERROR['401']);
-                        }
+                        showErrorModal(status);
                         deferred.reject(data);
                     }
                 );
@@ -289,9 +317,7 @@ angular.module('moderationDashboard.services', []).
                     }
                 ).error(
                     function (data, status) {
-                        if (status == 401) {
-                            alert(ERROR['401']);
-                        }
+                        showErrorModal(status);
                         deferred.reject(data);
                     }
                 );
@@ -315,9 +341,7 @@ angular.module('moderationDashboard.services', []).
                     }
                 ).error(
                     function (data, status) {
-                        if (status == 401) {
-                            alert(ERROR['401']);
-                        }
+                        showErrorModal(status);
                         deferred.reject(data);
                     }
                 );

@@ -228,3 +228,8 @@ select {
 .pagination-container.bottom {
     margin-top: 15px;
 }
+
+/* modal */
+.modal.error .modal-body {
+    font-size: 14px;
+}
