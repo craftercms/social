@@ -26,15 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
-import org.craftercms.social.domain.Action;
-import org.craftercms.social.domain.AttachmentModel;
-import org.craftercms.social.domain.Target;
-import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.*;
 import org.craftercms.social.domain.UGC.ModerationStatus;
-import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
@@ -565,28 +562,46 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, String sortField,
-                                          String sortOrder) {
-        return findUGCs(getModerationFilter(tenant, profileId), tenant, target, -1, -1, sortField, sortOrder,
-            ActionEnum.READ);
+                                          String sortOrder, String[] excludeWithModerationStatuses) {
+        return findUGCs(getModerationFilter(tenant, profileId, excludeWithModerationStatuses), tenant, target, -1, -1,
+                sortField, sortOrder, ActionEnum.READ);
     }
 
 
-    private String[] getModerationFilter(String tenantName, String profileId) {
+    private String[] getModerationFilter(String tenantName, String profileId, String[] excludeStatuses) {
         Profile p = crafterProfileService.getProfile(profileId);
         List<String> moderatorRoles = tenantService.getRootModeratorRoles(tenantName);
         ArrayList<Action> actions = new ArrayList<Action>();
+
         Action moderatorAction = new Action(ActionEnum.MODERATE.toString(), moderatorRoles);
         actions.add(moderatorAction);
-        UGC newUgc = new UGC();
-        newUgc.setActions(actions);
-        if (permissionService.allowed(ActionEnum.MODERATE, newUgc, p)) {
-            return new String[] {ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(),
-                ModerationStatus.PENDING.toString(), ModerationStatus.TRASH.toString()};
+
+        UGC tmpUgc = new UGC();
+        tmpUgc.setActions(actions);
+
+        List<String> statuses;
+
+        if (permissionService.allowed(ActionEnum.MODERATE, tmpUgc, p)) {
+            statuses = new ArrayList<String>(Arrays.asList(
+                    ModerationStatus.APPROVED.toString(),
+                    ModerationStatus.UNMODERATED.toString(),
+                    ModerationStatus.PENDING.toString(),
+                    ModerationStatus.TRASH.toString(),
+                    ModerationStatus.SPAM.toString()));
         } else {
-            return new String[] {ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(),
-                ModerationStatus.PENDING.toString()};
+            statuses = new ArrayList<String>(Arrays.asList(
+                    ModerationStatus.APPROVED.toString(),
+                    ModerationStatus.UNMODERATED.toString(),
+                    ModerationStatus.PENDING.toString()));
         }
 
+        if (ArrayUtils.isNotEmpty(excludeStatuses)) {
+            for (String excludeStatus : excludeStatuses) {
+                statuses.remove(excludeStatus);
+            }
+        }
+
+        return statuses.toArray(new String[statuses.size()]);
     }
 
     @Override
@@ -613,9 +628,10 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize,
-                                          String sortField, String sortOrder) {
-        List<UGC> list = uGCRepository.findByTenantTargetPaging(tenant, target, page, pageSize, ActionEnum.READ,
-            sortField, sortOrder);
+                                          String sortField, String sortOrder, String[] excludeWithModerationStatuses) {
+        List<UGC> list = findUGCs(getModerationFilter(tenant, profileId, excludeWithModerationStatuses), tenant, target, page, pageSize,
+                sortField, sortOrder,ActionEnum.READ);
+
         return populateUGCListWithProfiles(list);
     }
 
@@ -710,7 +726,7 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId, String sortField, String sortOrder) {
         Profile p = crafterProfileService.getProfile(profileId);
-        String[] moderationStatus = getModerationFilter(tenant, profileId);
+        String[] moderationStatus = getModerationFilter(tenant, profileId, null);
         UGC ugc = uGCRepository.findUGC(ugcId, ActionEnum.READ, moderationStatus);
         if (ugc == null) {
             return null;
@@ -925,12 +941,8 @@ public class UGCServiceImpl implements UGCService {
      * @param ugc
      * @param attributes
      * @return
-     * @deprecated Not not use this , it will be remove at UGCController
      */
-    @Deprecated
     private UGC populateUGCWithProfile(UGC ugc, List<String> attributes) {
-
-
         if (isProfileSetable(ugc)) {
             ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
         } else {
@@ -945,13 +957,9 @@ public class UGCServiceImpl implements UGCService {
     /**
      * @param ugc
      * @return
-     * @deprecated Not not use this , it will be remove at UGCController
      */
-    @Deprecated
     private UGC populateUGCWithProfile(UGC ugc) {
-        //** Min Attr needed is displayName.
-
-        return populateUGCWithProfile(ugc, Arrays.asList(UGCConstants.UGC_PROFILE_DISPLAY_NAME));
+        return populateUGCWithProfile(ugc, Arrays.asList(UGCConstants.UGC_PROFILE_DISPLAY_NAME, Subscriptions.ATTRIBUTE_AUTO_WATCH));
     }
 
     private List<AttachmentModel> getAttachmentsList(ObjectId[] attachmentsId, String tenant) {

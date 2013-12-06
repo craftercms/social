@@ -113,9 +113,9 @@ public interface UGCService {
 
 	List<UGC> findByTarget(String tenant, String target, int page, int pageSize, String sortField, String sortOrder);
 
-	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, String sortField, String sortOrder);
-	
-	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, String sortField, String sortOrder);
+	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, String sortField, String sortOrder, String[] excludeWithModerationStatuses);
+
+	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, String sortField, String sortOrder, String[] excludeWithModerationStatuses);
 
 	int getTenantTargetCount(String tenant, String target);
 

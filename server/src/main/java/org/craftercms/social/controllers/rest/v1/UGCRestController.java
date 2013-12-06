@@ -114,10 +114,13 @@ public class UGCRestController {
 
         if (page >= 0 && pageSize > 0) {
             List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page, pageSize,
-                sortField, sortOrder);
+                sortField, sortOrder, new String[] {ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()});
+
             return HierarchyGenerator.generateHierarchy(toPublicUGCList(ugcs), null, rootCount, childCount);
         } else {
-            List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder);
+            List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder,
+                    new String[] {ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()});
+
             return HierarchyGenerator.generateHierarchy(toPublicUGCList(ugcs), null, rootCount, childCount);
         }
     }

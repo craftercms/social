@@ -132,7 +132,7 @@ public class CrafterProfileServiceImpl implements CrafterProfileService {
 		}
 
 		try {
-			return client.getProfile(getAppToken(), profileId);
+			return client.getProfileWithAllAttributes(getAppToken(), profileId);
 		} catch (AppAuthenticationException e) {
 			try {
 				synchronized (lock) {
