@@ -30,12 +30,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
-import org.craftercms.social.domain.Action;
-import org.craftercms.social.domain.AttachmentModel;
-import org.craftercms.social.domain.Target;
-import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.*;
 import org.craftercms.social.domain.UGC.ModerationStatus;
-import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
@@ -945,12 +941,8 @@ public class UGCServiceImpl implements UGCService {
      * @param ugc
      * @param attributes
      * @return
-     * @deprecated Not not use this , it will be remove at UGCController
      */
-    @Deprecated
     private UGC populateUGCWithProfile(UGC ugc, List<String> attributes) {
-
-
         if (isProfileSetable(ugc)) {
             ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
         } else {
@@ -965,13 +957,9 @@ public class UGCServiceImpl implements UGCService {
     /**
      * @param ugc
      * @return
-     * @deprecated Not not use this , it will be remove at UGCController
      */
-    @Deprecated
     private UGC populateUGCWithProfile(UGC ugc) {
-        //** Min Attr needed is displayName.
-
-        return populateUGCWithProfile(ugc, Arrays.asList(UGCConstants.UGC_PROFILE_DISPLAY_NAME));
+        return populateUGCWithProfile(ugc, Arrays.asList(UGCConstants.UGC_PROFILE_DISPLAY_NAME, Subscriptions.ATTRIBUTE_AUTO_WATCH));
     }
 
     private List<AttachmentModel> getAttachmentsList(ObjectId[] attachmentsId, String tenant) {
