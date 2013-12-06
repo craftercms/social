@@ -209,7 +209,7 @@ public class CrafterProfileServiceTest implements CrafterProfileService {
 		actions.add(DELETE_ACTION);
 		actions.add(ACT_ON_ACTION);
 		actions.add(MODERATE_ACTION);
-		UGC ugc = new UGC(CONTENT, p.getId(), TENANT_TEST, TARGET_TEST, null, null, null, null);
+		UGC ugc = new UGC(CONTENT, p.getId(), TENANT_TEST, TARGET_TEST, null, null, null, null,false);
 
 		ugc.setActions(actions);
 

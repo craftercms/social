@@ -10,10 +10,13 @@ import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.util.Hierarchical;
 import org.craftercms.social.util.UGCConstants;
+import org.craftercms.social.util.action.ActionConstants;
 
 public class PublicUGC implements Hierarchical<PublicUGC> {
 
 
+    public static final String USER_WITH_NO_NAME = "User";
+    public static final String ANONYMOUS = "Anonymous";
     private final ObjectId parentId;
     private final ArrayList<PublicUGC> children;
     private int extraChildCount;
@@ -33,9 +36,11 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
     private Map<String, Object> profile;
     private UserInfo userInfo;
     private String moderationStatus;
+    private boolean anonymous;
 
 
-    public PublicUGC(final UGC templateUGC, final String profileId, final List<String> actions, boolean watchedByUser) {
+    public PublicUGC(final UGC templateUGC, final String profileId, final List<String> actions,
+                     boolean watchedByUser,List<String> profileRoles) {
         profile = new HashMap<String, Object>();
         this.attachments = new ArrayList<String>();
         this.id = templateUGC.getId().toString();
@@ -44,16 +49,21 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
         this.targetId = templateUGC.getTargetId();
         this.subject = templateUGC.getSubject();
         this.creationDate = templateUGC.getCreatedDate();
-        if (templateUGC.getProfile() == null || templateUGC.getProfile().getAttributes() == null) {
-            this.profile.put(UGCConstants.UGC_PROFILE_DISPLAY_NAME, "User");
+        this.anonymous = templateUGC.isAnonymousFlag();
+        if (anonymous && !isAnGod(profileRoles)) {
+            this.profile.put(UGCConstants.UGC_PROFILE_DISPLAY_NAME, ANONYMOUS);
         } else {
-            if (templateUGC.getProfile().getAttributes().get(UGCConstants.UGC_PROFILE_DISPLAY_NAME) != null) {
-                this.profile.put(UGCConstants.UGC_PROFILE_DISPLAY_NAME, templateUGC.getProfile().getAttributes().get
-                    (UGCConstants.UGC_PROFILE_DISPLAY_NAME).toString());
+            if (templateUGC.getProfile() == null || templateUGC.getProfile().getAttributes() == null) {
+                this.profile.put(UGCConstants.UGC_PROFILE_DISPLAY_NAME, USER_WITH_NO_NAME);
             } else {
-                this.profile.put(UGCConstants.UGC_PROFILE_DISPLAY_NAME, "User");
-            }
+                if (templateUGC.getProfile().getAttributes().get(UGCConstants.UGC_PROFILE_DISPLAY_NAME) != null) {
+                    this.profile.put(UGCConstants.UGC_PROFILE_DISPLAY_NAME, templateUGC.getProfile().getAttributes()
+                        .get(UGCConstants.UGC_PROFILE_DISPLAY_NAME).toString());
+                } else {
+                    this.profile.put(UGCConstants.UGC_PROFILE_DISPLAY_NAME, USER_WITH_NO_NAME);
+                }
 
+            }
         }
         this.likes = templateUGC.getLikes().size();
         this.dislikes = templateUGC.getDislikes().size();
@@ -72,6 +82,11 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
         this.moderationStatus = templateUGC.getModerationStatus().toString();
         this.targetDesc = templateUGC.getTargetDescription();
         this.targetUrl = templateUGC.getTargetUrl();
+    }
+
+    private boolean isAnGod(final List<String> profileRoles) {
+        return profileRoles.contains(ActionConstants.SOCIAL_MODERATOR) ||
+               profileRoles.contains(ActionConstants.SOCIAL_ADMIN);
     }
 
     public String getId() {
@@ -171,6 +186,10 @@ public class PublicUGC implements Hierarchical<PublicUGC> {
 
     public String getTargetUrl() {
         return targetUrl;
+    }
+
+    public boolean isAnonymous() {
+        return anonymous;
     }
 
     class UserInfo {
