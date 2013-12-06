@@ -10,7 +10,9 @@ angular.module('moderationDashboard.constants', []).
     }).
 
     constant('ERROR', {
-        '401': 'Your session has expired. Please log in and try this operation again.'
+        '401': 'Your session has expired. Please log in and try this operation again.',
+        '403': 'Sorry! You do not have permission to perform this operation',
+        'ALL': 'An unidentified error has occured. If the problem persists, please contact your system administrator'
     }).
 
     constant('ACTIONS', {
