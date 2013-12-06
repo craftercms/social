@@ -83,7 +83,7 @@ public class UGCRestController {
         log.debug("Get Request for UGC with status %s", moderationStatus);
         List<UGC> list = ugcService.findByModerationStatusAndTargetId(ModerationStatus.valueOf(moderationStatus
             .toUpperCase()), tenant, target, page, pageSize, sortField, sortOrder);
-        return toPublicUGC(list);
+        return toPublicUGCList(list);
     }
 
     @RequestMapping(value = "/moderation/{moderationStatus}", method = RequestMethod.GET)
@@ -97,7 +97,7 @@ public class UGCRestController {
         log.debug("Get Request for UGC with status %s", moderationStatus);
         List<UGC> list = ugcService.findByModerationStatus(ModerationStatus.valueOf(moderationStatus.toUpperCase()),
             tenant, page, pageSize, sortField, sortOrder);
-        return toPublicUGC(list);
+        return toPublicUGCList(list);
     }
 
     @RequestMapping(value = "/target", method = RequestMethod.GET)
@@ -108,20 +108,20 @@ public class UGCRestController {
                                                   @RequestParam(required = false, defaultValue = "0") int page,
                                                   @RequestParam(required = false, defaultValue = "0") int pageSize,
                                                   @RequestParam(required = false,
-                                                      defaultValue = "createdDate") String sortField,
-                                                  @RequestParam(required = false,
+        defaultValue = "createdDate") String sortField, @RequestParam(required = false,
         defaultValue = "DESC") String sortOrder) {
+
 
         if (page >= 0 && pageSize > 0) {
             List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page, pageSize,
                 sortField, sortOrder, new String[] {ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()});
 
-            return HierarchyGenerator.generateHierarchy(toPublicUGC(ugcs), null, rootCount, childCount);
+            return HierarchyGenerator.generateHierarchy(toPublicUGCList(ugcs), null, rootCount, childCount);
         } else {
             List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder,
                     new String[] {ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()});
 
-            return HierarchyGenerator.generateHierarchy(toPublicUGC(ugcs), null, rootCount, childCount);
+            return HierarchyGenerator.generateHierarchy(toPublicUGCList(ugcs), null, rootCount, childCount);
         }
     }
 
@@ -132,14 +132,13 @@ public class UGCRestController {
         defaultValue = "99") int rootCount, @RequestParam(required = false, defaultValue = "99") int childCount,
                                                         @RequestParam(required = false, defaultValue = "0") int page,
                                                         @RequestParam(required = false,
-                                                            defaultValue = "0") int pageSize,
-                                                        @RequestParam(required = false,
+        defaultValue = "0") int pageSize, @RequestParam(required = false,
         defaultValue = "createdDate") String sortField, @RequestParam(required = false,
         defaultValue = "DESC") String sortOrder) {
         List<UGC> list = ugcService.findByTargetRegex(getTenantName(), regex, getProfileId(), page, pageSize,
             sortField, sortOrder);
         log.debug("Found {} ugs using {} regex", list.size(), regex);
-        return HierarchyGenerator.generateHierarchy(toPublicUGC(list), null, rootCount, childCount);
+        return HierarchyGenerator.generateHierarchy(toPublicUGCList(list), null, rootCount, childCount);
     }
 
     @RequestMapping(value = "/moderation/{tenantName}/all", method = RequestMethod.GET)
@@ -155,7 +154,7 @@ public class UGCRestController {
         } else {
             list = ugcService.findUGCsByTenant(tenantName, sortField, sortOrder);
         }
-        return toPublicUGC(list);
+        return toPublicUGCList(list);
     }
 
     @RequestMapping(value = "/count", method = RequestMethod.GET)
@@ -178,9 +177,9 @@ public class UGCRestController {
                                             @RequestParam final String moderationStatus,
                                             @RequestParam final String tenant, final HttpServletResponse response)
         throws IOException, PermissionDeniedException {
-        UGC u = ugcService.updateModerationStatus(new ObjectId(ugcId), ModerationStatus.valueOf(moderationStatus
+        UGC ugc = ugcService.updateModerationStatus(new ObjectId(ugcId), ModerationStatus.valueOf(moderationStatus
             .toUpperCase()), tenant, getProfileId());
-        return new PublicUGC(u, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(u.getTargetId()));
+        return toPublicUgc(ugc);
     }
 
     @RequestMapping(value = "/moderation/update/status", method = RequestMethod.POST)
@@ -192,7 +191,7 @@ public class UGCRestController {
         PermissionDeniedException {
         List<UGC> list = ugcService.updateModerationStatus(ids, ModerationStatus.valueOf(moderationStatus.toUpperCase
             ()), tenant);
-        return toPublicUGC(list);
+        return toPublicUGCList(list);
     }
 
     @RequestMapping(value = "/get_ugc/{ugcId}", method = RequestMethod.GET)
@@ -201,7 +200,7 @@ public class UGCRestController {
                                  @RequestParam(required = false, defaultValue = "DESC") String sortOrder,
                                  HttpServletResponse response) throws IOException {
         UGC ugc = ugcService.findUGCAndChildren(new ObjectId(ugcId), tenant, getProfileId(), sortField, sortOrder);
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
+        return toPublicUgc(ugc);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST,
@@ -222,8 +221,8 @@ public class UGCRestController {
         } else {
             newUgc = ugcService.newChildUgc(new UGC(ugcRequest, getProfileId()));
         }
-        return new PublicUGC(newUgc, getProfileId(), getPossibleActionsForUGC(newUgc.getId().toString()),
-            userWatchTarget(newUgc.getTargetId()));
+        return toPublicUgc(newUgc);
+
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -235,9 +234,7 @@ public class UGCRestController {
             ugcRequest.getTargetId(), getProfileId(), ugcRequest.getParentId() == null? null: new ObjectId(ugcRequest
             .getParentId()), ugcRequest.getTextContent(), ugcRequest.getTargetUrl(),
             ugcRequest.getTargetDescription(), ugcRequest.getAttributes(), ugcRequest.getSubject());
-
-        return new PublicUGC(updatedUgc, getProfileId(), getPossibleActionsForUGC(ugcRequest.getUgcId()),
-            userWatchTarget(updatedUgc.getTargetId()));
+        return toPublicUgc(updatedUgc);
 
     }
 
@@ -248,7 +245,7 @@ public class UGCRestController {
         attachments) throws PermissionDeniedException, AttachmentErrorException {
 
         UGC ugc = ugcService.addAttachments(new ObjectId(ugcId), attachments, tenant, getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
+        return toPublicUgc(ugc);
     }
 
     @RequestMapping(value = "/{ugcId}/add_attachment", method = RequestMethod.POST)
@@ -287,14 +284,14 @@ public class UGCRestController {
     @ModelAttribute
     public PublicUGC likeUGC(@PathVariable() String ugcId, @RequestParam(required = true) final String tenant) {
         UGC ugc = ugcService.likeUGC(new ObjectId(ugcId), tenant, getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
+        return toPublicUgc(ugc);
     }
 
     @RequestMapping(value = "/unlike/{ugcId}", method = RequestMethod.POST)
     @ModelAttribute
     public PublicUGC unLikeUGC(@PathVariable() String ugcId) {
         UGC ugc = ugcService.unLikeUGC(new ObjectId(ugcId), getTenantName(), getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
+        return toPublicUgc(ugc);
     }
 
     @RequestMapping(value = "/flag/{ugcId}", method = RequestMethod.POST)
@@ -302,28 +299,28 @@ public class UGCRestController {
     public PublicUGC flagUGC(@PathVariable() String ugcId, @RequestParam final String tenant,
                              @RequestParam final String reason) {
         UGC ugc = ugcService.flagUGC(new ObjectId(ugcId), reason, tenant, getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
+        return toPublicUgc(ugc);
     }
 
     @RequestMapping(value = "/unflag/{ugcId}", method = RequestMethod.POST)
     @ModelAttribute
     public PublicUGC unflagUGC(@PathVariable() String ugcId, @RequestParam final String reason) {
         UGC ugc = ugcService.unflagUGC(new ObjectId(ugcId), reason, getTenantName(), getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
+        return toPublicUgc(ugc);
     }
 
     @RequestMapping(value = "/dislike/{ugcId}", method = RequestMethod.POST)
     @ModelAttribute
     public PublicUGC unDislikeUGC(@PathVariable() String ugcId, @RequestParam final String tenant) {
         UGC ugc = ugcService.dislikeUGC(new ObjectId(ugcId), tenant, getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
+        return toPublicUgc(ugc);
     }
 
     @RequestMapping(value = "/undislike/{ugcId}", method = RequestMethod.POST)
     @ModelAttribute
     public PublicUGC dislikeUGC(@PathVariable() String ugcId) {
         UGC ugc = ugcService.unDislikeUGC(new ObjectId(ugcId), getTenantName(), getProfileId());
-        return new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugcId), userWatchTarget(ugc.getTargetId()));
+        return toPublicUgc(ugc);
     }
 
     @RequestMapping(value = "/{ugcId}/set_attibutes", method = RequestMethod.POST)
@@ -364,6 +361,20 @@ public class UGCRestController {
         return ugcService.findPossibleActionsForUGC(ugcId, getProfileRoles());
     }
 
+    @ExceptionHandler(PermissionDeniedException.class)
+    public String handlePermissionException(PermissionDeniedException ex, HttpServletResponse response) {
+        response.setHeader("Content-Type", "application/json");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(AttachmentErrorException.class)
+    public String handleDataErrorException(AttachmentErrorException ex, HttpServletResponse response) {
+        response.setHeader("Content-Type", "application/json");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
+        return ex.getMessage();
+    }
+
     private Map<String, Object> parseAttibutes(HttpServletRequest request) {
         Map<String, Object> attributeMap = new HashMap<String, Object>();
         Map<String, Object> paramMap = request.getParameterMap();
@@ -389,14 +400,21 @@ public class UGCRestController {
         return RequestContext.getCurrent().getAuthenticationToken().getProfile().getTenantName();
     }
 
-    private List<PublicUGC> toPublicUGC(final List<UGC> ugs) {
+    private List<PublicUGC> toPublicUGCList(final List<UGC> ugs) {
         List<PublicUGC> toReturn = new ArrayList<PublicUGC>();
         for (UGC ugc : ugs) {
-            PublicUGC publicUGC = new PublicUGC(ugc, getProfileId(), getPossibleActionsForUGC(ugc.getId().toString())
-                , userWatchTarget(ugc.getTargetId()));
+            PublicUGC publicUGC = toPublicUgc(ugc);
             toReturn.add(publicUGC);
         }
         return toReturn;
+    }
+
+    private PublicUGC toPublicUgc(final UGC ugc) {
+        List<String> roles = getProfileRoles();
+        String profileId = getProfileId();
+        boolean isWatching = userWatchTarget(ugc.getTargetId());
+        List<String> posibleActions = getPossibleActionsForUGC(ugc.getId().toString());
+        return new PublicUGC(ugc, profileId, posibleActions, isWatching, roles);
     }
 
 

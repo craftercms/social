@@ -98,12 +98,12 @@ public class UGC implements Hierarchical<UGC> {
     private Map<String, Object> attributes = null;
 
     public UGC() {
-        this(null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null,false);
     }
 
     public UGC(ObjectId parentId, String textContent, ObjectId[] attachmentId, String profileId, String tenant,
                String targetId, Map<String, Object> attributes, String targetUrl, String targetDescription,
-               String subject) {
+               String subject,boolean anonymousFlag) {
         super();
         this.parentId = parentId;
         this.textContent = textContent;
@@ -123,25 +123,26 @@ public class UGC implements Hierarchical<UGC> {
         this.likes=new ArrayList<String>();
         this.dislikes=new ArrayList<String>();
         this.flags=new ArrayList<String>();
+        this.anonymousFlag=anonymousFlag;
 
     }
 
     public UGC(String textContent, String profileId, String tenant, String target, Map<String, Object> attributeMap,
-               String targetUrl, String targetDescription, String subject) {
-        this(null, textContent, null, profileId, tenant, target, attributeMap, targetUrl, targetDescription, subject);
+               String targetUrl, String targetDescription, String subject,boolean anonymousFlag) {
+        this(null, textContent, null, profileId, tenant, target, attributeMap, targetUrl, targetDescription, subject,anonymousFlag);
     }
 
     public UGC(String textContent, String profileId, String tenant, String target, ObjectId parentId, Map<String,
-        Object> attributeMap, String targetUrl, String targetDescription, String subject) {
+        Object> attributeMap, String targetUrl, String targetDescription, String subject,boolean anonymousFlag) {
         this(parentId, textContent, null, profileId, tenant, target, attributeMap, targetUrl, targetDescription,
-            subject);
+            subject,anonymousFlag);
     }
 
     public UGC(UGCRequest ugcRequest, String profileId) {
         this(ugcRequest.getTextContent(), profileId, ugcRequest.getTenant(), ugcRequest.getTargetId(),
             ugcRequest.getParentId() == null? null: new ObjectId(ugcRequest.getParentId()),
             ugcRequest.getAttributes(), ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription(),
-            ugcRequest.getSubject());
+            ugcRequest.getSubject(),ugcRequest.getAnonymousFlag());
 
         this.setActions(ugcRequest.getActions());
         this.setAttributes(this.getAttributes());
