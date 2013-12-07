@@ -3,7 +3,8 @@ jQuery(document).ready(function($){
     'use strict'
     
     var PROPERTIES_PATH = '/crafter-social-admin/static-assets/csadmin/properties/',
-        appConfigDeferred = $.getJSON(PROPERTIES_PATH + "app_conf.json"),
+        APP_CONFIG = '/crafter-social/api/2/config/config.json',
+        appConfigDeferred = $.getJSON(APP_CONFIG),
         sectionsConfigDeferred = $.getJSON(PROPERTIES_PATH + "moderation_status_action.json");
 
     // Load the configuration files before bootstrapping our angular app
