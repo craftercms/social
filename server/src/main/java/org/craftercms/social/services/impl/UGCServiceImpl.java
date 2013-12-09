@@ -337,8 +337,6 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC newUgc(UGC ugc) throws PermissionDeniedException {
-
-        ugc.setAnonymousFlag(ugc.isAnonymousFlag());
         List<Action> resolveActions = resolveUGCActions(ugc.getActions(), ugc.getParentId());
         ugc.setModerationStatus(ModerationStatus.UNMODERATED);
         ugc.setCreatedDate(new Date());
@@ -1080,8 +1078,8 @@ public class UGCServiceImpl implements UGCService {
                 RequestContext.getCurrent().getAuthenticationToken().getProfile().getRoles())) {
                 isSeteable = false;
             }
-
         }
+
         return isSeteable;
     }
 
