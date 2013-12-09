@@ -209,35 +209,33 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 		}
 	}
 
-	private Notification createNotification(Profile profile,
-			UGCAudit currentAudit, Map<String, Profile> actionOwnersCache) {
-		Notification notification = new Notification();
-		// ACTION of the current JOB
-		notification.setAction(profile.getSubscriptions().getAction());
+	private void createNotification(Profile profile, UGCAudit currentAudit, Map<String, Profile> actionOwnersCache) {
+        if (currentAudit.getProfileId() != null && !currentAudit.getProfileId().equalsIgnoreCase("anonymous")) {
+            Notification notification = new Notification();
+            // ACTION of the current JOB
+            notification.setAction(profile.getSubscriptions().getAction());
 
-		notification.setCreatedDate(new Date());
-		notification.setRow(currentAudit.getRow());
+            notification.setCreatedDate(new Date());
+            notification.setRow(currentAudit.getRow());
 
-		//FORMAT of the current JOB
-		notification.setFormat(profile.getSubscriptions().getFormat());
-		
-		//FORMAT of the current JOB
-		notification.setFrequency(profile.getSubscriptions().getFrequency());
-		notification.setSubscriberUsername(profile.getUserName());
-		
-		notification.setSubscriberEmail(profile.getEmail());
-		notification.setSubscriberId(profile.getId());
-		notification.setTransmitedStatus(TransmittedStatus.PENDING);
-		
-		notification.setEvent(createEvent(currentAudit,getActionAuditOwner(actionOwnersCache, currentAudit)));
-		
-		this.notificationRepository.save(notification);
-		
-		return notification;
+            //FORMAT of the current JOB
+            notification.setFormat(profile.getSubscriptions().getFormat());
+
+            //FORMAT of the current JOB
+            notification.setFrequency(profile.getSubscriptions().getFrequency());
+            notification.setSubscriberUsername(profile.getUserName());
+
+            notification.setSubscriberEmail(profile.getEmail());
+            notification.setSubscriberId(profile.getId());
+            notification.setTransmitedStatus(TransmittedStatus.PENDING);
+
+            notification.setEvent(createEvent(currentAudit, getActionAuditOwner(actionOwnersCache, currentAudit)));
+
+            this.notificationRepository.save(notification);
+        }
 	}
 
-	private Profile getActionAuditOwner(Map<String, Profile> actionOwnersCache,
-			UGCAudit currentAudit) {
+	private Profile getActionAuditOwner(Map<String, Profile> actionOwnersCache, UGCAudit currentAudit) {
 		Profile p = actionOwnersCache.get(currentAudit.getProfileId());
 		if (p == null) {
 			Profile currentProfile = this.profileRepository.findOne(new ObjectId(currentAudit.getProfileId()));
@@ -250,6 +248,7 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
 			}
 			actionOwnersCache.put(currentAudit.getProfileId(), p);
 		}
+
 		return p;
 	}
 
