@@ -944,11 +944,11 @@ public class UGCServiceImpl implements UGCService {
         if (isProfileSetable(ugc)) {
             ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
         } else {
-            Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null,
-                null, null, true);
+            Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null, null, null, true);
             ugc.setProfile(anonymousProfile);
             ugc.setProfileId(null);
         }
+
         return ugc;
     }
 
@@ -957,7 +957,15 @@ public class UGCServiceImpl implements UGCService {
      * @return
      */
     private UGC populateUGCWithProfile(UGC ugc) {
-        return populateUGCWithProfile(ugc, Arrays.asList(UGCConstants.UGC_PROFILE_DISPLAY_NAME, Subscriptions.ATTRIBUTE_AUTO_WATCH));
+        if (isProfileSetable(ugc)) {
+            ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
+        } else {
+            Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null, null, null, true);
+            ugc.setProfile(anonymousProfile);
+            ugc.setProfileId(null);
+        }
+
+        return ugc;
     }
 
     private List<AttachmentModel> getAttachmentsList(ObjectId[] attachmentsId, String tenant) {
