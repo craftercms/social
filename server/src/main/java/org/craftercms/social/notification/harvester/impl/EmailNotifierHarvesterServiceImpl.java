@@ -104,9 +104,13 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
             if (ugcIdObj != null) {
                 String ugcId = ugcIdObj.toString();
                 UGC ugc = ugcRepository.findOne(new ObjectId(ugcId));
-                UGC.ModerationStatus status = ugc.getModerationStatus();
-                if (status != UGC.ModerationStatus.SPAM && status != UGC.ModerationStatus.TRASH) {
-                    result.add(notification);
+                if (ugc != null) {
+                    UGC.ModerationStatus status = ugc.getModerationStatus();
+                    if (status != UGC.ModerationStatus.SPAM && status != UGC.ModerationStatus.TRASH) {
+                        result.add(notification);
+                    }
+                } else {
+                    log.error("No ugc found with id: '" + ugcId + "', notification record will be ignored");
                 }
             }
         }
