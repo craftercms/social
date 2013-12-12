@@ -32,6 +32,7 @@
 				<beans:prop key="org.springframework.dao.DataRetrievalFailureException">404</beans:prop>
                 <beans:prop key="org.craftercms.social.exceptions.PermissionDeniedException">403</beans:prop>
                 <beans:prop key="org.craftercms.social.exceptions.AttachmentErrorException">422</beans:prop>
+                <beans:prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">413</beans:prop>
 			</beans:props>
 		</beans:property>
 	</beans:bean>
