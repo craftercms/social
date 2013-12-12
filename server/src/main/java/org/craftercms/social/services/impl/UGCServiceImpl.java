@@ -30,8 +30,12 @@ import org.apache.commons.lang.ArrayUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
-import org.craftercms.social.domain.*;
+import org.craftercms.social.domain.Action;
+import org.craftercms.social.domain.AttachmentModel;
+import org.craftercms.social.domain.Target;
+import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
+import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
@@ -46,7 +50,6 @@ import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCHook;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.services.VirusScannerService;
-import org.craftercms.social.util.UGCConstants;
 import org.craftercms.social.util.action.ActionEnum;
 import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.support.CrafterProfileService;
@@ -238,20 +241,21 @@ public class UGCServiceImpl implements UGCService {
                     if (currentId == null) {
                         attachments[i] = supportDataAccess.saveFile(files[i]);
                     } else {
-                        attachments[i] = currentId;
+                        // attachments[i] = currentId;
+                        throw new AttachmentErrorException("Unable to save " + files[i].getOriginalFilename() + " " +
+                            "file already Exist");
                     }
                 }
             } catch (IOException ex) {
                 log.error("Unable to save the attachemnts ", ex);
                 attachments = new ObjectId[] {};
-            }
-            return attachments;
+            } return attachments;
         } else {
             return new ObjectId[] {};
         }
     }
 
-    private ObjectId[] updateUGCAttachment(UGC ugc, MultipartFile file) {
+    private ObjectId[] updateUGCAttachment(UGC ugc, MultipartFile file) throws AttachmentErrorException {
         List<ObjectId> listAttachments = new ArrayList<ObjectId>();
         if (file != null) {
             ObjectId attachmentId = null;
@@ -269,6 +273,9 @@ public class UGCServiceImpl implements UGCService {
                     log.error("Unable to save the attachemnt ", e);
                     attachmentId = new ObjectId();
                 }
+            } else {
+                throw new AttachmentErrorException("Given Attachment " + file.getOriginalFilename() + " already exist" +
+                    " for the give content");
             }
 
             return listAttachments.toArray(new ObjectId[listAttachments.size()]);
@@ -561,8 +568,8 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, String sortField,
                                           String sortOrder, String[] excludeWithModerationStatuses) {
-        return findUGCs(getModerationFilter(tenant, profileId, excludeWithModerationStatuses), tenant, target, -1, -1,
-                sortField, sortOrder, ActionEnum.READ);
+        return findUGCs(getModerationFilter(tenant, profileId, excludeWithModerationStatuses), tenant, target, -1,
+            -1, sortField, sortOrder, ActionEnum.READ);
     }
 
 
@@ -580,17 +587,12 @@ public class UGCServiceImpl implements UGCService {
         List<String> statuses;
 
         if (permissionService.allowed(ActionEnum.MODERATE, tmpUgc, p)) {
-            statuses = new ArrayList<String>(Arrays.asList(
-                    ModerationStatus.APPROVED.toString(),
-                    ModerationStatus.UNMODERATED.toString(),
-                    ModerationStatus.PENDING.toString(),
-                    ModerationStatus.TRASH.toString(),
-                    ModerationStatus.SPAM.toString()));
+            statuses = new ArrayList<String>(Arrays.asList(ModerationStatus.APPROVED.toString(),
+                ModerationStatus.UNMODERATED.toString(), ModerationStatus.PENDING.toString(),
+                ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()));
         } else {
-            statuses = new ArrayList<String>(Arrays.asList(
-                    ModerationStatus.APPROVED.toString(),
-                    ModerationStatus.UNMODERATED.toString(),
-                    ModerationStatus.PENDING.toString()));
+            statuses = new ArrayList<String>(Arrays.asList(ModerationStatus.APPROVED.toString(),
+                ModerationStatus.UNMODERATED.toString(), ModerationStatus.PENDING.toString()));
         }
 
         if (ArrayUtils.isNotEmpty(excludeStatuses)) {
@@ -627,8 +629,8 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize,
                                           String sortField, String sortOrder, String[] excludeWithModerationStatuses) {
-        List<UGC> list = findUGCs(getModerationFilter(tenant, profileId, excludeWithModerationStatuses), tenant, target, page, pageSize,
-                sortField, sortOrder,ActionEnum.READ);
+        List<UGC> list = findUGCs(getModerationFilter(tenant, profileId, excludeWithModerationStatuses), tenant,
+            target, page, pageSize, sortField, sortOrder, ActionEnum.READ);
 
         return populateUGCListWithProfiles(list);
     }
@@ -944,7 +946,8 @@ public class UGCServiceImpl implements UGCService {
         if (isProfileSetable(ugc)) {
             ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
         } else {
-            Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null, null, null, true);
+            Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null,
+                null, null, true);
             ugc.setProfile(anonymousProfile);
             ugc.setProfileId(null);
         }
@@ -960,7 +963,8 @@ public class UGCServiceImpl implements UGCService {
         if (isProfileSetable(ugc)) {
             ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
         } else {
-            Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null, null, null, true);
+            Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null,
+                null, null, true);
             ugc.setProfile(anonymousProfile);
             ugc.setProfileId(null);
         }
