@@ -62,9 +62,6 @@
         "value": "Spam"
     },
     "actions": [{
-        "label": "Restore",
-        "status": "Restore"
-    }, {
         "label": "Permanently delete",
         "status": "delete",
         "type": "delete"
@@ -78,11 +75,11 @@
         "value": "Trash" 
     },
     "actions": [{
-        "label": "Restore",
-        "status": "Restore"
-    }, {
         "label": "Permanently delete",
         "status": "delete",
         "type": "delete"
+    }, {
+        "label": "Unmoderated",
+        "status": "Unmoderated"
     }]
 }]
