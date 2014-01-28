@@ -413,7 +413,7 @@ public class UGCServiceImpl implements UGCService {
     public UGC likeUGC(ObjectId ugcId, String tenant, String profileId) {
         UGC ugc = uGCRepository.findOne(ugcId);
         if (ugc != null) {
-            if (userCan(AuditAction.LIKE, ugc, profileId)) {
+            if (!ugc.getLikes().contains(profileId)) {
                 ugc.getLikes().add(profileId);
                 auditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
                 checkForModeration(ugc);
@@ -497,7 +497,7 @@ public class UGCServiceImpl implements UGCService {
     public UGC dislikeUGC(ObjectId ugcId, String tenant, String profileId) {
         UGC ugc = uGCRepository.findOne(ugcId);
         if (ugc != null) { //save us a trip to mongo
-            if (userCan(AuditAction.DISLIKE, ugc, profileId)) {
+            if (!ugc.getDislikes().contains(profileId)) {
                 ugc.getDislikes().add(profileId);
                 auditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
                 checkForModeration(ugc);
