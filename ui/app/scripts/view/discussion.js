@@ -23,9 +23,12 @@
         createUI: function () {
 
             Base.prototype.createUI.call(this);
+            var isSocialAuthor = S.getDirector().getProfile().hasRole('SOCIAL_AUTHOR');
 
             var $replies = this.$('.reply-box');
-            if ($replies.size()) {
+            (!isSocialAuthor) && $replies.hide();
+
+            if ($replies.size() && isSocialAuthor) {
 
                 var view = new S.util.instance('view.Commenting', $.extend({
                     collection: this.collection,
