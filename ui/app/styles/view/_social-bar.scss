@@ -121,6 +121,12 @@ $controls-theme-font-colour: #FFFFFF;
 
       }
 
+      &.subordinate {
+        a {
+          min-width: 85px;
+        }
+      }
+
     }
   }
 
