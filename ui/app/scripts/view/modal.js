@@ -29,11 +29,21 @@
 
             Base.prototype.listen.call(this);
 
+            var me = this;
+
             this.$el.on('shown.bs.modal', function () {
-                $('body, html').css('overflow', 'hidden');
+                me.trigger('shown');
             });
 
             this.$el.on('hidden.bs.modal', function () {
+                me.trigger('hidden');
+            });
+
+            this.listenTo(this, 'shown', function () {
+                $('body, html').css('overflow', 'hidden');
+            });
+
+            this.listenTo(this, 'hidden', function () {
                 $('body, html').css('overflow', '');
             });
 
@@ -98,8 +108,9 @@
         },
 
         destroy: function () {
+            this.trigger('hidden');
             this.$el.remove();
-            this.$backdrop.remove();
+            this.$backdrop && this.$backdrop.remove();
         }
 
     });
