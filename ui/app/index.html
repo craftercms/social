@@ -16,58 +16,11 @@
     <link rel="stylesheet" href="styles/index.css">
     <!-- endbuild -->
 
-    <script>
-
-        /*
-         * Social configuration attributes can be overwritten by
-         * declaring this object before the social javascript is
-         * imported into the page
-         */
-        var crafterSocial_cfg = {
-
-//            'url.base'                      : '/',
-//            'url.service'                   : '/fixtures/api/2/',
-            'url.service'                   : 'http://127.0.0.1:8090/crafter-social/api/2/',
-            'url.templates'                 : 'templates/',
-            'url.security'                  : 'http://127.0.0.1:8090/social-auth/crafter-security-login',
-            'url.ugc.file'                  : '{attachmentId}.json',
-            'url.ugc.{id}.get_attachments'  : '.json?tenant={tenant}',
-            'url.ugc.{id}.add_attachment'   : '.json'
-
-        };
-
-        /*
-         * this function needs to be declared before the social javascript
-         * is imported into the page. Other wise it is not necessary to use
-         * a callback and the same can be achieved simply by calling the director
-         * class directly:
-         *
-         *      crafter.social.getDirector().socialise({ ... });
-         *
-         */
-        function crafterSocial_onAppReady ( director, CrafterSocial ) {
-            // console.log('Crafter Social is Ready!');
-
-            director.socialise({
-                target: '#jumbotron',
-                tenant: 'craftercms'
-            });
-
-            director.socialise({
-                target: '#jumbotron2',
-                tenant: 'craftercms'
-            });
-
-        }
-
-    </script>
-
 </head>
 <body>
 <!--[if lt IE 10]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 <![endif]-->
-
 
 <div class="container">
     <div class="header">
@@ -78,26 +31,41 @@
         </ul>
         <h3 class="text-muted">ui</h3>
     </div>
-
     <div class="jumbotron" id="jumbotron">
         <h1><i class="glyphicon glyphicon-info-sign"></i> 'Allo, 'Allo!</h1>
         <p class="lead">Always a pleasure scaffolding your apps.</p>
         <p><a class="btn btn-lg btn-success" href="#">Splendid!</a></p>
     </div>
-
     <div class="row marketing">
         <div class="col-lg-6">
-            <div id="jumbotron2" data-placement="left">
+            <div id="jumbotron2" data-placement="top">
                 <h4>HTML5 Boilerplate</h4>
                 <p>HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.</p>
             </div>
 
             <h4>Bootstrap</h4>
+            <p id="assurance-part03-chapter01-para01">Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.</p>
+
+            <h4>Modernizr</h4>
+            <p id="assurance-part03-chapter01-para02">Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
+
+            <h4>RequireJS</h4>
+            <p id="assurance-part03-chapter01-para03">RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
+
+            <h4>Bootstrap</h4>
+            <p id="assurance-part03-chapter01-para04">Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.</p>
+
+            <h4>Modernizr</h4>
+            <p id="assurance-part03-chapter01-para05">Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
+
+            <h4>RequireJS</h4>
+            <p id="assurance-part03-chapter01-table01">RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
+
+            <h4>Bootstrap</h4>
             <p>Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.</p>
 
             <h4>Modernizr</h4>
             <p>Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
-
 
             <h4>RequireJS</h4>
             <p>RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
@@ -108,7 +76,6 @@
             <h4>Modernizr</h4>
             <p>Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
 
-
             <h4>RequireJS</h4>
             <p>RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
 
@@ -117,51 +84,111 @@
 
             <h4>Modernizr</h4>
             <p>Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
-
-
-            <h4>RequireJS</h4>
-            <p>RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
-
-            <h4>Bootstrap</h4>
-            <p>Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.</p>
-
-            <h4>Modernizr</h4>
-            <p>Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
-
-
-            <h4>RequireJS</h4>
-            <p>RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
-
-            <h4>Bootstrap</h4>
-            <p>Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.</p>
-
-            <h4>Modernizr</h4>
-            <p>Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
-
 
             <h4>RequireJS</h4>
             <p>RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
 
         </div>
     </div>
-
     <div class="footer">
         <p>♥ from the Yeoman team</p>
     </div>
-
 </div>
 
 <!-- bower:js -->
-<script src="libs/modernizr/modernizr.js"></script>
+<!--<script src="libs/modernizr/modernizr.js"></script>-->
 <!-- endbower -->
+
+<script>
+
+    /*
+     * Social configuration attributes can be overwritten by
+     * declaring this object before the social javascript is
+     * imported into the page
+     */
+    var crafterSocial_cfg = (function () {
+        var cfg = {
+
+//                'url.base'                      : '/',
+//                'url.service'                   : '/fixtures/api/2/',
+            'url.service'                   : 'http://10.107.209.100:8090/crafter-social/api/2/',
+            'url.templates'                 : 'http://10.107.209.100:9000/templates/',
+            'url.security'                  : 'http://10.107.209.100:8090/social-auth/crafter-security-login',
+            'url.ugc.file'                  : '{attachmentId}.json',
+            'url.ugc.{id}.get_attachments'  : '.json?tenant={tenant}',
+            'url.ugc.{id}.add_attachment'   : '.json'
+
+            /**
+             * Overriding a director handler example:
+             *
+             'director.cfg.handlers.{CONST:EVENT_UNAUTHORISED_RESPONSE}' : {
+                    handler: function () {
+                        alert ('unauthorised!');
+                    }
+                 } */
+
+        };
+        return cfg;
+    }) ();
+
+    /*
+     * this function needs to be declared before the social javascript
+     * is imported into the page. Other wise it is not necessary to use
+     * a callback and the same can be achieved simply by calling the director
+     * class directly:
+     *
+     *      crafter.social.getDirector().socialise({ ... });
+     *
+     */
+    function crafterSocial_onAppReady ( director, CrafterSocial ) {
+        // console.log('Crafter Social is Ready!');
+
+        director.socialise({
+            target: '#jumbotron',
+            tenant: 'craftercms',
+            socialbar: {
+                cfg: {
+                    widgets: [
+                        { cls: 'crafter.social.view.barget.Reveal', cfg: { title: 'Reveal' }, instCfg: {  } }
+                    ]
+                }
+            }
+        });
+
+        director.socialise({
+            target: '#jumbotron2',
+            tenant: 'craftercms'
+        });
+
+        // Initialise the "session user".
+        director.setProfile({
+            displayName: 'You',
+            roles: [
+                'SOCIAL_ADVISORY',
+                'SOCIAL_ADMIN',
+                'SOCIAL_MODERATOR'
+            ]
+        })
+
+    }
+
+</script>
+
 
 <!-- build:css(.tmp) styles/main.css -->
 <link rel="stylesheet" href="styles/main.css">
 <!-- endbuild -->
 
+<!-- build:css(.tmp) styles/editor-content.css -->
+<link rel="stylesheet" href="styles/editor-content.css">
+<!-- endbuild -->
+
 <!-- build:js scripts/social.js -->
 
 <script src="scripts/app.js"></script>
+<script src="scripts/constants.js"></script>
+<script src="scripts/config.js"></script>
+<script src="scripts/lib-setup.js"></script>
 
 <script src="libs/handlebars/handlebars.js"></script>
 <script src="libs/jquery/jquery.js"></script>
@@ -175,8 +202,6 @@
 <script src="libs/sass-bootstrap/js/modal.js"></script>
 <script src="libs/sass-bootstrap/js/dropdown.js"></script>
 
-<script src="scripts/constants.js"></script>
-<script src="scripts/config.js"></script>
 <script src="scripts/api.js"></script>
 
 <script src="scripts/component/dropbox.js"></script>
@@ -203,9 +228,10 @@
 <script src="scripts/view/commentable.js"></script>
 <script src="scripts/view/barget/base.js"></script>
 <script src="scripts/view/barget/reveal.js"></script>
-<script src="scripts/view/barget/feedback.js"></script>
-<script src="scripts/view/barget/share.js"></script>
-<script src="scripts/view/barget/rate.js"></script>
+<script src="scripts/view/barget/disable.js"></script>
+<!--<script src="scripts/view/barget/feedback.js"></script>-->
+<!--<script src="scripts/view/barget/share.js"></script>-->
+<!--<script src="scripts/view/barget/rate.js"></script>-->
 <script src="scripts/view/social-bar.js"></script>
 <script src="scripts/view/auth.js"></script>
 <script src="scripts/view/file.js"></script>
@@ -214,6 +240,61 @@
 <script src="scripts/starter.js"></script>
 
 <!-- endbuild -->
+
+<script type="text/template" id="createAdvisoryTpl">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Create Advisory</h4>
+            </div>
+            <div class="modal-body" style="padding-bottom: 0">
+                <div class="form-group">
+                    <label>
+                        Advisory Message Position
+                    </label>
+                    <select class="form-control" name="position">
+                        <option value="above">Above</option>
+                        <option value="below">Below</option>
+                    </select>
+                </div>
+            </div>
+            <textarea class="ckeditor" name="textContent"></textarea>
+            <div class="modal-footer" style="margin-top: 0">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-submit>Submit</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script type="text/x-handlebars" id="advisoryMsgTmpl">
+    <div id="{{id}}" class="alert alert-warning isaca-advisory">{{html message}}</div>
+</script>
+<script src="advisory.js"></script>
+<script>
+
+    crafter.social.$('body').on('chunkbox.loadcomplete', function ( /* e */ ) {
+
+
+        var TOC = window.toc || {
+            // Fixture TOC object for testing outside of isaca's vm.
+            item: { id: 'assurance-part03-chapter01' },
+            getItemById: function () { return { id: 'assurance-part03-chapter01' }; }
+        };
+
+        var ContextMenu = ISACA.Advisory.ContextMenu;
+        var Manager = ISACA.Advisory.Manager;
+
+        new ContextMenu({
+            tenant: 'craftercms',
+            //selector: '#document .titlepage .title, #document p[id], #document div[id], #document figure[id]'
+        });
+
+        Manager.fetch(Manager.getNamespace(TOC.item.id), 'craftercms');
+
+    }).trigger('chunkbox.loadcomplete');
+
+</script>
 
 </body>
 </html>

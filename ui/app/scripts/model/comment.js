@@ -1,32 +1,23 @@
 (function (S) {
     'use strict';
 
-    var $ = S.$,
-        DEFAULT_ROLES = [
-            'SOCIAL_AUTHOR',
-            'SOCIAL_ADMIN',
-            'SOCIAL_MODERATOR',
-            'SOCIAL_USER'
-        ];
+    var C       = S.Constants,
+        Model   = S.Backbone.Model,
+        $       = S.$;
 
-    var Comment = S.Backbone.Model.extend({
+    function POST (url, attributes, data) {
+        this.save(attributes, {
+            url: S.url(url, this.toJSON()),
+            type: 'POST', // TODO REMOVE OR ADJUST
+            data: $.param($.extend({ tenant: this.get('tenant') }, data || {}))
+        });
+    }
+
+    var Comment = Model.extend({
+
         idAttribute: 'id',
-        url: function () {
-            if (this.isNew()) {
-                return S.url('ugc.create');
-            } else {
-                // TODO ... update?
-            }
-        },
         defaults: {
-            'actions' : [
-                { 'name' : 'read'       , 'roles' : DEFAULT_ROLES },
-                { 'name' : 'update'     , 'roles' : DEFAULT_ROLES },
-                { 'name' : 'create'     , 'roles' : DEFAULT_ROLES },
-                { 'name' : 'delete'     , 'roles' : DEFAULT_ROLES },
-                { 'name' : 'act_on'     , 'roles' : DEFAULT_ROLES },
-                { 'name' : 'moderate'   , 'roles' : DEFAULT_ROLES }
-            ],
+            // 'actions': ACTIONS,
             'anonymousFlag' : false,
             'childCount' : 0,
             'children' : [],
@@ -48,27 +39,58 @@
             'textContent' : '', // '{ "content": "" }',
             'timesModerated' : 0
         },
-//        parse: function (data) {
-//            data.content = U.fromJSON(data.textContent).content;
-//            return data;
-//        },
+
+        url: function () {
+            if (this.isNew()) {
+                return S.url('ugc.create');
+            } else {
+                // TODO ... update?
+            }
+        },
+
+        fetch: function ( options ) {
+            return Model.prototype.fetch.call(this, $.extend({
+                url: S.url('ugc.get_ugc', this.toJSON())
+            }, options || {}));
+        },
+
+        isTrashed: function () {
+            return this.get('moderationStatus') === C.get('MODERATION_STATUS_TRASH');
+        },
+
         like: function () {
-            this.save({ likeCount: this.get('likeCount') + 1 }, {
-                url: S.url('ugc.like', { id: this.get('id') }),
-                type: 'POST', // TODO REMOVE OR ADJUST
-                data: $.param({ tenant: this.get('tenant') })
-            });
+            POST.call(this, 'ugc.like', { likes: this.get('likes') + 1 });
         },
+        unlike: function () {
+            POST.call(this, 'ugc.unlike', { likes: this.get('likes') - 1 });
+        },
+
         flag: function ( reason ) {
-            this.save({ flagCount: this.get('flagCount') + 1 }, {
-                url: S.url('ugc.flag', { id: this.get('id') }),
-                type: 'POST', // TODO REMOVE OR ADJUST
-                data: $.param({ tenant: this.get('tenant'), reason: reason })
-            });
+            POST.call(this, 'ugc.flag', { likes: this.get('flags') + 1 }, { reason: reason });
         },
+        unflag: function ( reason ) {
+            POST.call(this, 'ugc.unflag', { likes: this.get('flags') - 1 }, { reason: reason });
+        },
+
+        dislike: function () {
+            POST.call(this, 'ugc.dislike', { likes: this.get('dislikes') + 1 });
+        },
+        undoDislike: function () {
+            POST.call(this, 'ugc.undislike', { likes: this.get('dislikes') - 1 });
+        },
+
+        trash: function () {
+            this.moderate(C.get('MODERATION_STATUS_TRASH'));
+        },
+
+        moderate: function ( status ) {
+            POST.call(this, 'ugc.moderation.{id}', { moderationStatus: status }, { moderationStatus: status, ugcId: this.get('id') });
+        },
+
         reply: function () {
 
         }
+
     });
 
     S.define('model.Comment', Comment);
