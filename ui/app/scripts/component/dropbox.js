@@ -298,21 +298,6 @@
 
     DP.init = function (oCfg) {
 
-        // Verify that the browser has the necessary
-        // features for the Dropbox to work
-        if ((function () {
-            return join([
-                typeof window.FileReader !== 'undefined',
-                'draggable' in document.createElement('span'),
-                !!window.FormData,
-                'upload' in new XMLHttpRequest()
-            ], ' ').indexOf('false') !== -1;
-        }) ()) {
-            // TODO fallback to input[type="file"]?
-            // TODO use modal instead of an alert?
-            alert('Your browser does not support the necessary features to use drag and drop file uploading');
-        }
-
         var me = this,
             settings = this.oCfg,
             elem;
@@ -357,6 +342,24 @@
 
         // Add theme class
         _.addClass.call(this, settings.theme.main);
+
+        // Verify that the browser has the necessary
+        // features for the Dropbox to work
+        if ((function () {
+            return join([
+                typeof window.FileReader !== 'undefined',
+                'draggable' in document.createElement('span'),
+                !!window.FormData,
+                'upload' in new XMLHttpRequest()
+            ], ' ').indexOf('false') !== -1;
+        }) ()) {
+            // TODO fallback to input[type="file"]?
+            // TODO use modal instead of an alert?
+            // alert('Your browser does not support the necessary features to use drag and drop file uploading');
+            $(this.element).append('<div class="alert alert-warning no-support">Your browser does not support the necessary features to use drag and drop file uploading. Please use a modern up to date browser.</div>');
+        } else {
+            $(this.element).addClass('cs-dnd-upload-supported');
+        }
 
     };
 
@@ -409,13 +412,12 @@
                 error();
             }
             // fire the respective event
-            _.fire.call(me, ((success) ? SUCCESS : ERROR),
-                { ui: fileUI, file: file, e: e });
+            _.fire.call(me, ((success) ? SUCCESS : ERROR), { ui: fileUI, file: file, e: e, XHR: xhr });
         });
 
-        xhr.addEventListener('error', function (/*e*/) {
+        xhr.addEventListener('error', function (e) {
             error();
-            _.fire.call(me, ERROR, { ui: fileUI, file: file });
+            _.fire.call(me, ERROR, { ui: fileUI, file: file, e: e, XHR: xhr });
         }, false);
 
         // TODO:

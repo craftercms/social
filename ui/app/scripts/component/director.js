@@ -27,12 +27,65 @@
 
         this.cache('profile', new S.model.Profile());
 
-        this.listenTo(this, C.get('EVENT_UNAUTHORISED_RESPONSE'), this.authenticate);
-        this.listenTo(this, C.get('EVENT_USER_AUTHENTICATION_SUCCESS'), this.setProfile);
+        $.each(this.cfg.handlers, function (event, conf) {
+
+            var dispatch    = (conf.dispatch ? (conf.dispatch === 'self' ? me : conf.dispatch) : me);
+            var context     = (conf.context ? (conf.context === 'self' ? me : conf.context) : me);
+            var handler     = (conf.handler);
+
+            me.listenTo(dispatch, event, U.isFunction(handler) ? handler : context[handler]);
+
+        });
 
         $( document ).ajaxComplete(function( event, request ) {
+            var modal;
             if (request.status === 401) {
                 me.trigger(C.get('EVENT_UNAUTHORISED_RESPONSE'));
+            } else if (request.status === 404) {
+
+                // me.trigger(C.get('EVENT_404'));
+
+                modal = new S.view.Modal({
+                    events: { 'click [data-dismiss]': 'destroy' },
+                    modal: { show: true }
+                }).render();
+
+                modal.set({
+                    title: 'Not Found',
+                    body: 'Sorry, the requested URL was not found.',
+                    footer: '<button data-dismiss class="btn btn-default">Close</button>'
+                });
+
+            } else if (request.status === 500) {
+
+                // me.trigger(C.get('EVENT_500'));
+
+                modal = new S.view.Modal({
+                    events: { 'click [data-dismiss]': 'destroy' },
+                    modal: { show: true }
+                }).render();
+
+                modal.set({
+                    title: 'Error',
+                    body: 'The server responded with an error, please verify your data and try again in a few seconds.',
+                    footer: '<button data-dismiss class="btn btn-default">Close</button>'
+                });
+
+            }  else if (request.status === 403) {
+
+                // me.trigger(C.get('EVENT_500'));
+
+                modal = new S.view.Modal({
+                    events: { 'click [data-dismiss]': 'destroy' },
+                    modal: { show: true }
+                }).render();
+
+                modal.set({
+                    title: 'Error',
+                    body: 'You don\'t have permissions to access that resource.',
+                    footer: '<button data-dismiss class="btn btn-default">Close</button>'
+                });
+
             }
         });
 
@@ -58,7 +111,24 @@
                 cls: 'controller.Base',
                 cfg: { /* target: null, tenant: null */ }
             }
-        }
+        },
+        handlers: (function () {
+
+            var handlers = { };
+
+            /**
+             * A handler is comprised of
+             *  {'self' || object} context: the object containing the handler function. If omitted assumes 'self'.
+             *  {string || function} handler: the function that handles the event. In the case of a string, should match the name of a function that is part of 'context' object
+             *  {'self' || object} dispatch the object that dispatches the event. if omitted assumes 'self'.
+             */
+
+            handlers[C.get('EVENT_UNAUTHORISED_RESPONSE')]          = { handler: 'authenticate' };
+            handlers[C.get('EVENT_USER_AUTHENTICATION_SUCCESS')]    = { handler: 'setProfile' };
+
+            return handlers;
+
+        }) ()
     };
 
     Director.prototype = $.extend({}, S.EventProvider, {
@@ -75,6 +145,9 @@
             return this.cache('profile');
         },
         setProfile: function ( oProfile ) {
+            if ( !(oProfile instanceof S.model.Profile) ) {
+                oProfile = new S.model.Profile(oProfile);
+            }
             return this.cache('profile', oProfile);
         },
         authenticate: function () {
@@ -147,7 +220,7 @@
                 View    = S.get(oCfg.view.parasite.cls)  || S.get(oCfg.view.parasite.cls, window),
                 Bar     = oCfg.socialbar ? S.get(oCfg.socialbar.cls) : false;
 
-            var controller = new Ctrl({
+            var controller = new Ctrl(null, {
                 target: oCfg.target,
                 tenant: oCfg.tenant
             });
