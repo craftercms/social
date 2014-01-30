@@ -8,11 +8,11 @@
     Class = Superclass.extend({
 
         icons: {
-            reveal: 'cs-icon-eye-open',
-            hover: 'cs-icon-hand-up'
+            enabled: 'cs-icon-remove-sign',
+            disabled: 'cs-icon-ok-circle'
         },
 
-        icon: 'eye-open',
+        icon: 'remove-sign',
         title: 'Discussion',
         render: S.util.emptyFn,
         createUI: S.util.emptyFn,
@@ -27,33 +27,33 @@
 
         visibilityModeChanged: function (mode) {
             switch (mode) {
-
                 case C.get('AREA_VISIBILITY_MODE_REVEAL'):
-                    this.$trigger
-                        .find('.text:first')
-                            .text('Hover')
-                            .end()
-                        .find('i')
-                            .removeClass(this.icons.reveal)
-                            .addClass(this.icons.hover);
-                    break;
-                case C.get('AREA_VISIBILITY_MODE_HIDE'):
                 case C.get('AREA_VISIBILITY_MODE_HOVER'):
                     this.$trigger
                         .find('.text:first')
-                            .text('Reveal')
+                            .text('Disable')
                             .end()
                         .find('i')
-                            .removeClass(this.icons.hover)
-                            .addClass(this.icons.reveal);
+                            .removeClass(this.icons.disabled)
+                            .addClass(this.icons.enabled);
                     break;
+                case C.get('AREA_VISIBILITY_MODE_HIDE'):
+                    this.$trigger
+                        .find('.text:first')
+                            .text('Enable')
+                            .end()
+                        .find('i')
+                            .removeClass(this.icons.enabled)
+                            .addClass(this.icons.disabled);
+                    break;
+
             }
         },
 
         activate: function ( $trigger ) {
 
-            if (S.getDirector().getAreaVisibilityMode() !== C.get('AREA_VISIBILITY_MODE_REVEAL')) {
-                S.getDirector().setAreaVisibilityMode(C.get('AREA_VISIBILITY_MODE_REVEAL'));
+            if (S.getDirector().getAreaVisibilityMode() !== C.get('AREA_VISIBILITY_MODE_HIDE')) {
+                S.getDirector().setAreaVisibilityMode(C.get('AREA_VISIBILITY_MODE_HIDE'));
             } else {
                 S.getDirector().setAreaVisibilityMode(C.get('AREA_VISIBILITY_MODE_HOVER'));
             }
@@ -62,6 +62,6 @@
 
     });
 
-    S.define('view.barget.Reveal', Class, true);
+    S.define('view.barget.Disable', Class, true);
 
 }) (crafter.social);

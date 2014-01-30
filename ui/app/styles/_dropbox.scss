@@ -1,10 +1,17 @@
 
 // TODO MOVE THIS OUT OF HERE!
 .#{$app-namespace}-view.#{$app-namespace}-file-view {
+
+  background: #fff;
   margin: 0 0 10px 0;
+  border-radius: $border-radius-large;
 
   .cs-file {
     @include clearfix();
+    border: none;
+    padding: 15px;
+    background: #ebebeb;
+    border-radius: $border-radius-large;
   }
 
   .cs-file-upload {
@@ -25,10 +32,9 @@
 
 }
 
-.#{$app-namespace}-dropbox-element {
+.#{$app-namespace}-view.#{$app-namespace}-dropbox-element {
 
   padding: 10px;
-  width: 450px;
   border-radius: 10px;
   border: 2px dashed #ccc;
   color: #336699;
@@ -36,11 +42,37 @@
   margin-left: auto;
   margin-right: auto;
   min-height: 100px;
+  position: relative;
 
-  &:empty {
+  &.cs-dnd-upload-supported {
     &:before {
-      content: 'Drop your files here';
+      content: "Drag & Drop Files Here";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      padding-top: 40px;
+      color: $gray-light;
+      font-size: 30px;
     }
+  }
+
+  .alert.no-support {
+    margin-top: -10px;
+    margin-right: -10px;
+    margin-left: -10px;
+    border-radius: 10px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-style: none none solid;
+    position: relative;
+  }
+
+  .cs-files-list,
+  .cs-uploads-list {
+    position: relative;
   }
 
   .linear {

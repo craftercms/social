@@ -40,20 +40,42 @@ $popover-font-size: 12px;
       font-size: $font-size-base;
     }*/
 
+    .comment-flagged {
+      header {
+        .cs-icon-flag {
+          color: lighten($color-crimson, 15%);
+        }
+      }
+    }
+
+    .comment-trashed {
+      header {
+        .cs-icon-trash {
+          color: lighten($color-crimson, 15%);
+        }
+      }
+    }
+
     .body-wrapper {
       position: relative;
       padding-left: 35px;
       @include clearfix();
 
+      [class*="-trash"] {
+        margin-right: 5px;
+      }
+
+      [class*="-trash"],
       [class*="-flag"] {
-        color: lighten($color-crimson, 15%);
         &:hover {
           color: $color-crimson;
         }
       }
 
       .avatar {
+        border-radius: 100%;
         position: absolute;
+        overflow: hidden;
         left: 0;
         top: 0;
       }
@@ -106,6 +128,10 @@ $popover-font-size: 12px;
         > li {
           padding-left: 0;
         }
+      }
+
+      .like-data {
+        margin-top: 2px;
       }
 
     }
