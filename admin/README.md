@@ -97,6 +97,27 @@ Note*: To ask Tomcat for more memory than the value provided by default, create 
 
     export JAVA_OPTS="-Xms1024m -Xmx10246m -XX:NewSize=256m -XX:MaxNewSize=356m -XX:PermSize=256m -XX:MaxPermSize=356m"
 
+## Configuration
+
+This application depends on a config file named __clientOptions.properties__ that should be set in:
+~/moderation-dashboard/deploy/tomcat/shared/classes/crafter/social/extension/
+
+__Example of a config file__
+
+    tenant=craftercms
+    pagination.itemsPerPage=2
+    pagination.maxPageNumber=3
+    targetUrl.pattern:(.*?)(.com)
+    targetUrl.replace:$1.net
+
+Config Options:
+
+* __tenant__: Name of the tenant for which comments are being managed
+* __pagination.itemsPerPage__: Number of comments that will display per results page
+* __pagination.maxPageNumber__: Number of pagination options that will display in the pagination menu
+* __targetUrl.pattern__: Look for a regex pattern to replace in the target URLs
+* __targetUrl.replace__: Text used to replace the contents of _targetUrl.pattern_
+
 
 ## Usage
 
