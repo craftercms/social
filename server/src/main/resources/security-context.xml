@@ -16,6 +16,8 @@
     
     <util:map id="crafter.urlRestrictions">
     	<entry key="/api/2/tenant/**" value="hasAdminRole()"/>
+        <entry key="/api/2/permission/**" value="hasAdminRole()"/>
+        <entry key="/api/2/config/**" value="hasAdminRole()"/>
     	<entry key="/api/2/ugc/create*" value="hasCreatePermission()"/>
     	<entry key="/api/2/ugc/update*" value="hasUpdatePermission()"/>
     	<entry key="/api/2/ugc/delete*" value="hasDeletePermissions()"/>
@@ -27,6 +29,11 @@
     	<entry key="/api/2/ugc/flag/**" value="hasActOnPermission()"/>
         <entry key="/api/2/subscriptions" value="isAuthenticated()"/>
         <entry key="/api/2/subscriptions/**" value="isAuthenticated()"/>
+        <entry key="/api/2/subscriptions" value="isAuthenticated()"/>
+        <entry key="/api/2/subscriptions/**" value="isAuthenticated()"/>
+        <entry key="/api/2/ugc/*/add_attachments*" value="hasUpdatePermission()"/>
+        <entry key="/api/2/ugc/*/add_attachment*" value="hasUpdatePermission()"/>
+        <entry key="/api/2/ugc/*/set_attibutes*" value="hasUpdatePermission()"/>
     </util:map>
     
     

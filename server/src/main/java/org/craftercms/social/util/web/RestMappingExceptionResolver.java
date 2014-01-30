@@ -21,6 +21,8 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
@@ -36,8 +38,9 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
  *  resolve the status
  * @author cortiz
  */
-public class RestMappingExceptionResolver extends
-		SimpleMappingExceptionResolver {
+public class RestMappingExceptionResolver extends SimpleMappingExceptionResolver {
+
+    private final transient Logger log = LoggerFactory.getLogger(RestMappingExceptionResolver.class);
 
 	@Override
 	protected String determineViewName(Exception ex, HttpServletRequest request) {
@@ -46,11 +49,14 @@ public class RestMappingExceptionResolver extends
 
 	@Override
 	protected ModelAndView getModelAndView(String viewName, Exception ex) {
+        log.error(ex.getMessage(), ex);
+
 		ModelAndView mv = new ModelAndView(viewName);
 		HashMap<String,Object> map=new HashMap<String,Object>(); 
 		map.put("message", ex.getMessage());
 		map.put("localizedMessage", ex.getLocalizedMessage());
 		mv.addAllObjects(map);
+
 		return mv;
 	}
 	
