@@ -331,7 +331,7 @@ angular.module('moderationDashboard.services', ['ui.bootstrap.modal']).
                     CONFIG.API_PATH + "moderation/" + moderationStatus + "/count.json",
                     {
                         params: {
-                            tenant: ENV.config.tenant,
+                            tenant: ENV.config.tenant
                         },
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                     }
