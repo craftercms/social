@@ -3,6 +3,8 @@
 
     var noConflictReference = window.crafter;
 
+    var PLACEHOLDER_STR = '$placeholder$';
+
     // TODO Eventually we will have a crafter API file which will define this namespace
     var crafter = {
 
@@ -17,6 +19,25 @@
 
             ( typeof AMD === 'undefined' ) && ( AMD = true );
 
+            var me      = this;
+            var blocks  = [];
+            packageName = packageName.replace(/\{.*?\}/g, function ( match ) {
+
+                match = match.substr(1, (match.length - 2));
+
+                var expr = match.split(':');
+                if ( expr.length > 1 ) {
+                    if ( expr[0].toUpperCase() === 'CONST' ) {
+                        blocks.push( me.Constants.get(expr[1]) );
+                    }
+                } else {
+                    blocks.push( match );
+                }
+
+                return (PLACEHOLDER_STR);
+
+            });
+
             var current = root || this,
                 pieces = packageName.split('.'),
                 length = pieces.length,
@@ -25,6 +46,9 @@
 
             for(var i = 0; i < length; i++) {
                 namespace = pieces[i];
+                if (namespace === PLACEHOLDER_STR) {
+                    namespace = blocks.shift();
+                }
                 if (i === max && (typeof component !== 'undefined')) {
                     current[namespace] = component;
                 } else if (!(namespace in current)) {
@@ -74,13 +98,24 @@
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    var windowCopy = {  };
+    for (var prop in window) { windowCopy[prop] = window; }
+
     // Director class instance (singleton)
     var director;
+    var UNDEFINED = 'undefined';
 
     crafter.define('social', {
 
         window: window,
+        windowCopy: windowCopy,
         parentScope: crafter,
+
+        noConflict: function ( variable ) {
+            var current = this.window[variable];
+            this.window[variable] = this.windowCopy[variable];
+            return current;
+        },
 
         define: function () { crafter.define.apply(this, arguments); },
 
@@ -118,7 +153,7 @@
         },
 
         resource: function ( url ) {
-            return ('%@%@'.fmt(this.Cfg('url.base'), url));
+            return this.string.fmt('%@%@', this.Cfg('url.base'), url);
         },
 
         url: function ( url, formats ) {
@@ -131,19 +166,34 @@
                 formats = window.encodeURIComponent(formats);
             }
 
-            var service     = this.Cfg('url.service');
-            var protocol    = (service.match(URL_PROTOCOL_REGEXP) || [''])[0];
+            var service;
+            var protocol;
+            var path        = this.Cfg('url.' + url);
+            var absolute    = false;
 
-            return protocol + this.string.fmt(
-                '{base}/{path}/{action}', {
+            if (typeof path === 'object') {
+                (path.absolute) && (absolute = true);
+                path = path.value;
+            }
+
+            if (path.match(URL_PROTOCOL_REGEXP)) {
+                absolute = true;
+            }
+
+            if (!absolute) {
+                service     = this.Cfg('url.service');
+                // The protocol's double slash is the only double slash allowed in the formation
+                // of URLs so need to separate it for the replace not to break it.
+                protocol    = (service.match(URL_PROTOCOL_REGEXP) || [''])[0];
+            }
+
+            return (absolute ? path : (
+                protocol + this.string.fmt('{base}/{path}/{action}', {
                     base: service.substr(protocol.length),
                     path: url.replace(/\./g, '/'),
-                    action: this.Cfg('url.' + url)
-                })
-                .replace('/.json', '.json')
-                .replace(/[\/\/]+/g, '/')
-                .fmt(formats || {});
-
+                    action: path
+                }).replace('/.json', '.json').replace(/[\/\/]+/g, '/')
+            )).fmt(formats || {  });
         },
 
         getDirector: function (  ) {
@@ -156,6 +206,34 @@
 
             }
             return director;
+        },
+
+        string: {
+            fmt: function( str /* [ fmt1, fmt2, fm3 ] */ ) {
+                if (typeof arguments[1] === 'object') {
+                    var values = arguments[1];
+                    return str.replace(/\{.*?\}/g, function( match ){
+                        return values[match.substr(1, match.length - 2)];
+                    });
+                } else {
+                    var index  = 0,
+                        formats = Array.prototype.splice.call(arguments, 1);
+                    return str.replace(/%@([0-9]+)?/g, function(s, argIndex) {
+                        argIndex = (argIndex) ? parseInt(argIndex, 10) - 1 : index++;
+                        if (index >= formats.length) { index = 0; }
+                        s = formats[argIndex];
+                        return (s === null) ? '(null)' : (typeof s === UNDEFINED) ? '' : s;
+                    });
+                }
+            },
+            loc: function ( key ) {
+                var value = crafter.social.util.get(this.LOCALE, key);
+                return value;
+            },
+            LOCALE: {
+                months: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
+                days: ['Sunday','Monday','Tuesday','Wednesday', 'Thursday','Friday','Saturday']
+            }
         }
 
     });

@@ -51,6 +51,7 @@ public class ActionUtil {
         private static final List<String> UPDATE_ROLES = new ArrayList<String>(){
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
+            add(ActionConstants.SOCIAL_AUTHOR);
 			add(ActionConstants.OWNER);
 		}
 	};
