@@ -229,7 +229,7 @@ angular.module('moderationDashboard.controllers', []).
          'ACTIONS',
          'ENV', function (scope, UgcApi, DeletePopupService, PaginationService, ACTIONS, ENV) {
 
-        var commentsSelected = function () {
+        var commentsSelected = function (event) {
             var listItems = [];
             $('.entries-list .selector').each(function (index) {
                 if ($(this).prop('checked')){
@@ -264,7 +264,7 @@ angular.module('moderationDashboard.controllers', []).
             }
 
             // check if an item has been selected
-            listItems = commentsSelected();
+            listItems = commentsSelected(event);
             if (listItems === null){
                 return;
             }

@@ -3,6 +3,7 @@ package org.craftercms.social.util;
 import org.apache.commons.collections.MapUtils;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
+import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.authentication.AuthenticationToken;
 import org.craftercms.social.domain.Subscriptions;
 
@@ -37,6 +38,16 @@ public class ProfileUtils {
         } else {
             return null;
         }
+    }
+
+    public static Profile getAnonymousProfile() {
+        Profile profile = new Profile();
+        profile.setId(null);
+        profile.setUserName(SecurityConstants.ANONYMOUS_USERNAME);
+        profile.setPassword("");
+        profile.setActive(true);
+
+        return profile;
     }
 
 }
