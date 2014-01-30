@@ -1,5 +1,6 @@
 /* jshint -W106 */
 crafter.social.Editor.editorConfig = function( config ) {
+    'use strict';
 
     // Define changes to default configuration here.
     // For the complete reference:
