@@ -20,6 +20,11 @@
             }
         },
 
+        parse: function (model) {
+            model.url = S.string.fmt(S.Cfg('url.files'), model);
+            return model;
+        },
+
         detach: function () {
 
         },

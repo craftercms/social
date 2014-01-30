@@ -1,8 +1,7 @@
 (function (social) {
     'use strict';
 
-    var UNDEFINED = 'undefined',
-        window = social.window;
+    var window = social.window;
 
     // Cache libs.
     social.$ = window.$.noConflict();
@@ -11,6 +10,18 @@
     social.EventProvider = social.underscore.clone(social.Backbone.Events);
 
     var $ = social.$;
+
+    // TODO: temporary, remove.
+    // TODO: might be worth supportting it, make it a setting
+    // TODO: doesn't work on firefox
+    ///*
+    $.support.cors = true;
+    (social.window.navigator.userAgent.toLowerCase().indexOf('firefox') === -1) && $.ajaxSetup({
+        crossDomain: true,
+        xhrFields: { withCredentials: true }/*,
+        headers: { 'Access-Control-Allow-Origin': '*' }*/
+    });
+    //*/
 
     social.define('request', $.ajax, false);
 
@@ -74,7 +85,8 @@
         },
 
         isHTML: (function () {
-            var regexp = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/;
+            // var regexp = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/
+            var regexp = /(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/;
             return function ( selector ) {
                 return regexp.exec( selector );
             };
@@ -109,34 +121,6 @@
         }) ()
 
     }), false);
-
-    social.define('string', {
-        fmt: function( str /* [ fmt1, fmt2, fm3 ] */ ) {
-            if (typeof arguments[1] === 'object') {
-                var values = arguments[1];
-                return str.replace(/\{.*?\}/g, function( match ){
-                    return values[match.substr(1, match.length - 2)];
-                });
-            } else {
-                var index  = 0,
-                    formats = Array.prototype.splice.call(arguments, 1);
-                return str.replace(/%@([0-9]+)?/g, function(s, argIndex) {
-                    argIndex = (argIndex) ? parseInt(argIndex, 10) - 1 : index++;
-                    if (index >= formats.length) { index = 0; }
-                    s = formats[argIndex];
-                    return (s === null) ? '(null)' : (typeof s === UNDEFINED) ? '' : s;
-                });
-            }
-        },
-        loc: function ( key ) {
-            var value = social.util.get(this.LOCALE, key);
-            return value;
-        },
-        LOCALE: {
-            months: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
-            days: ['Sunday','Monday','Tuesday','Wednesday', 'Thursday','Friday','Saturday']
-        }
-    }, 'social.string');
 
     // Prototype Extensions
 
