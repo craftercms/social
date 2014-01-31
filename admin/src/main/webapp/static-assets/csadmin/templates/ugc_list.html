@@ -78,24 +78,32 @@
                             <div class="entry-wrapper" 
                                  ng-class="{ expandable: ugc.isExpandable && !editMode }">
 
-                                <span class="last-update">
-                                    Submitted on: <span class="date">{{ugc.creationDate}}</span>
-                                </span>
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <span class="last-update">
+                                            Submitted on: <span class="date">{{ugc.creationDate}}</span>
+                                        </span>
+                                    </div>
+                                    <div class="span8">
+                                        <a  class="target-url pull-right"
+                                            ng-if="ugc.targetText && ugc.targetUrlMod"
+                                            target="_blank"
+                                            ng-href="{{ugc.targetUrlMod}}">{{ugc.targetText}}</a>
+                                    </div>
+                                </div>
 
-                                <a  class="target-url" 
-                                    ng-if="ugc.targetText && ugc.targetUrlMod" 
-                                    target="_blank" 
-                                    ng-href="{{ugc.targetUrlMod}}">{{ugc.targetText}}</a>
+
+
 
                                 <form novalidate ng-submit="updateUGCContent(ugc)">
                                     <div class="read-mode" ng-hide="editMode">
                                         <h4>{{ugc.title}}</h4>
 
                                         <div class="ugc-content summary" 
-                                             ng-hide="fullContent">{{ugc.teaser}}</div>
+                                             ng-hide="fullContent" ng-bind-html="ugc.teaser"></div>
 
                                         <div class="ugc-content full" 
-                                             ng-show="fullContent">{{ugc.textContent}}</div>
+                                             ng-show="fullContent" ng-bind-html="ugc.textContent"></div>
                                     </div>
                                     <div class="edit-mode" ng-show="editMode">
 
