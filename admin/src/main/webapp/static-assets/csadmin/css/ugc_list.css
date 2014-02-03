@@ -51,8 +51,14 @@ select {
 }
 
 .entries-list input {
-    margin: 0 0 0 10px;
+    margin: 0 0 0 5px;
     padding: 0;
+}
+
+@media (max-width: 768px) {
+    .entries-list .author-section img {
+        width: 50%;
+    }
 }
 
 /* alerts entries list */
@@ -150,9 +156,7 @@ select {
 }
 
 .entry-wrapper .target-url {
-    position: absolute;
-    right: 10px;
-    top: 0;
+
 }
 
 /* header */
@@ -163,7 +167,7 @@ select {
 
 .heading-wrapper input {
     height: 30px;
-    margin: 0 0 0 10px;
+    margin: 0 0 0 5px;
     padding: 0;
 }
 

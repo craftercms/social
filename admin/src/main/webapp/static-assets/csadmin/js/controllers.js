@@ -79,11 +79,11 @@ angular.module('moderationDashboard.controllers', []).
             UgcApi.getUgcList(conf).then(function (data) {
                 if (data) {
                     var tmpList = [],
-                        teaser, isExpandable;
+                        teaser, isExpandable, contentTmp;
 
                     angular.forEach(data, function (ugc){
-
-                        teaser = cropText(ugc.textContent, 200);
+                        contentTmp = angular.fromJson(ugc.textContent);
+                        teaser = cropText(contentTmp.content, 400);
                         isExpandable = (teaser == ugc.textContent) ? false : true;
 
                         tmpList.push({
@@ -91,15 +91,15 @@ angular.module('moderationDashboard.controllers', []).
                             'id': ugc.id,
                             'teaser': teaser,
                             'isExpandable': isExpandable,
-                            'textContent': ugc.textContent,
+                            'textContent': contentTmp.content,
                             'moderationStatus': ugc.moderationStatus,
                             'creationDate': scope.getDateTime(ugc.creationDate),
                             'displayName': ugc.profile.displayName,
                             'userImg': CONFIG.IMAGES_PATH + "profile-photo.jpg",
                             'targetId': ugc.targetId,
-                            'targetUrl': ugc.targetUrl,
+                            'targetUrl': "http://www.google.com",
                             'targetUrlMod': getTargetUrl(ugc.targetUrl, ENV.config.targetUrl),
-                            'targetText': ugc.targetDesc,
+                            'targetText': "Appendix B. Detailed Mapping Enterprise Goals—IT-related Goals (par. 1)",
                             'updated': false,
                             'updateMessage': "",
                             'alertClass': "",
