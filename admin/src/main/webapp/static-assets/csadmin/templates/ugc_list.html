@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div>
     <!-- ugc navigation -->
     <div class="row-fluid">
         <nav class="span12">
@@ -78,24 +78,32 @@
                             <div class="entry-wrapper" 
                                  ng-class="{ expandable: ugc.isExpandable && !editMode }">
 
-                                <span class="last-update">
-                                    Submitted on: <span class="date">{{ugc.creationDate}}</span>
-                                </span>
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <span class="last-update">
+                                            Submitted on: <span class="date">{{ugc.creationDate}}</span>
+                                        </span>
+                                    </div>
+                                    <div class="span8">
+                                        <a  class="target-url pull-right"
+                                            ng-if="ugc.targetText && ugc.targetUrlMod"
+                                            target="_blank"
+                                            ng-href="{{ugc.targetUrlMod}}">{{ugc.targetText}}</a>
+                                    </div>
+                                </div>
 
-                                <a  class="target-url" 
-                                    ng-if="ugc.targetText && ugc.targetUrlMod" 
-                                    target="_blank" 
-                                    ng-href="{{ugc.targetUrlMod}}">{{ugc.targetText}}</a>
+
+
 
                                 <form novalidate ng-submit="updateUGCContent(ugc)">
                                     <div class="read-mode" ng-hide="editMode">
                                         <h4>{{ugc.title}}</h4>
 
                                         <div class="ugc-content summary" 
-                                             ng-hide="fullContent">{{ugc.teaser}}</div>
+                                             ng-hide="fullContent" ng-bind-html="ugc.teaser"></div>
 
                                         <div class="ugc-content full" 
-                                             ng-show="fullContent">{{ugc.textContent}}</div>
+                                             ng-show="fullContent" ng-bind-html="ugc.textContent"></div>
                                     </div>
                                     <div class="edit-mode" ng-show="editMode">
 
@@ -106,10 +114,19 @@
                                         <textarea   class="content"
                                                     ng-model="ugc.textContent" 
                                                     ng-show="editMode" />
-                                        <button type="submit" 
-                                                class="btn btn-primary btn-sm" 
-                                                ng-show="editMode"
-                                                ng-click="editMode=!editMode">Done</button>
+
+                                        <div class="btn-group">
+                                            <button type="submit"
+                                                    class="btn btn-primary btn-sm"
+                                                    ng-show="editMode"
+                                                    ng-click="editMode=!editMode">Done</button>
+
+                                            <button class="btn btn-primary btn-sm"
+                                                    ng-show="editMode"
+                                                    type="button"
+                                                    ng-click="editMode=!editMode">Cancel</button>
+                                        </div>
+
                                     </div> 
                                 </form>
 
