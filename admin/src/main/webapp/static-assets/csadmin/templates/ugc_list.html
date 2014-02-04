@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div>
     <!-- ugc navigation -->
     <div class="row-fluid">
         <nav class="span12">
@@ -114,10 +114,19 @@
                                         <textarea   class="content"
                                                     ng-model="ugc.textContent" 
                                                     ng-show="editMode" />
-                                        <button type="submit" 
-                                                class="btn btn-primary btn-sm" 
-                                                ng-show="editMode"
-                                                ng-click="editMode=!editMode">Done</button>
+
+                                        <div class="btn-group">
+                                            <button type="submit"
+                                                    class="btn btn-primary btn-sm"
+                                                    ng-show="editMode"
+                                                    ng-click="editMode=!editMode">Done</button>
+
+                                            <button class="btn btn-primary btn-sm"
+                                                    ng-show="editMode"
+                                                    type="button"
+                                                    ng-click="editMode=!editMode">Cancel</button>
+                                        </div>
+
                                     </div> 
                                 </form>
 
