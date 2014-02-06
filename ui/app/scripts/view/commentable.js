@@ -209,17 +209,6 @@
                 url: S.url((watched ? 'subscriptions.unsubscribe' : 'subscriptions.subscribe'), {
                     target: this.cfg.target
                 }),
-                /*url: '/api/1/notifications/' + (watched ? 'remove' : 'add') + '.json?target=%@&title=%@&url=%@'.fmt(
-                    encodeURIComponent(this.cfg.target),
-                    toc.getCommentTitleById(this.cfg.target),
-                    toc.getCommentUrlById(this.cfg.target)
-                ),*/
-                /*url: '/api/2/subscriptions/' + (watched ? 'unsubscribe' : 'subscribe') + '/%@.json?target=%@&title=%@&url=%@'.fmt(
-                    encodeURIComponent(this.cfg.target),
-                    encodeURIComponent(this.cfg.target),
-                    toc.getCommentTitleById(this.cfg.target),
-                    toc.getCommentUrlById(this.cfg.target)
-                ),*/
                 success: function () {
                     collection.setIsWatched(!watched);
                 },
