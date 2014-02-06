@@ -356,7 +356,7 @@
             // TODO fallback to input[type="file"]?
             // TODO use modal instead of an alert?
             // alert('Your browser does not support the necessary features to use drag and drop file uploading');
-            $(this.element).append('<div class="alert alert-warning no-support">Your browser does not support the necessary features to use drag and drop file uploading. Please use a modern up to date browser.</div>');
+            $(this.element).prepend('<div class="alert alert-warning no-support">Your browser does not support the necessary features to upload files on this site. Please use a modern up to date browser.</div>');
         } else {
             $(this.element).addClass('cs-dnd-upload-supported');
         }
