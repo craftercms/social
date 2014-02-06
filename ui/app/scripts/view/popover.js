@@ -49,6 +49,10 @@
                     me.visible = false;
                 })
                 .on('shown.bs.popover', function () {
+
+                    var view = me.cache('commentingView');
+                    view && view.editor();
+
                     me.trigger('visibility.change', true);
                     me.visible = true;
                 });
@@ -167,6 +171,8 @@
          */
 
         hide: function () {
+
+            this.cache('commentingView').editor('destroy');
 
             var e = $.Event('hide.bs.' + this.type);
 

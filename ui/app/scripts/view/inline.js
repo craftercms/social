@@ -31,11 +31,17 @@
         },
 
         show: function () {
+
             this.$el.insertAfter(this.cfg.target);
             this.addAll();
+
+            var view = this.cache('commentingView');
+            view && view.editor();
+
         },
 
         hide: function () {
+            this.cache('commentingView').editor('destroy');
             this.$el.detach();
         }
 
