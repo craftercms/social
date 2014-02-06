@@ -97,7 +97,7 @@
                 'footer': '.modal-footer'
             }[section]);
 
-            if ( content instanceof HTMLElement || content instanceof $ ) {
+            if ( (typeof content === 'object') && (('nodeType' in content) || (content instanceof $)) ) {
                 $selection.html('').append(content);
             } else if (U.isHTML(content)){
                 $selection.html(content);
