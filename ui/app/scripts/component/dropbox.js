@@ -380,6 +380,8 @@
             fileUI = display.querySelector('[data-dropbox-file-id="' + file.id + '"]'),
             elemProgress = fileUI.querySelector(cfg.progress);
 
+        xhr.withCredentials = true;
+
         var error = function () {
             var response = xhr.responseText;
             fileUI.innerHTML = tmpl(cfg.templateUploadError, {
