@@ -18,8 +18,7 @@
     $.support.cors = true;
     (social.window.navigator.userAgent.toLowerCase().indexOf('firefox') === -1) && $.ajaxSetup({
         crossDomain: true,
-        xhrFields: { withCredentials: true }/*,
-        headers: { 'Access-Control-Allow-Origin': '*' }*/
+        xhrFields: { withCredentials: true }
     });
     //*/
 
@@ -146,6 +145,12 @@
                 if (!result) { break; }
             }
             return result;
+        };
+    }
+
+    if ( !Date.now ) {
+        Date.now = function () {
+            return new Date().getTime();
         };
     }
 
