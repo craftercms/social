@@ -154,4 +154,24 @@
         };
     }
 
+    if ( !window.JSON ) {
+
+        window.JSON = {
+            parse: function ( json ) {
+
+                var regExp = /[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/;
+                var test   = json.replace(/"(\\.|[^"\\])*"/g, '');
+
+                if ( !(regExp.test(test)) ) {
+                    // jshint -W061
+                    return eval('(' + json + ')');
+                } else {
+                    var error = 'Supplied content is not JSON';
+                    throw ('Error' in window) ? new Error(error) : error;
+                }
+            }
+        };
+
+    }
+
 }) (crafter.social);
