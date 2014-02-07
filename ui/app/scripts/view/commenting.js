@@ -22,10 +22,13 @@
 
             var editor = this.cache('editor');
 
-            if ( option === 'destroy' && editor ) {
+            if ( option === 'destroy' ) {
 
-                editor.destroy();
-                this.cache('editor', S.Constants.get('DESTROY'));
+                if ( editor ) {
+                    editor.destroy();
+                    this.cache('editor', S.Constants.get('DESTROY'));
+                }
+
                 return;
 
             }
@@ -33,45 +36,40 @@
             if (!editor) {
 
                 var me = this;
+                editor = me.cache('editor');
 
-                // TODO Inialisation problem (not reliable fix)
-                // seems at lightbox initialisation CKE is not able to manipulate all elements
-                // possibly due to lighbox being not yet fully visible (show animation)
-                setTimeout(function () {
+                if (!editor) {
 
-                    editor = me.cache('editor');
-                    if (!editor) {
+                    var mode        = me.cfg.editorMode;
+                    var $container  = me.$('.textarea:first');
+                    var $textarea   = $container.find('textarea:first');
 
-                        var mode        = me.cfg.editorMode;
-                        var $container  = me.$('.textarea:first');
-                        var $textarea   = $container.find('textarea:first');
+                    $container.addClass('editor-mode-' + mode);
 
-                        $container.addClass('editor-mode-' + mode);
+                    editor = CKEDITOR[mode]($textarea.get(0), $.extend({
+                        on: {
+                            pluginsLoaded: function () {
 
-                        editor = CKEDITOR[mode]($textarea.get(0), $.extend({
-                            on: {
-                                pluginsLoaded: function () {
+                                this.addCommand('_enterpressed_', {
+                                    exec : function( /* editor, data */ ) {
+                                        me.comment();
+                                    }
+                                });
 
-                                    this.addCommand('_enterpressed_', {
-                                        exec : function( /* editor, data */ ) {
-                                            me.comment();
-                                        }
-                                    });
+                                this.keystrokeHandler.keystrokes[CKEDITOR.SHIFT + 13] = '_enterpressed_';
 
-                                    this.keystrokeHandler.keystrokes[CKEDITOR.SHIFT + 13] = '_enterpressed_';
-
-                                }
                             }
-                        }, me.cfg.editor));
+                        }
+                    }, me.cfg.editor));
 
-                        me.cache('editor', editor);
+                    me.cache('editor', editor);
 
-                    }
-
-                }, 250);
+                }
 
             }
+
             return editor;
+
         },
 
         comment: function () {
