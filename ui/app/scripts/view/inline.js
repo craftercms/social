@@ -47,7 +47,7 @@
 
     });
 
-    Inline.DEFAULTS = {
+    Inline.DEFAULTS = $.extend({}, Discussion.DEFAULTS, {
         viewOptions: {
             hidden: ['inline.request']
         },
@@ -72,7 +72,7 @@
                 '</div>'
             ].join('')
         }
-    };
+    });
 
     S.define('view.Inline', Inline);
 
