@@ -69,11 +69,9 @@
 
         backdrop: function () {
             $.fn.modal.Constructor.prototype.backdrop.apply(this, arguments);
-
-            this.$backdrop
+            this.$backdrop && this.$backdrop
                 .removeClass('modal-backdrop')
                 .addClass('crafter-social-modal-view-backdrop');
-
         },
 
         render: function () {
