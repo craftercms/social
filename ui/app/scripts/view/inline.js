@@ -41,8 +41,12 @@
         },
 
         hide: function () {
-            this.cache('commentingView').editor('destroy');
+
+            var view = this.cache('commentingView');
+            view && view.editor('destroy');
+
             this.$el.detach();
+
         }
 
     });

@@ -172,7 +172,8 @@
 
         hide: function () {
 
-            this.cache('commentingView').editor('destroy');
+            var view = this.cache('commentingView');
+            view && view.editor('destroy');
 
             var e = $.Event('hide.bs.' + this.type);
 
