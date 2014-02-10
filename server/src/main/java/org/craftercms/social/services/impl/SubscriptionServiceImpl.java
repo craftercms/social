@@ -46,7 +46,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             profile.setAttributes(attributes);
         }
 
-        List<String> targets = (List<String>) attributes.get(Subscriptions.ATTRIBUTE_TARGETS);
+        List<String> targets = Subscriptions.getTargetsAsList(attributes);
         if (targets == null) {
             targets = new ArrayList<String>();
         }

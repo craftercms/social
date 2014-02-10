@@ -2,12 +2,17 @@ package org.craftercms.social.domain;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.craftercms.social.services.SubscriptionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.*;
 
 
 public class Subscriptions implements Serializable {
+
+    private static final Logger logger = LoggerFactory.getLogger(SubscriptionService.class);
 
     public static final String ATTRIBUTE_FREQUENCY =    "subscriptions_frequency";
     public static final String ATTRIBUTE_ACTION =       "subscriptions_action";
@@ -28,7 +33,7 @@ public class Subscriptions implements Serializable {
             subscriptions.setAction((String) attributes.get(ATTRIBUTE_ACTION));
             subscriptions.setFormat((String) attributes.get(ATTRIBUTE_FORMAT));
             subscriptions.setAutoWatch(Boolean.parseBoolean((String) attributes.get(ATTRIBUTE_AUTO_WATCH)));
-            subscriptions.setTargets((List<String>) attributes.get(ATTRIBUTE_TARGETS));
+            subscriptions.setTargets(getTargetsAsList(attributes));
 
             return subscriptions;
         } else {
@@ -48,6 +53,28 @@ public class Subscriptions implements Serializable {
         attributes.put(ATTRIBUTE_TARGETS, subscriptions.getTargets());
 
         return attributes;
+    }
+
+    public static List<String> getTargetsAsList(Map<String, Object> attributes) {
+        Object targets = attributes.get(ATTRIBUTE_TARGETS);
+        if (targets != null) {
+            if (targets instanceof List){
+                return (List<String>) targets;
+            } else if (targets instanceof String) {
+                logger.warn("Targets are not of type List, and instead are of type String, with value '{}'. " +
+                        "Trying to parse them", targets);
+
+                String targetsStr = StringUtils.strip((String) targets, "[]");
+                String[] targetsArray = targetsStr.split(",");
+
+                return new ArrayList<String>(Arrays.asList(targetsArray));
+            } else {
+                logger.warn("Targets are not of type List, and instead are of type {}, with value {}. Unable " +
+                        "to parse targets", targets.getClass().getName(), targets);
+            }
+        }
+
+        return new ArrayList<String>();
     }
 	
 	public Subscriptions() {
