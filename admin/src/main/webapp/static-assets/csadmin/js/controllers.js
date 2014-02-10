@@ -41,6 +41,22 @@ angular.module('moderationDashboard.controllers', []).
             return targetUrl;
         }
 
+        function getTeaserAndContent(ugc) {
+            var retVal = {}, content;
+
+            try {
+                content = angular.fromJson(ugc.textContent).content;
+                retVal.content = content;
+            }catch(SyntaxError) {
+                retVal.content = ugc.textContent;
+            }finally {
+                retVal.teaser = cropText(retVal.content, 400);
+                retVal.isExpandable = (retVal.teaser == ugc.textContent) ? false : true;
+            }
+
+            return retVal;
+        }
+
         scope.updateUGCContent = function (ugc) {            
             var callConfig, ugcData;
 
@@ -79,27 +95,25 @@ angular.module('moderationDashboard.controllers', []).
             UgcApi.getUgcList(conf).then(function (data) {
                 if (data) {
                     var tmpList = [],
-                        teaser, isExpandable;
+                        commentObj = {};
 
                     angular.forEach(data, function (ugc){
-
-                        teaser = cropText(ugc.textContent, 200);
-                        isExpandable = (teaser == ugc.textContent) ? false : true;
+                        commentObj = getTeaserAndContent(ugc);
 
                         tmpList.push({
                             'title': ugc.subject,
                             'id': ugc.id,
-                            'teaser': teaser,
-                            'isExpandable': isExpandable,
-                            'textContent': ugc.textContent,
+                            'teaser': commentObj.teaser,
+                            'isExpandable': commentObj.isExpandable,
+                            'textContent': commentObj.content,
                             'moderationStatus': ugc.moderationStatus,
                             'creationDate': scope.getDateTime(ugc.creationDate),
                             'displayName': ugc.profile.displayName,
                             'userImg': CONFIG.IMAGES_PATH + "profile-photo.jpg",
                             'targetId': ugc.targetId,
-                            'targetUrl': ugc.targetUrl,
+                            'targetUrl': "http://www.google.com",
                             'targetUrlMod': getTargetUrl(ugc.targetUrl, ENV.config.targetUrl),
-                            'targetText': ugc.targetDesc,
+                            'targetText': "Appendix B. Detailed Mapping Enterprise Goals—IT-related Goals (par. 1)",
                             'updated': false,
                             'updateMessage': "",
                             'alertClass': "",
