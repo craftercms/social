@@ -658,12 +658,15 @@
             }) ()) {
 
                 var $el = $(this.element).parent();
-                $el.addClass('cs-dnd-upload-supported');
+
                 this.__dragenter = function () { $el.addClass('dropbox-dragover'); };
                 this.__dragleave = function () { $el.removeClass('dropbox-dragover'); };
+
                 $(document)
                     .bind('dragover dragenter', this.__dragenter)
                     .bind('dragleave drop', this.__dragleave);
+
+                $el.parent().prepend('<div style="margin-bottom: 10px; text-align: center"><i class="crafter-social-icon cs-icon-info-sign"></i> You may drag and drop files from your desktop to upload them.</div>');
 
             }
 
