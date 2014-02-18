@@ -51,7 +51,7 @@
 
     Base.DEFAULTS = {
         tenant: null,
-        target: null,
+        target: null
         // TODO url: '' or { ... } ?
     };
 

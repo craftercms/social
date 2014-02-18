@@ -9,7 +9,7 @@
     Bar = Base.extend({
 
         events: {
-            'dblclick .control-element': 'toggle',
+            'click .control-element': 'toggle',
             'click [data-activate-widget]': 'activate',
 
             'click .social-utilities a': function (e) {

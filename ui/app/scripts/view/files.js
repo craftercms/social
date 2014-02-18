@@ -11,7 +11,9 @@
 
         className: [
             Base.prototype.className,
-            'crafter-social-files-view'
+            'crafter-social-view',
+            'crafter-social-files-view',
+            'crafter-social-dropbox-element'
         ].join(' '),
 
         listen: function () {
