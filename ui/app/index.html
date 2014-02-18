@@ -34,7 +34,7 @@
     <div class="jumbotron" id="jumbotron">
         <h1><i class="glyphicon glyphicon-info-sign"></i> 'Allo, 'Allo!</h1>
         <p class="lead">Always a pleasure scaffolding your apps.</p>
-        <p><a class="btn btn-lg btn-success" href="#">Splendid!</a></p>
+        <p><a class="btn btn-lg btn-success" href="javascript:crafter.social.getDirector().authenticate()">Splendid!</a></p>
     </div>
     <div class="row marketing">
         <div class="col-lg-6">
@@ -107,6 +107,7 @@
      * imported into the page
      */
     var crafterSocial_cfg = (function () {
+
         var cfg = {
 
 //                'url.base'                      : '/',
@@ -128,7 +129,9 @@
                  } */
 
         };
+
         return cfg;
+
     }) ();
 
     /*
@@ -142,6 +145,11 @@
      */
     function crafterSocial_onAppReady ( director, CrafterSocial ) {
         // console.log('Crafter Social is Ready!');
+
+
+//        var div = document.createElement('div');
+//        alert('ondragover' in div);
+
 
         director.socialise({
             target: '#jumbotron',
@@ -166,7 +174,8 @@
             roles: [
                 'SOCIAL_ADVISORY',
                 'SOCIAL_ADMIN',
-                'SOCIAL_MODERATOR'
+                'SOCIAL_MODERATOR',
+                'SOCIAL_AUTHOR'
             ]
         })
 
@@ -192,9 +201,10 @@
 
 <script src="libs/handlebars/handlebars.js"></script>
 <script src="libs/jquery/jquery.js"></script>
+<script src="scripts/vendor/jquery-browser-plugin/dist/jquery.browser.min.js"></script>
 <script src="libs/underscore/underscore.js"></script>
 <script src="libs/backbone/backbone.js"></script>
-<script src="libs/ckeditor/ckeditor.js"></script>
+<script src="libs/ckeditor/ckeditor-debug.js"></script>
 <script src="scripts/component/ckeditor/plugins/autogrow/plugin.js"></script>
 <script src="libs/sass-bootstrap/js/transition.js"></script>
 <script src="libs/sass-bootstrap/js/tooltip.js"></script>
@@ -202,12 +212,18 @@
 <script src="libs/sass-bootstrap/js/modal.js"></script>
 <script src="libs/sass-bootstrap/js/dropdown.js"></script>
 
+<script src="libs/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="libs/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="libs/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="libs/jquery-file-upload/js/jquery.fileupload-process.js"></script>
+<script src="libs/jquery-file-upload/js/jquery.fileupload-validate.js"></script>
+
 <script src="scripts/api.js"></script>
 
-<script src="scripts/component/dropbox.js"></script>
 <script src="scripts/component/director.js"></script>
 <script src="scripts/component/editor.js"></script>
 <script src="scripts/component/template-engine.js"></script>
+<script src="scripts/component/uploader.js"></script>
 
 <script src="scripts/model/profile.js"></script>
 <script src="scripts/model/file.js"></script>
@@ -229,9 +245,6 @@
 <script src="scripts/view/barget/base.js"></script>
 <script src="scripts/view/barget/reveal.js"></script>
 <script src="scripts/view/barget/disable.js"></script>
-<!--<script src="scripts/view/barget/feedback.js"></script>-->
-<!--<script src="scripts/view/barget/share.js"></script>-->
-<!--<script src="scripts/view/barget/rate.js"></script>-->
 <script src="scripts/view/social-bar.js"></script>
 <script src="scripts/view/auth.js"></script>
 <script src="scripts/view/file.js"></script>
