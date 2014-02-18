@@ -24,7 +24,9 @@
         // Dynamic Constants
         //
         EVENT_REVEAL_DISCUSSIONS        : 'crafter.social.reveal.discussions.{tenant}:{target}',
-        EVENT_DISCUSSION_WATCHED        : 'crafter.social.discussion.watched.{tenant}:{target}'
+        EVENT_DISCUSSION_WATCHED        : 'crafter.social.discussion.watched.{tenant}:{target}',
+
+        DESTROY: { }
 
     };
 

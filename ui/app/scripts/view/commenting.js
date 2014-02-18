@@ -18,31 +18,58 @@
             'click [data-action-comment]': 'comment'
         },
 
-        editor: function () {
+        editor: function ( option ) {
+
             var editor = this.cache('editor');
+
+            if ( option === 'destroy' ) {
+
+                if ( editor ) {
+                    editor.destroy();
+                    this.cache('editor', S.Constants.get('DESTROY'));
+                }
+
+                return;
+
+            }
+
             if (!editor) {
 
-                var $textarea = this.$('textarea'),
-                    me = this;
+                var me = this;
+                editor = me.cache('editor');
 
-                setTimeout(function () {
-                    editor = CKEDITOR[me.cfg.editorMode]($textarea.get(0), $.extend({
+                if (!editor) {
+
+                    var mode        = me.cfg.editorMode;
+                    var $container  = me.$('.textarea:first');
+                    var $textarea   = $container.find('textarea:first');
+
+                    $container.addClass('editor-mode-' + mode);
+
+                    editor = CKEDITOR[mode]($textarea.get(0), $.extend({
                         on: {
                             pluginsLoaded: function () {
+
                                 this.addCommand('_enterpressed_', {
                                     exec : function( /* editor, data */ ) {
                                         me.comment();
                                     }
                                 });
+
                                 this.keystrokeHandler.keystrokes[CKEDITOR.SHIFT + 13] = '_enterpressed_';
+
                             }
                         }
                     }, me.cfg.editor));
-                }, 200);
 
-                this.cache('editor', editor);
+                    me.cache('editor', editor);
+
+                }
+
             }
+
             return editor;
+
         },
 
         comment: function () {
@@ -98,13 +125,15 @@
                 return ('%@commenting.hbs').fmt(S.Cfg('url.templates'));
             }
         },
-//        editorMode: 'inline',
-//        editorMode: 'appendTo',
-        editorMode: 'replace',
-        /* jshint -W106 */
-        // http://docs.ckeditor.com/#!/api/CKEDITOR.config
-        editor: {
 
+//        editorMode: 'inline',
+        editorMode: 'replace',
+//        editorMode: 'appendTo',
+
+        /**
+         * @see http://docs.ckeditor.com/#!/api/CKEDITOR.config
+         *//* jshint -W106 */
+        editor: {
             autoGrow_bottomSpace: 0,
             autoGrow_maxHeight: 800,
             autoGrow_minHeight: 0,

@@ -137,6 +137,10 @@
             }
         },
 
+        _dragOverFn: function (e) {
+            e.preventDefault();
+        },
+
         files: function () {
 
             var me    = this;
@@ -155,80 +159,48 @@
 
             var Modal  = S.get('view.Modal');
             var modal  = new Modal({
-                modal: { show: true }
+                modal: { show: true, keyboard: false, backdrop: 'static' }
+            });
+
+            modal.$el.on('hidden.bs.modal', function () {
+                me.model.fetch();
+                modal.uploader.fileupload('destroy');
+                modal.destroy();
             });
 
             if (this.model.get('flags') === 0) {
 
-                var Dropbox = S.get('component.Dropbox');
-                var db = new Dropbox({
+                var URL = S.url('ugc.{id}.add_attachment', model.toJSON());
 
-                    element: view.el,
-                    display: view.$('.cs-uploads-list'),
+                modal.$el.on('shown.bs.modal', function () {
 
-                    uploadPostKey: 'attachment',
-                    target: S.url('ugc.{id}.add_attachment', model.toJSON()),
-                    formData: { tenant: model.get('tenant') },
-
-                    template: view.getTemplate('file'),
-                    templateUploadError: [
-                        /* jshint -W015 */
-                        '<div class="alert alert-danger {{theme.fileError}}">',
-                            '<span>An error has occurred trying to upload <i>"{{file.name}}"</i>.</span>', ' ',
-                            // TODO dismissing the message keeps the file UI container, remove it?
-                            '<a onclick="this.parentNode.parentNode.removeChild(this.parentNode)">Dismiss Message</a>',
-                        '</div>'
-                    ].j(),
-
-                    theme: {
-                        fileDisplay: 'crafter-social-view crafter-social-file-view'
-                    }
+                    // Initialize the jQuery File Upload widget:
+                    (modal.uploader = view.$('#fileupload')).fileupload({
+                        autoUpload: true,
+                        dataType: 'json',
+                        // dropZone: view.$el,
+                        singleFileUploads: true,
+                        url: S.url('ugc.{id}.add_attachment', model.toJSON()),
+                        xhrFields: { withCredentials: true },
+                        paramName: 'attachment',
+                        uploadPostKey: 'attachment',
+                        formData: { tenant: model.get('tenant') },
+                        getFilesFromResponse: function (data) {
+                            return data.files || [];
+                        }
+                    }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
+                        me.model.fetch();
+                    });
 
                 });
 
-                db.on(Dropbox.UPLOAD_SUCCESS_EVENT, function (data) {
-                    view.uploadComplete(data);
-                    me.model.fetch();
-                });
+            } else {
 
-                db.on(Dropbox.UPLOAD_ERROR_EVENT, function (data) {
-
-                    var modal;
-                    var XHR = data.XHR;
-
-                    if (XHR.status === 502) {
-
-                        modal = new S.view.Modal({
-                            events: { 'click [data-dismiss]': 'destroy' },
-                            modal: { show: true }
-                        }).render();
-
-                        modal.set({
-                            title: 'Error',
-                            body: 'The file you submitted surpasses the maximum file size.',
-                            footer: '<button data-dismiss class="btn btn-default">Close</button>'
-                        });
-
-                    } else if (XHR.status === 422) {
-
-                        modal = new S.view.Modal({
-                            events: { 'click [data-dismiss]': 'destroy' },
-                            modal: { show: true }
-                        }).render();
-
-                        modal.set({
-                            title: 'Error',
-                            body: 'A virus has been detected on the file. File was not uploaded.',
-                            footer: '<button data-dismiss class="btn btn-default">Close</button>'
-                        });
-
-                    } else if (XHR.status === 401) {
-
-                        Director.trigger(S.Constants.get('EVENT_UNAUTHORISED_RESPONSE'));
-
-                    }
-
-                });
+                modal.$('.modal-body').prepend([
+                    '<div class="alert alert-warning">',
+                    'This comment is flagged. File attachments are disabled.',
+                    '</div>'
+                ].join(''));
 
             }
 
@@ -237,14 +209,6 @@
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 
             modal.render();
-
-            if (this.model.get('flags') > 0) {
-                modal.$('.modal-body').prepend([
-                    '<div class="alert alert-warning">',
-                        'This comment is flagged. File attachments are disabled.',
-                    '</div>'
-                ].join(''));
-            }
 
             files.fetch();
 
@@ -278,3 +242,65 @@
     S.define('view.Comment', CommentView);
 
 }) (crafter.social);
+
+//                var Dropbox = S.get('component.Dropbox');
+//                var db = new Dropbox({
+//
+//                    element: view.el,
+//                    display: view.$('.cs-uploads-list'),
+//
+//                    uploadPostKey: 'attachment',
+//                    target: S.url('ugc.{id}.add_attachment', model.toJSON()),
+//                    formData: { tenant: model.get('tenant') },
+//
+//                    template: view.getTemplate('file'),
+//                    templateUploadError: [
+//                        /* jshint -W015 */
+//                        '<div class="alert alert-danger {{theme.fileError}}">',
+//                            '<span>An error has occurred trying to upload <i>"{{file.name}}"</i>.</span> ',
+//                            '<a onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)">Dismiss Message</a>',
+//                        '</div>'
+//                    ].j(),
+//
+//                    theme: {
+//                        fileDisplay: 'crafter-social-view crafter-social-file-view'
+//                    }
+//
+//                });
+//
+//                db.on(Dropbox.UPLOAD_SUCCESS_EVENT, function (data) {
+//                    view.uploadComplete(data);
+//                    me.model.fetch();
+//                });
+//
+//                db.on(Dropbox.UPLOAD_ERROR_EVENT, function (data) {
+//
+//                    var XHR = data.XHR;
+//                    var parsed;
+//
+//                    try {
+//                        parsed = JSON.parse(XHR.responseText);
+//                    } catch ( ex ) { }
+//
+//                    if (parsed.localizedMessage || parsed.message) {
+//
+//                        $(data.ui).find('.dropbox-file-error span')
+//                            .text(parsed.localizedMessage || parsed.message);
+//
+//                    } else if (XHR.status === 502 || XHR.status === 413) {
+//
+//                        $(data.ui).find('.dropbox-file-error span')
+//                            .text('The file you tried to upload exceeds the maximum file size.');
+//
+//                    } else if (XHR.status === 422) {
+//
+//                        $(data.ui).find('.dropbox-file-error span')
+//                            .text('A virus has been detected on the file. File was not uploaded.');
+//
+//                    } else if (XHR.status === 401) {
+//
+//                        Director.trigger(S.Constants.get('EVENT_UNAUTHORISED_RESPONSE'));
+//
+//                    }
+//
+//                });

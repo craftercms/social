@@ -18,8 +18,7 @@
     $.support.cors = true;
     (social.window.navigator.userAgent.toLowerCase().indexOf('firefox') === -1) && $.ajaxSetup({
         crossDomain: true,
-        xhrFields: { withCredentials: true }/*,
-        headers: { 'Access-Control-Allow-Origin': '*' }*/
+        xhrFields: { withCredentials: true }
     });
     //*/
 
@@ -147,6 +146,32 @@
             }
             return result;
         };
+    }
+
+    if ( !Date.now ) {
+        Date.now = function () {
+            return new Date().getTime();
+        };
+    }
+
+    if ( !window.JSON ) {
+
+        window.JSON = {
+            parse: function ( json ) {
+
+                var regExp = /[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/;
+                var test   = json.replace(/"(\\.|[^"\\])*"/g, '');
+
+                if ( !(regExp.test(test)) ) {
+                    // jshint -W061
+                    return eval('(' + json + ')');
+                } else {
+                    var error = 'Supplied content is not JSON';
+                    throw ('Error' in window) ? new Error(error) : error;
+                }
+            }
+        };
+
     }
 
 }) (crafter.social);

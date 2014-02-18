@@ -23,6 +23,13 @@
         listen: function () {
             Modal.prototype.listen.apply(this, arguments);
             Discussion.prototype.listen.apply(this, arguments);
+
+            var me = this;
+            $(this.$el)
+                .one('shown.bs.modal', function () {
+                    me.initCommentingView();
+                });
+
         },
 
         createUI: function () {
@@ -158,23 +165,18 @@
     Lightbox = Modal.extend(LightboxPrototype);
 
     /** @see view.Modal & view.Discussion for more */
-    Lightbox.DEFAULTS = {
-        viewOptions: {
-            hidden: ['lightbox.request']
-        }
-    };
-    $.extend(true, Lightbox.DEFAULTS, Modal.DEFAULTS);
-    $.extend(true, Lightbox.DEFAULTS, Discussion.DEFAULTS);
-    $.extend(true, Lightbox.DEFAULTS, {
+    Lightbox.DEFAULTS = $.extend(true, {}, Modal.DEFAULTS, Discussion.DEFAULTS, {
         classes: null,
+        initCommentingView: false,
+        viewOptions: { hidden: ['lightbox.request'] },
         templates: {
             /* jshint -W015 */
             'comment-box': [
                 '<div class="modal-comment-box">',
-                    '<h4 class="comment-box-title">Comments</h4>',
-                    '<div class="comments crafter-social-comment-thread">',
-                        '<div class="no-comments">(no comments)</div>',
-                    '</div>',
+                '<h4 class="comment-box-title">Comments</h4>',
+                '<div class="comments crafter-social-comment-thread">',
+                '<div class="no-comments">(no comments)</div>',
+                '</div>',
                 '</div>'
             ].join('')
         }
