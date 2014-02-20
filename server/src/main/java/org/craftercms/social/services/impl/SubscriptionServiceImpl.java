@@ -5,7 +5,6 @@ import org.apache.commons.collections.MapUtils;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.Subscriptions;
 import org.craftercms.social.services.SubscriptionService;
-import org.craftercms.social.util.ProfileUtils;
 import org.craftercms.social.util.support.CrafterProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,11 +30,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void updateSubscriptions(Profile profile, Subscriptions subscriptions) {
-        Map attributes = Subscriptions.setInAttributes(subscriptions, profile.getAttributes());
+        Map changedAttributes = new HashMap<String, Serializable>();
+        changedAttributes = Subscriptions.setInAttributes(subscriptions, changedAttributes);
 
-        profile.setAttributes(attributes);
+        Map attributes = profile.getAttributes();
+        if (attributes == null) {
+            profile.setAttributes(changedAttributes);
+        } else {
+            attributes.putAll(changedAttributes);
+        }
 
-        crafterProfileService.updateAttributes(profile.getId(), attributes);
+        crafterProfileService.updateAttributes(profile.getId(), changedAttributes);
     }
 
     @Override
@@ -57,7 +62,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         attributes.put(Subscriptions.ATTRIBUTE_TARGETS, targets);
 
-        crafterProfileService.updateAttributes(profile.getId(), attributes);
+        Map changedAttributes = new HashMap<String, Serializable>(1);
+        changedAttributes.put(Subscriptions.ATTRIBUTE_TARGETS, targets);
+
+        crafterProfileService.updateAttributes(profile.getId(), changedAttributes);
     }
 
     @Override
@@ -69,7 +77,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 if (targets.remove(targetId)) {
                     attributes.put(Subscriptions.ATTRIBUTE_TARGETS, targets);
 
-                    crafterProfileService.updateAttributes(profile.getId(), attributes);
+                    Map changedAttributes = new HashMap<String, Serializable>(1);
+                    changedAttributes.put(Subscriptions.ATTRIBUTE_TARGETS, targets);
+
+                    crafterProfileService.updateAttributes(profile.getId(), changedAttributes);
                 }
             }
         }

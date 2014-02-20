@@ -164,36 +164,87 @@
 
             modal.$el.on('hidden.bs.modal', function () {
                 me.model.fetch();
-                modal.uploader.fileupload('destroy');
+
+				if ($.browser.msie && $.browser.versionNumber > 9) {
+					
+					modal.uploader.fileupload('destroy');
+					
+				} else {
+
+                    modal.uploader.uploadify('destroy');
+
+                }
+				
                 modal.destroy();
             });
 
             if (this.model.get('flags') === 0) {
+				
+				var URL = S.url('ugc.{id}.add_attachment', model.toJSON());
+				
+				if ($.browser.msie && $.browser.versionNumber < 10) {
 
-                var URL = S.url('ugc.{id}.add_attachment', model.toJSON());
+					view.$('#fileupload').remove();
+					
+					modal.$el.on('shown.bs.modal', function () {
+					
+						(modal.uploader = view.$('#file-input')).uploadify({
+							height          : 30,
+							swf             : S.Cfg('url.base') +'libs/uploadify/uploadify.swf',
+							uploader        : URL,
+							width           : 120,
+							multi			: false,
+							formData		: { tenant: model.get('tenant') },
+                            fileObjName     : 'attachment',
+							onUploadSuccess : function ( file, data /*, response */) {
 
-                modal.$el.on('shown.bs.modal', function () {
+								view.uploadComplete(data);
+								me.model.fetch();
+							
+							},
+							onUploadError   : function (/* file, errorCode, errorMsg, errorString */) {
+                                /*
+                                console.log(file);
+								console.log(errorCode);
+								console.log(errorMsg);
+								console.log(errorString);
+								*/
+							}
+						});
+						
+					});
+					
+				
+				
+				} else {
+				
+					view.$('#ie9-files-container').remove();
+					
+	                modal.$el.on('shown.bs.modal', function () {
+	                    
+						// Initialize the jQuery File Upload widget:
+	                    (modal.uploader = view.$('#fileupload')).fileupload({
+	                        autoUpload: true,
+	                        dataType: 'json',
+	                        // dropZone: view.$el,
+	                        singleFileUploads: true,
+	                        url: S.url('ugc.{id}.add_attachment', model.toJSON()),
+	                        xhrFields: { withCredentials: true },
+	                        paramName: 'attachment',
+	                        uploadPostKey: 'attachment',
+	                        formData: { tenant: model.get('tenant') },
+	                        getFilesFromResponse: function (data) {
+	                            return data.files || [];
+	                        }
+	                    }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
+	                        me.model.fetch();
+	                    });
 
-                    // Initialize the jQuery File Upload widget:
-                    (modal.uploader = view.$('#fileupload')).fileupload({
-                        autoUpload: true,
-                        dataType: 'json',
-                        // dropZone: view.$el,
-                        singleFileUploads: true,
-                        url: S.url('ugc.{id}.add_attachment', model.toJSON()),
-                        xhrFields: { withCredentials: true },
-                        paramName: 'attachment',
-                        uploadPostKey: 'attachment',
-                        formData: { tenant: model.get('tenant') },
-                        getFilesFromResponse: function (data) {
-                            return data.files || [];
-                        }
-                    }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
-                        me.model.fetch();
-                    });
-
-                });
-
+	                });
+				
+				}
+				
+                
             } else {
 
                 modal.$('.modal-body').prepend([
