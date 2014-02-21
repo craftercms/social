@@ -196,32 +196,33 @@
 }
 
 /* ie9 files container */
-.ie9-files-container {
-  margin-bottom: 20px;
+#ie9-files-container {
+    margin-bottom: 10px;
 }
-.ie9-files-container object {
-  width: 120px;
-  height: 30px;
+#file-input, #file-input object {
+    width: 250px;
 }
 
 /* ckeditor ie textarea error */
 .crafter-social-view .cke_contents {
-  min-height: 30px;
+    min-height: 30px;
 }
-
 
 /*
 Uploadify
 Copyright (c) 2012 Reactive Apps, Ronnie Garcia
 Released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 */
+.custom-uploadify-btn {
+  margin-bottom: 5px;
+}
 
 .uploadify {
     position: relative;
     margin-bottom: 1em;
 }
 .uploadify .uploadify-button {
-    padding: 0 10px;
+    padding: 5px;
     background-color: #aaa;
     background-image: linear-gradient(bottom, #aaa 0%, #ebebeb 100%);
     background-image: -o-linear-gradient(bottom, #aaa 0%, #ebebeb 100%);
@@ -250,7 +251,7 @@ Released under the MIT License <http://www.opensource.org/licenses/mit-license.p
     width: 100%;
 }
 .uploadify:hover .uploadify-button {
-    padding: 0 10px;
+    padding: 5px;
     background-color: #888;
     background-image: linear-gradient(top, #bbb 0%, #ebebeb 100%);
     background-image: -o-linear-gradient(top, #bbb 0%, #ebebeb 100%);
@@ -270,8 +271,8 @@ Released under the MIT License <http://www.opensource.org/licenses/mit-license.p
     background-color: #D0D0D0;
     color: #808080;
 }
-.uploadify-queue {
-    margin-bottom: 1em;
+#file-input-queue {
+    margin: 1em 0;
 }
 .uploadify-queue-item {
     background-color: #F5F5F5;
@@ -286,6 +287,9 @@ Released under the MIT License <http://www.opensource.org/licenses/mit-license.p
 .uploadify-error {
     background-color: #FDE5DD !important;
 }
+.uploadify-queue-item .cancel {
+    display: none;
+}
 /*
 .uploadify-queue-item .cancel a {
 	background: url('uploadify-cancel.png') 0 0 no-repeat;
@@ -295,6 +299,7 @@ Released under the MIT License <http://www.opensource.org/licenses/mit-license.p
 	width: 16px;
 }
 */
+
 .uploadify-queue-item.completed {
     background-color: #E5E5E5;
 }

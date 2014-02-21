@@ -165,7 +165,7 @@
             modal.$el.on('hidden.bs.modal', function () {
                 me.model.fetch();
 
-				if ($.browser.msie && $.browser.versionNumber > 9) {
+				if ($.browser.msie && $.browser.versionNumber > 9 && false) {
 					
 					modal.uploader.fileupload('destroy');
 					
@@ -182,7 +182,7 @@
 				
 				var URL = S.url('ugc.{id}.add_attachment', model.toJSON());
 				
-				if ($.browser.msie && $.browser.versionNumber < 10) {
+				if ($.browser.msie && $.browser.versionNumber < 10 || true) {
 
 					view.$('#fileupload').remove();
 					
@@ -192,10 +192,11 @@
 							height          : 30,
 							swf             : S.Cfg('url.base') +'libs/uploadify/uploadify.swf',
 							uploader        : URL,
-							width           : 120,
+							width           : 250,
 							multi			: false,
 							formData		: { tenant: model.get('tenant') },
                             fileObjName     : 'attachment',
+                            buttonClass     : 'custom-uploadify-btn',
 							onUploadSuccess : function ( file, data /*, response */) {
 
 								view.uploadComplete(data);
