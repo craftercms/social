@@ -992,11 +992,19 @@ public class UGCServiceImpl implements UGCService {
      * @return
      */
     private UGC populateUGCWithProfile(UGC ugc, List<String> attributes) {
-        if (isProfileSetable(ugc)) {
-            ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
+        Profile currentProfile = RequestContext.getCurrent().getAuthenticationToken().getProfile();
+        Profile ugcProfile;
+
+        if (currentProfile.getId().equals(ugc.getProfileId())) {
+            ugcProfile = currentProfile;
         } else {
-            Profile actualProfile = RequestContext.getCurrent().getAuthenticationToken().getProfile();
-            Profile anonymousProfile = new MaskedAsAnonymousProfile(actualProfile);
+            ugcProfile = crafterProfileService.getProfile(ugc.getProfileId(), attributes);
+        }
+
+        if (isProfileSetable(ugc)) {
+            ugc.setProfile(ugcProfile);
+        } else {
+            Profile anonymousProfile = new MaskedAsAnonymousProfile(ugcProfile);
 
             ugc.setProfile(anonymousProfile);
             ugc.setProfileId(null);
@@ -1010,11 +1018,19 @@ public class UGCServiceImpl implements UGCService {
      * @return
      */
     private UGC populateUGCWithProfile(UGC ugc) {
-        if (isProfileSetable(ugc)) {
-            ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
+        Profile currentProfile = RequestContext.getCurrent().getAuthenticationToken().getProfile();
+        Profile ugcProfile;
+
+        if (currentProfile.getId().equals(ugc.getProfileId())) {
+            ugcProfile = currentProfile;
         } else {
-            Profile actualProfile = RequestContext.getCurrent().getAuthenticationToken().getProfile();
-            Profile anonymousProfile = new MaskedAsAnonymousProfile(actualProfile);
+            ugcProfile = crafterProfileService.getProfile(ugc.getProfileId());
+        }
+
+        if (isProfileSetable(ugc)) {
+            ugc.setProfile(ugcProfile);
+        } else {
+            Profile anonymousProfile = new MaskedAsAnonymousProfile(ugcProfile);
 
             ugc.setProfile(anonymousProfile);
             ugc.setProfileId(null);
