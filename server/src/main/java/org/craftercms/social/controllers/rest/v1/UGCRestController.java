@@ -361,20 +361,6 @@ public class UGCRestController {
         return ugcService.findPossibleActionsForUGC(ugcId, getProfileRoles());
     }
 
-    @ExceptionHandler(PermissionDeniedException.class)
-    public String handlePermissionException(PermissionDeniedException ex, HttpServletResponse response) {
-        response.setHeader("Content-Type", "application/json");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(AttachmentErrorException.class)
-    public String handleDataErrorException(AttachmentErrorException ex, HttpServletResponse response) {
-        response.setHeader("Content-Type", "application/json");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
-        return ex.getMessage();
-    }
-
     private Map<String, Object> parseAttibutes(HttpServletRequest request) {
         Map<String, Object> attributeMap = new HashMap<String, Object>();
         Map<String, Object> paramMap = request.getParameterMap();

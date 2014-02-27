@@ -1,10 +1,10 @@
 (function (S) {
     'use strict';
 
-    var Base    = S.view.Base,
+    var Base = S.view.Base,
         Comment = S.model.Comment,
-        U       = S.util,
-        $       = S.$;
+        U = S.util,
+        $ = S.$;
 
     var Director = S.getDirector();
 
@@ -33,9 +33,9 @@
         },
         render: function () {
 
-            var me          = this;
-            var profile     = Director.getProfile();
-            var model       = $.extend(this.model.toJSON(), {
+            var me = this;
+            var profile = Director.getProfile();
+            var model = $.extend(this.model.toJSON(), {
                 isTrashed: function () {
                     return me.model.isTrashed();
                 },
@@ -52,8 +52,8 @@
             this.$el.html(U.template(
                 this.getTemplate('main'), model));
 
-            var $children   = this.$('.comment-children:first');
-            model.children.every(function ( child ) {
+            var $children = this.$('.comment-children:first');
+            model.children.every(function (child) {
 
                 var m = new Comment(child),
                     v = new CommentView($.extend({}, me.cfg, { model: m }));
@@ -103,7 +103,7 @@
                     'click .btn-primary': function () {
                         this.$('.alert').remove();
                         var reason = this.$('textarea').val().trim();
-                        if ( reason !== '' ) {
+                        if (reason !== '') {
                             me.model[isFlagged ? 'unflag' : 'flag'](reason);
                             // TODO destroy after successful flagging
                             this.destroy();
@@ -111,7 +111,7 @@
                             this.$('.modal-body')
                                 .prepend('<div class="alert alert-danger">Please provide the reason.</div>')
                                 .find('textarea')
-                                    .focus();
+                                .focus();
                         }
                     }
                 }
@@ -127,7 +127,7 @@
 
 
         },
-        unflag: function ( reason ) {
+        unflag: function (reason) {
             this.model.unflag(reason);
         },
 
@@ -143,28 +143,38 @@
 
         files: function () {
 
-            var me    = this;
+            var me = this;
             var model = this.model;
 
-            var files   = S.util.instance('controller.Files', null, {
+            var files = S.util.instance('controller.Files', null, {
                 tenant: this.cfg.tenant,
                 comment: model
             });
 
-            var view    = S.util.instance('view.Files', {
+            var view = S.util.instance('view.Files', {
                 collection: files
             });
 
             view.render();
 
-            var Modal  = S.get('view.Modal');
-            var modal  = new Modal({
+            var Modal = S.get('view.Modal');
+            var modal = new Modal({
                 modal: { show: true, keyboard: false, backdrop: 'static' }
             });
 
             modal.$el.on('hidden.bs.modal', function () {
                 me.model.fetch();
-                modal.uploader.fileupload('destroy');
+
+                if ($.browser.msie && $.browser.versionNumber > 9) {
+
+                    modal.uploader.fileupload('destroy');
+
+                } else {
+
+                    modal.uploader.uploadify('destroy');
+
+                }
+
                 modal.destroy();
             });
 
@@ -172,27 +182,68 @@
 
                 var URL = S.url('ugc.{id}.add_attachment', model.toJSON());
 
-                modal.$el.on('shown.bs.modal', function () {
+                if ($.browser.msie && $.browser.versionNumber < 10) {
 
-                    // Initialize the jQuery File Upload widget:
-                    (modal.uploader = view.$('#fileupload')).fileupload({
-                        autoUpload: true,
-                        dataType: 'json',
-                        // dropZone: view.$el,
-                        singleFileUploads: true,
-                        url: S.url('ugc.{id}.add_attachment', model.toJSON()),
-                        xhrFields: { withCredentials: true },
-                        paramName: 'attachment',
-                        uploadPostKey: 'attachment',
-                        formData: { tenant: model.get('tenant') },
-                        getFilesFromResponse: function (data) {
-                            return data.files || [];
-                        }
-                    }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
-                        me.model.fetch();
+                    view.$('#fileupload').remove();
+
+                    modal.$el.on('shown.bs.modal', function () {
+
+                        (modal.uploader = view.$('#file-input')).uploadify({
+                            height: 30,
+                            swf: S.Cfg('url.base') + 'libs/uploadify/uploadify.swf',
+                            uploader: URL,
+                            width: 250,
+                            multi: false,
+                            formData: { tenant: model.get('tenant') },
+                            fileObjName: 'attachment',
+                            buttonClass: 'custom-uploadify-btn',
+                            onUploadSuccess: function (file, data /*, response */) {
+
+                                view.uploadComplete(data);
+                                me.model.fetch();
+
+                            },
+                            onUploadError: function (/* file, errorCode, errorMsg, errorString */) {
+                                /*
+                                 console.log(file);
+                                 console.log(errorCode);
+                                 console.log(errorMsg);
+                                 console.log(errorString);
+                                 */
+                            }
+                        });
+
                     });
 
-                });
+
+                } else {
+
+                    view.$('#ie9-files-container').remove();
+
+                    modal.$el.on('shown.bs.modal', function () {
+
+                        // Initialize the jQuery File Upload widget:
+                        (modal.uploader = view.$('#fileupload')).fileupload({
+                            autoUpload: true,
+                            dataType: 'json',
+                            // dropZone: view.$el,
+                            singleFileUploads: true,
+                            url: S.url('ugc.{id}.add_attachment', model.toJSON()),
+                            xhrFields: { withCredentials: true },
+                            paramName: 'attachment',
+                            uploadPostKey: 'attachment',
+                            formData: { tenant: model.get('tenant') },
+                            getFilesFromResponse: function (data) {
+                                return data.files || [];
+                            }
+                        }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
+                                me.model.fetch();
+                            });
+
+                    });
+
+                }
+
 
             } else {
 
@@ -241,7 +292,7 @@
 
     S.define('view.Comment', CommentView);
 
-}) (crafter.social);
+})(crafter.social);
 
 //                var Dropbox = S.get('component.Dropbox');
 //                var db = new Dropbox({

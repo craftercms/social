@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>crafter-social-admin</artifactId>
-	<version>2.3.5-SNAPSHOT</version>
+	<version>2.2.3-SNAPSHOT</version>
 	<name>Crafter Social Admin Console</name>
 	<description>Crafter Social Admin Console</description>
 	<url>https://github.com/craftercms/social/tree/master/admin</url>
@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.craftercms</groupId>
 		<artifactId>crafter-social-parent</artifactId>
-		<version>2.3.5-SNAPSHOT</version>
+		<version>2.2.3-SNAPSHOT</version>
 	</parent>
 	<organization>
 		<name>CrafterCMS</name>
@@ -32,9 +32,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git:git://github.com/craftercms/social/tree/master/admin</connection>
-		<developerConnection>scm:git:git://github.com/craftercms/social/tree/master/admin</developerConnection>
-		<url>scm:git:git://github.com/craftercms/social/tree/master/admin</url>
+		<connection>scm:git:git://github.com/craftercms/social/tree/master/blog</connection>
+		<developerConnection>scm:git:git://github.com/craftercms/social/tree/master/blog</developerConnection>
+		<url>scm:git:git://github.com/craftercms/social/tree/master/blog</url>
 	</scm>
 	<properties>
 		<java.version>1.6</java.version>
@@ -45,7 +45,7 @@
 		<servlet.api.version>2.5</servlet.api.version>
 		<org.freemarker.version>2.3.19</org.freemarker.version>
 		<org.apache.commons.fileupload.version>1.2.2</org.apache.commons.fileupload.version>
-		<crafter.profile.version>2.3.0</crafter.profile.version>
+		<crafter.profile.version>2.2.3-SNAPSHOT</crafter.profile.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -64,7 +64,7 @@
 		<dependency>
 			<groupId>org.craftercms</groupId>
 			<artifactId>crafter-security-provider</artifactId>
-			<version>2.3.0</version>
+			<version>${crafter.profile.version}</version>
 		</dependency>
 
 		<!-- Spring -->

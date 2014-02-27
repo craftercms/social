@@ -98,15 +98,17 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 	}
 
 	public boolean hasUpdatePermission() {
-		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
-		String[] ugcId = (String[]) params.get("ugcId");
-		if (ugcId == null || ugcId.length == 0) {
-			log.error("Parameter ugcId is mandory and has to have a valid value", ugcId);
-			return false;
+		String ugcId = RequestContext.getCurrent().getRequest().getParameter("ugcId");
+		if (ugcId == null || ugcId.isEmpty()) {
+            ugcId = getUgcIdFromUpdateUri();
+            if (ugcId == null || ugcId.isEmpty()) {
+                log.error("Parameter ugcId is mandory and has to have a valid value", ugcId);
+                return false;
+            }
 		}
 		try {
 			if (!permissionService.allowed(ActionEnum.UPDATE,
-					new ObjectId(ugcId[0]), getProfileId())) {
+					new ObjectId(ugcId), getProfileId())) {
 				log.error("UPDATE UGC permission not granted", ugcId);
 				return false;
 			}
@@ -334,6 +336,15 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 	public void setTenantService(TenantService tenantService) {
 		this.tenantService = tenantService;
 	}
+
+    private String getUgcIdFromUpdateUri() {
+        String ugcId = RequestContext.getCurrent().getRequest().getRequestURI().replaceAll(
+                ".*api/2/ugc/([^\\/\\.]*).*", "$1");
+        if (ugcId.equals(RequestContext.getCurrent().getRequest().getRequestURI())) {
+            return null;
+        }
+        return ugcId;
+    }
 
 	private String getUgcIdFromActOnUri() {
 		String ugcId = RequestContext.getCurrent().getRequest().getRequestURI().replaceAll(

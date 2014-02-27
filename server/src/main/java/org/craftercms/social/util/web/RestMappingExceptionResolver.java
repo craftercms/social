@@ -16,44 +16,72 @@
  */
 package org.craftercms.social.util.web;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileUploadBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 
 /**
  * Overrides the {@link SimpleMappingExceptionResolver} <br/><br/>
- *  {@link #doResolveException(HttpServletRequest, HttpServletResponse, Object, Exception)} removes the 
- *  StackTrace of the exception <br/><br/>
- *  {@link #determineViewName(Exception, HttpServletRequest)} Retunrs the Canotical name of the Excetion
- *  <br/>
- *  <br/>
- *  now {@link #determineStatusCode(HttpServletRequest, String)} Will use the exction canotical name to 
- *  resolve the status
+ * {@link #doResolveException(HttpServletRequest, HttpServletResponse, Object, Exception)} removes the
+ * StackTrace of the exception <br/><br/>
+ * {@link #determineViewName(Exception, HttpServletRequest)} Retunrs the Canotical name of the Excetion
+ * <br/>
+ * <br/>
+ * now {@link #determineStatusCode(HttpServletRequest, String)} Will use the exction canotical name to
+ * resolve the status
+ *
  * @author cortiz
  */
-public class RestMappingExceptionResolver extends
-		SimpleMappingExceptionResolver {
+public class RestMappingExceptionResolver extends SimpleMappingExceptionResolver {
 
-	@Override
-	protected String determineViewName(Exception ex, HttpServletRequest request) {
-		return ex.getClass().getCanonicalName();
-	}
+    private final transient Logger log = LoggerFactory.getLogger(RestMappingExceptionResolver.class);
 
-	@Override
-	protected ModelAndView getModelAndView(String viewName, Exception ex) {
-		ModelAndView mv = new ModelAndView(viewName);
-		HashMap<String,Object> map=new HashMap<String,Object>(); 
-		map.put("message", ex.getMessage());
-		map.put("localizedMessage", ex.getLocalizedMessage());
-		mv.addAllObjects(map);
-		return mv;
-	}
-	
-	
-	
+    @Override
+    protected String determineViewName(Exception ex, HttpServletRequest request) {
+        return ex.getClass().getCanonicalName();
+    }
+
+    @Override
+    protected ModelAndView getModelAndView(String viewName, Exception ex) {
+        log.error(ex.getMessage(), ex);
+
+        ModelAndView mv = new ModelAndView(viewName);
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        if (ex instanceof MaxUploadSizeExceededException) {
+            FileUploadBase.SizeLimitExceededException realEx = (FileUploadBase.SizeLimitExceededException)ex.getCause();
+            String maxSize = readableFileSize(realEx.getPermittedSize());
+            String fileSize = readableFileSize(realEx.getActualSize());
+            map.put("message",String.format("Unable to upload file due size limit is %s and upload size is %s",
+                maxSize,
+                fileSize));
+            map.put("maxSize",maxSize);
+            map.put("fileSize",fileSize);
+        } else {
+            map.put("message", ex.getMessage());
+            map.put("localizedMessage", ex.getLocalizedMessage());
+        } mv.addAllObjects(map);
+
+        return mv;
+    }
+
+
+    private String readableFileSize(long size) {
+        if (size <= 0) {
+            return "0";
+        }
+        final String[] units = new String[] {"B", "KB", "MB", "GB", "TB"};
+        int digitGroups = (int)(Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+
+
 }
