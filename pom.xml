@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>crafter-social-parent</artifactId>
-	<version>2.3.4-SNAPSHOT</version>
+	<version>2.3.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Crafter Social</name>
 	<description>Crafter Social</description>
@@ -39,7 +39,7 @@
 	<modules>
 		<module>virus-scanner</module>
 		<module>server</module>
-		<module>blog</module>
+        <!-- <module>blog</module> -->
 		<module>admin</module>
         <!--<module>ui-plugin</module>-->
 	</modules>
@@ -94,6 +94,34 @@
 				</plugins>
 			</build>
 		</profile>
+        <profile>
+            <id>JDK8</id>
+            <activation>
+                <jdk>
+                    1.8
+                </jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 	</profiles>
 	<build>
     	<plugins>
