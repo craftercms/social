@@ -5,8 +5,8 @@
     <title>Moderation Dashboard</title>
 
     <link href="static-assets/csadmin/img/favicon.ico" rel="Shortcut Icon">
-    <link rel="stylesheet" href="static-assets/csadmin/lib/bootstrap/css/bootstrap.css"/>
-    <link rel="stylesheet" href="static-assets/csadmin/lib/bootstrap/css/bootstrap-responsive.css"/>
+    <link rel="stylesheet" href="static-assets/csadmin/lib/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="static-assets/csadmin/lib/bootstrap/css/bootstrap-responsive.min.css"/>
     <link rel="stylesheet" href="static-assets/csadmin/css/ugc_list.css"/>
 </head>
 <body>
@@ -14,15 +14,15 @@
         <div ng-view></div>
     </div>
 
-    <script src="static-assets/csadmin/lib/jquery/jquery-1.10.2.js"></script>
-    <script src="static-assets/csadmin/lib/bootstrap/js/bootstrap.js"></script>
-    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular.js"></script>
-    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular-route.js"></script>
-    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular-resource.js"></script>
-    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular-cookies.js"></script>
-    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular-sanitize.js"></script>
-    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular-animate.js"></script>
-    <script src="static-assets/csadmin/lib/ui_bootstrap/ui-bootstrap-tpls-0.6.0.js"></script>
+    <script src="static-assets/csadmin/lib/jquery/jquery-1.10.2.min.js"></script>
+    <script src="static-assets/csadmin/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular.min.js"></script>
+    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular-route.min.js"></script>
+    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular-resource.min.js"></script>
+    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular-cookies.min.js"></script>
+    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular-sanitize.min.js"></script>
+    <script src="static-assets/csadmin/lib/angular-1.2.0-rc.3/angular-animate.min.js"></script>
+    <script src="static-assets/csadmin/lib/ui_bootstrap/ui-bootstrap-tpls-0.6.0.min.js"></script>
     <script src="static-assets/csadmin/js/app.js"></script>
     <script src="static-assets/csadmin/js/services.js"></script>
     <script src="static-assets/csadmin/js/controllers.js"></script>

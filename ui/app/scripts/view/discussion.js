@@ -24,19 +24,7 @@
 
             Base.prototype.createUI.call(this);
 
-            var $replies = this.$('.reply-box');
-            if ($replies.size()) {
-
-                var view = new S.util.instance('view.Commenting', $.extend({
-                    collection: this.collection,
-                    tenant: this.cfg.tenant,
-                    target: this.cfg.target
-                }, this.cfg.commenting));
-
-                $replies.append(view.render().el);
-                this.cache('commentingView', view);
-
-            }
+            this.cfg.initCommentingView && this.initCommentingView();
 
             var $opts = this.$('.options-view-container');
             if ($opts.size()) {
@@ -52,6 +40,28 @@
 
                 this.listenTo(options, 'view.change.request', this.changeView);
                 this.listenTo(options, 'view.close.request', this.hide || S.util.emptyFn);
+
+            }
+
+        },
+
+        initCommentingView: function () {
+
+            var $replies        = this.$('.reply-box');
+            var isSocialAuthor  = S.getDirector().getProfile().hasRole('SOCIAL_AUTHOR');
+
+            (!isSocialAuthor) && $replies.hide();
+
+            if ($replies.size() && isSocialAuthor) {
+
+                var view = new S.util.instance('view.Commenting', $.extend({
+                    collection: this.collection,
+                    tenant: this.cfg.tenant,
+                    target: this.cfg.target
+                }, this.cfg.commenting));
+
+                $replies.append(view.render().el);
+                this.cache('commentingView', view);
 
             }
 
@@ -75,6 +85,7 @@
     });
 
     Discussion.DEFAULTS = $.extend({}, Base.DEFAULTS, {
+        initCommentingView: true,
         commenting: {
             editor: {
                 'extraPlugins': 'autogrow',

@@ -14,7 +14,21 @@
         <filter-name>crafter.securityFilter</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
-    
+
+
+
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>classpath:crafter/social/extension/log4j-override.xml</param-value>
+    </context-param>
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>crafter-social</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.craftercms.social.util.web.ExtendedLog4jConfigListener</listener-class>
+    </listener>
     <filter-mapping>
     	<filter-name>crafter.requestContextBindingFilter</filter-name>
         <url-pattern>/*</url-pattern>

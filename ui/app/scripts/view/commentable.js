@@ -6,6 +6,7 @@
     var Commentable,
         Base = S.view.Base,
         C = S.Constants,
+        Director = S.getDirector(),
         U = S.util,
         $ = S.$;
 
@@ -48,7 +49,11 @@
             });
 
             this.listenTo(this.collection, 'sync', this.render);
-            this.listenTo(S.getDirector(), C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
+            this.listenTo(this.collection, C.get('EVENT_DISCUSSION_WATCHED', this.cfg), this.setWatched);
+
+            this.listenTo(Director, C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
+            this.listenTo(Director, C.get('EVENT_REVEAL_DISCUSSIONS', this.cfg), this.revealDiscussion);
+
         },
         createUI: function () {
 
@@ -74,6 +79,9 @@
                 $badge.text(length);
             }
 
+            var isWatched = this.collection.getIsWatched();
+            this.setWatched(isWatched);
+
             return this;
 
         },
@@ -94,6 +102,7 @@
                 case C.get('AREA_VISIBILITY_MODE_HIDE'):
                     this.hide = true;
                     this.reveal = false;
+                    this.$el.is(':visible') && this.mouseleave();
                     break;
             }
         },
@@ -152,9 +161,15 @@
             this.$el[visible ? 'addClass' : 'removeClass']('revealed-by-view');
         },
 
-        revealDiscussion: function () {
-            // App.trigger(C.get('EVENT_REVEAL_DISCUSSIONS', this.cfg.target));
+        revealDiscussion: function ( e ) {
+
+            if ( !(e instanceof $.Event) && (typeof arguments[0] === 'object') ) {
+                var cfg = arguments[0];
+                (cfg.view) && (this.cfg.discussionView = cfg.view);
+            }
+
             this.viewChangeRequest(this.cfg.discussionView);
+
         },
         viewChangeRequest: function ( requested ) {
 
@@ -184,27 +199,28 @@
 
         },
 
-        watch: function (e) {
+        watch: function (/*e*/) {
+            var collection = this.collection;
+            var watched = collection.getIsWatched();
             // TODO: what's backend like?
             S.request({
-                /*url: S.url('notifications.add', {
-                    target: this.cfg.target,
-                    title: '',
-                    url: ''
-                }),*/
-                /*url: '/api/1/notifications/add.json?target=%@&title=%@&url=%@'.fmt(
-                    encodeURIComponent(this.cfg.target),
-                    toc.getCommentTitleById(this.cfg.target),
-                    toc.getCommentUrlById(this.cfg.target)
-                ),*/
+                type: 'POST',
+                context: this,
+                url: S.url((watched ? 'subscriptions.unsubscribe' : 'subscriptions.subscribe'), {
+                    target: this.cfg.target
+                }),
                 success: function () {
-                    $(e.target).css('color', 'green');
-                    console.log(arguments);
+                    collection.setIsWatched(!watched);
                 },
                 error: function () {
-                    console.log(arguments);
+
                 }
             });
+        },
+        setWatched: function ( isWatched ) {
+            var $elem = this.$options.find('[data-action="watch"]');
+            $elem.parents('li:first')[ (isWatched === null) ? 'addClass' : 'removeClass' ]('hide');
+            $elem.show().css('color', isWatched ? 'green' : '');
         },
 
         mouseenter: function (  ) {
@@ -254,7 +270,9 @@
 
     Commentable.DEFAULTS = {
         templates: {
-            main: ('%@commentable.hbs').fmt(S.Cfg('url.templates'))
+            main: function () {
+                return S.string.fmt('%@commentable.hbs', S.Cfg('url.templates'));
+            }
         },
         discussionView: 'view.Popover'
     };

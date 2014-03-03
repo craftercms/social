@@ -33,7 +33,7 @@ angular.module('moderationDashboard.controllers', []).
         function getTargetUrl (targetUrl, targetUrlConfig) {
             var re;
 
-            if (typeof targetUrlConfig.pattern == 'string' && 
+            if (targetUrl && typeof targetUrlConfig.pattern == 'string' && 
                     typeof targetUrlConfig.replace == 'string') {
                 re = new RegExp(targetUrlConfig.pattern);
                 return targetUrl.replace(re, targetUrlConfig.replace);

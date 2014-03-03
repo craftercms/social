@@ -9,7 +9,7 @@
     Bar = Base.extend({
 
         events: {
-            'dblclick .control-element': 'toggle',
+            'click .control-element': 'toggle',
             'click [data-activate-widget]': 'activate',
 
             'click .social-utilities a': function (e) {
@@ -31,6 +31,9 @@
                 me = this;
 
             $.each(widgetsCfg, function (i, widgetCfg) {
+                // TODO because of the recursive extension (deep copy) of configs, the config-supplied array cant get rid of bargets without setting their index in the widgets array to nullish value
+                if (!widgetCfg) { return; }
+
                 var cls = widgetCfg.cls,
                     cfg = $.extend({}, (widgetCfg.cfg || {}), { bar: me }),
                     instance;
@@ -86,7 +89,7 @@
             widget: [
                 '<li class="subordinate">',
                     '<a data-activate-widget="{{guid}}">',
-                        '<i class="crafter-social-icon cs-icon-{{icon}}"></i> {{title}}',
+                        '<i class="crafter-social-icon cs-icon-{{icon}}"></i> <span class="text">{{title}}</span>',
                     '</a>',
                 '</li>'
             ].j()
@@ -94,9 +97,10 @@
         classes: ['crafter-social-bar'],
         widgets: [
             { cls: 'crafter.social.view.barget.Reveal', cfg: { title: 'Reveal' }, instCfg: {  } },
+            { cls: 'crafter.social.view.barget.Disable', cfg: { title: 'Disable' }, instCfg: {  } }/*,
             { cls: 'crafter.social.view.barget.Feedback' },
             { cls: 'crafter.social.view.barget.Share' },
-            { cls: 'crafter.social.view.barget.Rate' }
+            { cls: 'crafter.social.view.barget.Rate' }*/
         ]
     };
 

@@ -135,7 +135,11 @@
         cache: function ( name, value ) {
             ( !privates[this.guid] ) && ( privates[this.guid] = {} );
             if ( arguments.length > 1 ) {
-                privates[this.guid][name] = value;
+                if ( value === S.Constants.get('DESTROY') ) {
+                    delete(privates[this.guid][name]);
+                } else {
+                    privates[this.guid][name] = value;
+                }
                 return true;
             } else {
                 return privates[this.guid][name];

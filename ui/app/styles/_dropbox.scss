@@ -1,21 +1,27 @@
 
 // TODO MOVE THIS OUT OF HERE!
 .#{$app-namespace}-view.#{$app-namespace}-file-view {
+
+  background: #fff;
   margin: 0 0 10px 0;
+  border-radius: $border-radius-large;
 
   .cs-file {
     @include clearfix();
+    border: none;
+    padding: 15px;
+    background: #ebebeb;
+    border-radius: $border-radius-large;
   }
 
   .cs-file-upload {
     margin: 5px 0 0 0;
+    .progress {
+      margin-bottom: 0;
+    }
   }
 
   .cs-files-list & {
-
-    .cs-file-upload {
-      display: none;
-    }
 
   }
 
@@ -25,22 +31,50 @@
 
 }
 
-.#{$app-namespace}-dropbox-element {
+.#{$app-namespace}-view.#{$app-namespace}-dropbox-element {
 
   padding: 10px;
-  width: 450px;
   border-radius: 10px;
   border: 2px dashed #ccc;
   color: #336699;
   font-family: 'Josefin Sans Std Light', Helvetica, sans-serif;
   margin-left: auto;
   margin-right: auto;
-  min-height: 100px;
+  position: relative;
 
-  &:empty {
+  &.cs-dnd-upload-supported {
+
+    min-height: 150px;
+
     &:before {
-      content: 'Drop your files here';
+      content: "...or drag & drop from your desktop";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      padding-top: 80px;
+      color: $gray-light;
+      font-size: 30px;
     }
+
+  }
+
+  .alert.no-support {
+    margin-top: -10px;
+    margin-right: -10px;
+    margin-left: -10px;
+    border-radius: 10px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-style: none none solid;
+    position: relative;
+  }
+
+  .cs-files-list,
+  .cs-uploads-list {
+    position: relative;
   }
 
   .linear {
@@ -84,6 +118,7 @@
     padding: 5px;
     text-align: center;
   }
+
   .thumbnail {
     margin-top: 10px;
 
@@ -131,4 +166,31 @@
     transform: scale(1.1);
   }
 
+}
+
+.fileinput-button {
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  -ms-filter: 'alpha(opacity=0)';
+  font-size: 200px;
+  direction: ltr;
+  cursor: pointer;
+}
+
+/* Fixes for IE < 8 */
+@media screen\9 {
+  .fileinput-button input {
+    filter: alpha(opacity=0);
+    font-size: 100%;
+    height: 100%;
+  }
 }

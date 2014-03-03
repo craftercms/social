@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .#{$app-namespace}-view {
 
   /*
@@ -73,9 +75,9 @@
     display: block;
     border: 1px solid #b6b6b6;
     padding: 0;
-    -moz-box-shadow: 0 0 3px rgba(0, 0, 0, .15);
-    -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, .15);
-    box-shadow: 0 0 3px rgba(0, 0, 0, .15)
+    @include box-shadow(none);
+    border-radius: $border-radius-base;
+    overflow: hidden;
   }
 
   .cke_inner {
@@ -100,7 +102,7 @@
 
   .cke_top {
     border-bottom: 1px solid #b6b6b6;
-    padding: 6px 8px 2px;
+    padding: 5px 5px 0;
     white-space: normal;
     -moz-box-shadow: 0 1px 0 #fff inset;
     -webkit-box-shadow: 0 1px 0 #fff inset;
@@ -121,7 +123,7 @@
   }
 
   .cke_bottom {
-    padding: 6px 8px 2px;
+    padding: 5px 5px 0;
     position: relative;
     border-top: 1px solid #bfbfbf;
     -moz-box-shadow: 0 1px 0 #fff inset;

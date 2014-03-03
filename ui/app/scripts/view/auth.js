@@ -64,6 +64,11 @@
             var data = this.model.toJSON();
             this.setFormData(data);
 
+            var me = this;
+            this.$el.on('hidden.bs.modal', function () {
+                me.destroy();
+            });
+
             return this;
 
         },

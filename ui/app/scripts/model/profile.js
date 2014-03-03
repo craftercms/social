@@ -38,6 +38,15 @@
                     S.getDirector().trigger(C.get('EVENT_USER_AUTHENTICATION_FAILED'));
                 }
             });
+        },
+
+        hasRole: function ( role ) {
+            var found = false;
+            this.get('roles').every(function ( pRole ) {
+                ( pRole === role ) && (found = true);
+                return !found;
+            });
+            return found;
         }
 
     });

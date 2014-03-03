@@ -413,7 +413,7 @@ public class UGCServiceImpl implements UGCService {
     public UGC likeUGC(ObjectId ugcId, String tenant, String profileId) {
         UGC ugc = uGCRepository.findOne(ugcId);
         if (ugc != null) {
-            if (userCan(AuditAction.LIKE, ugc, profileId)) {
+            if (!ugc.getLikes().contains(profileId)) {
                 ugc.getLikes().add(profileId);
                 auditUGC(ugcId, AuditAction.LIKE, tenant, profileId, null);
                 checkForModeration(ugc);
@@ -497,7 +497,7 @@ public class UGCServiceImpl implements UGCService {
     public UGC dislikeUGC(ObjectId ugcId, String tenant, String profileId) {
         UGC ugc = uGCRepository.findOne(ugcId);
         if (ugc != null) { //save us a trip to mongo
-            if (userCan(AuditAction.DISLIKE, ugc, profileId)) {
+            if (!ugc.getDislikes().contains(profileId)) {
                 ugc.getDislikes().add(profileId);
                 auditUGC(ugcId, AuditAction.DISLIKE, tenant, profileId, null);
                 checkForModeration(ugc);
@@ -942,7 +942,16 @@ public class UGCServiceImpl implements UGCService {
      */
     private UGC populateUGCWithProfile(UGC ugc, List<String> attributes) {
         if (isProfileSetable(ugc)) {
-            ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
+            Profile currentProfile = RequestContext.getCurrent().getAuthenticationToken().getProfile();
+            Profile ugcProfile;
+
+            if (currentProfile.getId().equals(ugc.getProfileId())) {
+                ugcProfile = currentProfile;
+            } else {
+                ugcProfile = crafterProfileService.getProfile(ugc.getProfileId(), attributes);
+            }
+
+            ugc.setProfile(ugcProfile);
         } else {
             Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null, null, null, true);
             ugc.setProfile(anonymousProfile);
@@ -958,7 +967,16 @@ public class UGCServiceImpl implements UGCService {
      */
     private UGC populateUGCWithProfile(UGC ugc) {
         if (isProfileSetable(ugc)) {
-            ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
+            Profile currentProfile = RequestContext.getCurrent().getAuthenticationToken().getProfile();
+            Profile ugcProfile;
+
+            if (currentProfile.getId().equals(ugc.getProfileId())) {
+                ugcProfile = currentProfile;
+            } else {
+                ugcProfile = crafterProfileService.getProfile(ugc.getProfileId());
+            }
+
+            ugc.setProfile(ugcProfile);
         } else {
             Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null, null, null, true);
             ugc.setProfile(anonymousProfile);
