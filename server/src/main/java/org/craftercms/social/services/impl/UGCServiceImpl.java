@@ -942,7 +942,16 @@ public class UGCServiceImpl implements UGCService {
      */
     private UGC populateUGCWithProfile(UGC ugc, List<String> attributes) {
         if (isProfileSetable(ugc)) {
-            ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId(), attributes));
+            Profile currentProfile = RequestContext.getCurrent().getAuthenticationToken().getProfile();
+            Profile ugcProfile;
+
+            if (currentProfile.getId().equals(ugc.getProfileId())) {
+                ugcProfile = currentProfile;
+            } else {
+                ugcProfile = crafterProfileService.getProfile(ugc.getProfileId(), attributes);
+            }
+
+            ugc.setProfile(ugcProfile);
         } else {
             Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null, null, null, true);
             ugc.setProfile(anonymousProfile);
@@ -958,7 +967,16 @@ public class UGCServiceImpl implements UGCService {
      */
     private UGC populateUGCWithProfile(UGC ugc) {
         if (isProfileSetable(ugc)) {
-            ugc.setProfile(crafterProfileService.getProfile(ugc.getProfileId()));
+            Profile currentProfile = RequestContext.getCurrent().getAuthenticationToken().getProfile();
+            Profile ugcProfile;
+
+            if (currentProfile.getId().equals(ugc.getProfileId())) {
+                ugcProfile = currentProfile;
+            } else {
+                ugcProfile = crafterProfileService.getProfile(ugc.getProfileId());
+            }
+
+            ugc.setProfile(ugcProfile);
         } else {
             Profile anonymousProfile = new Profile(null, "anonymous", "", true, new Date(), new Date(), null, null, null, null, true);
             ugc.setProfile(anonymousProfile);
