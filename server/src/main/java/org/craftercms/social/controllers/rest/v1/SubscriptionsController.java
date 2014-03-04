@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/2/subscriptions")
 public class SubscriptionsController {
 
+    public static final String DEFAULT_FREQUENCY =      "instant";
+    public static final String DEFAULT_FORMAT =         "html";
+    public static final String DEFAULT_ACTION =         "email";
+    public static final boolean DEFAULT_AUTO_WATCH =    true;
+
     @Autowired
     private SubscriptionService subscriptionService;
 
@@ -41,6 +46,10 @@ public class SubscriptionsController {
 
         if (subscriptions == null) {
             subscriptions = new Subscriptions();
+            subscriptions.setFrequency(DEFAULT_FREQUENCY);
+            subscriptions.setFormat(DEFAULT_FORMAT);
+            subscriptions.setAction(DEFAULT_ACTION);
+            subscriptions.setAutoWatch(DEFAULT_AUTO_WATCH);
         }
 
         if (StringUtils.isNotEmpty(frequency)) {
