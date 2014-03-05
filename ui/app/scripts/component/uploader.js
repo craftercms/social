@@ -688,7 +688,6 @@
             $(document)
                 .unbind('dragover dragenter', this.__dragenter)
                 .unbind('dragleave drop', this.__dragleave);
-            console.log('he he');
         },
 
         enable: function () {
