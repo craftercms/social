@@ -204,12 +204,8 @@
 
                             },
                             onUploadError: function (/* file, errorCode, errorMsg, errorString */) {
-                                /*
-                                 console.log(file);
-                                 console.log(errorCode);
-                                 console.log(errorMsg);
-                                 console.log(errorString);
-                                 */
+                                // TODO add error message element as the other uploaders do
+                                // see commented Dropbox code below
                             }
                         });
 
@@ -237,8 +233,8 @@
                                 return data.files || [];
                             }
                         }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
-                                me.model.fetch();
-                            });
+                            me.model.fetch();
+                        });
 
                     });
 

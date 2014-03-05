@@ -55,6 +55,18 @@
 
                     me.trigger('visibility.change', true);
                     me.visible = true;
+
+                    if (me.cfg.scrollIntoView) {
+
+                        var pos = me.$el.offset(),
+                            $selection = $('body, html');
+
+                        $selection.animate({
+                            scrollTop: pos.top - 100
+                        }, 400);
+
+                    }
+
                 });
 
         },
@@ -232,7 +244,8 @@
         }),
         viewOptions: {
             hidden: ['close', 'popover.request']
-        }
+        },
+        scrollIntoView: true
     });
 
     S.define('view.Popover', Popover);

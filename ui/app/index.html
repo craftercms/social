@@ -59,15 +59,6 @@
             <p id="assurance-part03-chapter01-para05">Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
 
             <h4>RequireJS</h4>
-            <p id="assurance-part03-chapter01-table01">RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
-
-            <h4>Bootstrap</h4>
-            <p>Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.</p>
-
-            <h4>Modernizr</h4>
-            <p>Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
-
-            <h4>RequireJS</h4>
             <p>RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
 
             <h4>Bootstrap</h4>
@@ -85,9 +76,21 @@
             <h4>Modernizr</h4>
             <p>Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
 
+            <div id="assurance-part03-chapter01-table01" data-placement="bottom" style="height: 1000px; background-color: #ebebeb">
+                <h4>RequireJS</h4>
+                <p>RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
+            </div>
+
             <h4>RequireJS</h4>
             <p>RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node.</p>
 
+            <h4>Bootstrap</h4>
+            <p>Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.</p>
+
+            <div style="height:1000px">
+            <h4>Modernizr</h4>
+            <p>Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
+            </div>
         </div>
     </div>
     <div class="footer">
@@ -144,12 +147,6 @@
      *
      */
     function crafterSocial_onAppReady ( director, CrafterSocial ) {
-        // console.log('Crafter Social is Ready!');
-
-
-//        var div = document.createElement('div');
-//        alert('ondragover' in div);
-
 
         director.socialise({
             target: '#jumbotron',
@@ -164,7 +161,7 @@
         });
 
         director.socialise({
-            target: '#jumbotron2',
+            target: '#assurance-part03-chapter01-table01',
             tenant: 'craftercms'
         });
 
@@ -201,10 +198,10 @@
 
 <script src="libs/handlebars/handlebars.js"></script>
 <script src="libs/jquery/jquery.js"></script>
-<script src="scripts/vendor/jquery-browser-plugin/dist/jquery.browser.min.js"></script>
+<script src="libs/jquery.browser/dist/jquery.browser.min.js"></script>
 <script src="libs/underscore/underscore.js"></script>
 <script src="libs/backbone/backbone.js"></script>
-<script src="libs/ckeditor/ckeditor-debug.js"></script>
+<script src="libs/ckeditor/ckeditor.js"></script>
 <script src="scripts/component/ckeditor/plugins/autogrow/plugin.js"></script>
 <script src="libs/sass-bootstrap/js/transition.js"></script>
 <script src="libs/sass-bootstrap/js/tooltip.js"></script>
