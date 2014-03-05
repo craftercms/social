@@ -112,9 +112,9 @@
 
 //                'url.base'                      : '/',
 //                'url.service'                   : '/fixtures/api/2/',
-            'url.service'                   : 'http://10.107.209.100:8090/crafter-social/api/2/',
-            'url.templates'                 : 'http://10.107.209.100:9000/templates/',
-            'url.security'                  : 'http://10.107.209.100:8090/social-auth/crafter-security-login',
+            'url.service'                   : 'fixtures/api/2/',
+            'url.templates'                 : 'templates/',
+            'url.security'                  : '',
             'url.ugc.file'                  : '{attachmentId}.json',
             'url.ugc.{id}.get_attachments'  : '.json?tenant={tenant}',
             'url.ugc.{id}.add_attachment'   : '.json'
@@ -192,6 +192,8 @@
 <link rel="stylesheet" href="styles/editor-content.css">
 <!-- endbuild -->
 
+<link rel="stylesheet" href="libs/uploadify/uploadify.css">
+
 <!-- build:js scripts/social.js -->
 
 <script src="scripts/app.js"></script>
@@ -204,7 +206,7 @@
 <script src="scripts/vendor/jquery-browser-plugin/dist/jquery.browser.min.js"></script>
 <script src="libs/underscore/underscore.js"></script>
 <script src="libs/backbone/backbone.js"></script>
-<script src="libs/ckeditor/ckeditor-debug.js"></script>
+<script src="libs/ckeditor/ckeditor.js"></script>
 <script src="scripts/component/ckeditor/plugins/autogrow/plugin.js"></script>
 <script src="libs/sass-bootstrap/js/transition.js"></script>
 <script src="libs/sass-bootstrap/js/tooltip.js"></script>
@@ -217,6 +219,8 @@
 <script src="libs/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="libs/jquery-file-upload/js/jquery.fileupload-process.js"></script>
 <script src="libs/jquery-file-upload/js/jquery.fileupload-validate.js"></script>
+
+<script src="libs/uploadify/jquery.uploadify.js"></script>
 
 <script src="scripts/api.js"></script>
 
