@@ -38,6 +38,17 @@
             var view = this.cache('commentingView');
             view && view.editor();
 
+            if (this.cfg.scrollIntoView) {
+
+                var pos = this.$el.offset(),
+                    $selection = $('body, html');
+
+                $selection.animate({
+                    scrollTop: pos.top - 100
+                }, 400);
+
+            }
+
         },
 
         hide: function () {
@@ -55,6 +66,7 @@
         viewOptions: {
             hidden: ['inline.request']
         },
+        scrollIntoView: true,
         templates: {
             /* jshint -W015 */
             main: [
