@@ -201,6 +201,7 @@
 }
 #file-input, #file-input object {
     width: 250px;
+    height: 30px;
 }
 
 /* ckeditor ie textarea error */
@@ -222,7 +223,7 @@ Released under the MIT License <http://www.opensource.org/licenses/mit-license.p
     margin-bottom: 1em;
 }
 .uploadify .uploadify-button {
-    padding: 5px;
+
     background-color: #aaa;
     background-image: linear-gradient(bottom, #aaa 0%, #ebebeb 100%);
     background-image: -o-linear-gradient(bottom, #aaa 0%, #ebebeb 100%);
@@ -251,7 +252,7 @@ Released under the MIT License <http://www.opensource.org/licenses/mit-license.p
     width: 100%;
 }
 .uploadify:hover .uploadify-button {
-    padding: 5px;
+
     background-color: #888;
     background-image: linear-gradient(top, #bbb 0%, #ebebeb 100%);
     background-image: -o-linear-gradient(top, #bbb 0%, #ebebeb 100%);

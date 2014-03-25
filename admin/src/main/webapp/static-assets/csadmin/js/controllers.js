@@ -111,7 +111,7 @@ angular.module('moderationDashboard.controllers', []).
                             'displayName': ugc.profile.displayName,
                             'userImg': CONFIG.IMAGES_PATH + "profile-photo.jpg",
                             'targetId': ugc.targetId,
-                            'targetUrl': "http://www.google.com",
+                            'targetUrl': ugc.targetUrl,
                             'targetUrlMod': getTargetUrl(ugc.targetUrl, ENV.config.targetUrl),
                             'targetText': "Appendix B. Detailed Mapping Enterprise Goals—IT-related Goals (par. 1)",
                             'updated': false,

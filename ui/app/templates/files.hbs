@@ -22,12 +22,19 @@
             <div class="progress-extended" style="margin-bottom: 10px">&nbsp;</div>
         </div>
     </div>
+    <div style="margin-bottom:10px" class="cs-files-list"></div>
 </form>
 
 <div id="ie9-files-container" class="ie9-files-container">
 	<input id="file-input" type="file" name="file-input">
+
+	<div style="margin-bottom:10px" class="cs-files-list"></div>
+
+	<div id="file-alert-container" class="alert alert-danger dropbox-file-error" style="display: none;">
+        <span id="error-file-msg"></span>
+        <a onclick="this.parentNode.style.display = 'none';">Dismiss Message</a>
+    </div>
 </div>
-<div style="margin-bottom:10px" class="cs-files-list"></div>
 
 <script id="template-upload" type="text/x-handlebars">
     {{#each files}}

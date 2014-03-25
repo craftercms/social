@@ -165,7 +165,7 @@
             modal.$el.on('hidden.bs.modal', function () {
                 me.model.fetch();
 
-                if ($.browser.msie && $.browser.versionNumber > 9) {
+                if ($.browser.msie === undefined && parseInt($.browser.version, 10) > 9) {
 
                     modal.uploader.fileupload('destroy');
 
@@ -182,7 +182,7 @@
 
                 var URL = S.url('ugc.{id}.add_attachment', model.toJSON());
 
-                if ($.browser.msie && $.browser.versionNumber < 10) {
+                if ($.browser.msie !== undefined && parseInt($.browser.version, 10) < 10) {
 
                     view.$('#fileupload').remove();
 
@@ -203,13 +203,36 @@
                                 me.model.fetch();
 
                             },
-                            onUploadError: function (/* file, errorCode, errorMsg, errorString */) {
-                                /*
-                                 console.log(file);
-                                 console.log(errorCode);
-                                 console.log(errorMsg);
-                                 console.log(errorString);
-                                 */
+                            onUploadError: function ( file, errorCode, errorMsg /*, errorString */) {
+                                var errorMsgStr;
+                                if (errorMsg === '400') {
+
+                                    errorMsgStr = 'Invalid parameter sent';
+
+                                } else if (errorMsg === '404') {
+
+                                    errorMsgStr = 'Element not found on database';
+
+                                } else if (errorMsg === '403') {
+
+                                    errorMsgStr = 'User don\'t have permission';
+
+                                } else if (errorMsg === '413') {
+
+                                    errorMsgStr = 'The file you tried to upload exceeds the maximum file size.';
+
+                                } else if (errorMsg === '422') {
+
+                                    errorMsgStr = 'The file uploaded already exist.';
+
+                                } else {
+
+                                    errorMsgStr = 'Error. File could not be uploaded.';
+
+                                }
+
+                                $('#error-file-msg').text(errorMsgStr);
+                                $('#file-alert-container').css('display', 'block');
                             }
                         });
 
