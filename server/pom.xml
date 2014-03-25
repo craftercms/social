@@ -377,6 +377,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+	        <groupId>com.thetransactioncompany</groupId>
+	        <artifactId>cors-filter</artifactId>
+	        <version>1.9.2</version>
+        </dependency>
+        <dependency>
             <groupId>com.jayway.restassured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>1.8.0</version>
@@ -411,7 +416,7 @@
             </testResource>
         </testResources>
         <plugins>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -427,7 +432,7 @@
                 </configuration>
             </plugin>
 
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
