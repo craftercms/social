@@ -113,23 +113,29 @@
 
         var cfg = {
 
-//                'url.base'                      : '/',
-//                'url.service'                   : '/fixtures/api/2/',
-            'url.service'                   : 'http://10.107.209.100:8090/crafter-social/api/2/',
-            'url.templates'                 : 'http://10.107.209.100:9000/templates/',
-            'url.security'                  : 'http://10.107.209.100:8090/social-auth/crafter-security-login',
-            'url.ugc.file'                  : '{attachmentId}.json',
-            'url.ugc.{id}.get_attachments'  : '.json?tenant={tenant}',
-            'url.ugc.{id}.add_attachment'   : '.json'
+            //
+            // To use a 'live' crafter social/profile server, use the commented options below instead.
+            //
+            'url.base'                      : '/',
+            /* Fixtures need to be defined in the same format as the REST service */
+            'url.service'                   : '/fixtures/api/2/'
+            /*
+            'url.service'                   : 'http://0.0.0.0:8090/crafter-social/api/2/',
+            'url.templates'                 : 'http://0.0.0.0:9000/templates/',
+            'url.security'                  : 'http://0.0.0.0:8090/social-auth/crafter-security-login'
+            */
 
             /**
+             * @see app/scripts/config.js for more configuration options
+             *
              * Overriding a director handler example:
              *
              'director.cfg.handlers.{CONST:EVENT_UNAUTHORISED_RESPONSE}' : {
-                    handler: function () {
-                        alert ('unauthorised!');
-                    }
-                 } */
+                handler: function () {
+                    alert ('unauthorised!');
+                }
+             }
+             */
 
         };
 
