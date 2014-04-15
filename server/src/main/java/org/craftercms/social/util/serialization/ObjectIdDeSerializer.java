@@ -18,19 +18,18 @@ package org.craftercms.social.util.serialization;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
 
 public class ObjectIdDeSerializer extends JsonDeserializer<ObjectId> {
 
-	@Override
-	public ObjectId deserialize(JsonParser jsonParser, DeserializationContext context)
-			throws IOException, JsonProcessingException {
-		return new ObjectId(jsonParser.getText());
-	}
 
-	
+    @Override
+    public ObjectId deserialize(final com.fasterxml.jackson.core.JsonParser jp, final DeserializationContext ctxt)
+        throws IOException {
+        return new ObjectId(jp.getValueAsString());
+    }
 }

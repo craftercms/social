@@ -17,7 +17,7 @@
 package org.craftercms.social.util.support.security;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.impl.domain.Tenant;

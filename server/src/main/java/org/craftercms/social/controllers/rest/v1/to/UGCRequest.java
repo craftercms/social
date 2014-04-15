@@ -1,6 +1,6 @@
 package org.craftercms.social.controllers.rest.v1.to;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.craftercms.social.domain.Action;
 import org.springframework.web.multipart.MultipartFile;
 

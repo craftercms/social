@@ -2,6 +2,7 @@ package org.craftercms.social.domain;
 
 import java.util.Date;
 
+import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 
 public class Event {

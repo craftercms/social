@@ -17,6 +17,7 @@
 package org.craftercms.social.services.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.exceptions.TenantException;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCService;
@@ -36,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import clover.retrotranslator.edu.emory.mathcs.backport.java.util.Arrays;
+
 
 public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 
@@ -63,7 +65,7 @@ public class UgcSecurityExpressionRoot extends AccessRestrictionExpressionRoot {
 		super(profile);
 	}
 
-	public boolean hasCreatePermission() {
+	public boolean hasCreatePermission() throws TenantException {
 		Map params = RequestContext.getCurrent().getRequest().getParameterMap();
         // need to parse parentId from request parameter
 		String[] parentId = (String[]) params.get("parentId");

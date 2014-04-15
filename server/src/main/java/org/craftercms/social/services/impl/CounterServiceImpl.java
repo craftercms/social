@@ -1,5 +1,6 @@
 package org.craftercms.social.services.impl;
 
+import org.craftercms.social.exceptions.CounterException;
 import org.craftercms.social.repositories.CounterRepository;
 import org.craftercms.social.services.CounterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ public class CounterServiceImpl implements CounterService {
 	private CounterRepository counterRepository;
 	
 	@Override
-	public long getNextSequence(String collectionName) {
+	public long getNextSequence(String collectionName) throws CounterException {
 	  
 	  return counterRepository.getNextSequence(collectionName);
 

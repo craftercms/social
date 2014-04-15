@@ -22,7 +22,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.HarvestStatus;
+import org.craftercms.social.exceptions.AuditException;
+import org.craftercms.social.exceptions.HarvestStatusException;
 import org.craftercms.social.repositories.HarvestStatusRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,29 +66,23 @@ public abstract class BaseHarvesterService implements HarvesterService {
      *
      * @param params
      */
-    public void doHarvest(Map<String, ?> params) {
+    public void doHarvest(Map<String, ?> params) throws HarvestStatusException {
 
         String jobId = (String) params.get(JOB_ID_PARAM);
         String applicationId = (String) params.get(APPLICATION_ID_PARAM);
-        if (log.isDebugEnabled()) {
-        	log.debug("Starting harvester job ID->" + jobId + " with application ID->" + applicationId);
-        }
-
+       	log.debug("Starting harvester job ID->" + jobId + " with application ID->" + applicationId);
         HarvestStatus harvestStatus = getHarvesterLock(jobId, applicationId);
-
         if (harvestStatus.getStatus().equals(HARVESTER_STATUS_RUNNING))  {
-
             try {
                 // call the harvest internal method
                 doHarvestInternal(harvestStatus.getAttributes());
-
+            } catch (AuditException e) {
+                throw new HarvestStatusException("Unable to harvest ",e);
             } finally {
-
                 // Release the lock on the harvester
                 releaseHarvesterLock(harvestStatus);
             }
         }
-
     }
 
     /**
@@ -94,12 +91,18 @@ public abstract class BaseHarvesterService implements HarvesterService {
      * @param harvestStatus
      * @return
      */
-    private HarvestStatus releaseHarvesterLock(HarvestStatus harvestStatus) {
+    private HarvestStatus releaseHarvesterLock(HarvestStatus harvestStatus) throws HarvestStatusException {
 
         harvestStatus.setStatus(HARVESTER_STATUS_IDLE);
         harvestStatus.setApplicationId(""); // clear the application id
         harvestStatus.setLastRunDate(new Date());
-        HarvestStatus updatedHarvestStatus = harvestStatusRepository.save(harvestStatus);
+        HarvestStatus updatedHarvestStatus = null;
+        try {
+             harvestStatusRepository.save(harvestStatus);
+        } catch (MongoDataException e) {
+            log.error("Unable to release Lock for "+harvestStatus, e);
+            throw new HarvestStatusException("Unable to release lock",e);
+        }
 
         return updatedHarvestStatus;
     }
@@ -141,7 +144,7 @@ public abstract class BaseHarvesterService implements HarvesterService {
      *
      * @param harvesterProperties
      */
-    protected abstract void doHarvestInternal(Map<String, ?> harvesterProperties);
+    protected abstract void doHarvestInternal(Map<String, ?> harvesterProperties) throws HarvestStatusException, AuditException;
 
     public List<String> getActionFilters() {
         return actionFilters;

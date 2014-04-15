@@ -18,23 +18,15 @@ package org.craftercms.social.exceptions;
 
 import org.craftercms.social.util.action.ActionEnum;
 
-public class PermissionDeniedException extends Exception {
-	private static final long serialVersionUID = -2413298940118402561L;
+public class PermissionDeniedException extends SocialException {
+    private static final long serialVersionUID = -2413298940118402561L;
 
-	public PermissionDeniedException() {
-		super();
-	}
+    public PermissionDeniedException(String msg, ActionEnum action, Throwable thr) {
+        super(msg + ": Action " + action, thr);
+    }
 
-	public PermissionDeniedException(String msg, ActionEnum action, Throwable thr) {
-		super(msg + ": Action " + action, thr);
-	}
-
-	public PermissionDeniedException(String msg, ActionEnum action) {
-		super(msg + ": Action " + action);
-	}
-
-	public PermissionDeniedException(Throwable thr) {
-		super(thr);
-	}
+    public PermissionDeniedException(String msg, ActionEnum action) {
+        super(msg + ": Action " + action);
+    }
 
 }

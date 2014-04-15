@@ -23,15 +23,10 @@ package org.craftercms.social.exceptions;
  * Time: 10:28 AM
  * To change this template use File | Settings | File Templates.
  */
-public class AuthenticationException extends Exception {
+public class AuthenticationException extends SocialException {
 
-    public AuthenticationException() {
-        super();
-    }
 
-    public AuthenticationException(Throwable thr) {
-        super(thr);
-    }
+    private static final long serialVersionUID = -7904069597907192523L;
 
     public AuthenticationException(String msg) {
         super(msg);

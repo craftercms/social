@@ -16,71 +16,137 @@
  */
 package org.craftercms.social.repositories;
 
-import java.util.List;
-
+import com.mongodb.MongoException;
+import org.apache.commons.lang3.ArrayUtils;
+import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.UGCAudit;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Order;
-import org.springframework.data.mongodb.core.query.Query;
+import org.jongo.Find;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class UGCAuditRepositoryImpl implements UGCAuditRepositoryCustom {
-	
-	@Autowired
-	private MongoTemplate mongoTemplate;
-	
-	private static final String ROW = "row";
+public class UGCAuditRepositoryImpl extends JongoRepository<UGCAudit> implements UGCAuditRepository {
+
+    private static final String ROW = "row";
     private static final String ACTION = "action";
-	
-	@Override
-	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, String[] actionFilters) {
-		Query query = new Query();
-		query.sort().on(ROW, Order.DESCENDING);
-		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
+    private Logger log = LoggerFactory.getLogger(UGCAuditRepositoryImpl.class);
 
-        if(actionFilters != null){
-            for(String actionFilter : actionFilters){
-                query.addCriteria(Criteria.where(ACTION).is(actionFilter));
+    /**
+     * Creates a instance of a Jongo Repository.
+     */
+    public UGCAuditRepositoryImpl() throws MongoDataException {
+    }
+
+    @Override
+    public UGCAudit findByProfileIdAndUgcIdAndAction(final String profileId, final ObjectId ugcId,
+                                                     final UGCAudit.AuditAction action) throws MongoDataException {
+        log.debug("Finding UGC Audit for profile {}, id {} and action {} ");
+        String query = getQueryFor("social.audit.byProfileIdAction");
+        return findOne(query, profileId, ugcId, action);
+
+    }
+
+    @Override
+    public Iterable<UGCAudit> findByUgcId(final ObjectId ugcID) throws MongoDataException {
+        log.debug("Finding ugc by id {}", ugcID);
+        String query = getQueryFor("social.audit.byUgcId");
+        return find(query, ugcID);
+    }
+
+    @Override
+    public Iterable<UGCAudit> findByUgcIdAndAction(final ObjectId ugcId, final UGCAudit.AuditAction auditAction)
+        throws MongoDataException {
+        log.debug("Finding ugc by id {} and action {} ", ugcId, auditAction);
+        String query = getQueryFor("social.audit.byUgcIdAction");
+        return find(query, ugcId, auditAction);
+    }
+
+    @Override
+    public Iterable<UGCAudit> findByUgcIdAndProfileId(final ObjectId ugcId, final String profileId) throws
+        MongoDataException {
+        log.debug("Finding ugc by id {} and profile Id {} ", ugcId, profileId);
+        String query = getQueryFor("social.audit.byUgcIdAction");
+        return find(query, ugcId, profileId);
+    }
+
+    @Override
+    public Iterable<UGCAudit> findByProfileIdAndAction(final String profileId,
+                                                       final UGCAudit.AuditAction auditAction) throws
+        MongoDataException {
+        log.debug("Finding ugc by action {} and profile Id {} ", auditAction, profileId);
+        String query = getQueryFor("social.audit.byUgcIdAction");
+        return find(query, auditAction, profileId);
+    }
+
+    @Override
+    public Iterable<UGCAudit> findByProfileId(final String profileId) throws MongoDataException {
+        log.debug("Finding ugc by profile Id {}", profileId);
+        String query = getQueryFor("social.audit.byProfileId");
+        return find(query, profileId);
+    }
+
+    @Override
+    public Iterable<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, String[] actionFilters) throws
+        MongoDataException {
+        try {
+            if (ArrayUtils.isEmpty(actionFilters)) {
+                String query = getQueryFor("social.audit.ByLastRow");
+                return find(query, lastRowRetrieve);
+            } else {
+                String query = getQueryFor("social.audit.ByLastRowAndActions");
+                return find(query, lastRowRetrieve, actionFilters);
             }
+        } catch (MongoException ex) {
+            log.error("Unable to find by LastRetrievedRow " + lastRowRetrieve, ex);
+            throw new MongoDataException("Unable to find by LastRetrievedRow ", ex);
         }
+    }
 
-		return mongoTemplate.find(query, UGCAudit.class);
-	}
-	
-	@Override
-	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, int start, int end, String[] actionFilters) {
-		Query query = new Query();
-		
-		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
+    @Override
+    public Iterable<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, int start, int end,
+                                                     String[] actionFilters) throws MongoDataException {
 
-
-        if(actionFilters != null && actionFilters.length > 0){
-            query.addCriteria(Criteria.where(ACTION).in(actionFilters));
+        try {
+            Find find = null;
+            if (ArrayUtils.isEmpty(actionFilters)) {
+                String query = getQueryFor("social.audit.ByLastRow");
+                find = getCollection().find(query, lastRowRetrieve);
+            } else {
+                String query = getQueryFor("social.audit.ByLastRowAndActions");
+                find = getCollection().find(query, lastRowRetrieve, actionFilters);
+            }
+            return find.skip(start).limit(end).as(UGCAudit.class);
+        } catch (MongoException ex) {
+            log.error("Unable to find by LastRetrievedRow " + lastRowRetrieve, ex);
+            throw new MongoDataException("Unable to find by LastRetrievedRow ", ex);
         }
-		
-		query.skip(start);
-        query.limit(end > start? (end - start + 1): 0);
-		
-		query.sort().on(ROW, Order.DESCENDING);
-	
-		return mongoTemplate.find(query, UGCAudit.class);
-	}
-	
-	@Override
-	public long count(long lastRowRetrieve, String[] actionFilters) {
-		Query query = new Query();
-		
-		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
+    }
 
-        if(actionFilters != null && actionFilters.length > 0){
-            query.addCriteria(Criteria.where(ACTION).in(actionFilters));
+    @Override
+    public long count(long lastRowRetrieve, String[] actionFilters) throws MongoDataException {
+        try {
+            if (ArrayUtils.isEmpty(actionFilters)) {
+                String query = getQueryFor("social.audit.ByLastRow");
+                return getCollection().count(query, lastRowRetrieve);
+            } else {
+                String query = getQueryFor("social.audit.ByLastRowAndActions");
+                return getCollection().count(query, lastRowRetrieve, actionFilters);
+            }
+        } catch (MongoException ex) {
+            log.error("Unable to count audits for actionFilters" + actionFilters + " and ", ex);
+            throw new MongoDataException("Unable to count audits", ex);
         }
-		
-		return mongoTemplate.count(query, UGCAudit.class);
-	}
-	
+    }
 
-
+    @Override
+    public void deleteByRow(final long row) {
+        try {
+            String query = getQueryFor("social.audit.deleteRow");
+            getCollection().remove(query, row);
+        } catch (MongoException ex) {
+            log.error("Unable to delete UGC by row's id " + row, ex);
+        }
+    }
 
 }

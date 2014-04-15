@@ -31,7 +31,10 @@ import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.exceptions.AttachmentErrorException;
+import org.craftercms.social.exceptions.AuditException;
+import org.craftercms.social.exceptions.CounterException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
+import org.craftercms.social.exceptions.TenantException;
 import org.craftercms.social.util.web.Attachment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -58,8 +61,7 @@ public interface UGCService {
 	 *            new {@link ModerationStatus}
 	 * @return The Updated UGC
 	 */
-	UGC updateModerationStatus(ObjectId uGCId, ModerationStatus newStatus, String tenant, String profileId)
-            throws PermissionDeniedException;
+	UGC updateModerationStatus(ObjectId uGCId, ModerationStatus newStatus, String tenant, String profileId) throws PermissionDeniedException, AuditException, CounterException;
 
 	/**
 	 * Creates a new {@link UGC}
@@ -68,7 +70,7 @@ public interface UGCService {
 	 *            the {@link UGC} to save
 	 * @return the saved {@link UGC}
 	 */
-     UGC newUgc(UGC ugc) throws PermissionDeniedException;
+     UGC newUgc(UGC ugc) throws PermissionDeniedException, AuditException, CounterException;
 
 	/**
 	 * Creates a new child {@link UGC}
@@ -80,7 +82,7 @@ public interface UGCService {
 	 *             if the Parent UGC does not exist
 	 */
 
-	UGC newChildUgc(UGC ugc) throws PermissionDeniedException;
+	UGC newChildUgc(UGC ugc) throws PermissionDeniedException, AuditException, CounterException;
 
 	/**
 	 * Checks if a UGC Exists
@@ -99,11 +101,11 @@ public interface UGCService {
 	 */
 	Attachment getAttachment(ObjectId attachmentId);
 
-	UGC likeUGC(ObjectId objectId, String tenant, String profileId);
+	UGC likeUGC(ObjectId objectId, String tenant, String profileId) throws AuditException, CounterException;
 
-	UGC dislikeUGC(ObjectId objectId, String tenant, String profileId);
+	UGC dislikeUGC(ObjectId objectId, String tenant, String profileId) throws AuditException, CounterException;
 	
-	UGC flagUGC(ObjectId objectId, String reason, String tenant, String profileId);
+	UGC flagUGC(ObjectId objectId, String reason, String tenant, String profileId) throws AuditException, CounterException;
 
 	List<String> getTargets();
 
@@ -113,31 +115,31 @@ public interface UGCService {
 
 	List<UGC> findByTarget(String tenant, String target, int page, int pageSize, String sortField, String sortOrder);
 
-	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, String sortField, String sortOrder, String[] excludeWithModerationStatuses);
+	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, int page, int pageSize, String sortField, String sortOrder, String[] excludeWithModerationStatuses) throws TenantException;
 
-	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, String sortField, String sortOrder, String[] excludeWithModerationStatuses);
+	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, String sortField, String sortOrder, String[] excludeWithModerationStatuses) throws TenantException;
 
 	int getTenantTargetCount(String tenant, String target);
 
 	UGC findById(ObjectId ugcId);
 	
-	void setAttributes(ObjectId ugcId, Map<String, Object> attributeMap, String tenant, String profileId);
+	void setAttributes(ObjectId ugcId, Map<String, Object> attributeMap, String tenant, String profileId) throws AuditException, CounterException;
 
-	List<UGC> findByProfileAction(String profileId, AuditAction action);
+	List<UGC> findByProfileAction(String profileId, AuditAction action) throws AuditException;
 
 	void streamAttachment(ObjectId attachmentId, OutputStream outputStream) throws Exception;
 
-	UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId, String sortField, String sortOrder);
+	UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId, String sortField, String sortOrder) throws TenantException;
 
 	UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
 			String textContent, String string, String targetUrl, Map<String, Object> map,String subject
-            ) throws PermissionDeniedException, AttachmentErrorException;
+            ) throws PermissionDeniedException, AttachmentErrorException, AuditException, CounterException;
 
-    UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException;
+    UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException, AuditException, CounterException;
 
-	void deleteUgc(ObjectId objectId, String tenant, String profileId) throws PermissionDeniedException;
+	void deleteUgc(ObjectId objectId, String tenant, String profileId) throws PermissionDeniedException, AuditException, CounterException;
 	
-	void deleteUgc(List<String> ugcIds, String tenant, String profileId) throws PermissionDeniedException;
+	void deleteUgc(List<String> ugcIds, String tenant, String profileId) throws PermissionDeniedException, AuditException, CounterException;
 
 	List<UGC> findUGCsByTenant(String tenantName, int page, int pageSize,
 			String sortField, String sortOrder);
@@ -145,7 +147,7 @@ public interface UGCService {
 	List<UGC> findUGCsByTenant(String tenantName, String sortField, String sortOrder);
 
 	List<UGC> updateModerationStatus(List<String> ids, ModerationStatus status,
-			String tenant);
+			String tenant) throws AuditException, CounterException;
 
     List<String> findPossibleActionsForUGC(String ugcId, List<String> roles);
 
@@ -154,7 +156,7 @@ public interface UGCService {
 	List<AttachmentModel> getAttachments(ObjectId objectId, String tenant);
 
 	AttachmentModel addAttachment(ObjectId objectId, MultipartFile attachment,
-			String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException;
+			String tenant, String profileId) throws PermissionDeniedException, AttachmentErrorException, AuditException, CounterException;
 
 	UGC findById(ObjectId ugcId, List<String> attributes);
 
@@ -170,9 +172,9 @@ public interface UGCService {
      * @param profileId Profile Id of who's doing the action.
      * @return The updated UGC.
      */
-    UGC unflagUGC(ObjectId objectId, String reason, String tenant, String profileId);
+    UGC unflagUGC(ObjectId objectId, String reason, String tenant, String profileId) throws AuditException, CounterException;
 
-    UGC unLikeUGC(ObjectId objectId, String tenant, String profileId);
+    UGC unLikeUGC(ObjectId objectId, String tenant, String profileId) throws AuditException, CounterException;
 
-    UGC unDislikeUGC(ObjectId objectId, String tenant, String profileId);
+    UGC unDislikeUGC(ObjectId objectId, String tenant, String profileId) throws AuditException, CounterException;
 }

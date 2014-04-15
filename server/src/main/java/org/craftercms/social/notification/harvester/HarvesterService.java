@@ -18,6 +18,8 @@ package org.craftercms.social.notification.harvester;
 
 import java.util.Map;
 
+import org.craftercms.social.exceptions.HarvestStatusException;
+
 /**
  *  Harvester interface.  Implementers must override the doHarvest method.
  */
@@ -43,6 +45,6 @@ public interface HarvesterService {
      * The main doHarvest method.  A map of harvest details are passed in as parameters.
      * @param params
      */
-    void doHarvest(Map<String,?> params);
+    void doHarvest(Map<String,?> params) throws HarvestStatusException;
 
 }

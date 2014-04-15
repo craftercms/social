@@ -18,37 +18,45 @@ package org.craftercms.social.repositories;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.Tenant;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TenantRepositoryImpl implements TenantRepositoryCustom {
-	
-	@Autowired
-	private MongoTemplate mongoTemplate;
-	
-	@Override
-	public void setRoles(String tenantName, List<String> roles) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where("tenantName").is(tenantName));
-		Update update = new Update();
-		update.set("roles", roles);
-		mongoTemplate.updateFirst(query, update, Tenant.class);
-	}
-	
-	@Override
-	public void setActions(String tenantName, List<Action> actions) {
-		   
-		Query query = new Query();
-		query.addCriteria(Criteria.where("tenantName").is(tenantName));
-		Update update = new Update();
-		update.set("actions", actions);
-		mongoTemplate.updateFirst(query, update, Tenant.class);
-	}
+public class TenantRepositoryImpl extends JongoRepository<Tenant> implements TenantRepository {
+
+    private Logger log = LoggerFactory.getLogger(TenantRepositoryImpl.class);
+
+    /**
+     * Creates a instance of a Jongo Repository.
+     */
+    public TenantRepositoryImpl() throws MongoDataException {
+    }
+
+    @Override
+    public Tenant findTenantByTenantName(final String tenantName) throws MongoDataException {
+        log.debug("Finding tenant by name {}", tenantName);
+        String query = getQueryFor("social.tenant.byName");
+        return findOne(query, tenantName);
+    }
+
+
+    @Override
+    public void setRoles(String tenantName, List<String> roles) throws MongoDataException {
+        log.debug("Updating Tenant {} roles with {}", tenantName, roles);
+        Tenant tenant = findTenantByTenantName(tenantName);
+        tenant.setRoles(roles);
+        update(tenant.getId().toString(), tenant, false, false);
+    }
+
+    @Override
+    public void setActions(String tenantName, List<Action> actions) throws MongoDataException {
+        log.debug("Updating Tenant {} actions with  {}", tenantName, actions);
+        Tenant tenant = findTenantByTenantName(tenantName);
+        tenant.setActions(actions);
+        update(tenant.getId().toString(), tenant, false, false);
+    }
 
 }

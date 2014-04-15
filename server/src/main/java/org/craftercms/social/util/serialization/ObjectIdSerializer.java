@@ -16,35 +16,25 @@
  */
 package org.craftercms.social.util.serialization;
 
+
 import java.io.IOException;
-import java.lang.reflect.Type;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.ser.std.SerializerBase;
 
-public class ObjectIdSerializer extends SerializerBase<ObjectId>  {
+public class ObjectIdSerializer extends JsonSerializer<ObjectId> {
 
-	protected ObjectIdSerializer(Class<ObjectId> t) {
-		super(t);
-	}
-	
-	public ObjectIdSerializer() {
-		this(ObjectId.class);
-	}
 
-	@Override
-	public void serialize(ObjectId obj, JsonGenerator jGen,	SerializerProvider sp) 
-			throws IOException,	JsonProcessingException {
-		jGen.writeString(obj.toString());
-	}
+    @Override
+    public void serialize(final ObjectId value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException {
+        jgen.writeString(value.toString());
+    }
 
-	@Override
-	public JsonNode getSchema(SerializerProvider sp, Type type)	throws JsonMappingException {
-		return createSchemaNode("string");
-	}
+    @Override
+    public Class<ObjectId> handledType() {
+        return ObjectId.class;
+    }
 }

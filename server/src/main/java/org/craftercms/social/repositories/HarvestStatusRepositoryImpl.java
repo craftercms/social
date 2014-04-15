@@ -1,27 +1,31 @@
 package org.craftercms.social.repositories;
 
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Query.query;
-
+import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.HarvestStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
+import org.craftercms.social.exceptions.HarvestStatusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class HarvestStatusRepositoryImpl implements
-		HarvestStatusRepositoryCustom {
-	
-	@Autowired
-	private MongoTemplate mongoTemplate;
-	
-	private static final String ID = "_id";
+public class HarvestStatusRepositoryImpl extends JongoRepository<HarvestStatus> implements HarvestStatusRepository {
 
-	@Override
-	public HarvestStatus findHarvestStatusByJobId(String jobId) {
-		Query query = new Query();
-		query(where(ID).is(jobId));
-		
-		return mongoTemplate.findOne(query, HarvestStatus.class);
-	}
+    private Logger log = LoggerFactory.getLogger(HarvestStatusRepositoryImpl.class);
 
+    /**
+     * Creates a instance of a Jongo Repository.
+     */
+    public HarvestStatusRepositoryImpl() throws MongoDataException {
+    }
+
+
+    @Override
+    public HarvestStatus findHarvestStatusByJobId(String jobId) throws HarvestStatusException {
+        log.debug("Getting harvest Status by JobId");
+        try {
+            return findById(jobId);
+        } catch (MongoDataException ex) {
+            log.error("Unable to get Harvest Status by Job Id " + jobId, ex);
+            throw new HarvestStatusException("Unable to get Harvest Status", ex);
+        }
+    }
 }

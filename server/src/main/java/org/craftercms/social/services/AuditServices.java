@@ -21,20 +21,21 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
+import org.craftercms.social.exceptions.AuditException;
 
 public interface AuditServices {
 
-	List<UGCAudit> findUGCAudits(ObjectId ugcId);
+	Iterable<UGCAudit> findUGCAudits(ObjectId ugcID) throws AuditException;
 
-	List<UGCAudit> findUGCAudits(ObjectId ugcId, AuditAction auditAction);
+	Iterable<UGCAudit> findUGCAudits(ObjectId ugcId, AuditAction auditAction) throws AuditException;
 
 	UGCAudit findUGCAudits(ObjectId ugcId, AuditAction auditAction,
-			String profileId);
+			String profileId) throws AuditException;
 
-	List<UGCAudit> findUGCAudits(ObjectId ugcId, String profileId);
+	Iterable<UGCAudit> findUGCAudits(ObjectId ugcId, String profileId) throws AuditException;
 
-	List<UGCAudit> findUGCAuditsForProfile(String profileId, AuditAction valueOf);
+	Iterable<UGCAudit> findUGCAuditsForProfile(String profileId, AuditAction auditAction) throws AuditException;
 
-	List<UGCAudit> findUGCAuditsForProfile(String profileId);
+	Iterable<UGCAudit> findUGCAuditsForProfile(String profileId) throws AuditException;
 
 }

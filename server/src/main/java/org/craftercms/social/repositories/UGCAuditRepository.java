@@ -19,26 +19,36 @@ package org.craftercms.social.repositories;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository("uGCAuditRepository")
-public interface UGCAuditRepository extends MongoRepository<UGCAudit,ObjectId>, UGCAuditRepositoryCustom {
+
+public interface UGCAuditRepository extends CrudRepository<UGCAudit> {
 
 	UGCAudit findByProfileIdAndUgcIdAndAction(String profileId, ObjectId ugcId,
-			AuditAction action);
+			AuditAction action) throws MongoDataException;
 	
-	List<UGCAudit> findByUgcId(ObjectId ugcID);
+	Iterable<UGCAudit> findByUgcId(ObjectId ugcID) throws MongoDataException;
 
-	List<UGCAudit> findByUgcIdAndAction(ObjectId ugcId, AuditAction auditAction);
+	Iterable<UGCAudit> findByUgcIdAndAction(ObjectId ugcId, AuditAction auditAction) throws MongoDataException;
 
-	List<UGCAudit> findByUgcIdAndProfileId(ObjectId ugcId, String profileId);
+	Iterable<UGCAudit> findByUgcIdAndProfileId(ObjectId ugcId, String profileId) throws MongoDataException;
 
-	List<UGCAudit> findByProfileIdAndAction(String profileId,
-			AuditAction auditAction);
+	Iterable<UGCAudit> findByProfileIdAndAction(String profileId, AuditAction auditAction) throws MongoDataException;
 
-	List<UGCAudit> findByProfileId(String profileId);
+	Iterable<UGCAudit> findByProfileId(String profileId) throws MongoDataException;
 
+
+    Iterable<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, String[] actionFilters) throws MongoDataException;
+
+    Iterable<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, int start, int end, String[] actionFilters)
+        throws MongoDataException;
+
+    long count(long lastRowRetrieve, String[] actionFilters) throws MongoDataException;
+
+    void deleteByRow(long row);
 }

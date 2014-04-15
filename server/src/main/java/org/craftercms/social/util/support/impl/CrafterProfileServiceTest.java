@@ -46,27 +46,35 @@ public class CrafterProfileServiceTest implements CrafterProfileService {
 			add(ActionConstants.SOCIAL_AUTHOR);
 			add(ActionConstants.OWNER);
 		}
-	};
+
+        private static final long serialVersionUID = 1292635311333521712L;
+    };
 	private static final List<String>CREATE_ROLES = new ArrayList<String>() {
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
 			add(ActionConstants.SOCIAL_AUTHOR);
 			add(ActionConstants.OWNER);
 		}
-	};
+
+        private static final long serialVersionUID = -5756399747023122667L;
+    };
 	private static final List<String>UPDATE_ROLES = new ArrayList<String>() {
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
 			add(ActionConstants.SOCIAL_AUTHOR);
 			add(ActionConstants.OWNER);
 		}
-	};
+
+        private static final long serialVersionUID = 1848876373449505941L;
+    };
 	private static final List<String>DELETE_ROLES = new ArrayList<String>() {
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
 			add(ActionConstants.SOCIAL_AUTHOR);
 		}
-	};
+
+        private static final long serialVersionUID = 514560736433123521L;
+    };
 	private static final List<String>ACT_ON_ROLES = new ArrayList<String>() {
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
@@ -74,7 +82,9 @@ public class CrafterProfileServiceTest implements CrafterProfileService {
 			add(ActionConstants.SOCIAL_USER);
 			add(ActionConstants.OWNER);
 		}
-	};
+
+        private static final long serialVersionUID = 3151270107078868241L;
+    };
 	private static final List<String>MODERATE_ROLES = new ArrayList<String>() {
 		{
 			add(ActionConstants.SOCIAL_ADMIN);
@@ -125,6 +135,11 @@ public class CrafterProfileServiceTest implements CrafterProfileService {
     @Override
     public void updateAttributes(String profileId, Map<String, Serializable> attributes) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public List<Profile> findProfilesBySubscriptions(final String target) {
+        throw new RuntimeException();
     }
 
     public List<Profile> getProfilesByIds(List<String> profileIds) {

@@ -21,6 +21,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
+import org.craftercms.social.exceptions.AuditException;
 import org.craftercms.social.services.AuditServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,7 +40,8 @@ public class AuditRestController {
 	
 	@RequestMapping(value = "/{ugcId}", method = RequestMethod.GET)
 	@ModelAttribute
-	public List<UGCAudit> getUGCAudit(@PathVariable String ugcId,@RequestParam(required=false,defaultValue="") String profileId){
+	public Iterable<UGCAudit> getUGCAudit(@PathVariable String ugcId, @RequestParam(required = false,
+        defaultValue = "") String profileId) throws AuditException {
 		if(profileId.isEmpty()) {
 			return auditServices.findUGCAudits(new ObjectId(ugcId));
 		} else {
@@ -49,19 +51,19 @@ public class AuditRestController {
 	
 	@RequestMapping(value = "/{ugcId}/{action}", method = RequestMethod.GET)
 	@ModelAttribute
-	public List<UGCAudit> getUGCAuditForActions(@PathVariable String ugcId,@PathVariable String action){		
+	public Iterable<UGCAudit> getUGCAuditForActions(@PathVariable String ugcId, @PathVariable String action) throws AuditException {
 		return auditServices.findUGCAudits(new ObjectId(ugcId),AuditAction.valueOf(action.toUpperCase()));
 	}
 
 	@RequestMapping(value = "/profile/{profileId}/{action}", method = RequestMethod.GET)
 	@ModelAttribute
-	public List<UGCAudit> getUGCAuditForUserActions(@PathVariable String profileId,@PathVariable String action){		
+	public Iterable<UGCAudit> getUGCAuditForUserActions(@PathVariable String profileId, @PathVariable String action) throws AuditException {
 		return auditServices.findUGCAuditsForProfile(profileId,AuditAction.valueOf(action.toUpperCase()));
 	}
 	
 	@RequestMapping(value = "/profile/{profileId}", method = RequestMethod.GET)
 	@ModelAttribute
-	public List<UGCAudit> getUGCAuditForUserActions(@PathVariable String profileId){		
+	public Iterable<UGCAudit> getUGCAuditForUserActions(@PathVariable String profileId) throws AuditException {
 		return auditServices.findUGCAuditsForProfile(profileId);
 	}
 	

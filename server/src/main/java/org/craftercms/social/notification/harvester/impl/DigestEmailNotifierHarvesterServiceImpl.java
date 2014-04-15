@@ -2,8 +2,10 @@ package org.craftercms.social.notification.harvester.impl;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.social.domain.HarvestStatus;
 import org.craftercms.social.domain.Notification;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.exceptions.HarvestStatusException;
 import org.craftercms.social.exceptions.MailException;
 import org.craftercms.social.repositories.UGCRepository;
 import org.craftercms.social.util.support.CrafterProfileService;
@@ -47,11 +49,10 @@ public class DigestEmailNotifierHarvesterServiceImpl extends EmailNotifierHarves
         LinkedHashMap<String, Order> sorting = new LinkedHashMap<String, Order>();
         sorting.put(FIELD_SUBSCRIBER_ID, Order.ASCENDING);
         sorting.put(FIELD_EVENT_AUDIT_DATE, Order.DESCENDING);
-        setNotificationQuerySort(sorting);
     }
 
     @Override
-    public void doHarvest(Map<String, ?> params) {
+    public void doHarvest(Map<String, ?> params) throws HarvestStatusException {
         start();
         super.doHarvest(params);
         end();
@@ -89,7 +90,7 @@ public class DigestEmailNotifierHarvesterServiceImpl extends EmailNotifierHarves
                 || (profileChanged(subscriberId) && currentProfileNotifications.size() > 0);
     }
 
-    private void updateNotifications(List<Notification> notificationList, Notification.TransmittedStatus status) {
+    private void updateNotifications(List<Notification> notificationList, Notification.TransmittedStatus status) throws HarvestStatusException {
         for (Notification notification : notificationList) {
             updateNotification(notification, status);
         }
@@ -101,11 +102,15 @@ public class DigestEmailNotifierHarvesterServiceImpl extends EmailNotifierHarves
             updateNotifications(notificationList, transmittedStatus);
             sendEmail(notificationList);
             transmittedStatus = Notification.TransmittedStatus.PROCESSED;
-        } catch (Exception e) {
+        } catch (Exception | HarvestStatusException e) {
             log.error("Digest Email Notifier Harvester error:" + e.getMessage());
             transmittedStatus = Notification.TransmittedStatus.PENDING;
         } finally {
-            updateNotifications(notificationList, transmittedStatus);
+            try {
+                updateNotifications(notificationList, transmittedStatus);
+            } catch (HarvestStatusException e) {
+                log.error("Error while updating any Notification !!!!",e);
+            }
             currentPage++;
         }
     }
@@ -160,7 +165,7 @@ public class DigestEmailNotifierHarvesterServiceImpl extends EmailNotifierHarves
         }
 
         templateArgs.put(ANONYMOUS, anonymous);
-        org.craftercms.social.domain.Profile notificationProfile = notification.getEvent().getProfile();
+        Profile notificationProfile = notification.getEvent().getProfile();
         Map<String, Object> eventProfileAttributes = retrieveProfileAttributes(notificationProfile.getId().toString());
         templateArgs.put(EVENT_PROFILE_ATTRIBUTES, eventProfileAttributes);
 

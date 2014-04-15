@@ -3,8 +3,8 @@ package org.craftercms.virusscanner.impl;
 import clamavj.ClamScan;
 import clamavj.ScanResult;
 import org.craftercms.virusscanner.api.VirusScanner;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +20,7 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 	public static final String FILE_NOT_FOUND_MESSAGE = "File not found";
 	public static final String SCAN_FAILED_MESSAGE = "Scan failed";
 
-	private static Log log = LogFactory.getLog(ClamavVirusScannerImpl.class);
+	private static Logger log = LoggerFactory.getLogger(ClamavVirusScannerImpl.class);
 
 	private String host;
 	private int port;

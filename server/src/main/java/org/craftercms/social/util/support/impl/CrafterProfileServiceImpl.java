@@ -3,12 +3,14 @@ package org.craftercms.social.util.support.impl;
 import java.io.Serializable;
 import java.util.*;
 
+import org.craftercms.profile.ProfileClientException;
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
+import org.craftercms.social.domain.Subscriptions;
 import org.craftercms.social.util.support.CrafterProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -218,7 +220,7 @@ public class CrafterProfileServiceImpl implements CrafterProfileService {
         if (profileId == null || profileId.equals("") || profileId.equalsIgnoreCase("anonymous")) {
             return;
         } else if (attributes == null) {
-            attributes = new HashMap<String, Serializable>();
+            attributes = new HashMap<>();
         }
 
         try {
@@ -233,6 +235,17 @@ public class CrafterProfileServiceImpl implements CrafterProfileService {
             }
             client.setAttributesForProfile(getAppToken(), profileId, attributes);
         }
+    }
+
+    @Override
+    public List<Profile> findProfilesBySubscriptions(final String target) {
+        try {
+            return client.getProfilesByAttributeValue(getAppToken(), Subscriptions.ATTRIBUTE_TARGETS,target);
+        } catch (ProfileClientException e) {
+            log.error("Unable to get profiles for subscription target "+target,e);
+            return null;
+        }
+
     }
 
 }

@@ -1,6 +1,7 @@
 package org.craftercms.testing.unit;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.UserProfile;
@@ -11,7 +12,11 @@ import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.exceptions.AttachmentErrorException;
+import org.craftercms.social.exceptions.AuditException;
+import org.craftercms.social.exceptions.CounterException;
 import org.craftercms.social.exceptions.PermissionDeniedException;
+import org.craftercms.social.exceptions.SocialException;
+import org.craftercms.social.exceptions.TenantException;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
@@ -32,7 +37,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -89,7 +93,7 @@ public class UGCServiceTest {
 	private List<String> moderateRootRoles;
 	
 	@Before
-	public void startup() {
+	public void startup() throws SocialException, MongoDataException {
 		mockStatic(RequestContext.class);
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 
@@ -120,6 +124,10 @@ public class UGCServiceTest {
 		when(counterService.getNextSequence(Mockito.<String>any())).thenReturn(1l);
 		when(auditRepository.findByProfileIdAndAction(PROFILE_ID, AuditAction.CREATE)).thenReturn(la);
 		when(auditRepository.findByProfileIdAndUgcIdAndAction(PROFILE_ID, new ObjectId(VALID_ID),AuditAction.CREATE)).thenReturn(audit);
+        when(auditRepository.findByProfileIdAndUgcIdAndAction(PROFILE_ID, new ObjectId(VALID_ID),
+            AuditAction.LIKE)).thenReturn(audit);
+        when(auditRepository.findByProfileIdAndUgcIdAndAction(PROFILE_ID, new ObjectId(VALID_ID),
+            AuditAction.DISLIKE)).thenReturn(audit);
 		when(tenantService.getRootModeratorRoles("test")).thenReturn(moderateRootRoles);
 		when(supportDataAccess.getAttachment(Mockito.<ObjectId>any())).thenReturn(attachment);
 		
@@ -166,7 +174,7 @@ public class UGCServiceTest {
 		
 	}
 	@Test
-	public void testFindByTargetValidUGC() {
+	public void testFindByTargetValidUGC() throws TenantException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -177,7 +185,7 @@ public class UGCServiceTest {
 		
 	}
 	@Test
-	public void testFindByTargetValid_UGC() {
+	public void testFindByTargetValid_UGC() throws TenantException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -188,7 +196,7 @@ public class UGCServiceTest {
 		
 	}
 	@Test
-	public void testFindUGCAndChildren() {
+	public void testFindUGCAndChildren() throws TenantException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -206,12 +214,12 @@ public class UGCServiceTest {
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
 		
-		UGC ugc = ugcServiceImpl.initUGCAndChildren(currentUGC, currentProfile, new String[]{"UNMODERATED"}, SORT_FIELD,SORT_ORDER);
+		UGC ugc = ugcServiceImpl.initUGCAndChildren(currentUGC, new String[]{"UNMODERATED"}, SORT_FIELD,SORT_ORDER);
 		assertNotNull(ugc);
 		
 	}
 	@Test
-	public void testLikeUGC() {
+	public void testLikeUGC() throws AuditException, CounterException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -221,7 +229,7 @@ public class UGCServiceTest {
 		
 	}
 	@Test
-	public void testDiskeUGC() {
+	public void testDiskeUGC() throws AuditException, CounterException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -231,7 +239,7 @@ public class UGCServiceTest {
 		
 	}
 	@Test
-	public void testFlagUGC() {
+	public void testFlagUGC() throws AuditException, CounterException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -262,7 +270,7 @@ public class UGCServiceTest {
 		
 	}
 	@Test
-	public void testNewChild() {
+	public void testNewChild() throws AuditException, CounterException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -282,7 +290,7 @@ public class UGCServiceTest {
 	}
 	
 	@Test
-	public void testNewChildUgc() {
+	public void testNewChildUgc() throws AuditException, CounterException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -302,7 +310,7 @@ public class UGCServiceTest {
 		
 	}
 	@Test
-	public void testSetAttributes() {
+	public void testSetAttributes() throws AuditException, CounterException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -312,7 +320,7 @@ public class UGCServiceTest {
 		ugcServiceImpl.setAttributes(currentUGC.getId(), attributeMap, "test", PROFILE_ID);
 	}
 	@Test
-	public void testUpdateModerationStatus() {
+	public void testUpdateModerationStatus() throws AuditException, CounterException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -323,7 +331,7 @@ public class UGCServiceTest {
 		assertNotNull(ugc);
 	}
 	@Test
-	public void testUpdateUGC() {
+	public void testUpdateUGC() throws AuditException, CounterException {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
@@ -375,9 +383,8 @@ public class UGCServiceTest {
 	}
 
 	private Profile getProfile() {
-		Map<String,Object> attributes = new HashMap<String, Object>();
-		Profile p = new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes,"", true);
-		return p;
+		Map<String,Object> attributes = new HashMap<>();
+		return new Profile(PROFILE_ID, "test", "test", true, new Date(), new Date(), attributes,"", true);
 	}
 	
 	private Query getQuery() {

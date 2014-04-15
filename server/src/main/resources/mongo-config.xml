@@ -51,7 +51,7 @@
 		<mongo:repository id="harvestStatusRepository" mongo-template-ref="mongoTemplate"/>
 		<mongo:repository id="notificationRepository" mongo-template-ref="mongoTemplate"/>
 		<mongo:repository id="tenantRepository" mongo-template-ref="mongoTemplate"/>
-		<mongo:repository id="profileRepository" mongo-template-ref="profileTemplate"/>
+		<!--<mongo:repository id="profileRepository" mongo-template-ref="profileTemplate"/>-->
 		<mongo:repository id="counterRepository" mongo-template-ref="mongoTemplate"/>
 	</mongo:repositories>	
 

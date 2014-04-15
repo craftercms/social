@@ -16,29 +16,30 @@
  */
 package org.craftercms.social.services;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.Tenant;
+import org.craftercms.social.exceptions.TenantException;
 
 public interface TenantService {
-	
-	static final String MODERATE = "moderate";
-	static final String CREATE = "create";
-	
-	List<String> getRootCreateRoles(String tenantName);
-	Tenant setTenant(String tenantName,List<String> roles);
-	Tenant getTenantByName(String tenantName);
-	void deleteTenant(String tenantName);
-	void setTenantRoles(String tenantName, List<String> roles);
-	List<String> getRootModeratorRoles(String tenantName);
-	void setTenantActions(String tenant, List<Action> actions);
-	List<String> getActionCreateRoles(String tenantName);
-	List<String> getModeratorRoles(String tenantName);
-	
+
+    static final String MODERATE = "moderate";
+    static final String CREATE = "create";
+
+    List<String> getRootCreateRoles(String tenantName) throws TenantException;
+
+    Tenant setTenant(String tenantName, List<String> roles) throws TenantException;
+
+    Tenant getTenantByName(String tenantName) throws TenantException;
+
+    void deleteTenant(String tenantName) throws TenantException;
+
+    void setTenantRoles(String tenantName, List<String> roles) throws TenantException;
+
+    List<String> getRootModeratorRoles(String tenantName) throws TenantException;
+
+    void setTenantActions(String tenant, List<Action> actions) throws TenantException;
+
 
 }

@@ -16,14 +16,14 @@
  */
 package org.craftercms.social.exceptions;
 
+import java.io.IOException;
+
 import org.craftercms.social.util.action.ActionEnum;
 
 
-public class AttachmentErrorException extends Exception {
+public class AttachmentErrorException extends SocialException {
 
-	public AttachmentErrorException() {
-		super();
-	}
+    private static final long serialVersionUID = -6487913701852114662L;
 
     public AttachmentErrorException(String msg) {
         super(msg);
@@ -37,8 +37,7 @@ public class AttachmentErrorException extends Exception {
 		super(msg + ": Action " + action);
 	}
 
-	public AttachmentErrorException(Throwable thr) {
-		super(thr);
-	}
-
+    public AttachmentErrorException(final Throwable e) {
+        super("Unable to create Attachment",e);
+    }
 }

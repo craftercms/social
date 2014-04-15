@@ -1,14 +1,19 @@
 package org.craftercms.social.notification.harvester.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.Notification;
 import org.craftercms.social.domain.Notification.TransmittedStatus;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.exceptions.HarvestStatusException;
 import org.craftercms.social.exceptions.MailException;
 import org.craftercms.social.notification.harvester.BaseHarvesterService;
 import org.craftercms.social.repositories.NotificationRepository;
@@ -18,87 +23,85 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Order;
 
 public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
-	private static final HashMap<String, Order> DEFAULT_SORT = new HashMap<String, Order>(){
-		{
-			put("createdDate", Order.DESCENDING);
-		}
-	};
 
-	private static final String DEFAULT_FREQUENCY = "instant";
-	private static final String EMAIL_ACTION = "email";
-	private static final String DEFAULT_SIGNATURE_EMAIL = "Crafter Team";
 
-	//Email arguments that could be used by the freemarker template
-	private static final String SIGNATURE_EMAIL = "signatureEmail";
-	private static final String SUBSCRIBER_USER_NAME = "subscriberUsername";
-	private static final String SUBSCRIBER_EMAIL = "subscriberEmail";
-	private static final String EVENT_ACTION = "eventAction";
-	private static final String EVENT_TARGET = "eventTarget";
-	private static final String EVENT_USERNAME = "eventUsername";
-	private static final String EVENT_USER_EMAIL = "eventUserEmail";
-	private static final String EVENT_DATE = "eventDate";
+    private static final String DEFAULT_FREQUENCY = "instant";
+    private static final String EMAIL_ACTION = "email";
+    private static final String DEFAULT_SIGNATURE_EMAIL = "Crafter Team";
 
-	private Map<String,Order> notificationQuerySort;
+    //Email arguments that could be used by the freemarker template
+    private static final String SIGNATURE_EMAIL = "signatureEmail";
+    private static final String SUBSCRIBER_USER_NAME = "subscriberUsername";
+    private static final String SUBSCRIBER_EMAIL = "subscriberEmail";
+    private static final String EVENT_ACTION = "eventAction";
+    private static final String EVENT_TARGET = "eventTarget";
+    private static final String EVENT_USERNAME = "eventUsername";
+    private static final String EVENT_USER_EMAIL = "eventUserEmail";
+    private static final String EVENT_DATE = "eventDate";
 
-	private String frequency;
+    private List<DefaultKeyValue<String, Boolean>> notificationQuerySort;
 
-	private String emailTemplateFtl;
+    private String frequency;
 
-	private String emailSubject;
+    private String emailTemplateFtl;
 
-	private TransmittedStatus transmitedStatus;
+    private String emailSubject;
 
-	private Map<String, String> actionToDisplay;
+    private TransmittedStatus transmitedStatus;
 
-	@Autowired
-	private NotificationRepository notificationRepository;
+    private Map<String, String> actionToDisplay;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private UGCRepository ugcRepository;
 
-	@Autowired
-	private MailService mailService;
+    @Autowired
+    private MailService mailService;
 
-	private String fromAddress;
+    private String fromAddress;
 
-	private String emailBody;
+    private String emailBody;
 
-	private String signatureEmail;
+    private String signatureEmail;
 
-	//private PageManagement pageManagement;
+    //private PageManagement pageManagement;
 
-	private int pageSize;
+    private int pageSize;
 
-	private Map<String, String> emailParameters;
+    private Map<String, String> emailParameters;
 
-	public EmailNotifierHarvesterServiceImpl() {
-		frequency = DEFAULT_FREQUENCY;
-		pageSize = DEFAULT_PAGE_SIZE;
-		transmitedStatus = TransmittedStatus.PENDING;
+    public EmailNotifierHarvesterServiceImpl() {
+        frequency = DEFAULT_FREQUENCY;
+        pageSize = DEFAULT_PAGE_SIZE;
+        transmitedStatus = TransmittedStatus.PENDING;
+        signatureEmail = DEFAULT_SIGNATURE_EMAIL;
+        emailParameters = new HashMap<>();
+        actionFilters = new ArrayList<>();
+        notificationQuerySort = Collections.unmodifiableList(Arrays.asList(new DefaultKeyValue<>("createdDate",
+            false)));
+        ;
+    }
 
-		signatureEmail = DEFAULT_SIGNATURE_EMAIL;
+    @Override
+    public void doHarvestInternal(Map<String, ?> harvesterProperties) throws HarvestStatusException {
+        try {
+            Iterable<Notification> notificationList = notificationRepository
+                .findNotificationByFrequencyAndTransmittedStatus(frequency, transmitedStatus.toString(),
+                    EMAIL_ACTION, getActionFiltersAsStringArray(), notificationQuerySort);
+            if (notificationList != null) {
+                log.debug("Email notifier harvester found notifications ");
+                emailNotifications(filterNotifications(notificationList));
+            }
+        } catch (MongoDataException ex) {
+            log.error("Unable to Harvest", ex);
+            throw new HarvestStatusException("Unable to harvest ", ex);
+        }
+    }
 
-		emailParameters = new HashMap<String, String>();
-        actionFilters = new ArrayList<String>();
-        notificationQuerySort = DEFAULT_SORT;
-	}
-
-	@Override
-	public void doHarvestInternal(Map<String, ?> harvesterProperties) {
-		List<Notification> notificationList = notificationRepository.findNotificationByFrequencyAndTransmitedStatus(frequency,
-                transmitedStatus.toString(), EMAIL_ACTION, getActionFiltersAsStringArray(), notificationQuerySort);
-
-		if (notificationList != null && notificationList.size() > 0) {
-			if (log.isDebugEnabled()) {
-				log.debug("Email notifier harvester found notifications: " + notificationList.size());
-			}
-			emailNotifications(filterNotifications(notificationList));
-
-		}
-	}
-
-    private List<Notification> filterNotifications(List<Notification> notificationList) {
-        List<Notification> result = new ArrayList<Notification>();
+    private List<Notification> filterNotifications(Iterable<Notification> notificationList) {
+        List<Notification> result = new ArrayList<>();
         for (Notification notification : notificationList) {
             Object ugcIdObj = notification.getEvent().getUgcId();
             if (ugcIdObj != null) {
@@ -117,13 +120,13 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
         return result;
     }
 
-	/**
+    /**
      * Sets the email template that will be used to email
      *
      * @param //resetEmailTemplate
      */
     public void setEmailTemplateFtl(String emailTemplateFtl) {
-    	this.emailTemplateFtl = emailTemplateFtl;
+        this.emailTemplateFtl = emailTemplateFtl;
     }
 
     /**
@@ -132,7 +135,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
      * @param emailSubject Subject of the email
      */
     public void setEmailSubject(String emailSubject) {
-    	this.emailSubject = emailSubject;
+        this.emailSubject = emailSubject;
     }
 
     /**
@@ -141,7 +144,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
      * @param emailText Body text of the email
      */
     public void setEmailText(String emailText) {
-    	this.emailBody = emailText;
+        this.emailBody = emailText;
     }
 
     /**
@@ -150,58 +153,65 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
      * @param mailFrom Email account used to send emails
      */
     public void setMailFrom(String mailFrom) {
-    	if (mailFrom != null && mailFrom.equals("")) {
-    		this.fromAddress = mailFrom;
-    	}
+        if (mailFrom != null && mailFrom.equals("")) {
+            this.fromAddress = mailFrom;
+        }
     }
 
 
-	public void setFrequency(String frequency) {
-		this.frequency = frequency;
-	}
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
+    }
 
-	public Map<String, String> getActionToDisplay() {
-		return actionToDisplay;
-	}
+    public Map<String, String> getActionToDisplay() {
+        return actionToDisplay;
+    }
 
-	public void setActionToDisplay(Map<String, String> actionToDisplay) {
-		this.actionToDisplay = actionToDisplay;
-	}
+    public void setActionToDisplay(Map<String, String> actionToDisplay) {
+        this.actionToDisplay = actionToDisplay;
+    }
 
-	public String getSignatureEmail() {
-		return signatureEmail;
-	}
+    public String getSignatureEmail() {
+        return signatureEmail;
+    }
 
-	public void setSignatureEmail(String signatureEmail) {
-		this.signatureEmail = signatureEmail;
-	}
+    public void setSignatureEmail(String signatureEmail) {
+        this.signatureEmail = signatureEmail;
+    }
 
-	protected void emailNotifications(List<Notification> notificationList) {
-		TransmittedStatus trasmittedStatus;
-		for (Notification notification: notificationList) {
-			trasmittedStatus = TransmittedStatus.PROCESSING;
-			try {
-				updateNotification(notification, trasmittedStatus);
-				emailNotification(notification);
-				trasmittedStatus = TransmittedStatus.PROCESSED;
-			} catch(MailException e) {
-				log.error("Email notifier harvester error:" + e.getMessage());
-				trasmittedStatus = TransmittedStatus.PENDING;
-			} finally {
-				if (log.isDebugEnabled()) {
-					log.debug("Email notifier harvester updating notification " + notification.getId()  +" status: " + trasmittedStatus);
-				}
-				updateNotification(notification, trasmittedStatus);
-			}
-		}
-	}
+    protected void emailNotifications(List<Notification> notificationList) throws HarvestStatusException {
+        TransmittedStatus trasmittedStatus;
+        for (Notification notification : notificationList) {
+            trasmittedStatus = TransmittedStatus.PROCESSING;
+            try {
+                updateNotification(notification, trasmittedStatus);
+                emailNotification(notification);
+                trasmittedStatus = TransmittedStatus.PROCESSED;
+            } catch (MailException e) {
+                log.error("Email notifier harvester error:" + e.getMessage());
+                trasmittedStatus = TransmittedStatus.PENDING;
+            } finally {
+                if (log.isDebugEnabled()) {
+                    log.debug("Email notifier harvester updating notification " + notification.getId() + " status: "
+                        + trasmittedStatus);
+                }
+                updateNotification(notification, trasmittedStatus);
+            }
+        }
+    }
 
-	protected void updateNotification(Notification notification, TransmittedStatus transmitedStatus) {
-		notification.setTransmitedStatus(transmitedStatus);
-		this.notificationRepository.save(notification);
-	}
+    protected void updateNotification(Notification notification, TransmittedStatus transmitedStatus) throws
+        HarvestStatusException {
+        try {
+            notification.setTransmitedStatus(transmitedStatus);
+            this.notificationRepository.save(notification);
+        } catch (MongoDataException e) {
+            log.error("Unable to update notification {} and status {}  due {}", notification, transmitedStatus, e);
+            throw new HarvestStatusException("Unable to update Notification", e);
+        }
+    }
 
-	private void emailNotification(Notification notification) throws MailException {
+    private void emailNotification(Notification notification) throws MailException {
         Map<String, Object> templateArgs = getNotificationTemplateArguments(notification);
         templateArgs.putAll(getGlobalTemplateArguments(notification));
         sendEmail(templateArgs, notification.getSubscriberEmail());
@@ -209,7 +219,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 
     protected void sendEmail(Map<String, Object> templateArgs, String subscriberEmail) throws MailException {
         mailService.sendMailTLS(emailSubject, emailBody, this.emailTemplateFtl, templateArgs, subscriberEmail,
-                fromAddress);
+            fromAddress);
     }
 
     protected Map<String, Object> getGlobalTemplateArguments(Notification notification) {
@@ -236,30 +246,21 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
         return templateArgs;
     }
 
-	public int getPageSize() {
-		return pageSize;
-	}
+    public int getPageSize() {
+        return pageSize;
+    }
 
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
-	}
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
 
-	public Map<String, String> getEmailParameters() {
-		return emailParameters;
-	}
+    public Map<String, String> getEmailParameters() {
+        return emailParameters;
+    }
 
-	public void setEmailParameters(Map<String, String> emailParameters) {
-		if (emailParameters!=null) {
-			this.emailParameters = emailParameters;
-		}
-	}
-
-	public Map<String,Order> getNotificationQuerySort() {
-		return notificationQuerySort;
-	}
-
-	public void setNotificationQuerySort(Map<String,Order> notificationQuerySort) {
-		this.notificationQuerySort = notificationQuerySort;
-	}
-
+    public void setEmailParameters(Map<String, String> emailParameters) {
+        if (emailParameters != null) {
+            this.emailParameters = emailParameters;
+        }
+    }
 }

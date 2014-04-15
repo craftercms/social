@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean id="ugcAuditHarvesterService" class="org.craftercms.social.notification.harvester.impl.UGCAuditHarvesterServiceImpl">
 	    <property name="pageSize" value="15"/>
@@ -34,7 +34,7 @@
         <property name="triggers">
             <list>
             	<!-- -  JOB to HEARVEST data from UGCAudit table and produces notifications   - -->
-                <bean class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+                <bean class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
                     <property name="startDelay" value="${social.harvester.audit.frequency}"/>
                     <property name="repeatInterval" value="${social.harvester.audit.frequency}"/>
                     <property name="jobDetail">
@@ -54,7 +54,7 @@
                     </property>
                 </bean>
                 <!-- -  JOB to Consume the notifications via email   - -->
-                <bean class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+                <bean class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
                     <property name="startDelay" value="${social.harvester.notifier.frequency}"/>
                     <property name="repeatInterval" value="${social.harvester.notifier.frequency}"/>
                     <property name="jobDetail">

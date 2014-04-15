@@ -16,54 +16,85 @@
  */
 package org.craftercms.social.services.impl;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.UGCAudit;
 import org.craftercms.social.domain.UGCAudit.AuditAction;
+import org.craftercms.social.exceptions.AuditException;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.services.AuditServices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuditServicesImpl implements AuditServices {
-
+    private Logger log = LoggerFactory.getLogger(AuditServicesImpl.class);
 	@Autowired
 	private UGCAuditRepository uGCAuditRepository;
 	
 	@Override
-	public List<UGCAudit> findUGCAudits(ObjectId ugcID) {
-		return uGCAuditRepository.findByUgcId(ugcID);
-	}
+	public Iterable<UGCAudit> findUGCAudits(ObjectId ugcID) throws AuditException {
+        try {
+            return uGCAuditRepository.findByUgcId(ugcID);
+        } catch (MongoDataException e) {
+            log.error("Unable to find Audits for ugc"+ugcID, e);
+            throw new AuditException("Unable to find Audits for ugc",e);
+        }
+    }
 
 	@Override
-	public List<UGCAudit> findUGCAudits(ObjectId ugcId, AuditAction auditAction) {
-		return uGCAuditRepository.findByUgcIdAndAction(ugcId,auditAction);
+	public Iterable<UGCAudit> findUGCAudits(ObjectId ugcId, AuditAction auditAction) throws AuditException {
+        try {
+            return uGCAuditRepository.findByUgcIdAndAction(ugcId, auditAction);
+        }catch (MongoDataException ex){
+            log.error("Unable to find ugcs by id "+ugcId+" and auditAction "+auditAction, ex);
+            throw new AuditException("Unable to find Audits for ugc and action",ex);
+        }
 	}
 
 	@Override
 	public UGCAudit findUGCAudits(ObjectId ugcId, AuditAction action,
-			String profileId) {
-		return uGCAuditRepository.findByProfileIdAndUgcIdAndAction(profileId, ugcId, action);
-	}
+			String profileId) throws AuditException {
+        try {
+            return uGCAuditRepository.findByProfileIdAndUgcIdAndAction(profileId, ugcId, action);
+        } catch (MongoDataException e) {
+            log.error("Unable to find ugcs by id " + ugcId + " and auditAction " + action, e);
+            throw new AuditException("Unable to find Audits for ugc and action",e);
+        }
+    }
 
 	@Override
-	public List<UGCAudit> findUGCAudits(ObjectId ugcId, String profileId) {
-		return uGCAuditRepository.findByUgcIdAndProfileId(ugcId,profileId);
-	}
+	public Iterable<UGCAudit> findUGCAudits(ObjectId ugcId, String profileId) throws AuditException {
+        try {
+            return uGCAuditRepository.findByUgcIdAndProfileId(ugcId,profileId);
+        } catch (MongoDataException e) {
+            log.error("Unable to find ugcs by id " + ugcId + " and profileid " + profileId, e);
+            throw new AuditException("Unable to find Audits for ugc and action",e);
+        }
+    }
 
 	@Override
-	public List<UGCAudit> findUGCAuditsForProfile(String profileId,
-			AuditAction auditAction) {
-		return uGCAuditRepository.findByProfileIdAndAction(profileId,auditAction);
-		
-	}
+	public Iterable<UGCAudit> findUGCAuditsForProfile(String profileId, AuditAction auditAction) throws AuditException {
+        try {
+            return uGCAuditRepository.findByProfileIdAndAction(profileId,auditAction);
+        } catch (MongoDataException e) {
+            log.error("Unable to find ugcs by profileid" +profileId + " and auditAction " + auditAction, e);
+            throw new AuditException("Unable to find Audits for ugc and action",e);
+        }
+
+    }
 
 	@Override
-	public List<UGCAudit> findUGCAuditsForProfile(String profileId) {
-		return uGCAuditRepository.findByProfileId(profileId);
-	}
+	public Iterable<UGCAudit> findUGCAuditsForProfile(String profileId) throws AuditException {
+        try {
+            return uGCAuditRepository.findByProfileId(profileId);
+        } catch (MongoDataException e) {
+            log.error("Unable to find ugcs by profileID"+profileId, e);
+            throw new AuditException("Unable to find Audits for ugc and action",e);
+        }
+    }
 
 	
 }

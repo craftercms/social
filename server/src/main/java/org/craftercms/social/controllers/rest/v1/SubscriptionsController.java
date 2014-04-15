@@ -1,6 +1,6 @@
 package org.craftercms.social.controllers.rest.v1;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.Subscriptions;
 

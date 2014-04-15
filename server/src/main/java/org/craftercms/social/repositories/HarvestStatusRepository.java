@@ -1,12 +1,10 @@
 package org.craftercms.social.repositories;
 
+import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.social.domain.HarvestStatus;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import org.craftercms.social.exceptions.HarvestStatusException;
 
-@Repository("harvestStatusRepository")
-public interface HarvestStatusRepository extends MongoRepository<HarvestStatus,String>, HarvestStatusRepositoryCustom {
-	
-	
+public interface HarvestStatusRepository extends CrudRepository<HarvestStatus> {
 
+    HarvestStatus findHarvestStatusByJobId(String jobId) throws HarvestStatusException;
 }

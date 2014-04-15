@@ -34,5 +34,6 @@ public interface CrafterProfileService {
 	boolean validateUserToken(String ticket);
 	Profile getUserInformation(String ticket);
     void updateAttributes(String profileId, Map<String, Serializable> attributes);
+    List<Profile> findProfilesBySubscriptions(String target);
 
 }

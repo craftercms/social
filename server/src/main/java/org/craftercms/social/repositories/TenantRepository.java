@@ -16,12 +16,19 @@
  */
 package org.craftercms.social.repositories;
 
-import org.bson.types.ObjectId;
-import org.craftercms.social.domain.Tenant;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-@Repository("tenantRepository")
-public interface TenantRepository extends MongoRepository<Tenant,ObjectId>, TenantRepositoryCustom {
-	Tenant findTenantByTenantName(String tenantName);
+import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.social.domain.Action;
+import org.craftercms.social.domain.Tenant;
+
+public interface TenantRepository extends CrudRepository<Tenant> {
+
+    Tenant findTenantByTenantName(String tenantName) throws MongoDataException;
+
+    void setRoles(String tenantName, List<String> roles) throws MongoDataException;
+
+    void setActions(String tenantName, List<Action> actions) throws MongoDataException;
+
 }

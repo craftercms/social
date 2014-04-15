@@ -19,157 +19,155 @@ package org.craftercms.social.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.Tenant;
+import org.craftercms.social.exceptions.TenantException;
 import org.craftercms.social.repositories.TenantRepository;
 import org.craftercms.social.services.TenantService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TenantServiceImpl implements TenantService {
-	
-	
 
-	@Autowired
-	private TenantRepository tenantRepository;
+    private Logger log = LoggerFactory.getLogger(TenantServiceImpl.class);
 
-	@Value("#{socialSettings['create.roles']}")
-	private String createRoles;
-	
-	@Value("#{socialSettings['moderator.roles']}")
-	private String moderatorRoles;
+    @Autowired
+    private TenantRepository tenantRepository;
 
-	@Override
-	public List<String> getRootCreateRoles(String tenantName) {
-		Tenant tenant = this.tenantRepository
-				.findTenantByTenantName(tenantName);
-		if (tenant == null || tenant.getRoles() == null) {
-			ArrayList<String> roles = new ArrayList<String>();
-			String[] creates = this.createRoles.split(",");
-			for (String role : creates) {
-				roles.add(role.trim());
-			}
-			return roles;
-		} else {
-			return tenant.getRoles();
-		}
-	}
-	
-	@Override
-	public List<String> getActionCreateRoles(String tenantName) {
-//		Tenant tenant = this.tenantRepository
-//				.findTenantByTenantName(tenantName);
-//		List<String> roles = new ArrayList<String>();
-//		if (tenant == null || tenant.getActionRoles() == null) {
-//			String[] creates = this.createRoles.split(",");
-//			for (String role : roles) {
-//				roles.add(role.trim());
-//			}
-//		} else {
-//			for (Action action: tenant.getActionRoles()) {
-//				if (action.equals("create")) {
-//					roles.addAll(action.getRoles());
-//					break;
-//				}
-//				
-//			}
-//		}
-//		return roles;
-		return getActionRoles(CREATE, tenantName,createRoles);
-	}
-	
-	@Override
-	public List<String> getModeratorRoles(String tenantName) {
-//		Tenant tenant = this.tenantRepository
-//				.findTenantByTenantName(tenantName);
-//		if (tenant == null || tenant.getRoles() == null) {
-//			ArrayList<String> roles = new ArrayList<String>();
-//			String[] creates = this.moderatorRoles.split(",");
-//			for (String role : creates) {
-//				roles.add(role.trim());
-//			}
-//			return roles;
-//		} else {
-//			//TODO: get moderator tenant
-//			return tenant.getRoles();
-//		}
-		return getActionRoles(MODERATE, tenantName,moderatorRoles);
-	}
-	
-	private List<String> getActionRoles(String actionToFind, String tenantName, String defaultValue) {
-		Tenant tenant = this.tenantRepository
-				.findTenantByTenantName(tenantName);
-		List<String> roles = new ArrayList<String>();
-		if (tenant == null || tenant.getActions() == null) {
-			String[] creates = defaultValue.split(",");
-			for (String role : roles) {
-				roles.add(role.trim());
-			}
-		} else {
-			for (Action action: tenant.getActions()) {
-				if (action.equals(actionToFind)) {
-					roles.addAll(action.getRoles());
-					break;
-				}
-				
-			}
-		}
-		return roles;
-	}
-	
-	@Override
-	public List<String> getRootModeratorRoles(String tenantName) {
-		Tenant tenant = this.tenantRepository
-				.findTenantByTenantName(tenantName);
-		if (tenant == null || tenant.getRoles() == null) {
-			ArrayList<String> roles = new ArrayList<String>();
-			String[] creates = this.moderatorRoles.split(",");
-			for (String role : creates) {
-				roles.add(role.trim());
-			}
-			return roles;
-		} else {
-			//TODO: get moderator tenant
-			return tenant.getRoles();
-		}
-	}
-	
-	@Override
-	public Tenant setTenant(String tenantName, List<String> roles) {
-		Tenant tenant = new Tenant();
-		tenant.setTenantName(tenantName);
-		tenant.setRoles(roles);
-		tenantRepository.save(tenant);
-		return tenant;
-	}
+    @Value("#{socialSettings['create.roles']}")
+    private String createRoles;
 
-	@Override
-	public void setTenantRoles(String tenantName, List<String> roles) {
-		Tenant t = this.tenantRepository.findTenantByTenantName(tenantName);
-		this.tenantRepository.setRoles(t.getTenantName(), roles);
-	}
+    @Value("#{socialSettings['moderator.roles']}")
+    private String moderatorRoles;
 
-	@Override
-	public Tenant getTenantByName(String tenantName) {
-		Tenant tenant = this.tenantRepository
-				.findTenantByTenantName(tenantName);
-		return tenant;
-	}
+    @Override
+    public List<String> getRootCreateRoles(String tenantName) throws TenantException {
+        try {
+            Tenant tenant = this.tenantRepository.findTenantByTenantName(tenantName);
+            if (tenant == null || tenant.getRoles() == null) {
+                ArrayList<String> roles = new ArrayList<>();
+                String[] creates = this.createRoles.split(",");
+                for (String role : creates) {
+                    roles.add(role.trim());
+                }
+                return roles;
+            } else {
+                return tenant.getRoles();
+            }
+        } catch (MongoDataException ex) {
+            log.error("Unable to get Root Roles", ex);
+            throw new TenantException("Unable to get Root Roles", ex);
+        }
+    }
 
-	@Override
-	public void deleteTenant(String tenantName) {
-		Tenant t = this.tenantRepository.findTenantByTenantName(tenantName);
-		if (t != null) {
-			this.tenantRepository.delete(t);
-		}
-	}
+    private List<String> getActionRoles(String actionToFind, String tenantName) throws TenantException {
+        try {
+            Tenant tenant = this.tenantRepository.findTenantByTenantName(tenantName);
+            List<String> roles = new ArrayList<>();
+            if (tenant == null || tenant.getActions() == null) {
+                for (String role : roles) {
+                    roles.add(role.trim());
+                }
+            } else {
+                for (Action action : tenant.getActions()) {
+                    if (action.equals(actionToFind)) {
+                        roles.addAll(action.getRoles());
+                        break;
+                    }
 
-	@Override
-	public void setTenantActions(String tenant, List<Action> actions) {
-		this.tenantRepository.setActions(tenant, actions);
-		
-	}
+                }
+            }
+            return roles;
+        } catch (MongoDataException ex) {
+            log.error("Unable to get action " + actionToFind + "roles for tenant " + tenantName, ex);
+            throw new TenantException("Unable to get action Roles", ex);
+        }
+    }
+
+    @Override
+    public List<String> getRootModeratorRoles(String tenantName) throws TenantException {
+        Tenant tenant;
+        try {
+            tenant = this.tenantRepository.findTenantByTenantName(tenantName);
+        } catch (MongoDataException e) {
+            log.error("Unable to find Tenant with name " + tenantName);
+            throw new TenantException("Unable to find tenant by name ", e);
+        }
+        if (tenant == null || tenant.getRoles() == null) {
+            ArrayList<String> roles = new ArrayList<>();
+            String[] creates = this.moderatorRoles.split(",");
+            for (String role : creates) {
+                roles.add(role.trim());
+            }
+            return roles;
+        } else {
+            //TODO: get moderator tenant
+            return tenant.getRoles();
+        }
+    }
+
+    @Override
+    public Tenant setTenant(String tenantName, List<String> roles) throws TenantException {
+        Tenant tenant = new Tenant();
+        tenant.setTenantName(tenantName);
+        tenant.setRoles(roles);
+        try {
+            tenantRepository.save(tenant);
+        } catch (MongoDataException e) {
+            log.error("Unable to save tenant", e);
+            throw new TenantException("Unable to save Tenant", e);
+        }
+        return tenant;
+    }
+
+    @Override
+    public void setTenantRoles(String tenantName, List<String> roles) throws TenantException {
+        try {
+            Tenant t = this.tenantRepository.findTenantByTenantName(tenantName);
+            this.tenantRepository.setRoles(t.getTenantName(), roles);
+        } catch (MongoDataException ex) {
+            log.error("Unable to set Roles " + roles + " to tenant " + tenantName, ex);
+            throw new TenantException("Unable to set Roles to a Tenant", ex);
+        }
+    }
+
+    @Override
+    public Tenant getTenantByName(String tenantName) throws TenantException {
+        try {
+            return this.tenantRepository.findTenantByTenantName(tenantName);
+        } catch (MongoDataException e) {
+            log.error("Unable to get tenant " + tenantName, e);
+            throw new TenantException("Unable to get tenant by name", e);
+        }
+
+    }
+
+    @Override
+    public void deleteTenant(String tenantName) throws TenantException {
+        try {
+            Tenant t = this.tenantRepository.findTenantByTenantName(tenantName);
+            if (t != null) {
+                this.tenantRepository.removeById(t.getId().toString());
+            }
+        } catch (MongoDataException ex) {
+            log.error("Unable to delete tenant " + tenantName, ex);
+            throw new TenantException("Unable to delete tenant", ex);
+        }
+    }
+
+    @Override
+    public void setTenantActions(String tenant, List<Action> actions) throws TenantException {
+        try {
+            this.tenantRepository.setActions(tenant, actions);
+        } catch (MongoDataException e) {
+            log.error("Unable to set Tenant " + tenant + " actions" + actions, e);
+            throw new TenantException("Unable to set actions to a tenant", e);
+        }
+
+    }
 }

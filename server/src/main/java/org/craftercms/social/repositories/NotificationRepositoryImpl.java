@@ -1,61 +1,45 @@
 package org.craftercms.social.repositories;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+import com.mongodb.MongoException;
+import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
+import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.Notification;
-import org.craftercms.social.domain.Notification.TransmittedStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Order;
-import org.springframework.data.mongodb.core.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class NotificationRepositoryImpl implements NotificationRepositoryCustom {
-	
-	private static final String TRANSMITED_STATUS = "transmitedStatus";
-	private static final String ACTION = "action";
-	private static final String FREQUENCY = "frequency";
-	
-    private static final String EVENT_ACTION = "event.action";
-	
-	@Autowired
-	private MongoTemplate mongoTemplate;
+public class NotificationRepositoryImpl extends JongoRepository<Notification> implements NotificationRepository {
 
-	@Override
-	public List<Notification> findNotificationByFrequencyAndTransmitedStatus(
-			String frequency, String transmittedStatus, String action, String[] eventActionFilters, Map<String,Order> notificaticationQuerySort) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where(FREQUENCY).is(frequency).and(ACTION).is(action).and(TRANSMITED_STATUS).is(transmittedStatus));
+    private Logger log = LoggerFactory.getLogger(NotificationRepositoryImpl.class);
 
-        if(eventActionFilters != null && eventActionFilters.length > 0){
-            query.addCriteria(Criteria.where(EVENT_ACTION).in(eventActionFilters));
+    /**
+     * Creates a instance of a Jongo Repository.
+     */
+    public NotificationRepositoryImpl() throws MongoDataException {
+    }
+
+
+    @Override
+    public Iterable<Notification> findNotificationByFrequencyAndTransmittedStatus(String frequency,
+                                                                                  String transmittedStatus,
+                                                                                  String action,
+                                                                                  String[] eventActionFilters,
+                                                                                  List<DefaultKeyValue<String,
+                                                                                      Boolean>>
+                                                                                      notificationQuerySort) throws
+        MongoDataException {
+        try {
+            String query = getQueryFor("social.notification.byFreqActionStatus");
+            return getCollection().find(query, frequency, action, transmittedStatus).sort(createSortQuery
+                (notificationQuerySort)).as(Notification.class);
+        } catch (MongoException ex) {
+            log.error("Unable to find Notifications by given params frequency {}.transmitedStatus {} , action {} , " +
+                    "" + "eventActionFilters {} and sorted by notificaticationQuerySort {}", frequency,
+                transmittedStatus, action, eventActionFilters, notificationQuerySort
+            );
+            throw new MongoDataException("Unable to find Notifications by given params", ex);
         }
-        
-        setSortToQuery(query, notificaticationQuerySort);
-        
-		return mongoTemplate.find(query, Notification.class);
-	}
-	
-	private void setSortToQuery(Query query, Map<String, Order> notificaticationQuerySort) {
-		Iterator it = notificaticationQuerySort.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)it.next();
-	        query.sort().on((String)pairs.getKey(), (Order)pairs.getValue());
-	    }
-	}
-
-	@Override
-	public long countPendingsByFrequency(String frequency, String[] eventActionFilters) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where(FREQUENCY).is(frequency).and(TRANSMITED_STATUS).is(TransmittedStatus.PENDING));
-
-        if(eventActionFilters != null && eventActionFilters.length > 0){
-            query.addCriteria(Criteria.where(EVENT_ACTION).in(eventActionFilters));
-        }
-
-        return mongoTemplate.count(query, Notification.class);
-	}
-
+    }
 }

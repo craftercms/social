@@ -1,6 +1,6 @@
 package org.craftercms.social.util;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.authentication.AuthenticationToken;
