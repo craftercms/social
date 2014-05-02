@@ -11,8 +11,8 @@
     		http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
     		http://www.springframework.org/schema/context 
     		http://www.springframework.org/schema/context/spring-context-3.1.xsd">
-	
-	<mongo:mongo id="mongoConnection" host="${mongo.host}" port="${mongo.port}" write-concern="SAFE">
+
+	<mongo:mongo id="mongoConnection" replica-set="${mongo.server.set}"  write-concern="${mongo.writeConcern}">
 		<mongo:options connections-per-host="${mongo.connectionsPerHost}"
 			threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
 			connect-timeout="${mongo.connectTimeout}" max-wait-time="${mongo.maxWaitTime}"
