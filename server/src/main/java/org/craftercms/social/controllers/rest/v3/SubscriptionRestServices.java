@@ -40,4 +40,12 @@ public interface SubscriptionRestServices {
      * @throws org.craftercms.social.exceptions.SocialException If unable to save due a internal error.
      */
     boolean subscribe(final String targetId) throws SocialException;
+
+    /**
+     * Unsubscribes a user for the given target Id.
+     * @param targetId Target id to subscribe the user.
+     * @return True if available to save , false other wise.
+     * @throws org.craftercms.social.exceptions.SocialException If unable to save due a internal error.
+     */
+    boolean unSubscribe(final String targetId) throws SocialException;
 }
