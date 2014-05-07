@@ -24,7 +24,7 @@
 	<filter-mapping>
       <filter-name>crafter.securityFilter</filter-name>
       <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    </filter-mapping>a
 	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>

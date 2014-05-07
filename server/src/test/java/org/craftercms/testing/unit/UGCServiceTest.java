@@ -14,7 +14,7 @@ import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.AuditException;
 import org.craftercms.social.exceptions.CounterException;
-import org.craftercms.social.exceptions.PermissionDeniedException;
+import org.craftercms.social.exceptions.PermissionsException;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.TenantException;
 import org.craftercms.social.moderation.ModerationDecision;
@@ -114,13 +114,13 @@ public class UGCServiceTest {
 		when(repository.findOne(new ObjectId(VALID_ID))).thenReturn(currentUGC);
 		when(repository.findOne(new ObjectId(ROOT_ID))).thenReturn(currentUGC);
 		when(repository.findUGCs("","", new String[]{""}, ActionEnum.READ, 0, 0, SORT_FIELD,SORT_ORDER)).thenReturn(ul);
-		when(repository.findUGC(new ObjectId(VALID_ID), ActionEnum.READ,new String[]{""})).thenReturn(currentUGC);
+		when(repository.findUGC(new ObjectId(VALID_ID), new String[]{""})).thenReturn(currentUGC);
 		when(repository.findByIds(Mockito.<ObjectId[]>any())).thenReturn(ul);
-		when(repository.findByTenantTargetPaging("test","testing",1,10,ActionEnum.READ,SORT_FIELD,SORT_ORDER)).thenReturn(ul);
-		when(repository.findTenantAndTargetIdAndParentIsNull(Mockito.<String>any(),Mockito.<String>any(),Mockito.<ActionEnum>any())).thenReturn(ul);
+		when(repository.findByTenantTargetPaging("test","testing",1,10, SORT_FIELD,SORT_ORDER)).thenReturn(ul);
+		when(repository.findTenantAndTargetIdAndParentIsNull(Mockito.<String>any(),Mockito.<String>any())).thenReturn(ul);
 		when(repository.save(Mockito.<UGC>any())).thenReturn(currentUGC);
 		when(permissionService.getQuery(ActionEnum.READ, currentProfile)).thenReturn(getQuery());
-		when(permissionService.allowed(Mockito.<ActionEnum>any(), Mockito.<UGC>any(), Mockito.<Profile>any())).thenReturn(true);
+		when(permissionService.allowed(Mockito.<ActionEnum>any(), Mockito.<Profile>any())).thenReturn(true);
 		when(counterService.getNextSequence(Mockito.<String>any())).thenReturn(1l);
 		when(auditRepository.findByProfileIdAndAction(PROFILE_ID, AuditAction.CREATE)).thenReturn(la);
 		when(auditRepository.findByProfileIdAndUgcIdAndAction(PROFILE_ID, new ObjectId(VALID_ID),AuditAction.CREATE)).thenReturn(audit);
@@ -200,7 +200,7 @@ public class UGCServiceTest {
 		mockStatic(RequestContext.class);
 		
 		when(RequestContext.getCurrent()).thenReturn(getCurrentRequestContext());
-		when(repository.findUGC(new ObjectId(VALID_ID), ActionEnum.READ, new String[] {
+		when(repository.findUGC(new ObjectId(VALID_ID), new String[] {
 			ModerationStatus.APPROVED.toString(), ModerationStatus.UNMODERATED.toString(),
 			ModerationStatus.PENDING.toString(), ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()}))
                 .thenReturn(currentUGC);
@@ -281,7 +281,7 @@ public class UGCServiceTest {
             currentUGC.setProfileId(PROFILE_ID);
             currentUGC.setAnonymousFlag(false);
 			u = ugcServiceImpl.newUgc(currentUGC);
-		} catch (PermissionDeniedException pde) {
+		} catch (PermissionsException pde) {
 			fail(pde.getMessage());
         }
 
@@ -302,7 +302,7 @@ public class UGCServiceTest {
             currentUGC.setProfileId(PROFILE_ID);
             currentUGC.setAnonymousFlag(false);
 			u = ugcServiceImpl.newChildUgc(currentUGC);
-		} catch (PermissionDeniedException pde) {
+		} catch (PermissionsException pde) {
 			fail(pde.getMessage());
         }
 
@@ -342,7 +342,7 @@ public class UGCServiceTest {
 		try {
 			ugc = ugcServiceImpl.updateUgc(currentUGC.getId(), "test", "testing", PROFILE_ID, null, "Content", null,
                 null, null, null);
-		} catch(PermissionDeniedException pde) {
+		} catch(PermissionsException pde) {
 			fail(pde.getMessage());
         } catch (AttachmentErrorException dee) {
             fail(dee.getMessage());

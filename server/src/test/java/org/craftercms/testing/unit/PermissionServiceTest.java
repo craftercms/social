@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,7 +68,7 @@ public class PermissionServiceTest {
 		when(ugcService.findById(Mockito.<ObjectId>any())).thenReturn(currentUGC);
 		when(crafterProfileService.getProfile(PROFILE_ID)).thenReturn(currentProfile);
 		
-		boolean allowed = permissionServiceImpl.allowed(ActionEnum.CREATE, new ObjectId(UGC_ID), PROFILE_ID);
+		boolean allowed = permissionServiceImpl.allowed(ActionEnum.CREATE, PROFILE_ID);
 		assertTrue(allowed);
 	}
 	
@@ -78,7 +77,7 @@ public class PermissionServiceTest {
 		when(ugcService.findById(Mockito.<ObjectId>any())).thenReturn(currentUGC);
 		when(crafterProfileService.getProfile(PROFILE_ID)).thenReturn(currentProfile);
 		
-		boolean allowed = permissionServiceImpl.allowed(ActionEnum.CREATE, currentUGC, PROFILE_ID);
+		boolean allowed = permissionServiceImpl.allowed(ActionEnum.CREATE, PROFILE_ID);
 		assertTrue(allowed);
 	}
 	
@@ -87,7 +86,7 @@ public class PermissionServiceTest {
 		when(ugcService.findById(Mockito.<ObjectId>any())).thenReturn(currentUGC);
 		when(crafterProfileService.getProfile(PROFILE_ID)).thenReturn(currentProfile);
 		
-		boolean allowed = permissionServiceImpl.allowed(ActionEnum.CREATE, currentUGC, currentProfile);
+		boolean allowed = permissionServiceImpl.allowed(ActionEnum.CREATE, currentProfile);
 		assertTrue(allowed);
 	}
 	@Test
@@ -95,19 +94,10 @@ public class PermissionServiceTest {
 		when(ugcService.findById(Mockito.<ObjectId>any())).thenReturn(currentUGC);
 		when(crafterProfileService.getProfile(PROFILE_ID)).thenReturn(currentProfile);
 		
-		boolean allowed = permissionServiceImpl.allowed(ActionEnum.DELETE, currentUGC, currentProfile);
+		boolean allowed = permissionServiceImpl.allowed(ActionEnum.DELETE, currentProfile);
 		assertFalse(allowed);
 	}
-	@Test
-	public void testCheckGrantedPermission() {
-		when(ugcService.findById(Mockito.<ObjectId>any())).thenReturn(currentUGC);
-		when(crafterProfileService.getProfile(PROFILE_ID)).thenReturn(currentProfile);
-		
-		List<UGC> l = permissionServiceImpl.checkGrantedPermission(ActionEnum.DELETE, ul, PROFILE_ID);
-		assertNotNull(l);
-		assertTrue(l.size()==0);
-	}
-	
+
 	private UGC getUGC() {
 		UGC ugc= new UGC();
 		ugc.setCreatedBy("test");

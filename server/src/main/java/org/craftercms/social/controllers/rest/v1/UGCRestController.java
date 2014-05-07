@@ -37,7 +37,7 @@ import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.UGC.ModerationStatus;
 import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.AuditException;
-import org.craftercms.social.exceptions.PermissionDeniedException;
+import org.craftercms.social.exceptions.PermissionsException;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.TenantException;
 import org.craftercms.social.services.UGCService;
@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -75,6 +76,7 @@ public class UGCRestController {
 
     @RequestMapping(value = "/moderation/{moderationStatus}/target", method = RequestMethod.GET)
     @ModelAttribute
+    @PreAuthorize(value = "can('readUGC')")
     public List<PublicUGC> findByModerationStatusAndTargetId(@PathVariable final String moderationStatus,
                                                              @RequestParam final String tenant,
                                                              @RequestParam final String target,
@@ -190,7 +192,7 @@ public class UGCRestController {
     public List<PublicUGC> updateModerationStatus(@RequestParam(required = false) List<String> ids,
                                                   @RequestParam final String moderationStatus,
                                                   @RequestParam final String tenant) throws IOException,
-        SocialException, PermissionDeniedException, AuditException {
+        SocialException, PermissionsException, AuditException {
         List<UGC> list = ugcService.updateModerationStatus(ids, ModerationStatus.valueOf(moderationStatus.toUpperCase
             ()), tenant);
         return toPublicUGCList(list);
@@ -262,8 +264,7 @@ public class UGCRestController {
     @RequestMapping(value = "/{ugcId}/get_attachments", method = RequestMethod.GET)
     @ModelAttribute
     public List<AttachmentModel> getAttachments(@PathVariable final String ugcId,
-                                                @RequestParam(required = true) final String tenant) throws
-        PermissionDeniedException, AttachmentErrorException {
+                                                @RequestParam(required = true) final String tenant) throws PermissionsException, AttachmentErrorException {
 
         return ugcService.getAttachments(new ObjectId(ugcId), tenant);
     }
@@ -280,7 +281,7 @@ public class UGCRestController {
     @ModelAttribute
     public void deleteUGC(@RequestParam List<String> ugcIds, @RequestParam(required = true) String tenant) throws
         SocialException {
-        ugcService.deleteUgc(ugcIds, tenant, getProfileId());
+        ugcService.bulkDeleteUgc(ugcIds, tenant, getProfileId());
     }
 
     @RequestMapping(value = "/like/{ugcId}", method = RequestMethod.POST)
@@ -360,8 +361,8 @@ public class UGCRestController {
         return ugcService.findPossibleActionsForUGC(ugcId, getProfileRoles());
     }
 
-    @ExceptionHandler(PermissionDeniedException.class)
-    public String handlePermissionException(PermissionDeniedException ex, HttpServletResponse response) {
+    @ExceptionHandler(PermissionsException.class)
+    public String handlePermissionException(PermissionsException ex, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
         return ex.getMessage();

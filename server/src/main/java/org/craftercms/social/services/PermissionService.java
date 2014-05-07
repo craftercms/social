@@ -19,43 +19,44 @@ package org.craftercms.social.services;
 import java.util.List;
 import java.util.Set;
 
-import org.bson.types.ObjectId;
-import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.social.domain.UGC;
-import org.craftercms.social.util.action.ActionEnum;
-import org.springframework.data.mongodb.core.query.Query;
 
 
 public interface PermissionService {
 
-	/* May not need both of these methods yet */
-	
-	/* For blog application
-	 * 	1. on listing page, should validate against each of the children
-	 *  2. on details page, should validate against the children recursively
-	 * 
-	 */
-	
-	/* for the action and object passed in, delete if the given profile is allowed to perform 
-	 * action on the UGC
-	 * 
-	 * 
-	 */
-	boolean allowed(ActionEnum action, UGC ugc, Profile profile);
-	
-	
-	boolean allowed(ActionEnum action, ObjectId ugcId, String profileId);	
-	
-	boolean allowed(ActionEnum action, UGC ugc, String profileId);
-	
-	/* used by findAll type query, to narrow the selection
-	 * build sample query for this */
-	Query getQuery(ActionEnum action, Profile profile);
-	
-	List<UGC> checkGrantedPermission(ActionEnum action, List<UGC> list, String profileId);
+    /**
+     * Checks if a Action is allowed for the given roles.
+     *
+     * @param actionName Name of the Action to be execute.
+     * @param roles      Roles of to check.
+     * @return True if the action can be execute by at least one of the given roles
+     * false otherwise.
+     */
+    boolean allowed(final String actionName, List<String> roles);
 
-    boolean excludeProfileInfo(UGC ugc, ActionEnum action, List<String> roles);
+    /**
+     * Checks if a Action is allowed for the given roles.
+     *
+     * @param ugcId      Id of the UGc to check.
+     * @param actionName Name of the Action to be execute.
+     * @param roles      Roles of to check.
+     * @return True if the action can be execute by at least one of the given roles
+     * false otherwise.
+     */
+    public boolean allowed(final String ugcId, final String actionName, final String profileId,
+                           final List<String> roles);
 
+
+    /**
+     * Checks if a Action is allowed for the given roles.
+     *
+     * @param ugc    Id of the ugc to check.
+     * @param action Name of the Action to be execute.
+     * @param roles  Roles of to check.
+     * @return True if the action can be execute by at least one of the given roles
+     * false otherwise.
+     */
+    boolean excludeProfileInfo(UGC ugc, String action, List<String> roles);
 
     Set<String> getActionsForUser(List<String> profileRoles);
 }

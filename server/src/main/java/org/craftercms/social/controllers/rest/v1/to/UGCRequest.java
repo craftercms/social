@@ -38,6 +38,7 @@ public class UGCRequest {
 
     private List<Action> actions;
 
+
     public String getTenant() {
         return tenant;
     }

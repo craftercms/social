@@ -25,6 +25,20 @@
         </property>
     </bean>
 
+
+
+    <bean id="socialCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="shared" value="false"/>
+    </bean>
+
+    <bean id="socialSecurityCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="socialCacheManager"/>
+        <property name="name" value="socialSecurityCache" />
+        <property name="timeToLiveSeconds" value="${social.security.cache.ttl}"/>
+        <property name="memoryStoreEvictionPolicy" value="LRU"/>
+        <property name="timeToIdleSeconds" value="${social.security.cache.ttl}"/>
+    </bean>
+
     <bean id="validationMsgs" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="locations">
             <list>

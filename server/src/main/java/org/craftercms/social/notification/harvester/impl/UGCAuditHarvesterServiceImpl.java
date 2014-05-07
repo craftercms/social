@@ -203,7 +203,7 @@ public class UGCAuditHarvesterServiceImpl extends BaseHarvesterService {
         }
 
         for (UGCAudit currentAudit : audits) {
-            UGC ugc = ugcRepository.findOne(currentAudit.getUgcId());
+            UGC ugc = ugcRepository.findOne(currentAudit.getUgcId().toString());
             if (ugc != null) {
                 UGC.ModerationStatus modStatus = ugc.getModerationStatus();
                 if (modStatus != UGC.ModerationStatus.SPAM && modStatus != UGC.ModerationStatus.TRASH) {

@@ -2,41 +2,34 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:security="http://www.springframework.org/schema/security"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd">
+    <security:global-method-security pre-post-annotations="enabled" jsr250-annotations="disabled"
+                                     secured-annotations="disabled">
+        <security:expression-handler ref="socialMethodSecurityExpressionHandler"/>
+    </security:global-method-security>
 
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    <security:http realm="Protected API"
+                   use-expressions="true"
+                   auto-config="false"
+                   create-session="stateless"
+                   entry-point-ref="Http403ForbiddenEntryPoint"
 
-    <security:http security="none" pattern="/*.jsp"/>
-    <security:http security="none" pattern="/resources/**"/>
-    <import resource="classpath:crafter/security/security-context.xml"/>
+            >
+        <security:custom-filter ref="socialAuthenticationTokenProcessingFilter" position="FORM_LOGIN_FILTER"/>
+        <security:intercept-url pattern="/**" access="isAuthenticated()"/>
+    </security:http>
 
-    <util:map id="crafter.urlRestrictions">
-        <entry key="/api/2/tenant/**" value="hasAdminRole()"/>
-        <entry key="/api/2/ugc/create*" value="hasCreatePermission()"/>
-        <entry key="/api/2/ugc/update*" value="hasUpdatePermission()"/>
-        <entry key="/api/2/ugc/delete*" value="hasDeletePermissions()"/>
-        <entry key="/api/2/ugc/delete/**" value="hasDeletePermissions()"/>
-        <entry key="/api/2/audit/**" value="hasAuditorRole()"/>
-        <entry key="/api/2/ugc/moderation/**/status*" value="hasModeratorPermission()"/>
-        <entry key="/api/2/ugc/like/**" value="hasActOnPermission()"/>
-        <entry key="/api/2/ugc/dislike/**" value="hasActOnPermission()"/>
-        <entry key="/api/2/ugc/flag/**" value="hasActOnPermission()"/>
-        <entry key="/api/2/subscriptions" value="isAuthenticated()"/>
-        <entry key="/api/2/subscriptions/**" value="isAuthenticated()"/>
-    </util:map>
+    <bean id="Http403ForbiddenEntryPoint"
+          class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
-
-    <bean id="crafter.urlAccessRestrictionCheckingProcessor"
-          class="org.craftercms.social.services.impl.UrlAccessRestrictionCheckingSocialProcessor">
-        <property name="urlRestrictions" ref="crafter.urlRestrictions"/>
-    </bean>
-
-    <bean id="crafter.authTokenResolvingProcessor"
-          class="org.craftercms.social.services.impl.AuthenticationTicketResolvingProcessor">
-        <property name="authenticationTokenCache" ref="crafter.authenticationTokenCache"/>
-        <property name="authenticationService" ref="crafter.authenticationService"/>
+    <bean id="socialAuthenticationTokenProcessingFilter"
+          class="org.craftercms.social.ext.security.AuthenticationTokenProcessingFilter"/>
+    <bean class="org.craftercms.social.ext.security.SocialMethodSecurityExpressionHandler"
+          id="socialMethodSecurityExpressionHandler">
+        <property name="permissionService" ref="permissionService"/>
     </bean>
 
 </beans>

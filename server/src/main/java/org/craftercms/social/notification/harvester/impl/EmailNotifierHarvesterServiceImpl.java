@@ -15,6 +15,7 @@ import org.craftercms.social.domain.Notification.TransmittedStatus;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.HarvestStatusException;
 import org.craftercms.social.exceptions.MailException;
+import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.notification.harvester.BaseHarvesterService;
 import org.craftercms.social.repositories.NotificationRepository;
 import org.craftercms.social.repositories.UGCRepository;
@@ -94,19 +95,24 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
                 log.debug("Email notifier harvester found notifications ");
                 emailNotifications(filterNotifications(notificationList));
             }
-        } catch (MongoDataException ex) {
+        } catch (MongoDataException | UGCException ex) {
             log.error("Unable to Harvest", ex);
             throw new HarvestStatusException("Unable to harvest ", ex);
         }
     }
 
-    private List<Notification> filterNotifications(Iterable<Notification> notificationList) {
+    private List<Notification> filterNotifications(Iterable<Notification> notificationList) throws UGCException {
         List<Notification> result = new ArrayList<>();
         for (Notification notification : notificationList) {
             Object ugcIdObj = notification.getEvent().getUgcId();
             if (ugcIdObj != null) {
                 String ugcId = ugcIdObj.toString();
-                UGC ugc = ugcRepository.findOne(new ObjectId(ugcId));
+                UGC ugc = null;
+                try {
+                    ugc = ugcRepository.findOne(ugcId);
+                } catch (MongoDataException e) {
+                    throw new UGCException("Unable to find UGC",e);
+                }
                 if (ugc != null) {
                     UGC.ModerationStatus status = ugc.getModerationStatus();
                     if (status != UGC.ModerationStatus.SPAM && status != UGC.ModerationStatus.TRASH) {

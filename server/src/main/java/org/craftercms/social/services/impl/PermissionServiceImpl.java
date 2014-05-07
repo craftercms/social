@@ -16,214 +16,125 @@
  */
 package org.craftercms.social.services.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
-import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.social.domain.Action;
+import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.social.domain.Actions;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.exceptions.PermissionsException;
+import org.craftercms.social.repositories.SecurityProfileRepository;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.services.UGCService;
-import org.craftercms.social.util.action.ActionConstants;
-import org.craftercms.social.util.action.ActionEnum;
-import org.craftercms.social.util.action.ActionUtil;
-import org.craftercms.social.util.support.CrafterProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-@Component
+/**
+ * <p>This Class is intent to be use with Spring Security Annotations.</p>
+ * <p><b>DO Not use this class with other with out reading the Javadoc properly,
+ * Unexpected things can and will happen</b></p>
+ */
 public class PermissionServiceImpl implements PermissionService {
-	
-	@Autowired
-	private UGCService uGCService;
-	
-	@Autowired
-	private CrafterProfileService crafterProfileService;
-	
-	public static final String SUPER_ADMIN = "SUPERADMIN";
 
-	@Override
-	public boolean allowed(ActionEnum action, UGC ugc, Profile profile) {
-		if (ugc.getActions() == null) { 
-			return false;
-		}
-		
-		if (isSuperAdmin(profile.getRoles())) { 
-			return true;
-		}
-		
-		List<Action> actions = ugc.getActions();
-		
-		for (Action a: actions) {
-			if (a.getName().equalsIgnoreCase(action.name().toLowerCase())) {
-				return checkActionPermission(a, ugc, profile);
-			}
-		}
-		return false;
-	}
-	
-	@Override
-	public boolean allowed(ActionEnum action, UGC ugc, String profileId) {
-		return allowed(action, ugc, crafterProfileService.getProfile(profileId));
-	}
+    private static final String SYSTEM_DEFAULT = "systemDefaultProfile";
+    private SecurityProfileRepository securityProfileRepository;
+    private UGCService ugcService;
+    private Ehcache securityCache;
 
-	@Override
-	public boolean allowed(ActionEnum action, ObjectId ugcId, String profileId) {
-		return allowed(action, uGCService.findById(ugcId), crafterProfileService.getProfile(profileId));
-	}
+    private Logger log = LoggerFactory.getLogger(PermissionServiceImpl.class);
 
-	@Override
-	public Query getQuery(ActionEnum action, Profile p) {
-		String[] roles = null;
-		if (p.getRoles() != null) {
-			roles = p.getRoles().toArray(new String[p.getRoles().size()]);
-		}
-		Query query = new Query();
-		if (isSuperAdmin(roles)) {
-			query.addCriteria(Criteria.where("actions.name").is(action.toString().toLowerCase()));
-		} else if (roles!= null && roles.length > 0) {
-			 query.addCriteria(Criteria.where("actions").elemMatch(
-					Criteria.where("name").is("read")
-						.and("roles").in(roles)));
-		}
-		return query;
-	}
-//	@Override
-//	public Query getQuery(ActionEnum action, Profile p) {
-//		String[] roles = {};
-//		if (p.getRoles() != null) {
-//			roles = p.getRoles().toArray(new String[p.getRoles().size()]);
-//		}
-//		Query query = new Query();
-//		if (isSuperAdmin(roles)) {
-//			query.addCriteria(Criteria.where("actions.name").is(action.toString().toLowerCase()));
-//		} else if (roles!= null) {
-//			 query.addCriteria(Criteria.where("actions").elemMatch(
-//					Criteria.where("name").is(action.toString().toLowerCase())
-//						.and("roles").in(roles)));
-//		}
-//		return query;
-//	}
-	
-	public List<UGC> checkGrantedPermission(ActionEnum action, List<UGC> list, String profileId) {
-		List<UGC> grantedList = new ArrayList<UGC>();
-		UGC checkUGCPermissions;
-		for (UGC current: list) {
-			if (current.getParentId() != null) {
-				checkUGCPermissions = getParent(list, current.getParentId().toString());
-			} else {
-				checkUGCPermissions = current;
-			}
-			if (allowed(action, checkUGCPermissions, profileId)) {
-				grantedList.add(current);
-			}
-		}
-		return grantedList;
-	}
 
     @Override
-    public boolean excludeProfileInfo(UGC ugc, ActionEnum actionName, List<String> roles) {
-    	boolean exclude = true;
-         List<Action> actions = ugc.getActions();
-         Action action = new Action();
-         action.setName(actionName.toString());
-         if (actions != null && !actions.isEmpty()) {
-        	 for (Action current: actions) {
-        		 if (current.equals(action) && !excludeProfileInfo(current, roles)) {
-    				 exclude = false;
-    				 break;
-        		 }
-        	 }
-         }
-         return exclude;
+    public boolean allowed(final String actionName, final List<String> roles) {
+        Actions defaultProfile = getDefaultSecurityProfile(); //Never throws null
+        if(defaultProfile.getActions().containsKey(actionName.toUpperCase())){
+            return CollectionUtils.containsAny(defaultProfile.getActions().get(actionName.toUpperCase()),roles);
+        }else{
+            log.info("Security Profile {} (default) does not have action {}",defaultProfile,actionName);
+            return false;
+        }
     }
+
+    @Override
+    public boolean allowed(final String ugcId, final String actionName, final String profileId,
+                           final List<String> roles) {
+        UGC ugc = ugcService.findById(new ObjectId(ugcId));
+        if (ugc == null) {
+            return true;
+        }
+        Actions profile = getSecurityProfile(ugc.getSecurityProfile());
+        if (profile.getActions().containsKey(actionName.toUpperCase())) {
+            List<String> securityProfileRoles = profile.getActions().get(actionName.toUpperCase());
+            //Makes Runtime special OWNER Role
+            if(ugc.getProfileId().equals(profileId)){
+                securityProfileRoles.add(Actions.OWNER_ROLE);
+            }
+            return CollectionUtils.containsAny(securityProfileRoles,roles);
+        } else {
+            log.info("Security Profile {} for ugc {} does not have action {}", profile.getId(), ugcId, actionName.toUpperCase());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean excludeProfileInfo(final UGC ugc, final String action, final List<String> roles) {
+        throw new NotImplementedException();
+    }
+
 
     @Override
     public Set<String> getActionsForUser(final List<String> profileRoles) {
-        return ActionUtil.getActionForRoles(profileRoles);
+        return null;
     }
 
-    private boolean excludeProfileInfo(Action currentAction, List<String> roles) {
-    	boolean exclude = true;
-    	if (roles == null) {
-    		return exclude;
-    	}
-		 for (String r: roles) {
-			 if (currentAction.getRoles().contains(r)) {
-				 return false;
-			 }
-		 }
-    	return exclude;
+    private Actions getSecurityProfile(String securityProfileId) {
+        Element cacheElement = securityCache.get(securityProfileId);
+        if (cacheElement == null) {
+            return getSecurityProfileFromDB(securityProfileId);
+        } else {
+            return (Actions)cacheElement.getObjectValue();
+        }
     }
-	
-	private boolean checkActionPermission(Action a, UGC ugc, Profile p) {
-		List<String> rolesAllowed = a.getRoles();
-		List<String> rolesProfile = p.getRoles();
-		boolean found = false;
-		for(String roleAllowed: rolesAllowed) {
-			if (roleAllowed.equalsIgnoreCase(ActionConstants.OWNER) && ugc.getProfileId() != null && p.getId()!=null  //OWNER
-					&& ugc.getProfileId().equalsIgnoreCase(p.getId())) {
-				return true;
-			}
-			if (isInProfileRoles(roleAllowed, rolesProfile)) {
-				found = true;
-				break;
-			}
-		}
-		return found;
-	}
 
-   private boolean isInProfileRoles(String roleAllowed,
-			List<String> rolesProfile) {
-		if (roleAllowed.equalsIgnoreCase(ActionConstants.ANONYMOUS)) {
-			return true;
-		}
-		if (rolesProfile == null) {
-			return false;
-		}
-		boolean isInProfile = false;
-		for (String roleProfile: rolesProfile) {
-			if (roleProfile.equalsIgnoreCase(roleAllowed)) {
-				isInProfile = true;
-				break;
-			}
-		}
-		return isInProfile;
-	}
-	
-	private UGC getParent(List<UGC> list, String parentId) {
-		UGC found = null;
-		for (UGC c: list) {
-			if (c.getId().toString().equals(parentId) && c.getParentId() == null) {
-				found = c; 
-				break;
-			} else if (c.getId().toString().equals(parentId)) {
-				found = getParent(list, c.getParentId().toString());
-			}
-		}
-		return found;
-	}
-	
-	private boolean isSuperAdmin(List<String> roles) {
-		boolean isSuperAdmin = false;
-		for(String role: roles) {
-			if (role.equalsIgnoreCase(SUPER_ADMIN)) {
-				isSuperAdmin = true;
-				break;
-			}
-		}
-		return isSuperAdmin;
-	}
-	
-	private boolean isSuperAdmin(String[] roles) {
-		if (roles == null) {
-			return false;
-		}
-		return isSuperAdmin(Arrays.asList(roles));
-	}
+    private Actions getSecurityProfileFromDB(final String securityProfileId) {
+        try {
+            Actions secProfile = securityProfileRepository.findById(securityProfileId);
+            if (secProfile != null) {
+                securityCache.put(new Element(securityProfileId, secProfile));
+                return secProfile;
+            }
+            throw new PermissionsException("Unable to find Security Profile with Id " + securityProfileId);
+        } catch (MongoDataException e) {
+            log.error("Unable to get Security Profile with id" + securityProfileId, e);
+            throw new PermissionsException("Unable to get Security Profile");
+        }
+    }
+
+    private Actions getDefaultSecurityProfile(){
+        Element cacheElement = securityCache.get(SYSTEM_DEFAULT);
+        if (cacheElement == null) {
+            return getDefaultSecurityProfileDB();
+        } else {
+            return (Actions)cacheElement.getObjectValue();
+        }
+    }
+
+    public Actions getDefaultSecurityProfileDB() {
+        try {
+            Actions defaultProfile = securityProfileRepository.findDefault();
+            if (defaultProfile != null) {
+                securityCache.put(new Element(SYSTEM_DEFAULT, defaultProfile));
+                return defaultProfile;
+            }
+            throw new PermissionsException("Unable to find Default Security Profile ");
+        } catch (MongoDataException e) {
+            log.error("\"Unable to find Default Security Profile", e);
+            throw new PermissionsException("Unable to get Default Security Profile");
+        }
+    }
 }

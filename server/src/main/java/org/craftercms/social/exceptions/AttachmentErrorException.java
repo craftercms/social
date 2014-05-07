@@ -18,7 +18,6 @@ package org.craftercms.social.exceptions;
 
 import java.io.IOException;
 
-import org.craftercms.social.util.action.ActionEnum;
 
 
 public class AttachmentErrorException extends SocialException {
@@ -29,11 +28,11 @@ public class AttachmentErrorException extends SocialException {
         super(msg);
     }
 
-	public AttachmentErrorException(String msg, ActionEnum action, Throwable thr) {
+	public AttachmentErrorException(String msg, String action, Throwable thr) {
 		super(msg + ": Action " + action, thr);
 	}
 
-	public AttachmentErrorException(String msg, ActionEnum action) {
+	public AttachmentErrorException(String msg, String action) {
 		super(msg + ": Action " + action);
 	}
 

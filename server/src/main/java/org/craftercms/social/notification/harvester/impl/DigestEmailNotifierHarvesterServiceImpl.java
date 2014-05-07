@@ -157,7 +157,7 @@ public class DigestEmailNotifierHarvesterServiceImpl extends EmailNotifierHarves
 
         String ugcId = notification.getEvent().getUgcId().toString();
         boolean anonymous = false;
-        UGC ugc = ugcRepository.findOne(new ObjectId(ugcId));
+        UGC ugc = ugcRepository.findOne(ugcId);
         if (ugc == null) {
             log.warn("Could not find ugc with id'" + ugcId + "'");
         } else {

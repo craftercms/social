@@ -53,7 +53,6 @@ public class UGC implements Hierarchical<UGC> {
     @Transient
     private List<AttachmentModel> attachmentsList;
     private ObjectId[] attachmentId;
-    private List<Action> actions;
 
     private String createdBy;
     private String lastModifiedBy;
@@ -63,6 +62,7 @@ public class UGC implements Hierarchical<UGC> {
 
     private ModerationStatus moderationStatus;
     private int timesModerated;
+    private String securityProfile;
     /**
      * List of profiles that like this.
      */
@@ -120,9 +120,9 @@ public class UGC implements Hierarchical<UGC> {
         this.targetDescription = targetDescription;
         this.targetUrl = targetUrl;
         this.subject = subject;
-        this.likes=new ArrayList<String>();
-        this.dislikes=new ArrayList<String>();
-        this.flags=new ArrayList<String>();
+        this.likes=new ArrayList<>();
+        this.dislikes=new ArrayList<>();
+        this.flags=new ArrayList<>();
         this.anonymousFlag=anonymousFlag;
 
     }
@@ -144,7 +144,7 @@ public class UGC implements Hierarchical<UGC> {
             ugcRequest.getAttributes(), ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription(),
             ugcRequest.getSubject(),ugcRequest.getAnonymousFlag());
 
-        this.setActions(ugcRequest.getActions());
+
         this.setAttributes(this.getAttributes());
 
     }
@@ -274,15 +274,6 @@ public class UGC implements Hierarchical<UGC> {
     }
 
 
-
-    public List<Action> getActions() {
-        return actions;
-    }
-
-    public void setActions(List<Action> actions) {
-        this.actions = actions;
-    }
-
     public String getCreatedBy() {
         return createdBy;
     }
@@ -393,5 +384,13 @@ public class UGC implements Hierarchical<UGC> {
 
     public void setFlags(final List<String> flags) {
         this.flags = flags;
+    }
+
+    public String getSecurityProfile() {
+        return securityProfile;
+    }
+
+    public void setSecurityProfile(final String securityProfile) {
+        this.securityProfile = securityProfile;
     }
 }

@@ -17,14 +17,11 @@
 package org.craftercms.social.controllers.rest.v1;
 
 import java.util.Arrays;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
-import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.Tenant;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.services.TenantService;
-import org.craftercms.social.util.action.ActionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -54,8 +51,9 @@ public class TenantRestController {
     @RequestMapping(value = "set_tenant_actions", method = RequestMethod.POST)
     @ModelAttribute
     public void setTenantActions(HttpServletRequest request, @RequestParam String tenant) throws SocialException {
-        List<Action> list = ActionUtil.getActions(request);
-        tenantService.setTenantActions(tenant, list);
+        throw new RuntimeException("To be change !!!");
+        //List<Action> list = ActionUtil.getActions(request);
+        //tenantService.setTenantActions(tenant, list);
     }
 
     @RequestMapping(value = "delete_tenant", method = RequestMethod.POST)

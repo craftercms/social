@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.impl.domain.Profile;
@@ -41,21 +42,21 @@ import org.craftercms.social.domain.UGCAudit.AuditAction;
 import org.craftercms.social.exceptions.AttachmentErrorException;
 import org.craftercms.social.exceptions.AuditException;
 import org.craftercms.social.exceptions.CounterException;
-import org.craftercms.social.exceptions.PermissionDeniedException;
+import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.TenantException;
+import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.helpers.MultipartFileClone;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.repositories.UGCAuditRepository;
 import org.craftercms.social.repositories.UGCRepository;
 import org.craftercms.social.services.CounterService;
 import org.craftercms.social.services.PermissionService;
+import org.craftercms.social.services.SecurityProfileService;
 import org.craftercms.social.services.SupportDataAccess;
 import org.craftercms.social.services.TenantService;
 import org.craftercms.social.services.UGCHook;
 import org.craftercms.social.services.UGCService;
 import org.craftercms.social.services.VirusScannerService;
-import org.craftercms.social.util.action.ActionEnum;
-import org.craftercms.social.util.action.ActionUtil;
 import org.craftercms.social.util.support.CrafterProfileService;
 import org.craftercms.social.util.support.ResultParser;
 import org.craftercms.social.util.web.Attachment;
@@ -63,7 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.UGCException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -99,6 +100,8 @@ public class UGCServiceImpl implements UGCService {
     @Autowired
     private VirusScannerService virusScannerService;
 
+    private SecurityProfileService securityProfileService;
+
     @Autowired
     private UGCHook ugcHook;
 
@@ -106,44 +109,48 @@ public class UGCServiceImpl implements UGCService {
     public List<UGC> findByModerationStatus(final ModerationStatus moderationStatus, final String tenant, int page,
                                             int pageSize, String sortField, String sortOrder) {
         log.debug("Looking for Users with status %s and tenant %s", moderationStatus, tenant);
-        return findUGCs(new String[] {moderationStatus.toString()}, tenant, null, page, pageSize, sortField,
-            sortOrder, ActionEnum.MODERATE);
+        return findUGCs(new String[] {moderationStatus.toString()}, tenant, null, page, pageSize, sortField, sortOrder);
     }
 
     @Override
     public UGC updateUgc(ObjectId ugcId, String tenant, String targetId, String profileId, ObjectId parentId,
                          String textContent, String targetUrl, String targetDescription, Map<String,
-        Object> attributes, String subject) throws PermissionDeniedException, AttachmentErrorException,
-        AuditException, CounterException {
+        Object> attributes, String subject) throws SocialException {
 
-        UGC ugc = uGCRepository.findOne(ugcId);
-        if (ugc != null && canEditUgc(ugc)) {
-            ugc.setTargetId(targetId);
-            ugc.setParentId(parentId);
-            ugc.setTextContent(textContent);
-            //ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
-            ugc.setTargetUrl(targetUrl);
-            ugc.setTargetDescription(targetDescription);
-            ugc.setLastModifiedDate(new Date());
-            ugc.setSubject(subject);
-            // http://issues.craftercms.org/browse/CRAFTERCMS-478
-            if (ugc.getModerationStatus() == ModerationStatus.APPROVED) {
-                ugc.setModerationStatus(ModerationStatus.UNMODERATED);
-            }
+        try {
+            UGC ugc = uGCRepository.findOne(ugcId.toString());
+            if (ugc != null && canEditUgc(ugc)) {
+                ugc.setTargetId(targetId);
+                ugc.setParentId(parentId);
+                ugc.setTextContent(textContent);
+                //ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
+                ugc.setTargetUrl(targetUrl);
+                ugc.setTargetDescription(targetDescription);
+                ugc.setLastModifiedDate(new Date());
+                ugc.setSubject(subject);
+                // http://issues.craftercms.org/browse/CRAFTERCMS-478
+                if (ugc.getModerationStatus() == ModerationStatus.APPROVED) {
+                    ugc.setModerationStatus(ModerationStatus.UNMODERATED);
+                }
 
-            Map<String, Object> currentAttributes = ugc.getAttributes();
-            if (currentAttributes != null && attributes != null) {
-                currentAttributes.putAll(attributes);
-            } else {
-                currentAttributes = attributes;
+                Map<String, Object> currentAttributes = ugc.getAttributes();
+                if (currentAttributes != null && attributes != null) {
+                    currentAttributes.putAll(attributes);
+                } else {
+                    currentAttributes = attributes;
+                }
+                ugc.setAttributes(currentAttributes);
+
+                this.uGCRepository.save(ugc);
+                ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+                //Audit call
+                auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
             }
-            ugc.setAttributes(currentAttributes);
-            this.uGCRepository.save(ugc);
-            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
-            //Audit call
-            auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
+            return ugc;
+        } catch (MongoDataException e) {
+            log.error("Unable to update UGC due a Error ", e);
+            throw new UGCException("Unable to update UGC", e);
         }
-        return ugc;
     }
 
     private boolean canEditUgc(final UGC ugc) {
@@ -153,46 +160,54 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC addAttachments(ObjectId ugcId, MultipartFile[] attachments, String tenant,
-                              String profileId) throws PermissionDeniedException, AttachmentErrorException,
-        AuditException, CounterException {
+                              String profileId) throws SocialException {
 
-        attachments = scanFilesForVirus(attachments);
-        UGC ugc = null;
-        if (existsUGC(ugcId)) {
-            ugc = uGCRepository.findOne(ugcId);
-            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
-            ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
-            ugc.setLastModifiedDate(new Date());
-            this.uGCRepository.save(ugc);
+        try {
+            attachments = scanFilesForVirus(attachments);
+            UGC ugc = null;
+            if (existsUGC(ugcId)) {
+                ugc = uGCRepository.findOne(ugcId.toString());
+                ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+                ugc.setAttachmentId(updateUGCAttachments(ugc, attachments));
+                ugc.setLastModifiedDate(new Date());
+                this.uGCRepository.save(ugc);
 
-            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
-            //Audit call
-            auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
+                ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+                //Audit call
+                auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
+            }
+            return ugc;
+        } catch (MongoDataException e) {
+            log.error("Unable to add attachments to UGC " + ugcId.toString(), e);
+            throw new UGCException("Unable to add  attachments to the UGC", e);
         }
-        return ugc;
     }
 
     @Override
     public AttachmentModel addAttachment(ObjectId ugcId, MultipartFile attachment, String tenant,
-                                         String profileId) throws PermissionDeniedException,
-        AttachmentErrorException, AuditException, CounterException {
+                                         String profileId) throws SocialException {
 
-        attachment = scanFileForVirus(attachment);
-        UGC ugc;
-        AttachmentModel attachmentModel = null;
-        if (existsUGC(ugcId)) {
-            ugc = uGCRepository.findOne(ugcId);
-            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
-            ugc.setAttachmentId(updateUGCAttachment(ugc, attachment));
-            ugc.setLastModifiedDate(new Date());
-            this.uGCRepository.save(ugc);
+        try {
+            attachment = scanFileForVirus(attachment);
+            UGC ugc;
+            AttachmentModel attachmentModel = null;
+            if (existsUGC(ugcId)) {
+                ugc = uGCRepository.findOne(ugcId.toString());
+                ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+                ugc.setAttachmentId(updateUGCAttachment(ugc, attachment));
+                ugc.setLastModifiedDate(new Date());
+                this.uGCRepository.save(ugc);
 
-            ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
-            //Audit call
-            auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
-            attachmentModel = findUgcAttachmentModel(ugc.getAttachmentsList(), attachment.getOriginalFilename());
+                ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
+                //Audit call
+                auditUGC(ugcId, AuditAction.UPDATE, tenant, profileId, null);
+                attachmentModel = findUgcAttachmentModel(ugc.getAttachmentsList(), attachment.getOriginalFilename());
+            }
+            return attachmentModel;
+        } catch (MongoDataException e) {
+            log.error("Unable to add attachments to UGC " + ugcId.toString(), e);
+            throw new UGCException("Unable to add an attachment to the UGC", e);
         }
-        return attachmentModel;
     }
 
     private AttachmentModel findUgcAttachmentModel(List<AttachmentModel> modelList, String filename) {
@@ -210,29 +225,19 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public void deleteUgc(ObjectId ugcId, String tenant, String profileId) throws PermissionDeniedException,
-        AuditException, CounterException {
-        UGC parent = uGCRepository.findOne(ugcId);
-        if (parent != null) {
-            List<UGC> children = uGCRepository.findByParentId(ugcId);
-            for (UGC ugcChild : children) {
-                deleteUgc(ugcChild.getId(), tenant, profileId);
+    public void deleteUgc(ObjectId ugcId, String tenant, String profileId) throws SocialException {
+
+        try {
+            UGC parent = uGCRepository.findOne(ugcId.toString());
+            if (parent != null) {
+                Iterable<UGC> children = uGCRepository.findByParentId(ugcId);
+                for (UGC ugcChild : children) {
+                    deleteUgc(ugcChild.getId(), tenant, profileId);
+                }
             }
-
-            removeAttachments(ugcId);
-            this.uGCRepository.delete(ugcId);
-            //Audit call
-            auditForDeleteUGC(parent, profileId);
-
-        }
-    }
-
-    @Override
-    public void deleteUgc(List<String> ugcIds, String tenant, String profileId) throws PermissionDeniedException,
-        AuditException, CounterException {
-        //TODO: Cortiz : this could be done in a single query !!
-        for (String id : ugcIds) {
-            deleteUgc(new ObjectId(id), tenant, profileId);
+        } catch (MongoDataException e) {
+            log.error("Unable to delete Ugc tree for ugc id" + ugcId, e);
+            throw new UGCException("Unable to delete UGC Tree", e);
         }
     }
 
@@ -265,7 +270,7 @@ public class UGCServiceImpl implements UGCService {
     private ObjectId[] updateUGCAttachment(UGC ugc, MultipartFile file) {
         List<ObjectId> listAttachments = new ArrayList<>();
         if (file != null) {
-            ObjectId attachmentId ;
+            ObjectId attachmentId;
 
             if (ugc.getAttachmentId() != null) {
                 Collections.addAll(listAttachments, ugc.getAttachmentId());
@@ -300,20 +305,27 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public UGC updateModerationStatus(ObjectId uGCId, ModerationStatus newStatus, String tenant,
-                                      String profileId) throws AuditException, CounterException {
-        if (existsUGC(uGCId)) {
-            UGC ugc = uGCRepository.findOne(uGCId);
-            if (newStatus == ModerationStatus.APPROVED || pendingToUnmoderated(ugc.getModerationStatus(), newStatus)) {
-                ugc.getFlags().clear();//Clear all flags is UGC is approve or old=PENDING,new=UNMODERATED
+                                      String profileId) throws SocialException {
+
+        try {
+            if (existsUGC(uGCId)) {
+                UGC ugc = uGCRepository.findOne(uGCId);
+                if (newStatus == ModerationStatus.APPROVED || pendingToUnmoderated(ugc.getModerationStatus(),
+                    newStatus)) {
+                    ugc.getFlags().clear();//Clear all flags is UGC is approve or old=PENDING,new=UNMODERATED
+                }
+                ugc.setModerationStatus(newStatus);
+                ugc.setLastModifiedDate(new Date());
+                //Audit call
+                auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
+                return populateUGCWithProfile(save(ugc));
+            } else {
+                log.error("UGC {} does not exist", uGCId);
+                throw new UGCException("Parent UGC does not exist");
             }
-            ugc.setModerationStatus(newStatus);
-            ugc.setLastModifiedDate(new Date());
-            //Audit call
-            auditUGC(uGCId, AuditAction.MODERATE, tenant, profileId, null);
-            return populateUGCWithProfile(save(ugc));
-        } else {
-            log.error("UGC {} does not exist", uGCId);
-            throw new DataIntegrityViolationException("Parent UGC does not exist");
+        } catch (MongoDataException e) {
+            log.error("Unable to update Moderation status for UGC" + uGCId, e);
+            throw new UGCException("Unable to update Moderation status for UGC", e);
         }
     }
 
@@ -323,47 +335,49 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public List<UGC> updateModerationStatus(List<String> ids, ModerationStatus newStatus,
-                                            String tenant) throws AuditException, CounterException {
-        List<UGC> result = new ArrayList<UGC>();
-        if (ids == null) {
-            return result;
-        }
-        String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
-        for (String id : ids) {
-            UGC ugc = uGCRepository.findOne(new ObjectId(id));
-            if (ugc != null) {
-                if (newStatus == ModerationStatus.APPROVED || pendingToUnmoderated(ugc.getModerationStatus(),
-                    newStatus)) {
-                    ugc.getFlags().clear();//Clear all flags is UGC is approve
-                }
-                ugc.setModerationStatus(newStatus);
-                ugc.setLastModifiedDate(new Date());
-                //Audit call
-
-                auditUGC(ugc.getId(), AuditAction.MODERATE, tenant, profileId, null);
-                result.add(populateUGCWithProfile(save(ugc)));
-            } else {
-                log.error("UGC {} does not exist", id);
+                                            String tenant) throws SocialException {
+        try {
+            List<UGC> result = new ArrayList();
+            if (ids == null) {
+                return result;
             }
+            String profileId = RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();
+            for (String id : ids) {
+                UGC ugc = uGCRepository.findOne(id);
+                if (ugc != null) {
+                    if (newStatus == ModerationStatus.APPROVED || pendingToUnmoderated(ugc.getModerationStatus(),
+                        newStatus)) {
+                        ugc.getFlags().clear();//Clear all flags is UGC is approve
+                    }
+                    ugc.setModerationStatus(newStatus);
+                    ugc.setLastModifiedDate(new Date());
+                    //Audit call
+
+                    auditUGC(ugc.getId(), AuditAction.MODERATE, tenant, profileId, null);
+                    result.add(populateUGCWithProfile(save(ugc)));
+                } else {
+                    log.error("UGC {} does not exist", id);
+                }
+            }
+            return result;
+        } catch (MongoDataException e) {
+            log.error("Unable to update moderation status for ids "+ StringUtils.join(ids), e);
+            throw new UGCException("Unable to update moderation status for Ids",e);
         }
-        return result;
     }
 
     @Override
-    public UGC newUgc(UGC ugc) throws PermissionDeniedException, AuditException, CounterException {
-        List<Action> resolveActions = resolveUGCActions(ugc.getActions(), ugc.getParentId());
+    public UGC newUgc(UGC ugc) throws SocialException {
         ugc.setModerationStatus(ModerationStatus.UNMODERATED);
         ugc.setCreatedDate(new Date());
         ugc.setLastModifiedDate(new Date());
+        ugc.setSecurityProfile(securityProfileService.getDefaultSecurityProfile().getId());
         checkForModeration(ugc);
-
-        ugc.setActions(resolveActions);
         UGC ugcWithProfile = populateUGCWithProfile(save(ugc));
         ugcWithProfile.setAttachmentsList(getAttachmentsList(ugcWithProfile.getAttachmentId(),
             ugcWithProfile.getTenant()));
         //Audit call
         auditUGC(ugcWithProfile.getId(), AuditAction.CREATE, ugc.getTenant(), ugc.getProfileId(), null);
-
         //UGC Hook
         ugcHook.onNewUGC(ugcWithProfile, ugcWithProfile.getProfile());
 
@@ -372,15 +386,15 @@ public class UGCServiceImpl implements UGCService {
 
 
     @Override
-    public UGC newChildUgc(UGC ugc) throws PermissionDeniedException, AuditException, CounterException {
+    public UGC newChildUgc(UGC ugc) throws SocialException {
 
         if (!existsUGC(ugc.getParentId())) {
             log.error("Parent for {} does not exist", ugc);
-            throw new DataIntegrityViolationException("Parent UGC does not exist");
+            throw new UGCException("Parent UGC does not exist");
         }
 
         // resolve and set the actions
-        ugc.setActions(resolveUGCActions(ugc.getActions(), ugc.getParentId()));
+        ugc.setSecurityProfile(securityProfileService.getDefaultSecurityProfile().getId());
         ugc.setModerationStatus(ModerationStatus.UNMODERATED);
         ugc.setCreatedDate(new Date());
         ugc.setLastModifiedDate(new Date());
@@ -400,7 +414,7 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public boolean existsUGC(ObjectId id) {
-        return uGCRepository.findOne(id) != null;
+        return findById(id) != null;
     }
 
     /**
@@ -409,9 +423,15 @@ public class UGCServiceImpl implements UGCService {
      * @param ugc
      * @return
      */
-    private UGC save(UGC ugc) {
+    private UGC save(UGC ugc) throws UGCException {
         log.debug("Saving {}", ugc.toString());
-        return uGCRepository.save(ugc);
+        try {
+            uGCRepository.save(ugc);
+            return ugc;
+        } catch (MongoDataException e) {
+            log.error("Unable to save UGC ",e);
+            throw new UGCException("Unable to Save UGC",e);
+        }
     }
 
     private void checkForModeration(UGC ugc) {
@@ -424,8 +444,8 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC likeUGC(ObjectId ugcId, String tenant, String profileId) throws AuditException, CounterException {
-        UGC ugc = uGCRepository.findOne(ugcId);
+    public UGC likeUGC(ObjectId ugcId, String tenant, String profileId) throws AuditException, CounterException, UGCException {
+        UGC ugc =findById(ugcId);
         if (ugc != null) {
             if (!ugc.getLikes().contains(profileId)) {
                 ugc.getLikes().add(profileId);
@@ -439,17 +459,17 @@ public class UGCServiceImpl implements UGCService {
             return populateUGCWithProfile(save(ugc));
         } else {
             log.debug("UGC Id {} does not exist", ugcId);
-            throw new DataIntegrityViolationException("UGC does not exist");
+            throw new UGCException("UGC does not exist");
         }
     }
 
     @Override
-    public UGC unLikeUGC(ObjectId ugcId, String tenant, String profileId) throws AuditException, CounterException {
-        UGC ugc = uGCRepository.findOne(ugcId);
+    public UGC unLikeUGC(ObjectId ugcId, String tenant, String profileId) throws AuditException, CounterException, UGCException {
+        UGC ugc = findById(ugcId);
         if (ugc != null) {
             if (ugc.getLikes().contains(profileId)) {
                 ugc.getLikes().remove(profileId);
-                uGCRepository.save(ugc);
+                save(ugc);
                 auditUGC(ugcId, AuditAction.UNLIKE, tenant, profileId, "");
             } else {
                 log.debug("Profile ID {} has not like UGC {} ", profileId, ugcId);
@@ -457,18 +477,18 @@ public class UGCServiceImpl implements UGCService {
             return populateUGCWithProfile(save(ugc));
         } else {
             log.debug("UGC Id {} does not exist", ugcId);
-            throw new DataIntegrityViolationException("UGC does not exist");
+            throw new UGCException("UGC does not exist");
         }
     }
 
 
     @Override
-    public UGC unDislikeUGC(ObjectId ugcId, String tenant, String profileId) throws AuditException, CounterException {
-        UGC ugc = uGCRepository.findOne(ugcId);
+    public UGC unDislikeUGC(ObjectId ugcId, String tenant, String profileId) throws AuditException, CounterException, UGCException {
+        UGC ugc = findById(ugcId);
         if (ugc != null) {
             if (ugc.getDislikes().contains(profileId)) {
                 ugc.getDislikes().remove(profileId);
-                uGCRepository.save(ugc);
+                save(ugc);
                 auditUGC(ugcId, AuditAction.UNDISLIKE, tenant, profileId, "");
             } else {
                 log.debug("Profile ID {} has not dislike UGC {} ", profileId, ugcId);
@@ -476,19 +496,19 @@ public class UGCServiceImpl implements UGCService {
             return populateUGCWithProfile(save(ugc));
         } else {
             log.debug("UGC Id {} does not exist", ugcId);
-            throw new DataIntegrityViolationException("UGC does not exist");
+            throw new UGCException("UGC does not exist");
         }
     }
 
 
     @Override
     public UGC unflagUGC(final ObjectId ugcId, final String reason, final String tenant,
-                         final String profileId) throws AuditException, CounterException {
-        UGC ugc = uGCRepository.findOne(ugcId);
+                         final String profileId) throws SocialException {
+        UGC ugc = findById(ugcId);
         if (ugc != null) {
             if (ugc.getFlags().contains(profileId)) {
                 ugc.getFlags().remove(profileId);
-                uGCRepository.save(ugc);
+                save(ugc);
                 removeAuditUGC(ugcId, AuditAction.FLAG, profileId);    //NOT GOOD,
                 // Its not an audit table.(not using it as one)
                 auditUGC(ugcId, AuditAction.UNFLAG, tenant, profileId, reason);
@@ -498,7 +518,7 @@ public class UGCServiceImpl implements UGCService {
             return populateUGCWithProfile(save(ugc));
         } else {
             log.debug("UGC Id {} does not exist", ugcId);
-            throw new DataIntegrityViolationException("UGC does not exist");
+            throw new UGCException("UGC does not exist");
         }
     }
 
@@ -514,8 +534,8 @@ public class UGCServiceImpl implements UGCService {
     }
 
     @Override
-    public UGC dislikeUGC(ObjectId ugcId, String tenant, String profileId) throws AuditException, CounterException {
-        UGC ugc = uGCRepository.findOne(ugcId);
+    public UGC dislikeUGC(ObjectId ugcId, String tenant, String profileId) throws SocialException{
+        UGC ugc = findById(ugcId);
         if (ugc != null) { //save us a trip to mongo
             if (!ugc.getDislikes().contains(profileId)) {
                 ugc.getDislikes().add(profileId);
@@ -529,7 +549,7 @@ public class UGCServiceImpl implements UGCService {
             return populateUGCWithProfile(save(ugc));
         } else {
             log.debug("UGC Id {} does not exist", ugcId);
-            throw new DataIntegrityViolationException("UGC does not exist");
+            throw new UGCException("UGC does not exist");
         }
     }
 
@@ -560,7 +580,7 @@ public class UGCServiceImpl implements UGCService {
                                                        String target, int page, int pageSize, String sortField,
                                                        String sortOrder) {
         return findUGCs(new String[] {moderationStatus.toString()}, tenant, target, page, pageSize, sortField,
-            sortOrder, ActionEnum.MODERATE);
+            sortOrder);
     }
 
     @SuppressWarnings("unchecked")
@@ -571,10 +591,9 @@ public class UGCServiceImpl implements UGCService {
             "classpath:/mongo/getTargetsMap.js", "classpath:/mongo/getTargetsReduce.js", parser);
     }
 
-    @Override
     public List<UGC> findByTarget(String tenant, String target, int page, int pageSize, String sortField,
                                   String sortOrder) {
-        return findUGCs(null, tenant, target, page, pageSize, sortField, sortOrder, ActionEnum.READ);
+        return findUGCs(null, tenant, target, page, pageSize, sortField, sortOrder);
     }
 
     @Override
@@ -582,7 +601,7 @@ public class UGCServiceImpl implements UGCService {
                                           String sortOrder, String[] excludeWithModerationStatuses) throws
         TenantException {
         return findUGCs(getModerationFilter(tenant, profileId, excludeWithModerationStatuses), tenant, target, -1,
-            -1, sortField, sortOrder, ActionEnum.READ);
+            -1, sortField, sortOrder);
     }
 
 
@@ -600,7 +619,7 @@ public class UGCServiceImpl implements UGCService {
 
         List<String> statuses;
 
-        if (permissionService.allowed(ActionEnum.MODERATE, tmpUgc, p)) {
+        if (permissionService.allowed(ActionEnum.MODERATE, p)) {
             statuses = new ArrayList<>(Arrays.asList(ModerationStatus.APPROVED.toString(),
                 ModerationStatus.UNMODERATED.toString(), ModerationStatus.PENDING.toString(),
                 ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()));
@@ -620,7 +639,7 @@ public class UGCServiceImpl implements UGCService {
 
     @Override
     public int getTenantTargetCount(String tenant, String target) {
-        return uGCRepository.findTenantAndTargetIdAndParentIsNull(tenant, target, ActionEnum.READ).size();
+        return uGCRepository.findTenantAndTargetIdAndParentIsNull(tenant, target).size();
 
     }
 
@@ -635,8 +654,7 @@ public class UGCServiceImpl implements UGCService {
                                        final int page, final int pageSize, final String sortField,
                                        final String sortOrder) {
         log.debug("Getting UGC by targetId matches {} regex", regex);
-        return uGCRepository.findByTenantAndTargetIdRegex(tenant, regex, page, pageSize, ActionEnum.READ, sortField,
-            sortOrder);
+        return uGCRepository.findByTenantAndTargetIdRegex(tenant, regex, page, pageSize, sortField, sortOrder);
     }
 
 
@@ -645,7 +663,7 @@ public class UGCServiceImpl implements UGCService {
                                           String sortField, String sortOrder, String[] excludeWithModerationStatuses)
         throws TenantException {
         List<UGC> list = findUGCs(getModerationFilter(tenant, profileId, excludeWithModerationStatuses), tenant,
-            target, page, pageSize, sortField, sortOrder, ActionEnum.READ);
+            target, page, pageSize, sortField, sortOrder);
 
         return populateUGCListWithProfiles(list);
     }
@@ -687,13 +705,8 @@ public class UGCServiceImpl implements UGCService {
     }
 
     private void auditForDeleteUGC(UGC ugc, String profileId) throws AuditException, CounterException {
-        Target target;
-        if (ugc != null) {
-            target = new Target(ugc.getTargetId(), ugc.getTargetDescription(), ugc.getTargetUrl());
-        } else {
-            return;
-        }
-        UGCAudit audit = new UGCAudit(ugc.getId(), ugc.getTenant(), profileId, AuditAction.DELETE, null, target);
+        UGCAudit audit = new UGCAudit(ugc.getId(), ugc.getTenant(), profileId, AuditAction.DELETE, null,
+            new Target(ugc.getTargetId(), ugc.getTargetDescription(), ugc.getTargetUrl()));
         audit.setRow(counterService.getNextSequence("uGCAudit"));
         try {
             uGCAuditRepository.save(audit);
@@ -770,7 +783,7 @@ public class UGCServiceImpl implements UGCService {
     public UGC findUGCAndChildren(ObjectId ugcId, String tenant, String profileId, String sortField,
                                   String sortOrder) throws TenantException {
         String[] moderationStatus = getModerationFilter(tenant, profileId, null);
-        UGC ugc = uGCRepository.findUGC(ugcId, ActionEnum.READ, moderationStatus);
+        UGC ugc = uGCRepository.findUGC(ugcId, moderationStatus);
         if (ugc == null) {
             return null;
         }
@@ -789,8 +802,7 @@ public class UGCServiceImpl implements UGCService {
     public UGC initUGCAndChildren(UGC ugc, String[] moderationStatus, String sortField, String sortOrder) {
         ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), ugc.getTenant()));
         UGC populatedUgc = populateUGCWithProfile(ugc);
-        List<UGC> children = uGCRepository.findByParentIdWithReadPermission(populatedUgc.getId(), ActionEnum.READ,
-            moderationStatus, sortField, sortOrder);
+        List<UGC> children = uGCRepository.findByParentId(populatedUgc.getId(), moderationStatus, sortField, sortOrder);
         for (UGC ugcChild : children) {
             initUGCAndChildren(ugcChild, moderationStatus, sortField, sortOrder);
         }
@@ -808,10 +820,9 @@ public class UGCServiceImpl implements UGCService {
     public List<UGC> findUGCsByTenant(String tenantName, int page, int pageSize, String sortField, String sortOrder) {
         List<UGC> ugcs = null;
         if (page != -1 && pageSize != -1) {
-            ugcs = uGCRepository.findByTenantTargetPaging(tenantName, null, page, pageSize, ActionEnum.READ,
-                sortField, sortOrder);
+            ugcs = uGCRepository.findByTenantTargetPaging(tenantName, null, page, pageSize, sortField, sortOrder);
         } else {
-            ugcs = uGCRepository.findByTenantAndSort(tenantName, ActionEnum.READ, sortField, sortOrder);
+            ugcs = uGCRepository.findByTenantAndSort(tenantName, sortField, sortOrder);
         }
         return populateUGCListWithProfiles(ugcs);
 
@@ -930,8 +941,8 @@ public class UGCServiceImpl implements UGCService {
     }
 
     private List<UGC> populateUGCListWithProfiles(List<UGC> ugcList) {
-        Map<String, List<UGC>> profileIdUGCMap = new HashMap<String, List<UGC>>();
-        List<UGC> anonymousUgc = new ArrayList<UGC>();
+        Map<String, List<UGC>> profileIdUGCMap = new HashMap<>();
+        List<UGC> anonymousUgc = new ArrayList<>();
 
         if (ugcList != null && ugcList.size() > 0) {
 
@@ -940,7 +951,7 @@ public class UGCServiceImpl implements UGCService {
                 // map
                 List<UGC> subUGCList = profileIdUGCMap.get(ugc.getProfileId());
                 if (subUGCList == null) {
-                    subUGCList = new ArrayList<UGC>();
+                    subUGCList = new ArrayList<>();
                     if (isProfileSetable(ugc)) {
                         profileIdUGCMap.put(ugc.getProfileId(), subUGCList);
                     }
@@ -1047,75 +1058,10 @@ public class UGCServiceImpl implements UGCService {
         return data;
     }
 
-    /**
-     * Resolve the full set of actions for the new UGC
-     *
-     * @param actions  from request
-     * @param parentId of ugc
-     * @return
-     */
-    private List<Action> resolveUGCActions(List<Action> actions, ObjectId parentId) {
-        if (actions == null || actions.size() == 0) {
-            // if there is a parent, get the parent's actions & set in there
-            return resolveUGCActionsEmpty(parentId);
 
-        }
-        // resolve what actions need to be added from the parent if any
-        // if there is no parent, take them from the default actions
-        List<Action> actionsToAdd = new ArrayList<>();
-        List<String> actionsMissing = new ArrayList<>();
-        for (String action : ActionUtil.ACTIONS) {
-            actionsMissing.add(action);
-        }
-
-        for (Action action : actions) {
-            int aIndex = actionsMissing.indexOf(action.getName());
-            if (aIndex != -1) {
-                actionsMissing.remove(aIndex);
-            }
-        }
-
-        if (actionsMissing.size() > 0) {
-
-            // get parent actions
-            UGC parentUgc = null;
-            if (parentId != null) {
-                parentUgc = this.findById(parentId);
-            }
-
-            List<Action> actionsToMerge;
-            if (parentUgc != null) {
-                actionsToMerge = parentUgc.getActions();
-            } else {
-                actionsToMerge = ActionUtil.getDefaultActions();
-            }
-
-            for (Action action : actionsToMerge) {
-                if (actionsMissing.contains(action.getName())) {
-                    actionsToAdd.add(action);
-                }
-            }
-            // sets default actions if any missing
-            actions.addAll(actionsToAdd);
-        }
-        return actions;
-    }
-
-    private List<Action> resolveUGCActionsEmpty(ObjectId ugcParentId) {
-        if (ugcParentId != null) {
-            UGC parentUgc = this.findById(ugcParentId);
-            if (parentUgc != null) {
-                return parentUgc.getActions();
-            }
-        }
-        // otherwise use the defaults
-        return ActionUtil.getDefaultActions();
-    }
 
     private List<UGC> findUGCs(String[] moderationStatus, final String tenant, String target, int page, int pageSize,
-                               String sortField, String sortOrder, ActionEnum action) {
-        List<UGC> grantedList = uGCRepository.findUGCs(tenant, target, moderationStatus, action, page, pageSize,
-            sortField, sortOrder);
+                               String sortField, String sortOrder) {
         return populateUGCListWithProfiles(grantedList);
     }
 
@@ -1162,7 +1108,7 @@ public class UGCServiceImpl implements UGCService {
      * @param id unique identifier to the UGC that will be removed and their attachments will be removed.
      */
     private void removeAttachments(ObjectId id) {
-        UGC ugc = uGCRepository.findOne(id);
+        UGC ugc = findById(id);
         if (ugc.getAttachmentId() != null && ugc.getAttachmentId().length > 0) {
             List<ObjectId> attachments = Arrays.asList(ugc.getAttachmentId());
             for (ObjectId attachmentId : attachments) {
@@ -1174,7 +1120,7 @@ public class UGCServiceImpl implements UGCService {
     @Override
     public List<AttachmentModel> getAttachments(ObjectId objectId, String tenant) {
         List<AttachmentModel> result = null;
-        UGC ugc = uGCRepository.findOne(objectId);
+        UGC ugc =findById(objectId);
         if (ugc != null) {
             ugc.setAttachmentsList(getAttachmentsList(ugc.getAttachmentId(), tenant));
             result = ugc.getAttachmentsList();

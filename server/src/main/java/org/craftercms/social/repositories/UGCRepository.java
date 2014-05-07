@@ -16,32 +16,103 @@
  */
 package org.craftercms.social.repositories;
 
-import org.bson.types.ObjectId;
-import org.craftercms.social.domain.UGC;
-import org.craftercms.social.domain.UGC.ModerationStatus;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
-@Repository("uGCRepository")
-public interface UGCRepository extends MongoRepository<UGC, ObjectId>, UGCRepositoryCustom {
+import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.social.domain.UGC;
+import org.craftercms.social.exceptions.SecurityProfileException;
+import org.craftercms.social.exceptions.UGCException;
+import org.springframework.data.mongodb.repository.Query;
 
-	List<UGC> findByModerationStatusAndTenant(ModerationStatus moderationStatus, String tenant);
+/**
+ * UGC Data Operations.
+ */
+public interface UGCRepository extends CrudRepository<UGC> {
 
-	List<UGC> findByModerationStatusAndTenantAndTargetId(ModerationStatus moderationStatus, String tenant, String target);
-	
-	List<UGC> findByTenantAndTargetId(String tenant, String target);
+    /**
+     * Find Ugc with the given Ids.
+     * @param ids Ids to look for.
+     * @return A Iterable of  UGS with the given Id's.
+     * @throws MongoDataException If ugc can be found due a data error.
+     */
+    Iterable<UGC> findByIds(ObjectId[] ids) throws MongoDataException;
 
-    Page<UGC> findByTenantAndTargetId(String tenant, String target, Pageable pageable);
+    /**
+     *  Finds all Child Ugs for the given parent.
+     * @param parentId Parent of the UGS.
+     * @return  A list of all UGC that have the given parent Id as it's parent.
+     * @throws MongoDataException If ugc can be found due a data error.
+     */
+    Iterable<UGC> findByParentId(ObjectId parentId) throws MongoDataException;
 
-    List<UGC> findByTenantAndTargetIdAndParentIdIsNull(String tenant, String target);
+    /**
+     * Find all UGcs with the given tenant,target and moderation status.
+     * Also Skips Results and Orders (Order before skip)
+     * @param tenant Tenant of the UGc.
+     * @param target Target of the UGC
+     * @param moderationStatusArr Moderation Status of the UGC
+     * @param page Page wanted.
+     * @param pageSize Page Size
+     * @param sortField Sort field.
+     * @param sortOrder <b>True</b> for ascending order <b>False</b> for descending.
+     * @return A List of UGCs that matches the given criteria.
+     * @throws MongoDataException If ugc can be found due a data error.
+     */
+     Iterable<UGC> findUGCs(String tenant, String target, String[] moderationStatusArr, int page, int pageSize,
+                                  String sortField, boolean sortOrder) throws MongoDataException;
 
-	@Query("{_id:{$in:?0}}")
-	List<UGC> findByIds(ObjectId[] ids);
-	
-	List<UGC> findByParentId(ObjectId parentId);
+    /**
+     * Find all UGC that are not a children of any other UGC (Roots)
+     * @param tenant Tenant of the UGc.
+     * @param target Target of the UGC
+     * @return A List of UGCs that are not children and match the tenant and target.
+     * @throws MongoDataException If ugc can be found due a data error.
+     */
+    Iterable<UGC> findTenantAndTargetIdAndParentIsNull(String tenant, String target) throws MongoDataException;
+
+    /**
+     * Find a UGC by Id and moderation Status
+     * @param id Id of the UGC
+     * @param moderationStatus Posible Moderation status of the UGC
+     * @return A UGC with given Id and in a given moderation status.
+     * @throws MongoDataException If ugc can be found due a data error.
+     */
+    UGC findUGC(ObjectId id, String[] moderationStatus) throws MongoDataException;
+
+    /**
+     * Find all Ugc for the given tenant and target.<i>Sorts and Pages result.</i>
+     * @param tenant Tenant of the UGc.
+     * @param target Target of the UGC
+     * @param page Page wanted.
+     * @param pageSize Page Size
+     * @param sortField Sort field.
+     * @param sortOrder <b>True</b> for ascending order <b>False</b> for descending.
+     * @return
+     */
+    Iterable<UGC> findByTenantTargetPaging(String tenant, String target, int page, int pageSize, String sortField,
+                                       boolean sortOrder) throws MongoDataException;
+
+    /**
+     * Gets all the possible  actions that a the given Role can do to a given UGC base on that's UGC Security Profile.
+     * @param ugcId UGC id.
+     * @param roles Roles to check.
+     * @return A List of Actions that a given Roles can do to a UGC.
+     * @throws MongoDataException If ugc can be found due a data error.
+     * @throws SecurityProfileException If there is a problem checking the security Profile.
+     */
+    Iterable<String> findPossibleActionsForUGC(String ugcId, List<String> roles) throws MongoDataException, SecurityProfileException;
+
+    Iterable<UGC> findByParentId(ObjectId parentId, String[] moderationStatus, String sortField, boolean sortOrder) throws MongoDataException;
+
+    Iterable<UGC> findByTenantAndSort(String tenant, String sortField, boolean sortOrder) throws MongoDataException;
+
+    Iterable<UGC> findByModerationStatusAndTenantAndTargetId(String[] moderationStatus, String tenant,
+                                                             String targetId,
+                                                             boolean isOnlyRoot) throws MongoDataException;
+
+    Iterable<UGC> findByTenantAndTargetIdRegex(String tenant, String targetIdRegex, int page, int pageSize,
+                                               String sortField, boolean sortOrder) throws MongoDataException;
+
 }
