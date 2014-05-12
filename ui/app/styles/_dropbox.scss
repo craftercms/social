@@ -16,13 +16,12 @@
 
   .cs-file-upload {
     margin: 5px 0 0 0;
+    .progress {
+      margin-bottom: 0;
+    }
   }
 
   .cs-files-list & {
-
-    .cs-file-upload {
-      display: none;
-    }
 
   }
 
@@ -41,22 +40,25 @@
   font-family: 'Josefin Sans Std Light', Helvetica, sans-serif;
   margin-left: auto;
   margin-right: auto;
-  min-height: 100px;
   position: relative;
 
   &.cs-dnd-upload-supported {
+
+    min-height: 150px;
+
     &:before {
-      content: "Drag & Drop Files Here";
+      content: "...or drag & drop from your desktop";
       position: absolute;
       top: 0;
       bottom: 0;
       left: 0;
       right: 0;
       text-align: center;
-      padding-top: 40px;
+      padding-top: 80px;
       color: $gray-light;
       font-size: 30px;
     }
+
   }
 
   .alert.no-support {
@@ -116,6 +118,7 @@
     padding: 5px;
     text-align: center;
   }
+
   .thumbnail {
     margin-top: 10px;
 
@@ -163,4 +166,151 @@
     transform: scale(1.1);
   }
 
+}
+
+.fileinput-button {
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  -ms-filter: 'alpha(opacity=0)';
+  font-size: 200px;
+  direction: ltr;
+  cursor: pointer;
+}
+
+/* Fixes for IE < 8 */
+@media screen\9 {
+  .fileinput-button input {
+    filter: alpha(opacity=0);
+    font-size: 100%;
+    height: 100%;
+  }
+}
+
+/* ie9 files container */
+#ie9-files-container {
+    margin-bottom: 10px;
+}
+#file-input, #file-input object {
+    width: 250px;
+    height: 30px;
+}
+
+/* ckeditor ie textarea error */
+.crafter-social-view .cke_contents {
+    min-height: 30px;
+}
+
+/*
+Uploadify
+Copyright (c) 2012 Reactive Apps, Ronnie Garcia
+Released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+*/
+.custom-uploadify-btn {
+  margin-bottom: 5px;
+}
+
+.uploadify {
+    position: relative;
+    margin-bottom: 1em;
+}
+.uploadify .uploadify-button {
+
+    background-color: #aaa;
+    background-image: linear-gradient(bottom, #aaa 0%, #ebebeb 100%);
+    background-image: -o-linear-gradient(bottom, #aaa 0%, #ebebeb 100%);
+    background-image: -moz-linear-gradient(bottom, #aaa 0%, #ebebeb 100%);
+    background-image: -webkit-linear-gradient(bottom, #aaa 0%, #ebebeb 100%);
+    background-image: -ms-linear-gradient(bottom, #aaa 0%, #ebebeb 100%);
+    background-image: -webkit-gradient(
+            linear,
+            left bottom,
+            left top,
+            color-stop(0, #aaa),
+            color-stop(1, #ebebeb)
+    );
+    background-position: center top;
+    background-repeat: no-repeat;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    border: 1px solid #ebebeb;
+    color: #FFF;
+    font: bold 12px Arial, Helvetica, sans-serif;
+    text-align: center;
+    /*
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+	*/
+    width: 100%;
+}
+.uploadify:hover .uploadify-button {
+
+    background-color: #888;
+    background-image: linear-gradient(top, #bbb 0%, #ebebeb 100%);
+    background-image: -o-linear-gradient(top, #bbb 0%, #ebebeb 100%);
+    background-image: -moz-linear-gradient(top, #bbb 0%, #ebebeb 100%);
+    background-image: -webkit-linear-gradient(top, #bbb 0%, #ebebeb 100%);
+    background-image: -ms-linear-gradient(top, #bbb 0%, #ebebeb 100%);
+    background-image: -webkit-gradient(
+            linear,
+            left bottom,
+            left top,
+            color-stop(0, #bbb),
+            color-stop(1, #ebebeb)
+    );
+    background-position: center bottom;
+}
+.uploadify-button.disabled {
+    background-color: #D0D0D0;
+    color: #808080;
+}
+#file-input-queue {
+    margin: 1em 0;
+}
+.uploadify-queue-item {
+    background-color: #F5F5F5;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    font: 11px Verdana, Geneva, sans-serif;
+    margin-top: 5px;
+    max-width: 350px;
+    padding: 10px;
+}
+.uploadify-error {
+    background-color: #FDE5DD !important;
+}
+.uploadify-queue-item .cancel {
+    display: none;
+}
+/*
+.uploadify-queue-item .cancel a {
+	background: url('uploadify-cancel.png') 0 0 no-repeat;
+	float: right;
+	height:	16px;
+	text-indent: -9999px;
+	width: 16px;
+}
+*/
+
+.uploadify-queue-item.completed {
+    background-color: #E5E5E5;
+}
+.uploadify-progress {
+    background-color: #E5E5E5;
+    margin-top: 10px;
+    width: 100%;
+}
+.uploadify-progress-bar {
+    background-color: #0099FF;
+    height: 3px;
+    width: 1px;
 }

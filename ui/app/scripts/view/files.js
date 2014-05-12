@@ -11,7 +11,9 @@
 
         className: [
             Base.prototype.className,
-            'crafter-social-files-view'
+            'crafter-social-view',
+            'crafter-social-files-view',
+            'crafter-social-dropbox-element'
         ].join(' '),
 
         listen: function () {
@@ -31,8 +33,7 @@
         },
 
         uploadComplete: function ( data ) {
-            $(data.ui).remove();
-            var attrs = U.fromJSON(data.e.target.responseText);
+            var attrs = U.fromJSON(data);
             var model = new File(attrs);
             this.addOne(model);
         }

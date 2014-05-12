@@ -1,10 +1,10 @@
 (function (S) {
     'use strict';
 
-    var Base    = S.view.Base,
+    var Base = S.view.Base,
         Comment = S.model.Comment,
-        U       = S.util,
-        $       = S.$;
+        U = S.util,
+        $ = S.$;
 
     var Director = S.getDirector();
 
@@ -33,9 +33,9 @@
         },
         render: function () {
 
-            var me          = this;
-            var profile     = Director.getProfile();
-            var model       = $.extend(this.model.toJSON(), {
+            var me = this;
+            var profile = Director.getProfile();
+            var model = $.extend(this.model.toJSON(), {
                 isTrashed: function () {
                     return me.model.isTrashed();
                 },
@@ -52,8 +52,8 @@
             this.$el.html(U.template(
                 this.getTemplate('main'), model));
 
-            var $children   = this.$('.comment-children:first');
-            model.children.every(function ( child ) {
+            var $children = this.$('.comment-children:first');
+            model.children.every(function (child) {
 
                 var m = new Comment(child),
                     v = new CommentView($.extend({}, me.cfg, { model: m }));
@@ -103,7 +103,7 @@
                     'click .btn-primary': function () {
                         this.$('.alert').remove();
                         var reason = this.$('textarea').val().trim();
-                        if ( reason !== '' ) {
+                        if (reason !== '') {
                             me.model[isFlagged ? 'unflag' : 'flag'](reason);
                             // TODO destroy after successful flagging
                             this.destroy();
@@ -111,7 +111,7 @@
                             this.$('.modal-body')
                                 .prepend('<div class="alert alert-danger">Please provide the reason.</div>')
                                 .find('textarea')
-                                    .focus();
+                                .focus();
                         }
                     }
                 }
@@ -127,7 +127,7 @@
 
 
         },
-        unflag: function ( reason ) {
+        unflag: function (reason) {
             this.model.unflag(reason);
         },
 
@@ -137,98 +137,144 @@
             }
         },
 
+        _dragOverFn: function (e) {
+            e.preventDefault();
+        },
+
         files: function () {
 
-            var me    = this;
+            var me = this;
             var model = this.model;
 
-            var files   = S.util.instance('controller.Files', null, {
+            var files = S.util.instance('controller.Files', null, {
                 tenant: this.cfg.tenant,
                 comment: model
             });
 
-            var view    = S.util.instance('view.Files', {
+            var view = S.util.instance('view.Files', {
                 collection: files
             });
 
             view.render();
 
-            var Modal  = S.get('view.Modal');
-            var modal  = new Modal({
-                modal: { show: true }
+            var Modal = S.get('view.Modal');
+            var modal = new Modal({
+                modal: { show: true, keyboard: false, backdrop: 'static' }
+            });
+
+            modal.$el.on('hidden.bs.modal', function () {
+                me.model.fetch();
+
+                if ($.browser.msie === undefined && parseInt($.browser.version, 10) > 9) {
+
+                    modal.uploader.fileupload('destroy');
+
+                } else {
+
+                    modal.uploader.uploadify('destroy');
+
+                }
+
+                modal.destroy();
             });
 
             if (this.model.get('flags') === 0) {
 
-                var Dropbox = S.get('component.Dropbox');
-                var db = new Dropbox({
+                var URL = S.url('ugc.{id}.add_attachment', model.toJSON());
 
-                    element: view.el,
-                    display: view.$('.cs-uploads-list'),
+                if ($.browser.msie !== undefined && parseInt($.browser.version, 10) < 10) {
 
-                    uploadPostKey: 'attachment',
-                    target: S.url('ugc.{id}.add_attachment', model.toJSON()),
-                    formData: { tenant: model.get('tenant') },
+                    view.$('#fileupload').remove();
 
-                    template: view.getTemplate('file'),
-                    templateUploadError: [
-                        /* jshint -W015 */
-                        '<div class="alert alert-danger {{theme.fileError}}">',
-                            '<span>An error has occurred trying to upload <i>"{{file.name}}"</i>.</span>', ' ',
-                            // TODO dismissing the message keeps the file UI container, remove it?
-                            '<a onclick="this.parentNode.parentNode.removeChild(this.parentNode)">Dismiss Message</a>',
-                        '</div>'
-                    ].j(),
+                    modal.$el.on('shown.bs.modal', function () {
 
-                    theme: {
-                        fileDisplay: 'crafter-social-view crafter-social-file-view'
-                    }
+                        (modal.uploader = view.$('#file-input')).uploadify({
+                            height: 30,
+                            swf: S.Cfg('url.base') + 'libs/uploadify/uploadify.swf',
+                            uploader: URL,
+                            width: 250,
+                            multi: false,
+                            formData: { tenant: model.get('tenant') },
+                            fileObjName: 'attachment',
+                            buttonClass: 'custom-uploadify-btn',
+                            onUploadSuccess: function (file, data /*, response */) {
 
-                });
+                                view.uploadComplete(data);
+                                me.model.fetch();
 
-                db.on(Dropbox.UPLOAD_SUCCESS_EVENT, function (data) {
-                    view.uploadComplete(data);
-                    me.model.fetch();
-                });
+                            },
+                            onUploadError: function ( file, errorCode, errorMsg /*, errorString */) {
+                                var errorMsgStr;
+                                if (errorMsg === '400') {
 
-                db.on(Dropbox.UPLOAD_ERROR_EVENT, function (data) {
+                                    errorMsgStr = 'Invalid parameter sent';
 
-                    var modal;
-                    var XHR = data.XHR;
+                                } else if (errorMsg === '404') {
 
-                    if (XHR.status === 502) {
+                                    errorMsgStr = 'Element not found on database';
 
-                        modal = new S.view.Modal({
-                            events: { 'click [data-dismiss]': 'destroy' },
-                            modal: { show: true }
-                        }).render();
+                                } else if (errorMsg === '403') {
 
-                        modal.set({
-                            title: 'Error',
-                            body: 'The file you submitted surpasses the maximum file size.',
-                            footer: '<button data-dismiss class="btn btn-default">Close</button>'
+                                    errorMsgStr = 'User don\'t have permission';
+
+                                } else if (errorMsg === '413') {
+
+                                    errorMsgStr = 'The file you tried to upload exceeds the maximum file size.';
+
+                                } else if (errorMsg === '422') {
+
+                                    errorMsgStr = 'The file uploaded already exist.';
+
+                                } else {
+
+                                    errorMsgStr = 'Error. File could not be uploaded.';
+
+                                }
+
+                                $('#error-file-msg').text(errorMsgStr);
+                                $('#file-alert-container').css('display', 'block');
+                            }
                         });
 
-                    } else if (XHR.status === 422) {
+                    });
 
-                        modal = new S.view.Modal({
-                            events: { 'click [data-dismiss]': 'destroy' },
-                            modal: { show: true }
-                        }).render();
 
-                        modal.set({
-                            title: 'Error',
-                            body: 'A virus has been detected on the file. File was not uploaded.',
-                            footer: '<button data-dismiss class="btn btn-default">Close</button>'
-                        });
+                } else {
 
-                    } else if (XHR.status === 401) {
+                    view.$('#ie9-files-container').remove();
 
-                        Director.trigger(S.Constants.get('EVENT_UNAUTHORISED_RESPONSE'));
+                    modal.$el.on('shown.bs.modal', function () {
 
-                    }
+                        // Initialize the jQuery File Upload widget:
+                        (modal.uploader = view.$('#fileupload')).fileupload({
+                            autoUpload: true,
+                            dataType: 'json',
+                            // dropZone: view.$el,
+                            singleFileUploads: true,
+                            url: S.url('ugc.{id}.add_attachment', model.toJSON()),
+                            xhrFields: { withCredentials: true },
+                            paramName: 'attachment',
+                            uploadPostKey: 'attachment',
+                            formData: { tenant: model.get('tenant') },
+                            getFilesFromResponse: function (data) {
+                                return data.files || [];
+                            }
+                        }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
+                                me.model.fetch();
+                            });
 
-                });
+                    });
+
+                }
+
+
+            } else {
+
+                modal.$('.modal-body').prepend([
+                    '<div class="alert alert-warning">',
+                    'This comment is flagged. File attachments are disabled.',
+                    '</div>'
+                ].join(''));
 
             }
 
@@ -237,14 +283,6 @@
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 
             modal.render();
-
-            if (this.model.get('flags') > 0) {
-                modal.$('.modal-body').prepend([
-                    '<div class="alert alert-warning">',
-                        'This comment is flagged. File attachments are disabled.',
-                    '</div>'
-                ].join(''));
-            }
 
             files.fetch();
 
@@ -277,4 +315,66 @@
 
     S.define('view.Comment', CommentView);
 
-}) (crafter.social);
+})(crafter.social);
+
+//                var Dropbox = S.get('component.Dropbox');
+//                var db = new Dropbox({
+//
+//                    element: view.el,
+//                    display: view.$('.cs-uploads-list'),
+//
+//                    uploadPostKey: 'attachment',
+//                    target: S.url('ugc.{id}.add_attachment', model.toJSON()),
+//                    formData: { tenant: model.get('tenant') },
+//
+//                    template: view.getTemplate('file'),
+//                    templateUploadError: [
+//                        /* jshint -W015 */
+//                        '<div class="alert alert-danger {{theme.fileError}}">',
+//                            '<span>An error has occurred trying to upload <i>"{{file.name}}"</i>.</span> ',
+//                            '<a onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)">Dismiss Message</a>',
+//                        '</div>'
+//                    ].j(),
+//
+//                    theme: {
+//                        fileDisplay: 'crafter-social-view crafter-social-file-view'
+//                    }
+//
+//                });
+//
+//                db.on(Dropbox.UPLOAD_SUCCESS_EVENT, function (data) {
+//                    view.uploadComplete(data);
+//                    me.model.fetch();
+//                });
+//
+//                db.on(Dropbox.UPLOAD_ERROR_EVENT, function (data) {
+//
+//                    var XHR = data.XHR;
+//                    var parsed;
+//
+//                    try {
+//                        parsed = JSON.parse(XHR.responseText);
+//                    } catch ( ex ) { }
+//
+//                    if (parsed.localizedMessage || parsed.message) {
+//
+//                        $(data.ui).find('.dropbox-file-error span')
+//                            .text(parsed.localizedMessage || parsed.message);
+//
+//                    } else if (XHR.status === 502 || XHR.status === 413) {
+//
+//                        $(data.ui).find('.dropbox-file-error span')
+//                            .text('The file you tried to upload exceeds the maximum file size.');
+//
+//                    } else if (XHR.status === 422) {
+//
+//                        $(data.ui).find('.dropbox-file-error span')
+//                            .text('A virus has been detected on the file. File was not uploaded.');
+//
+//                    } else if (XHR.status === 401) {
+//
+//                        Director.trigger(S.Constants.get('EVENT_UNAUTHORISED_RESPONSE'));
+//
+//                    }
+//
+//                });

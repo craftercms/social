@@ -49,8 +49,24 @@
                     me.visible = false;
                 })
                 .on('shown.bs.popover', function () {
+
+                    var view = me.cache('commentingView');
+                    view && view.editor();
+
                     me.trigger('visibility.change', true);
                     me.visible = true;
+
+                    if (me.cfg.scrollIntoView) {
+
+                        var pos = me.$el.offset(),
+                            $selection = $('body, html');
+
+                        $selection.animate({
+                            scrollTop: pos.top - 100
+                        }, 400);
+
+                    }
+
                 });
 
         },
@@ -168,6 +184,9 @@
 
         hide: function () {
 
+            var view = this.cache('commentingView');
+            view && view.editor('destroy');
+
             var e = $.Event('hide.bs.' + this.type);
 
             this.$tip.removeClass('in');
@@ -225,7 +244,8 @@
         }),
         viewOptions: {
             hidden: ['close', 'popover.request']
-        }
+        },
+        scrollIntoView: true
     });
 
     S.define('view.Popover', Popover);

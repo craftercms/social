@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-social</artifactId>
-    <version>2.3.4-SNAPSHOT</version>
+    <version>2.3.6-SNAPSHOT</version>
     <name>Crafter Social</name>
     <description>Crafter Social</description>
     <url>https://github.com/craftercms/social/tree/master/server</url>
@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-social-parent</artifactId>
-        <version>2.3.4-SNAPSHOT</version>
+        <version>2.3.6-SNAPSHOT</version>
     </parent>
     <organization>
         <name>CrafterCMS</name>
@@ -64,7 +64,7 @@
         <org.codehaus.jackson.version>1.9.5</org.codehaus.jackson.version>
         <com.thoughtworks.xstream.version>1.4.2</com.thoughtworks.xstream.version>
         <org.mongodb.java-driver.version>2.11.3</org.mongodb.java-driver.version>
-        <org.craftercms.profile.client.version>2.3.0</org.craftercms.profile.client.version>
+        <org.craftercms.profile.client.version>2.3.6-SNAPSHOT</org.craftercms.profile.client.version>
         <org.apache.httpcomponents.version>4.2.2</org.apache.httpcomponents.version>
         <clover.version>3.1.8</clover.version>
         <test.port>8080</test.port>
@@ -102,7 +102,7 @@
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-security-provider</artifactId>
-            <version>2.3.0</version>
+            <version>${org.craftercms.profile.client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -377,6 +377,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+	        <groupId>com.thetransactioncompany</groupId>
+	        <artifactId>cors-filter</artifactId>
+	        <version>1.9.2</version>
+        </dependency>
+        <dependency>
             <groupId>com.jayway.restassured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>1.8.0</version>
@@ -411,73 +416,7 @@
             </testResource>
         </testResources>
         <plugins>
-            <plugin>
-                <groupId>com.github.joelittlejohn.embedmongo</groupId>
-                <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.1.9</version>
-                <executions>
-                    <execution>
-                        <id>start</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <port>29017</port>
-                            <randomPort>false</randomPort>
-                            <databaseDirectory>${basedir}/target</databaseDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>stop</id>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.11.v20130520</version>
-                <configuration>
-                    <classesDirectory>${basedir}/target/classes</classesDirectory>
-                    <webXml>${basedir}/src/test/resources/test-web.xml</webXml>
-                    <webDefaultXml>${basedir}/src/test/resources/test-web.xml</webDefaultXml>
-                    <overrideWebXml>${basedir}/src/test/resources/test-web.xml</overrideWebXml>
-                    <connectors>
-                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>8989</port>
-                        </connector>
-                    </connectors>
-                    <webAppConfig>
-                        <contextPath>/crafter-social</contextPath>
-                    </webAppConfig>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
-                    <stopKey>foo</stopKey>
-                    <stopPort>9999</stopPort>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>start-jetty</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <scanIntervalSeconds>0</scanIntervalSeconds>
-                            <daemon>true</daemon>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>stop-jetty</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -493,30 +432,7 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-                    <testFailureIgnore>false</testFailureIgnore>
-                    <includes>
-                        <include>
-                            **/integration/**/*.java
-                        </include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/*$__CLR*</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <!-- <goal>verify</goal> -->
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

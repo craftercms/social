@@ -9,8 +9,10 @@
     "backbone": "~1.1.0",
     "underscore": "~1.5.2",
     "ckeditor": "*",
-    "handlebars": "~1.1.0"
+    "handlebars": "~1.1.0",
+    "jquery-file-upload": "~9.5.4",
+    "uploadify": "~3.2.1",
+    "jquery.browser": "~0.0.6"
   },
-  "devDependencies": {},
-  "resolutions": {}
+  "devDependencies": {}
 }

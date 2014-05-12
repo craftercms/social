@@ -31,20 +31,42 @@
         },
 
         show: function () {
+
             this.$el.insertAfter(this.cfg.target);
             this.addAll();
+
+            var view = this.cache('commentingView');
+            view && view.editor();
+
+            if (this.cfg.scrollIntoView) {
+
+                var pos = this.$el.offset(),
+                    $selection = $('body, html');
+
+                $selection.animate({
+                    scrollTop: pos.top - 100
+                }, 400);
+
+            }
+
         },
 
         hide: function () {
+
+            var view = this.cache('commentingView');
+            view && view.editor('destroy');
+
             this.$el.detach();
+
         }
 
     });
 
-    Inline.DEFAULTS = {
+    Inline.DEFAULTS = $.extend({}, Discussion.DEFAULTS, {
         viewOptions: {
             hidden: ['inline.request']
         },
+        scrollIntoView: true,
         templates: {
             /* jshint -W015 */
             main: [
@@ -66,7 +88,7 @@
                 '</div>'
             ].join('')
         }
-    };
+    });
 
     S.define('view.Inline', Inline);
 

@@ -217,7 +217,7 @@
                     });
                 } else {
                     var index  = 0,
-                        formats = Array.prototype.splice.call(arguments, 1);
+                        formats = Array.prototype.slice.call(arguments, 1);
                     return str.replace(/%@([0-9]+)?/g, function(s, argIndex) {
                         argIndex = (argIndex) ? parseInt(argIndex, 10) - 1 : index++;
                         if (index >= formats.length) { index = 0; }
