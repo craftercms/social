@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.craftercms.social.domain.UGCAudit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Order;
@@ -36,7 +37,7 @@ public class UGCAuditRepositoryImpl implements UGCAuditRepositoryCustom {
 	@Override
 	public List<UGCAudit> findByLastRetrievedRow(long lastRowRetrieve, String[] actionFilters) {
 		Query query = new Query();
-		query.sort().on(ROW, Order.DESCENDING);
+        query.with(new Sort(new Sort.Order(Sort.Direction.DESC,ROW)));
 		query.addCriteria(Criteria.where(ROW).gt(lastRowRetrieve));
 
         if(actionFilters != null){
@@ -62,7 +63,7 @@ public class UGCAuditRepositoryImpl implements UGCAuditRepositoryCustom {
 		query.skip(start);
         query.limit(end > start? (end - start + 1): 0);
 		
-		query.sort().on(ROW, Order.DESCENDING);
+		query.with(new Sort(new Sort.Order(Sort.Direction.DESC,ROW)));
 	
 		return mongoTemplate.find(query, UGCAudit.class);
 	}

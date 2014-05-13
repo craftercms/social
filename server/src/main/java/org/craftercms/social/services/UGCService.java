@@ -117,7 +117,10 @@ public interface UGCService {
 
 	List<UGC> findByTargetValidUGC(String tenant, String target, String profileId, String sortField, String sortOrder, String[] excludeWithModerationStatuses);
 
-	int getTenantTargetCount(String tenant, String target);
+
+    long countFindbyAttributes(Map<String, Object> attributes) throws PermissionDeniedException;
+
+    int getTenantTargetCount(String tenant, String target);
 
 	UGC findById(ObjectId ugcId);
 	
@@ -175,4 +178,6 @@ public interface UGCService {
     UGC unLikeUGC(ObjectId objectId, String tenant, String profileId);
 
     UGC unDislikeUGC(ObjectId objectId, String tenant, String profileId);
+
+    List<UGC> findbyAttributes(Map<String, Object> attributes) throws PermissionDeniedException;
 }

@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.MapUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.controllers.rest.v1.to.PublicUGC;
@@ -46,7 +47,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,6 +68,7 @@ public class UGCRestController {
         "attachmentId", "anonymousFlag", "targetUrl", "targetDescription", "moderationStatus", "profileId", "tenant",
         "target", "ticket", "attachments", "action_read", "action_create", "action_update", "action_delete",
         "action_act_on", "action_moderate"});
+
     private static final Set<String> ugcFieldSet = new HashSet<String>(ugcFieldList);
 
     @RequestMapping(value = "/moderation/{moderationStatus}/target", method = RequestMethod.GET)
@@ -114,12 +115,13 @@ public class UGCRestController {
 
         if (page >= 0 && pageSize > 0) {
             List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), page, pageSize,
-                sortField, sortOrder, new String[] {ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()});
+                sortField, sortOrder, new String[] {ModerationStatus.TRASH.toString(),
+                    ModerationStatus.SPAM.toString()});
 
             return HierarchyGenerator.generateHierarchy(toPublicUGCList(ugcs), null, rootCount, childCount);
         } else {
             List<UGC> ugcs = ugcService.findByTargetValidUGC(tenant, target, getProfileId(), sortField, sortOrder,
-                    new String[] {ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()});
+                new String[] {ModerationStatus.TRASH.toString(), ModerationStatus.SPAM.toString()});
 
             return HierarchyGenerator.generateHierarchy(toPublicUGCList(ugcs), null, rootCount, childCount);
         }
@@ -232,8 +234,9 @@ public class UGCRestController {
 
         UGC updatedUgc = ugcService.updateUgc(new ObjectId(ugcRequest.getUgcId()), ugcRequest.getTenant(),
             ugcRequest.getTargetId(), getProfileId(), ugcRequest.getParentId() == null? null: new ObjectId(ugcRequest
-            .getParentId()), ugcRequest.getTextContent(), ugcRequest.getTargetUrl(),
-            ugcRequest.getTargetDescription(), ugcRequest.getAttributes(), ugcRequest.getSubject());
+                .getParentId()), ugcRequest.getTextContent(), ugcRequest.getTargetUrl(),
+            ugcRequest.getTargetDescription(), ugcRequest.getAttributes(), ugcRequest.getSubject()
+        );
         return toPublicUgc(updatedUgc);
 
     }
@@ -330,6 +333,39 @@ public class UGCRestController {
         Map<String, Object> attributeMap = parseAttibutes(request);
         ugcService.setAttributes(new ObjectId(ugcId), attributeMap, tenant, getProfileId());
     }
+
+    @RequestMapping(value = "/attributes")
+    @ModelAttribute
+    public HierarchyList<PublicUGC> findByAttributes(@RequestParam(required = false,
+        defaultValue = "99") int rootCount, @RequestParam(required = false, defaultValue = "99") int childCount,
+                                                     @RequestParam final Map<String,
+                                                         Object> attributes) throws PermissionDeniedException {
+
+        if (attributes.containsKey("rootCount")) {
+            attributes.remove("rootCount");
+        }
+        if (attributes.containsKey("childCount")) {
+            attributes.remove("childCount");
+        }
+        List<UGC> ugcs = ugcService.findbyAttributes(attributes);
+        return HierarchyGenerator.generateHierarchy(toPublicUGCList(ugcs), null, rootCount, childCount);
+    }
+
+    @RequestMapping(value = "/attributes/count")
+    @ModelAttribute
+    public Map<String,Long> countFindByAttributes(@RequestParam Map<String,
+        Object> attributes) throws PermissionDeniedException {
+        if (attributes.containsKey("rootCount")) {
+            attributes.remove("rootCount");
+        }
+        if (attributes.containsKey("childCount")) {
+            attributes.remove("childCount");
+        }
+        HashMap<String,Long> map = new HashMap<String, Long>(1);
+        map.put("count",ugcService.countFindbyAttributes(attributes));
+        return map;
+    }
+
 
     private String getProfileId() {
         return RequestContext.getCurrent().getAuthenticationToken().getProfile().getId();

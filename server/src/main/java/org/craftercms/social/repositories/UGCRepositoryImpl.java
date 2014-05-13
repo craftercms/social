@@ -18,6 +18,8 @@ package org.craftercms.social.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBList;
@@ -29,12 +31,14 @@ import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.exceptions.PermissionDeniedException;
 import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.util.UGCConstants;
 import org.craftercms.social.util.action.ActionEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Order;
@@ -111,9 +115,9 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
         q.addCriteria(Criteria.where(TARGET_ID).regex(targetIdRegex, "ig"));
         q.addCriteria(Criteria.where(TENANT).is(tenant));
         if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
-            q.sort().on(sortField, Order.DESCENDING);
+            q.with(new Sort(new Sort.Order(Sort.Direction.DESC,sortField)));
         } else {
-            q.sort().on(sortField, Order.ASCENDING);
+            q.with(new Sort(new Sort.Order(Sort.Direction.ASC,sortField)));
         }
         log.debug("Getting UGC using {}", q.toString());
         return mongoTemplate.find(q, UGC.class);
@@ -145,9 +149,9 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
         }
 
         if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
-            query.sort().on(sortField, Order.DESCENDING);
+            query.with(new Sort(new Sort.Order(Sort.Direction.DESC,sortField)));
         } else {
-            query.sort().on(sortField, Order.ASCENDING);
+            query.with(new Sort(new Sort.Order(Sort.Direction.ASC,sortField)));
         }
         return mongoTemplate.find(query, UGC.class);
     }
@@ -167,6 +171,40 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
             return list.get(0);
         }
         return null;
+    }
+
+    @Override
+    public List<UGC> findByAttributes(final Map<String, Object> attributes,final ActionEnum action) throws PermissionDeniedException {
+        return mongoTemplate.find(findByAttributesInternal(attributes,action),UGC.class);
+    }
+
+    @Override
+    public long countFindByAttributes(final Map<String, Object> attributes, final ActionEnum action) throws
+        PermissionDeniedException {
+
+        return mongoTemplate.count(findByAttributesInternal(attributes,action), UGC.class);
+    }
+
+    private Query findByAttributesInternal(final Map<String, Object> attributes, final ActionEnum action) throws
+        PermissionDeniedException{
+        Query query = this.permissionService.getQuery(action, RequestContext.getCurrent().getAuthenticationToken()
+            .getProfile());
+        if (query == null) {
+            throw new PermissionDeniedException("You can not read current UGC",action);
+        }
+        includeDefaultUGCFields(query);
+        for (String attributeName : attributes.keySet()) {
+            Object value = attributes.get(attributeName);
+            Set<String> arrayIfPossible = org.springframework.util.StringUtils.commaDelimitedListToSet(value.toString());
+            if (arrayIfPossible==null || arrayIfPossible.size()<=1) {
+                query.addCriteria(Criteria.where("attributes."+attributeName).is(value));
+            }else{
+                query.addCriteria(Criteria.where("attributes."+attributeName).in(arrayIfPossible));
+            }
+        }
+        query.addCriteria(Criteria.where(UGCConstants.TENANT).is(RequestContext.getCurrent().getAuthenticationToken()
+            .getProfile().getTenantName()));
+        return query;
     }
 
     private void includeDefaultUGCFields(Query query) {
@@ -219,11 +257,10 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
         int end = pageSize;
         query.skip(start);
         query.limit(end);
-
         if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
-            query.sort().on(sortField, Order.DESCENDING);
+            query.with(new Sort(new Sort.Order(Sort.Direction.DESC,sortField)));
         } else {
-            query.sort().on(sortField, Order.ASCENDING);
+            query.with(new Sort(new Sort.Order(Sort.Direction.ASC,sortField)));
         }
         return mongoTemplate.find(query, UGC.class);
     }
@@ -238,9 +275,9 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
             query.addCriteria(Criteria.where(TENANT).is(tenant));
         }
         if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
-            query.sort().on(sortField, Order.DESCENDING);
+            query.with(new Sort(new Sort.Order(Sort.Direction.DESC,sortField)));
         } else {
-            query.sort().on(sortField, Order.ASCENDING);
+            query.with(new Sort(new Sort.Order(Sort.Direction.ASC,sortField)));
         }
         return mongoTemplate.find(query, UGC.class);
     }
@@ -289,9 +326,9 @@ public class UGCRepositoryImpl implements UGCRepositoryCustom {
             query.addCriteria(Criteria.where(MODERATION_STATUS).in(moderationStatus));
         }
         if (sortOrder.equalsIgnoreCase(UGCConstants.SORT_ORDER_DESC)) {
-            query.sort().on(sortField, Order.DESCENDING);
+            query.with(new Sort(new Sort.Order(Sort.Direction.DESC,sortField)));
         } else {
-            query.sort().on(sortField, Order.ASCENDING);
+            query.with(new Sort(new Sort.Order(Sort.Direction.ASC,sortField)));
         }
         return mongoTemplate.find(query, UGC.class);
     }

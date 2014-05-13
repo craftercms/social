@@ -7,6 +7,7 @@ import java.util.Map;
 import org.craftercms.social.domain.Notification;
 import org.craftercms.social.domain.Notification.TransmittedStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Order;
@@ -25,7 +26,7 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom 
 
 	@Override
 	public List<Notification> findNotificationByFrequencyAndTransmitedStatus(
-			String frequency, String transmittedStatus, String action, String[] eventActionFilters, Map<String,Order> notificaticationQuerySort) {
+			String frequency, String transmittedStatus, String action, String[] eventActionFilters, Map<String,Sort.Direction> notificaticationQuerySort) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where(FREQUENCY).is(frequency).and(ACTION).is(action).and(TRANSMITED_STATUS).is(transmittedStatus));
 
@@ -38,11 +39,11 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom 
 		return mongoTemplate.find(query, Notification.class);
 	}
 	
-	private void setSortToQuery(Query query, Map<String, Order> notificaticationQuerySort) {
+	private void setSortToQuery(Query query, Map<String, Sort.Direction> notificaticationQuerySort) {
 		Iterator it = notificaticationQuerySort.entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry pairs = (Map.Entry)it.next();
-	        query.sort().on((String)pairs.getKey(), (Order)pairs.getValue());
+	        query.with(new Sort(new Sort.Order((Sort.Direction)pairs.getValue(),pairs.getKey().toString())));
 	    }
 	}
 
