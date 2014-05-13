@@ -605,7 +605,15 @@ public class UGCServiceImpl implements UGCService {
             -1, sortField, sortOrder, ActionEnum.READ);
     }
 
+    @Override
+    public List<UGC> findbyAttributes(final Map<String, Object> attributes) throws PermissionDeniedException {
+        return uGCRepository.findByAttributes(attributes,ActionEnum.READ);
+    }
 
+    @Override
+    public long countFindbyAttributes(final Map<String, Object> attributes) throws PermissionDeniedException {
+        return uGCRepository.countFindByAttributes(attributes,ActionEnum.READ);
+    }
     private String[] getModerationFilter(String tenantName, String profileId, String[] excludeStatuses) {
         Profile p = crafterProfileService.getProfile(profileId);
         List<String> moderatorRoles = tenantService.getRootModeratorRoles(tenantName);

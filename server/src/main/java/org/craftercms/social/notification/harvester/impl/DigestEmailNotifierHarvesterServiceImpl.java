@@ -8,6 +8,7 @@ import org.craftercms.social.exceptions.MailException;
 import org.craftercms.social.repositories.UGCRepository;
 import org.craftercms.social.util.support.CrafterProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Order;
 
 import java.util.*;
@@ -44,9 +45,9 @@ public class DigestEmailNotifierHarvesterServiceImpl extends EmailNotifierHarves
     public DigestEmailNotifierHarvesterServiceImpl() {
         maxNotificationsPerEmail = DEFAULT_MAX_NOTIF_PER_EMAIL;
         profileAttributes = DEFAULT_PROFILE_ATTRIBUTES;
-        LinkedHashMap<String, Order> sorting = new LinkedHashMap<String, Order>();
-        sorting.put(FIELD_SUBSCRIBER_ID, Order.ASCENDING);
-        sorting.put(FIELD_EVENT_AUDIT_DATE, Order.DESCENDING);
+        LinkedHashMap<String, Sort.Direction> sorting = new LinkedHashMap<String, Sort.Direction>();
+        sorting.put(FIELD_SUBSCRIBER_ID, Sort.Direction.ASC);
+        sorting.put(FIELD_EVENT_AUDIT_DATE, Sort.Direction.DESC);
         setNotificationQuerySort(sorting);
     }
 

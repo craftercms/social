@@ -15,14 +15,17 @@ import org.craftercms.social.repositories.NotificationRepository;
 import org.craftercms.social.repositories.UGCRepository;
 import org.craftercms.social.services.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Order;
 
 public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
-	private static final HashMap<String, Order> DEFAULT_SORT = new HashMap<String, Order>(){
+	private static final HashMap<String, Sort.Direction> DEFAULT_SORT = new HashMap<String, Sort.Direction>(){
 		{
-			put("createdDate", Order.DESCENDING);
+			put("createdDate",Sort.Direction.DESC);
 		}
-	};
+
+        private static final long serialVersionUID = 3680280949055605761L;
+    };
 
 	private static final String DEFAULT_FREQUENCY = "instant";
 	private static final String EMAIL_ACTION = "email";
@@ -38,7 +41,7 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 	private static final String EVENT_USER_EMAIL = "eventUserEmail";
 	private static final String EVENT_DATE = "eventDate";
 
-	private Map<String,Order> notificationQuerySort;
+	private Map<String,Sort.Direction> notificationQuerySort;
 
 	private String frequency;
 
@@ -254,11 +257,11 @@ public class EmailNotifierHarvesterServiceImpl extends BaseHarvesterService {
 		}
 	}
 
-	public Map<String,Order> getNotificationQuerySort() {
+	public Map<String,Sort.Direction> getNotificationQuerySort() {
 		return notificationQuerySort;
 	}
 
-	public void setNotificationQuerySort(Map<String,Order> notificationQuerySort) {
+	public void setNotificationQuerySort(Map<String,Sort.Direction> notificationQuerySort) {
 		this.notificationQuerySort = notificationQuerySort;
 	}
 

@@ -17,9 +17,12 @@
 package org.craftercms.social.repositories;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.exceptions.PermissionDeniedException;
+import org.craftercms.social.services.PermissionService;
 import org.craftercms.social.util.action.ActionEnum;
 
 public interface UGCRepositoryCustom {
@@ -33,7 +36,10 @@ public interface UGCRepositoryCustom {
 	
 	UGC findUGC(ObjectId id, ActionEnum action, String[] moderationStatusArr);
 
-	List<UGC> findByTenantTargetPaging(String tenant, String target,
+    long countFindByAttributes(Map<String, Object> attributes, ActionEnum action) throws
+        PermissionDeniedException;
+
+    List<UGC> findByTenantTargetPaging(String tenant, String target,
 			int page, int pageSize, ActionEnum action, String sortField, String sortOrder);
 
     List<String> findPossibleActionsForUGC(String ugcId, List<String> roles);
@@ -48,4 +54,6 @@ public interface UGCRepositoryCustom {
 
     List<UGC> findByTenantAndTargetIdRegex(String tenant, String targetIdRegex, int page, int pageSize,
                                            ActionEnum action, String sortField, String sortOrder);
+
+    List<UGC> findByAttributes(Map<String, Object> attributes,final ActionEnum action) throws PermissionDeniedException;
 }
