@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <bean id="social.mongodb.optionsFactory" class="org.craftercms.commons.mongo.MongoClientOptionsFactory">
+        <property name="autoConnectRetry" value="${studio.social.mongodb.connection.autoConnectRetry}"/>
+        <property name="connectionsPerHost" value="${studio.social.mongodb.connection.connectionsPerHost}"/>
+        <property name="maxAutoConnectRetryTime" value="${studio.social.mongodb.connection.maxWaitTime}"/>
+        <property name="socketKeepAlive" value="${studio.social.mongodb.connection.socketKeepAlive}"/>
+        <property name="threadsAllowedToBlockForConnectionMultiplier"
+                  value="${studio.social.mongodb.connection.threadsAllowedToBlockForConnectionMultiplier}"/>
+        <property name="connectTimeout" value="${studio.social.mongodb.connection.connectTimeout}"/>
+        <property name="writeConcern" value="${studio.social.mongodb.connection.writeConcern}"/>
+        <property name="readPreference" value="${studio.social.mongodb.connection.readPreference}"/>
+    </bean>
+
+
+    <bean class="com.mongodb.MongoClient" id="social.mongodb.mongoClient">
+        <constructor-arg>
+            <list>
+                <ref bean="social.mongo.mainServer"/>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="social.mongodb.optionsFactory"/>
+    </bean>
+
+    <bean id="social.mongo.mainServer" class="com.mongodb.ServerAddress">
+        <constructor-arg value="${studio.social.mongodb.connection.host}"/>
+        <constructor-arg value="${studio.social.mongodb.connection.port}"/>
+    </bean>
+
+    <bean id="social.mongodb.jongoFactory" class="org.craftercms.commons.mongo.JongoFactoryBean">
+        <property name="mongo" ref="social.mongodb.mongoClient"/>
+        <property name="username" value="${studio.social.mongodb.connection.dbUser}"/>
+        <property name="password" value="${studio.social.mongodb.connection.dbPassword}"/>
+        <property name="dbName" value="${studio.social.mongodb.connection.db}"/>
+    </bean>
+
+    <bean id="social.mongodb.queries" class="org.craftercms.commons.mongo.JongoQueries" init-method="init">
+        <property name="resources">
+            <list>
+                <value>classpath:/crafter/social/social-queries.xml</value>
+                <value>classpath:/crafter/social/extension/social-queries.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="social.mongodb.jongoRepository" class="org.craftercms.social.repositories.SocialJongoRepository"
+          abstract="true" init-method="init">
+        <property name="queries" ref="social.mongodb.queries"/>
+        <property name="jongo" ref="social.mongodb.jongoFactory"/>
+        <property name="ugcFactory" ref="social.ugc.factory"/>
+    </bean>
+
+    <bean id="social.repository.ugcRepository" class="org.craftercms.social.repositories.ugc.impl.UGCRepositoryImpl"
+          parent="social.mongodb.jongoRepository"/>
+
+
+</beans>

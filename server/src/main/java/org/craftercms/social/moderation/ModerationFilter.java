@@ -17,6 +17,7 @@
 package org.craftercms.social.moderation;
 
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.SocialUgc;
 
 /**
  * Filter Interface for Moderation Decision manager
@@ -29,7 +30,7 @@ public interface ModerationFilter {
 	 * @return True if the UGC Need to be moderate
 	 * 		   False Otherwise
 	 */
-	public boolean needModeration(UGC ugc);
+	public boolean needModeration(SocialUgc ugc);
 	/**
 	 * Get's the name of the Modetation Filter
 	 * @return the name of the Filter

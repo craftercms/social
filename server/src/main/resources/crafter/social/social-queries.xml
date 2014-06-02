@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="social.ugc.getTree1">
+        {$project:{doc:"$$CURRENT",ancestors:{$cond:[{$eq:["$ancestors",[]]},['Fry'],'$ancestors']}}}
+    </entry>
+
+    <entry key="social.ugc.getTree2">
+        {$match:{"doc.tenantId":#,$or:[{ancestors:{$in:#}},{_id:#}]}}
+    </entry>
+
+    <entry key="social.ugc.getTree3">
+        {$unwind:"$ancestors"}
+    </entry>
+
+    <entry key="social.ugc.getTree4">
+        {$group:{_id:"$_id",ancesterSize:{$sum:{$cond:[{$eq:["$ancestors",'Fry']},0,1]}},doc:{$addToSet:"$$CURRENT"}}}
+    </entry>
+
+    <entry key="social.ugc.getTree5">
+        {$sort:{ancestors:1}}
+    </entry>
+
+    <entry key="social.ugc.getTree6">
+        {$unwind:"$doc"}
+    </entry>
+
+    <entry key="social.ugc.getTree7">
+        {$group:{_id:"$_id",ancesterSize:{$first:"$ancesterSize"},doc:{$first:"$doc"}}}
+    </entry>
+
+    <entry key="social.ugc.getTree8">
+        {$sort:{ancesterSize:1,"doc.doc.createDate":1}}
+    </entry>
+
+    <entry key="social.ugc.getTree9">
+        {$match:{ancesterSize:{$lte:#}}}
+    </entry>
+
+    <entry key="social.ugc.getTree10">
+        {$project:{ugc:"$doc.doc",_id:0}}
+    </entry>
+
+    <entry key="social.ugc.byTargetId">
+        {tenantId:#,targetId:#}
+    </entry>
+
+    <entry key="social.ugc.byTenantAndId">
+        {_id:#,tenantId:#}
+    </entry>
+    <entry key="social.ugc.byTargetId">
+        {tenantId:#,targetId:#}
+    </entry>
+    <entry key="social.ugc.deleteAttribute">
+        { $unset:#}
+    </entry>
+    <entry key="social.ugc.addAttributes">
+        {$set:{attributes:#}}
+    </entry>
+    <entry key="social.ugc.byIds">
+        {_id:{$in:#}}
+    </entry>
+    <entry key="social.ugc.childrenOf">
+        {tenantId:#,ancestors:{$in:#}}
+    </entry>
+    <entry key="social.ugc.defaultSort">
+        {createDate:1}
+    </entry>
+</properties>

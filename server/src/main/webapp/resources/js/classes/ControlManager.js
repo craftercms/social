@@ -13,7 +13,7 @@
 	var DOM = tinymce.DOM, Event = tinymce.dom.Event, each = tinymce.each, extend = tinymce.extend;
 
 	/**
-	 * This class is responsible for managing UI control instances. It's both a factory and a collection for the controls.
+	 * This class is responsible for managing UI control instances. It's both a ugcFactory and a collection for the controls.
 	 * @class tinymce.ControlManager
 	 */
 	tinymce.create('tinymce.ControlManager', {
@@ -119,7 +119,7 @@
 		createControl : function(name) {
 			var ctrl, i, l, self = this, editor = self.editor, factories, ctrlName;
 
-			// Build control factory cache
+			// Build control ugcFactory cache
 			if (!self.controlFactories) {
 				self.controlFactories = [];
 				each(editor.plugins, function(plugin) {

@@ -318,7 +318,7 @@
  *
  * @method createControl
  * @param {String} name Control name to create for example "mylistbox" 
- * @param {tinymce.ControlManager} controlman Control manager/factory to use to create the control. 
+ * @param {tinymce.ControlManager} controlman Control manager/ugcFactory to use to create the control.
  * @return {tinymce.ui.Control} Returns a new control instance or null.
  * @example 
  * // Creates a new plugin class

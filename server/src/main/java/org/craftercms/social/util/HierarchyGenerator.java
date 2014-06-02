@@ -28,7 +28,7 @@ public class HierarchyGenerator {
 
 	public static <T extends Hierarchical<T>> HierarchyList<T> generateHierarchy(List<T> objList, ObjectId parentId, int rootCount, int childCount) {
 		HierarchyList<T> hierarchy = new HierarchyList<T>();
-		HashMap<Object, T> map = new HashMap<Object, T>();
+		HashMap<Object, T> map = new HashMap<>();
 		if (objList != null && objList.size() > 0) {
 			for (T obj : objList) {
 				map.put(obj.getId(), obj);

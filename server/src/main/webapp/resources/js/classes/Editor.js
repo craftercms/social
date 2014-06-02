@@ -426,7 +426,7 @@
 			 */
 			t.controlManager = new tinymce.ControlManager(t);
 
-			// Enables users to override the control factory
+			// Enables users to override the control ugcFactory
 			t.onBeforeRenderUI.dispatch(t, t.controlManager);
 
 			// Measure box
@@ -1082,7 +1082,7 @@
 		/**
 		 * Adds a button that later gets created by the ControlManager. This is a shorter and easier method
 		 * of adding buttons without the need to deal with the ControlManager directly. But it's also less
-		 * powerfull if you need more control use the ControlManagers factory methods instead.
+		 * powerfull if you need more control use the ControlManagers ugcFactory methods instead.
 		 *
 		 * @method addButton
 		 * @param {String} name Button name to add.

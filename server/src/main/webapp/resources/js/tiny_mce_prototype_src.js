@@ -13593,7 +13593,7 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 
 			t.controlManager = new tinymce.ControlManager(t);
 
-			// Enables users to override the control factory
+			// Enables users to override the control ugcFactory
 			t.onBeforeRenderUI.dispatch(t, t.controlManager);
 
 			// Measure box
@@ -15930,7 +15930,7 @@ tinymce.ForceBlocks = function(editor) {
 		createControl : function(name) {
 			var ctrl, i, l, self = this, editor = self.editor, factories, ctrlName;
 
-			// Build control factory cache
+			// Build control ugcFactory cache
 			if (!self.controlFactories) {
 				self.controlFactories = [];
 				each(editor.plugins, function(plugin) {

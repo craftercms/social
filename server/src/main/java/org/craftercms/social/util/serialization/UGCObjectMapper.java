@@ -34,15 +34,16 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 public class UGCObjectMapper extends ObjectMapper {
     private static final long serialVersionUID = 1669827811287238948L;
     private List<JsonSerializer> serializerList = new ArrayList();
-    private Map<Class, JsonDeserializer> deserializerMap = new HashMap<Class, JsonDeserializer>();
+    private Map<Class, JsonDeserializer> deserializerMap = new HashMap<>();
 
 
     public UGCObjectMapper(List<JsonSerializer> serializerList, Map<Class, JsonDeserializer> deserializerMap) {
         super();
         super.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        super.getSerializationConfig().without(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        super.getSerializationConfig().with(SerializationFeature.WRITE_NULL_MAP_VALUES,
+        super.getSerializationConfig().without(SerializationFeature.FAIL_ON_EMPTY_BEANS,
             SerializationFeature.WRITE_EMPTY_JSON_ARRAYS);
+        super.getSerializationConfig().with(SerializationFeature.WRITE_NULL_MAP_VALUES);
+
         this.serializerList = serializerList;
         this.deserializerMap = deserializerMap;
         registerSerializationModule();
