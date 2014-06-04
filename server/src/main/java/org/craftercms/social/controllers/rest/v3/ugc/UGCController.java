@@ -217,7 +217,7 @@ public class UGCController<T extends UGC> {
     @RequestMapping(value = "/{ugcId}/attachment/{attachmentId}", method = RequestMethod.GET)
     @ResponseBody()
     @ApiOperation(value = "Sends the attachment to the client",notes = "This will send the headers  content-type " +
-        "detected (based on extension)  and content-length")
+        "(based on extension),content-length,and content-disposition")
     public void readAttachment(@ApiParam("Id of the UGC")@NotBlank @PathVariable(value = "ugcId") final String ugcId,
                                @ApiParam("Id of the attachment")@NotBlank @PathVariable(value = "attachmentId") final
                                String attachmentId,
