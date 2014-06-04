@@ -10,6 +10,10 @@
         {$match:{"doc.tenantId":#,$or:[{ancestors:{$in:#}},{_id:#}]}}
     </entry>
 
+    <entry key="social.ugc.getTreeChildrenOnly">
+        {$match:{"doc.tenantId":#,{ancestors:{$in:#}}}
+    </entry>
+
     <entry key="social.ugc.getTree3">
         {$unwind:"$ancestors"}
     </entry>

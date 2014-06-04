@@ -94,8 +94,12 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
      * @param tenant Tenant Owner of the Ugc to look for.
      * @param limit  How many results
      * @param skip   where to start.
+     * @param childrenCount
      * @return A iterate with the results.empty if noting is found.
      * @throws MongoDataException
      */
-    Iterable findChildren(String ugcId, String tenant, int limit, int skip) throws MongoDataException;
+    Iterable findChildren(String ugcId, String tenant, int limit, int skip, final int childrenCount) throws MongoDataException;
+
+
+    Iterable<UGC> findChildrenFlat(String ugcId, String tenant, int limit, int skip) throws MongoDataException;
 }

@@ -162,8 +162,42 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     }
 
     @Override
-    public Iterable findChildren(final String ugcId, final String tenant, final int limit,
-                                 final int skip) throws MongoDataException {
+    public Iterable<T> findChildren(final String ugcId, final String tenant, final int limit, final int skip, final
+    int childrenCount) throws MongoDataException {
+        if(childrenCount>=1){
+            return findChildrenFlat(ugcId,tenant,limit,skip);
+        }
+        try {
+            String pt1 = getQueryFor("social.ugc.getTree1");
+            String pt2 = getQueryFor("social.ugc.getTreeChildrenOnly");
+            String pt3 = getQueryFor("social.ugc.getTree3");
+            String pt4 = getQueryFor("social.ugc.getTree4");
+            String pt5 = getQueryFor("social.ugc.getTree5");
+            String pt6 = getQueryFor("social.ugc.getTree6");
+            String pt7 = getQueryFor("social.ugc.getTree7");
+            String pt8 = getQueryFor("social.ugc.getTree8");
+            String pt9 = getQueryFor("social.ugc.getTree9");
+            String pt10 = getQueryFor("social.ugc.getTree10");
+
+            if (!ObjectId.isValid(ugcId)) {
+                throw new IllegalArgumentException("Given UGC id is not valid");
+            }
+            ObjectId id = new ObjectId(ugcId);
+            Aggregate aggregation = getCollection().aggregate(pt1);
+            aggregation.and(pt2, tenant, Arrays.asList(id));
+            aggregation.and(pt3).and(pt4).and(pt5).and(pt6).and(pt7).and(pt8);
+            aggregation.and(pt9, childrenCount);
+            aggregation.and(pt10);
+            return toUgcList(aggregation.as(super.ugcFactory.getTreeClass()));
+        } catch (Exception ex) {
+            log.error("Unable to ", ex);
+            throw new MongoDataException("Unable to find children of given UGC", ex);
+        }
+    }
+
+    @Override
+    public Iterable<T> findChildrenFlat(final String ugcId, final String tenant, final int limit,
+                                        final int skip) throws MongoDataException {
         try {
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC id is not valid");

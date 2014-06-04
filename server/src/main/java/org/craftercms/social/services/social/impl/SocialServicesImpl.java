@@ -47,6 +47,25 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
         }
     }
 
+    @Override
+    public T moderate(final String ugcId, final SocialUgc.ModerationStatus moderationStatus, final String
+        userId, final String tenant) throws UGCException {
+        try{
+            T ugc = ugcRepository.findUGC(ugcId, tenant);
+            if(ugc==null){
+                throw new IllegalUgcException("Given UGC does not exist for current user's tenant");
+            }
+            if(ugc.getModerationStatus() != SocialUgc.ModerationStatus.TRASH){ // Once is trash stays thrash (TBC)
+                ugc.setModerationStatus(moderationStatus);
+            }
+            ugcRepository.save(ugc);
+            return ugc;
+        }catch (MongoDataException ex){
+            log.debug("Unable to change ugc moderation status",ex);
+            throw new UGCException("Unable to change ugc moderation status",ex);
+        }
+    }
+
     private void voteDown(final T ugc, final String userId) {
         unvoteUp(ugc,userId);
         ugc.getVotesDown().add(userId);

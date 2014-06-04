@@ -21,6 +21,7 @@
     <import resource="virus-scanner-context.xml"/>
     <import resource="security-context.xml"/>
 
+
     <bean class="org.craftercms.social.services.ugc.impl.UGCServiceImpl" id="social.ugc.ugcService">
         <property name="UGCRepositoryImpl" ref="social.repository.ugcRepository"/>
         <property name="pipeline" ref="social.services.pipeline"/>
@@ -39,4 +40,5 @@
         </property>
     </bean>
     <bean class="${studio.social.system.ugcClass}" id="social.ugc.factory"/>
+    <import resource="classpath:/crafter/security/rest-security-context.xml"/>
 </beans>

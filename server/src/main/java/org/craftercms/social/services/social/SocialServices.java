@@ -2,6 +2,7 @@ package org.craftercms.social.services.social;
 
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
+import org.craftercms.social.exceptions.UGCException;
 
 /**
  * Defines all Rest Services for Moderation of UGCs.
@@ -54,4 +55,13 @@ public interface SocialServices<T extends SocialUgc> {
      * @return A new (updated) Public (secure) UGC.
      */
     T unFlag(final String ugcId, final String reason, final String userId);
+
+    /**
+     * Change the moderation Status of the given UGC.
+     * @param ugcId Id of the UGC to change moderation status.
+     * @param moderationStatus new Moderation Status.
+     * @param userId Id of the user that is changing the status.
+     * @param tenant Tenant Owner of the Ugc.
+     */
+    T moderate(String ugcId, SocialUgc.ModerationStatus moderationStatus, String userId, String tenant) throws UGCException;
 }

@@ -180,11 +180,13 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
 
     @Override
-    public Iterable readChildren(final String tenant, final String ugcId, final int limit, final int skip) throws UGCException {
+    public Iterable<T> readChildren(final String tenant, final String ugcId, final int limit, final int skip, final int
+        childCount) throws UGCException {
         log.debug("Finding all UGC {} children for tenant {} starting from {} up to {} results", ugcId,tenant,limit,
             skip);
         try {
-            return ugcRepository.findChildren(ugcId,tenant,limit,skip);
+            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, tenant, limit, skip,
+                childCount)));
         } catch (MongoDataException ex) {
             log.error("Unable to read ", ex);
             throw new UGCException("Unable to ", ex);

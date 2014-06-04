@@ -19,9 +19,10 @@
             </beans:list>
         </beans:property>
     </beans:bean>
-    <resources mapping="/resources/**" location="/resources/"/>
+    <resources mapping="/swagger-ui/**" location="/swagger-ui/"/>
 
-    <context:component-scan base-package="org.craftercms.social.controllers.rest.v3"/>
+    <context:component-scan
+            base-package="org.craftercms.social.controllers.rest.v3,org.craftercms.social.controllers.web"/>
 
     <annotation-driven content-negotiation-manager="contentNegotiationManager">
 
@@ -97,20 +98,27 @@
         </beans:property>
     </beans:bean>
 
-    <!--<beans:bean id="exceptionMapping"-->
-                <!--class="org.craftercms.social.util.web.RestMappingExceptionResolver">-->
-        <!--<beans:property name="defaultStatusCode" value="500"/>-->
-        <!--<beans:property name="statusCodes">-->
-            <!--<beans:props>-->
-                <!--<beans:prop key="java.lang.IllegalArgumentException">400</beans:prop>-->
-                <!--<beans:prop key="java.lang.Exception">500</beans:prop>-->
-            <!--</beans:props>-->
-        <!--</beans:property>-->
-    <!--</beans:bean>-->
-
     <beans:bean id="multipartResolver"
                 class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <beans:property name="maxUploadSize" value="${studio.social.web.maxUpload}"/>
     </beans:bean>
 
+    <!-- freemarker config -->
+    <beans:bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <beans:property name="templateLoaderPath" value="/WEB-INF/views/"/>
+    </beans:bean>
+
+    <!--
+
+      View resolvers can also be configured with ResourceBundles or XML files. If you need
+      different view resolving based on Locale, you have to use the resource bundle resolver.
+
+    -->
+    <beans:bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <beans:property name="cache" value="true"/>
+        <beans:property name="prefix" value=""/>
+        <beans:property name="suffix" value=".ftl"/>
+    </beans:bean>
+
+    <beans:import resource="rest-api-documentation-context.xml"/>
 </beans:beans>

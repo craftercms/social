@@ -52,7 +52,6 @@
         <org.apache.commons.io.version>2.2</org.apache.commons.io.version>
         <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
         <org.spring-data.mongodb.version>1.0.1.RELEASE</org.spring-data.mongodb.version>
-        <org.spring-social.version>1.0.1.RELEASE</org.spring-social.version>
         <com.thoughtworks.xstream.version>1.4.2</com.thoughtworks.xstream.version>
         <org.mongodb.java-driver.version>2.11.3</org.mongodb.java-driver.version>
         <org.apache.httpcomponents.version>4.2.2</org.apache.httpcomponents.version>
@@ -71,6 +70,11 @@
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-commons-utilities</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-security-provider</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
@@ -528,7 +532,28 @@
             <artifactId>spring-expression</artifactId>
             <version>${org.springframework.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.mangofactory</groupId>
+            <artifactId>swagger-springmvc</artifactId>
+            <version>0.8.4-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <name>Sonatype</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+
 
     <build>
         <testResources>

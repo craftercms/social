@@ -159,11 +159,11 @@ public interface UGCService<T extends UGC> {
     FileInfo readAttachment(String ugcId, String tenant, String attachmentId) throws FileNotFoundException, UGCException;
 
     /**
-     *
-     * @param tenant
+     *  @param tenant
      * @param ugcId
      * @param limit
      * @param skip
+     * @param childCount
      */
-    Iterable<T> readChildren(String tenant, String ugcId, int limit, int skip) throws UGCException;
+    Iterable<T> readChildren(String tenant, String ugcId, int limit, int skip, final int childCount) throws UGCException;
 }
