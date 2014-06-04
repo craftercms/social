@@ -40,5 +40,5 @@
         </property>
     </bean>
     <bean class="${studio.social.system.ugcClass}" id="social.ugc.factory"/>
-    <import resource="classpath:/crafter/security/rest-security-context.xml"/>
+    <!--<import resource="classpath:/crafter/security/rest-security-context.xml"/>-->
 </beans>
