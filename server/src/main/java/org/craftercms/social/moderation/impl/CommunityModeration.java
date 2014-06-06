@@ -16,7 +16,7 @@
  */
 package org.craftercms.social.moderation.impl;
 
-import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.moderation.ModerationFilter;
 
 public class CommunityModeration implements ModerationFilter {
@@ -24,10 +24,10 @@ public class CommunityModeration implements ModerationFilter {
 	private int comunityOffenceMaxPercentage;
 
 	@Override
-	public boolean needModeration(UGC ugc) {
+	public boolean needModeration(SocialUgc ugc) {
 		    //To prevent division by 0
-		    int likes = (ugc.getLikes().size() == 0)?1:ugc.getLikes().size();
-			int percentage = ((ugc.getDislikes().size() * 100) / (likes + ugc.getDislikes().size()));
+		    int likes = (ugc.getVotesUp().size() == 0)?1:ugc.getVotesUp().size();
+			int percentage = ((ugc.getVotesDown().size() * 100) / (likes + ugc.getVotesDown().size()));
 			return percentage >= comunityOffenceMaxPercentage;
 	}
 

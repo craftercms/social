@@ -16,351 +16,100 @@
  */
 package org.craftercms.social.domain;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamConverter;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.social.controllers.rest.v1.to.UGCRequest;
-import org.craftercms.social.util.Hierarchical;
-import org.craftercms.social.util.UGCConstants;
-import org.craftercms.social.util.serialization.StringObjectMapConverter;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.craftercms.commons.jackson.mvc.annotations.Exclude;
+import org.craftercms.commons.mongo.Document;
+import org.craftercms.commons.mongo.FileInfo;
+import org.jongo.marshall.jackson.oid.Id;
+import org.springframework.beans.BeanUtils;
 
-@XStreamAlias("ugc")
-@XmlRootElement
-@Document(collection = UGCConstants.UGC_COLLECTION_NAME)
-public class UGC implements Hierarchical<UGC> {
+@Document(collectionName = UGC.COLLECTION_NAME)
+public class UGC<T extends UGC> {
 
-    public enum ModerationStatus {
-        UNMODERATED, PENDING, APPROVED, SPAM, TRASH
-    }
+    public static final String COLLECTION_NAME = "ugc";
 
-    public static final String[] ModerationStatusString = {"UNMODERATED", "PENDING", "APPROVED", "SPAM", "TRASH"};
-
-    public static final String COLLECTION_NAME = null;
-
+    @Id
     private ObjectId id;
-    private ObjectId parentId;
+    private ArrayDeque<ObjectId> ancestors;
+    private String targetId;
+    private String tenantId;
+    private String subject;
     private String textContent;
-    @Transient
-    private List<AttachmentModel> attachmentsList;
     private ObjectId[] attachmentId;
-    private List<Action> actions;
-
     private String createdBy;
     private String lastModifiedBy;
-    private String owner;
     private Date createdDate;
     private Date lastModifiedDate;
-
-    private ModerationStatus moderationStatus;
-    private int timesModerated;
-    /**
-     * List of profiles that like this.
-     */
-    private List<String> likes;
-
-    /**
-     * List of profiles that like dislike.
-     */
-    private List<String> dislikes;
-
-    /**
-     * List of profiles that flag this.
-     */
-    private List<String> flags;
-    private String profileId;
-    private String tenant;
-    private String targetId;
-    private String targetUrl;
-    private String targetDescription;
-    private String subject;
     private boolean anonymousFlag;
-    @Transient
-    private transient List<UGC> children;
-    @Transient
-    private int extraChildCount;
-    @Transient
-    private transient Profile profile = null;
-
-
-    @XmlElement(name = "attributes")
-    @XStreamAlias("attributes")
-    @XStreamConverter(StringObjectMapConverter.class)
-    private Map<String, Object> attributes = null;
+    private Map<String, Object> attributes;
+    private ArrayDeque<T> children;
+    private List<FileInfo> attachments;
 
     public UGC() {
-        this(null, null, null, null, null, null, null, null,false);
+        ancestors = new ArrayDeque<>();
+        children = new ArrayDeque<>();
+        attachments=new ArrayList<>();
     }
 
-    public UGC(ObjectId parentId, String textContent, ObjectId[] attachmentId, String profileId, String tenant,
-               String targetId, Map<String, Object> attributes, String targetUrl, String targetDescription,
-               String subject,boolean anonymousFlag) {
-        super();
-        this.parentId = parentId;
-        this.textContent = textContent;
-        if (attachmentId == null) {
-            this.attachmentId = null;
-        } else {
-            this.attachmentId = attachmentId.clone();
-        }
-        this.profileId = profileId;
-        this.tenant = tenant;
-        this.targetId = targetId;
-        this.attributes = attributes;
-        this.children = new ArrayList<UGC>();
-        this.targetDescription = targetDescription;
-        this.targetUrl = targetUrl;
+    public UGC(T base) {
+        this();
+        BeanUtils.copyProperties(base, this);
+    }
+
+    public UGC(final String subject, final String textContent, final String targetId) {
+        this();
         this.subject = subject;
-        this.likes=new ArrayList<String>();
-        this.dislikes=new ArrayList<String>();
-        this.flags=new ArrayList<String>();
-        this.anonymousFlag=anonymousFlag;
-
+        this.textContent = textContent;
+        this.targetId = targetId;
     }
 
-    public UGC(String textContent, String profileId, String tenant, String target, Map<String, Object> attributeMap,
-               String targetUrl, String targetDescription, String subject,boolean anonymousFlag) {
-        this(null, textContent, null, profileId, tenant, target, attributeMap, targetUrl, targetDescription, subject,anonymousFlag);
+    public UGC(final String subject, final String textContent, final String targetId,
+               final ArrayDeque<ObjectId> ancestors) {
+        this();
+        this.subject = subject;
+        this.textContent = textContent;
+        this.targetId = targetId;
+        this.ancestors = ancestors;
     }
 
-    public UGC(String textContent, String profileId, String tenant, String target, ObjectId parentId, Map<String,
-        Object> attributeMap, String targetUrl, String targetDescription, String subject,boolean anonymousFlag) {
-        this(parentId, textContent, null, profileId, tenant, target, attributeMap, targetUrl, targetDescription,
-            subject,anonymousFlag);
-    }
-
-    public UGC(UGCRequest ugcRequest, String profileId) {
-        this(ugcRequest.getTextContent(), profileId, ugcRequest.getTenant(), ugcRequest.getTargetId(),
-            ugcRequest.getParentId() == null? null: new ObjectId(ugcRequest.getParentId()),
-            ugcRequest.getAttributes(), ugcRequest.getTargetUrl(), ugcRequest.getTargetDescription(),
-            ugcRequest.getSubject(),ugcRequest.getAnonymousFlag());
-
-        this.setActions(ugcRequest.getActions());
-        this.setAttributes(this.getAttributes());
-
-    }
-
-    @Override
-    public void addChild(UGC child) {
-        children.add(child);
-    }
-
-    @Override
-    @XmlElement
-    public List<UGC> getChildren() {
-        return children;
-    }
-
-    @Override
-    public int getChildCount() {
-        return children.size();
-    }
-
-    @XmlElement
-    @Override
-    public int getExtraChildCount() {
-        return extraChildCount;
-    }
-
-    @Override
-    public void incExtraChildCount() {
-        extraChildCount++;
-    }
-
-    @Override
-    public void incExtraChildCountBy(int count) {
-        extraChildCount += count;
-    }
 
     public ObjectId getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(final ObjectId id) {
         this.id = id;
     }
 
-    public ObjectId getParentId() {
-        return parentId;
+    public ArrayDeque<ObjectId> getAncestors() {
+        return ancestors;
     }
 
-    public void setParentId(ObjectId parentId) {
-        this.parentId = parentId;
-    }
-
-    public String getTextContent() {
-        return textContent;
-    }
-
-    public void setTextContent(String textContent) {
-        this.textContent = textContent;
-    }
-
-    public ObjectId[] getAttachmentId() {
-        return attachmentId;
-    }
-
-    public void setAttachmentId(ObjectId[] attachmentId) {
-        if (attachmentId == null) {
-            this.attachmentId = null;
-        } else {
-            this.attachmentId = attachmentId.clone();
-        }
-    }
-
-    public ModerationStatus getModerationStatus() {
-        return moderationStatus;
-    }
-
-    public void setModerationStatus(ModerationStatus moderationStatus) {
-        this.moderationStatus = moderationStatus;
-    }
-
-    public int getTimesModerated() {
-        return timesModerated;
-    }
-
-    public void setTimesModerated(int timesModerated) {
-        this.timesModerated = timesModerated;
-    }
-
-
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
+    public void setAncestors(final ArrayDeque<ObjectId> ancestors) {
+        this.ancestors = ancestors;
     }
 
     public String getTargetId() {
         return targetId;
     }
 
-    public void setTargetId(String targetId) {
+    public void setTargetId(final String targetId) {
         this.targetId = targetId;
     }
 
-    @XmlElement
-    public Date getDateAdded() {
-        return new Date(id.getTime());
+    public String getTenantId() {
+        return tenantId;
     }
 
-
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Map<String, Object> attributes) {
-        this.attributes = attributes;
-    }
-
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-    }
-
-
-
-    public List<Action> getActions() {
-        return actions;
-    }
-
-    public void setActions(List<Action> actions) {
-        this.actions = actions;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public String getLastModifiedBy() {
-        return lastModifiedBy;
-    }
-
-    public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public String getTenant() {
-        return tenant;
-    }
-
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
-    }
-
-    public List<AttachmentModel> getAttachmentsList() {
-        return attachmentsList;
-    }
-
-    public void setAttachmentsList(List<AttachmentModel> attachmentsList) {
-        this.attachmentsList = attachmentsList;
-    }
-
-    public boolean isAnonymousFlag() {
-        return anonymousFlag;
-    }
-
-    public void setAnonymousFlag(boolean isAnonymous) {
-        this.anonymousFlag = isAnonymous;
-    }
-
-    public String getTargetUrl() {
-        return targetUrl;
-    }
-
-    public void setTargetUrl(String targetUrl) {
-        this.targetUrl = targetUrl;
-    }
-
-    public String getTargetDescription() {
-        return targetDescription;
-    }
-
-    public void setTargetDescription(String targetDescription) {
-        this.targetDescription = targetDescription;
+    public void setTenantId(final String tenantId) {
+        this.tenantId = tenantId;
     }
 
     public String getSubject() {
@@ -371,27 +120,116 @@ public class UGC implements Hierarchical<UGC> {
         this.subject = subject;
     }
 
-    public List<String> getLikes() {
-        return likes;
+    public String getTextContent() {
+        return textContent;
     }
 
-    public void setLikes(final List<String> likes) {
-        this.likes = likes;
+    public void setTextContent(final String textContent) {
+        this.textContent = textContent;
     }
 
-    public List<String> getDislikes() {
-        return dislikes;
+    public ObjectId[] getAttachmentId() {
+        return attachmentId;
     }
 
-    public void setDislikes(final List<String> dislikes) {
-        this.dislikes = dislikes;
+    public void setAttachmentId(final ObjectId[] attachmentId) {
+        this.attachmentId = attachmentId;
     }
 
-    public List<String> getFlags() {
-        return flags;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setFlags(final List<String> flags) {
-        this.flags = flags;
+    public void setCreatedBy(final String createdBy) {
+        this.createdBy = createdBy;
     }
+
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(final String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(final Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public boolean isAnonymousFlag() {
+        return anonymousFlag;
+    }
+
+    public void setAnonymousFlag(final boolean anonymousFlag) {
+        this.anonymousFlag = anonymousFlag;
+    }
+
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(final Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
+
+    public ArrayDeque<T> getChildren() {
+        return children;
+    }
+
+    public void setChildren(final ArrayDeque<T> children) {
+        this.children = children;
+    }
+
+    public List<FileInfo> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(final List<FileInfo> attachments) {
+        this.attachments = attachments;
+    }
+
+    public boolean isMyParent(final T ugc) {
+        if (ancestors.isEmpty()) {
+            return false;
+        } else {
+            return ancestors.getLast().equals(ugc.getId());
+        }
+    }
+
+    public <T extends UGC> boolean isMyChild(final T ug) {
+        if (ug.getAncestors().isEmpty()) {
+            return false;
+        }
+        return ug.getAncestors().getLast().equals(this.id);
+    }
+
+    @Override
+    public String toString() {
+        return "UGC{" +
+            "id=" + id +
+            ", ancestors=" + StringUtils.join(ancestors) +
+            ", targetId='" + targetId + '\'' +
+            ", subject='" + subject + '\'' +
+            ", createdBy='" + createdBy + '\'' +
+            ", lastModifiedBy='" + lastModifiedBy + '\'' +
+            ", createdDate=" + createdDate +
+            ", lastModifiedDate=" + lastModifiedDate +
+            ", anonymousFlag=" + anonymousFlag +
+            ", attributes=" + attributes +
+            '}';
+    }
+
+
 }

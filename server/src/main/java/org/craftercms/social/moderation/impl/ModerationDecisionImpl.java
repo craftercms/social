@@ -19,6 +19,7 @@ package org.craftercms.social.moderation.impl;
 import java.util.List;
 
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.moderation.ModerationFilter;
 
@@ -46,7 +47,7 @@ public class ModerationDecisionImpl implements ModerationDecision {
 	 * @see org.craftercms.social.moderation.ModerationDecision#needModeration(org.craftercms.social.domain.UGC)
 	 */
 	@Override
-	public boolean needModeration(final UGC ugc) {
+	public boolean needModeration(final SocialUgc ugc) {
 		boolean needsModeration = false;
 		for (ModerationFilter filter : filters) {
 			if (filter.needModeration(ugc)) {
@@ -58,7 +59,7 @@ public class ModerationDecisionImpl implements ModerationDecision {
 	}
 
 	@Override
-	public boolean isTrash(UGC ugc) {
+	public boolean isTrash(SocialUgc ugc) {
 		return ugc.getFlags().size() >= maxFlagsBeforeTrash;
 	}
 	

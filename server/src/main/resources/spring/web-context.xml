@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc 
+			http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <beans:bean name="social.properties"
+                class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <beans:property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <beans:property name="locations">
+            <beans:list>
+                <beans:value>classpath:crafter/social/social.properties</beans:value>
+                <beans:value>classpath*:crafter/social/extension/social.properties</beans:value>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+    <resources mapping="/swagger-ui/**" location="/swagger-ui/"/>
+
+    <context:component-scan
+            base-package="org.craftercms.social.controllers.rest.v3,org.craftercms.social.controllers.web"/>
+
+    <annotation-driven content-negotiation-manager="contentNegotiationManager">
+
+        <message-converters>
+            <beans:bean id="jacksonMessageConverter"
+                        class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter"
+                    >
+                <beans:property name="supportedMediaTypes" value="application/json"/>
+                <beans:property name="prettyPrint" value="false"/>
+                <beans:property name="filter">
+                    <beans:bean class="org.craftercms.commons.jackson.mvc.SelectorFilterFactory">
+                        <beans:property name="filters">
+                            <beans:list>
+                                <beans:bean class="org.craftercms.commons.jackson.mvc.GDataPropertyFilter">
+                                    <beans:property name="selectorParameterName" value="selector"/>
+                                </beans:bean>
+                            </beans:list>
+                        </beans:property>
+                    </beans:bean>
+                </beans:property>
+
+                <beans:property name="objectMapper">
+                    <beans:bean class="org.craftercms.social.util.serialization.UGCObjectMapper" >
+                        <beans:property name="annotationIntrospector" >
+                            <beans:bean class="org.craftercms.commons.jackson.mvc.CrafterJacksonAnnotationIntrospector">
+                                <beans:property name="defaultFilter" value="gdata"/>
+                            </beans:bean>
+                        </beans:property>
+                        <beans:constructor-arg name="serializerList">
+                            <beans:list>
+                                <beans:bean
+                                        class="org.craftercms.commons.jackson.ObjectIdSerializer"/>
+                            </beans:list>
+                        </beans:constructor-arg>
+                        <beans:constructor-arg name="deserializerMap">
+                            <beans:map key-type="java.lang.Class"
+                                       value-type="com.fasterxml.jackson.databind.JsonDeserializer">
+                                <beans:entry>
+                                    <beans:key>
+                                        <beans:value>org.bson.types.ObjectId</beans:value>
+                                    </beans:key>
+                                    <beans:bean
+                                            class="org.craftercms.commons.jackson.ObjectIdDeserializer"/>
+                                </beans:entry>
+                            </beans:map>
+                        </beans:constructor-arg>
+
+                        <beans:property name="dateFormat">
+                            <beans:bean class="java.text.SimpleDateFormat">
+                                <beans:constructor-arg type="java.lang.String"
+                                                       value="${studio.social.web.mapping.dateFormat}"/>
+                            </beans:bean>
+                        </beans:property>
+                    </beans:bean>
+                </beans:property>
+            </beans:bean>
+        </message-converters>
+    </annotation-driven>
+
+    <beans:bean id="contentNegotiationManager"
+                class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <beans:property name="favorPathExtension" value="true"/>
+        <beans:property name="favorParameter" value="false"/>
+        <beans:property name="ignoreAcceptHeader" value="true"/>
+        <beans:property name="defaultContentType" value="application/json"/>
+        <beans:property name="useJaf" value="false"/>
+        <beans:property name="mediaTypes">
+            <beans:value>
+                json=application/json
+                html=text/html
+                *=*/*
+            </beans:value>
+        </beans:property>
+    </beans:bean>
+
+    <beans:bean id="multipartResolver"
+                class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <beans:property name="maxUploadSize" value="${studio.social.web.maxUpload}"/>
+    </beans:bean>
+
+    <!-- freemarker config -->
+    <beans:bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <beans:property name="templateLoaderPath" value="/WEB-INF/views/"/>
+    </beans:bean>
+
+    <!--
+
+      View resolvers can also be configured with ResourceBundles or XML files. If you need
+      different view resolving based on Locale, you have to use the resource bundle resolver.
+
+    -->
+    <beans:bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <beans:property name="cache" value="true"/>
+        <beans:property name="prefix" value=""/>
+        <beans:property name="suffix" value=".ftl"/>
+    </beans:bean>
+
+    <beans:import resource="rest-api-documentation-context.xml"/>
+</beans:beans>

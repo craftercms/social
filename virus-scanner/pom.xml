@@ -5,11 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-virus-scanner</artifactId>
-    <version>1.0-SNAPSHOT</version>
 	<name>Crafter Social Virus Scanner</name>
 	<description>Crafter Social Virus Scanner</description>
 	<url>https://github.com/craftercms/social/tree/master/virus-scanner</url>
-
 	<parent>
 		<groupId>org.craftercms</groupId>
 		<artifactId>crafter-social-parent</artifactId>
@@ -42,41 +40,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1</version>
-            <scope>provided</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Spring Core -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${spring.core.version}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.core.version}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.core.version}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -102,8 +75,8 @@
     </build>
 
     <properties>
-        <java.version>1.6</java.version>
-        <spring.core.version>3.1.1.RELEASE</spring.core.version>
+        <java.version>1.7</java.version>
+        <spring.core.version>4.0.1.RELEASE</spring.core.version>
         <skipTests>true</skipTests>
     </properties>
     

@@ -35,6 +35,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.moderation.ModerationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public class BlackListModeration implements ModerationFilter {
 	}
 
 	@Override
-	public boolean needModeration(UGC ugc) {
+	public boolean needModeration(SocialUgc ugc) {
 		boolean needsModeration = false;
 		if (testRegex(ugc.getTextContent())) {
 			needsModeration = true;

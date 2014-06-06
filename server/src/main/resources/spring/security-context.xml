@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!--<bean id="crafter.socialSubjectResolver" class="org.craftercms.social.security.SocialSubjectResolver"/>-->
+
+    <!--<bean id="crafter.socialPermissionResolver" class="org.craftercms.social.security.SocialPermissionResolver">-->
+        <!--<property name="permissionRepository" ref="social.repository.permissionRepository"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="crafter.permissionEvaluator"-->
+          <!--class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">-->
+        <!--<property name="subjectResolver" ref="crafter.socialSubjectResolver"/>-->
+        <!--<property name="permissionResolver" ref="crafter.socialPermissionResolver"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="crafter.hasPermissionAnnotationHandler"-->
+          <!--class="org.craftercms.commons.security.permissions.annotations.HasPermissionAnnotationHandler">-->
+        <!--<property name="permissionEvaluators">-->
+            <!--<map>-->
+                <!--<entry key=" org.craftercms.social.security.SocialPermission" value-ref="crafter.permissionEvaluator"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+</beans>

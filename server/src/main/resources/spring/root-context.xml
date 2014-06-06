@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="classpath:/crafter/security/rest-security-context.xml"/>
+    <bean name="social.properties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="order" value="0"/>
+        <property name="locations">
+            <list>
+                <value>classpath:crafter/social/social.properties</value>
+                <value>classpath*:crafter/social/extension/social.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <import resource="mongo-config.xml"/>
+    <import resource="moderation-context.xml"/>
+    <import resource="scheduler-context.xml"/>
+    <import resource="virus-scanner-context.xml"/>
+    <import resource="security-context.xml"/>
+
+
+    <bean class="org.craftercms.social.services.ugc.impl.UGCServiceImpl" id="social.ugc.ugcService">
+        <property name="UGCRepositoryImpl" ref="social.repository.ugcRepository"/>
+        <property name="pipeline" ref="social.services.pipeline"/>
+        <property name="invalidQueryKeys" value="${studio.social.ugc.invalidQueryKeys}"/>
+        <property name="socialUgcFactory" ref="social.ugc.factory"/>
+    </bean>
+    <bean class="org.craftercms.social.services.social.impl.SocialServicesImpl" id="social.ugc.socialServices">
+        <property name="ugcRepository" ref="social.repository.ugcRepository"/>
+    </bean>
+
+    <bean id="social.services.pipeline" class="org.craftercms.social.services.ugc.pipeline.UgcPipeline">
+        <property name="pipeList">
+            <list>
+                <bean class="org.craftercms.social.services.ugc.pipeline.MetadataPipe"/>
+            </list>
+        </property>
+    </bean>
+    <bean class="${studio.social.system.ugcClass}" id="social.ugc.factory"/>
+
+</beans>

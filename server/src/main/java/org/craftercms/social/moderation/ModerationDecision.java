@@ -17,6 +17,7 @@
 package org.craftercms.social.moderation;
 
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.SocialUgc;
 
 public interface ModerationDecision {
 	
@@ -27,9 +28,9 @@ public interface ModerationDecision {
 	 * @param ugc UGC to test
 	 * @return True if at least one {@link ModerationFilter#needModeration(UGC)} returns true; 
 	 */
-	boolean needModeration(final UGC ugc);
+	boolean needModeration(final SocialUgc ugc);
 
-	boolean isTrash(UGC ugc);
+	boolean isTrash(SocialUgc ugc);
 	
 	void setMaxFlagsBeforeTrash(int maxFlags);
 }

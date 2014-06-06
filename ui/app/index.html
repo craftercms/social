@@ -111,12 +111,13 @@
         var cfg = {
 
             'url.base'                      : '/',
-            'url.service'                   : '/fixtures/api/2/'/*,
-
-            'url.service'                   : 'http://0.0.0.0:8090/crafter-social/api/2/',
-            'url.templates'                 : 'http://0.0.0.0:9000/templates/',
+            'url.service'                   : '/fixtures/api/2/',
+            //'url.service'                   : '/fixtures/api/',
+            'url.templates'                 : '/templates/',
             'url.security'                  : 'http://0.0.0.0:8090/social-auth/crafter-security-login',
-            */
+            'url.ugc.file'                  : '{attachmentId}.json',
+            'url.ugc.{id}.get_attachments'  : '.json?tenant={tenant}',
+            'url.ugc.{id}.add_attachment'   : '.json'
 
             /**
              * Overriding a director handler example:

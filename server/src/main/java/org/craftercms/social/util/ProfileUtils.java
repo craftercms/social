@@ -1,13 +1,8 @@
 package org.craftercms.social.util;
 
-import org.apache.commons.collections.MapUtils;
-import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.security.api.RequestContext;
-import org.craftercms.security.authentication.AuthenticationToken;
-import org.craftercms.social.domain.Subscriptions;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.craftercms.profile.api.Profile;
+import org.craftercms.security.authentication.Authentication;
+import org.craftercms.security.utils.SecurityUtils;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,21 +14,17 @@ import java.util.Map;
 public class ProfileUtils {
 
     public static Profile getCurrentProfile() {
-        RequestContext requestContext = RequestContext.getCurrent();
-        if (requestContext != null) {
-            AuthenticationToken authToken = requestContext.getAuthenticationToken();
-            if (authToken != null) {
-                return authToken.getProfile();
-            }
+        Authentication auth = SecurityUtils.getCurrentAuthentication();
+        if (auth != null) {
+            return auth.getProfile();
         }
-
         return null;
     }
 
     public static String getCurrentProfileId() {
         Profile profile = getCurrentProfile();
         if (profile != null) {
-            return profile.getId();
+            return profile.getId().toString();
         } else {
             return null;
         }

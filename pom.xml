@@ -37,10 +37,10 @@
 		<url>scm:git:git://github.com/craftercms/social</url>
 	</scm>
 	<modules>
-		<module>virus-scanner</module>
+		<!--<module>virus-scanner</module>-->
 		<module>server</module>
-		<module>blog</module>
-		<module>admin</module>
+		<!--<module>blog</module>-->
+		<!--<module>admin</module>-->
         <!--<module>ui-plugin</module>-->
 	</modules>
 	<profiles>
@@ -72,24 +72,7 @@
                 </plugins>
             </build>
         </profile>
-    	<profile>
-            <id>Sonar</id>
-            <properties>
-                <clover.version>3.1.8</clover.version>
-                <sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
-                <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-                <sonar.clover.reportPath>${project.build.directory}/clover.xml</sonar.clover.reportPath>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.atlassian.maven.plugins</groupId>
-                        <artifactId>maven-clover2-plugin</artifactId>
-                        <version>${clover.version}</version>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+
 		<profile>
 			<id>release-sign-artifacts</id>
 			<activation>

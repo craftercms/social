@@ -47,7 +47,7 @@ public class RestMappingExceptionResolver extends
 	@Override
 	protected ModelAndView getModelAndView(String viewName, Exception ex) {
 		ModelAndView mv = new ModelAndView(viewName);
-		HashMap<String,Object> map=new HashMap<String,Object>(); 
+		HashMap<String,Object> map=new HashMap<>();
 		map.put("message", ex.getMessage());
 		map.put("localizedMessage", ex.getLocalizedMessage());
 		mv.addAllObjects(map);

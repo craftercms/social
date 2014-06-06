@@ -17,12 +17,13 @@
 package org.craftercms.social.moderation.impl;
 
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.moderation.ModerationFilter;
 
 public class FlagModeration implements ModerationFilter {
 
 	@Override
-	public boolean needModeration(UGC ugc) {
+	public boolean needModeration(SocialUgc ugc) {
 		return ugc.getFlags().size() > 0;
 	}
 	
