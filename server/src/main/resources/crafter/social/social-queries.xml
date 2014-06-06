@@ -71,4 +71,7 @@
     <entry key="social.ugc.defaultSort">
         {createDate:1}
     </entry>
+    <entry key="social.permissions.isAllowed">
+        {action:#,roles:{$in:#},tenantId:#}
+    </entry>
 </properties>

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.file.FileUtils;
+import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.social.exceptions.IllegalSocialQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +47,16 @@ public class GlobalDefaultExceptionHandler {
         serializeError(e, resp, HttpStatus.INTERNAL_SERVER_ERROR, req);
     }
 
+    @ExceptionHandler(value = ActionDeniedException.class)
+    public void ActionDeniedHandler(HttpServletRequest req, HttpServletResponse resp, Exception e) throws Exception {
+        log.error("Request: " + req.getRequestURL() + " raised and error {}", e);
+        serializeError(e, resp, HttpStatus.FORBIDDEN, req);
+    }
 
-    @ExceptionHandler(value = {MissingServletRequestParameterException.class,IllegalSocialQueryException.class})
+
+        @ExceptionHandler(value = {MissingServletRequestParameterException.class,IllegalSocialQueryException.class})
     public void missingParameterHandler(HttpServletRequest req, HttpServletResponse resp,
                                         Exception e) throws Exception {
-
         serializeError(e, resp, HttpStatus.BAD_REQUEST, req);
     }
 
@@ -72,8 +78,6 @@ public class GlobalDefaultExceptionHandler {
         converter.writeValue(response.getOutputStream(), error);
     }
 
-
-
     private void serializeError(Exception ex, HttpServletResponse response, HttpStatus status,
                                 final HttpServletRequest req) throws IOException {
         log.error("Request: " + req.getRequestURL() + " raised and error {}", ex.toString());
@@ -93,12 +97,10 @@ public class GlobalDefaultExceptionHandler {
         converter.writeValue(response.getOutputStream(), error);
     }
 
-
     public String getStackTrace(final Throwable throwable) {
         final StringWriter sw = new StringWriter();
         final PrintWriter pw = new PrintWriter(sw, true);
         throwable.printStackTrace(pw);
         return sw.getBuffer().toString();
     }
-
 }

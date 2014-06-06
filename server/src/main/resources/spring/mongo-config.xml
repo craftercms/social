@@ -47,15 +47,23 @@
         </property>
     </bean>
 
-    <bean id="social.mongodb.jongoRepository" class="org.craftercms.social.repositories.SocialJongoRepository"
+
+    <bean id="social.mongodb.socialRepository" class="org.craftercms.social.repositories.SocialJongoRepository"
           abstract="true" init-method="init">
         <property name="queries" ref="social.mongodb.queries"/>
         <property name="jongo" ref="social.mongodb.jongoFactory"/>
         <property name="ugcFactory" ref="social.ugc.factory"/>
     </bean>
 
+    <bean id="social.mongodb.baseRepository" class="org.craftercms.commons.mongo.AbstractJongoRepository"
+          abstract="true" init-method="init">
+        <property name="jongo" ref="social.mongodb.jongoFactory"/>
+        <property name="queries" ref="social.mongodb.queries"/>
+    </bean>
+
     <bean id="social.repository.ugcRepository" class="org.craftercms.social.repositories.ugc.impl.UGCRepositoryImpl"
-          parent="social.mongodb.jongoRepository"/>
+          parent="social.mongodb.socialRepository"/>
 
-
+    <bean id="social.repository.permissionRepository"
+          class="org.craftercms.social.repositories.security.impl.PermissionRepositoryImpl" parent="social.mongodb.baseRepository"/>
 </beans>

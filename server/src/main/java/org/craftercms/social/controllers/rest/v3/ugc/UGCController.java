@@ -13,6 +13,7 @@ import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.SocialException;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,14 +59,23 @@ public class UGCController<T extends UGC> {
     public T createUGG(@ApiParam(name = "content", required = true, value = "Text content of the UGC ") @NotBlank
                            @SafeHtml(whitelistType = SafeHtml.WhiteListType.RELAXED)
                        final String content, @ApiParam(value = "Subject of the UGC", name = "subject",
-        required = true) @SafeHtml(whitelistType = SafeHtml.WhiteListType.RELAXED)
-                       final String subject, @ApiParam(value = "Target Id of the UGC. Its always required but for " +
-        "security and structure concerns if parent param is given , It will use the parent UGC targetId",
-        name = "target") @NotBlank final String target, @ApiParam(name = "parent",
+        required = false) @SafeHtml(whitelistType = SafeHtml.WhiteListType.RELAXED)
+                      @RequestParam(defaultValue = "",required = false) final String subject,
+                       @ApiParam(value = "Target Id of the" +
+        " " +
+        "UGC. Its always " +
+                          "required but " +
+        "for " +
+        "security and structure concerns if parent param is given , It will use the parent UGC target",
+        name = "target") @RequestParam(defaultValue = "",required = false) @NotBlank final String target,
+                       @ApiParam(name = "parent",
         value = "Parent Id of the UGC that will be created") @RequestParam(required = false,
-        value = "parent") final String parent) throws SocialException {
+        value = "parent") final String parent) throws SocialException, MissingServletRequestParameterException {
         log.debug("Request for creating a new UGC");
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
+        if(StringUtils.isBlank(parent) && StringUtils.isBlank(target)){
+            throw new MissingServletRequestParameterException("parent or target","String");
+        }
         return (T)ugcService.create(tenant, parent, target, content, subject);
     }
 
@@ -111,12 +122,12 @@ public class UGCController<T extends UGC> {
     @RequestMapping(value = "/target", method = RequestMethod.GET)
     @ResponseBody()
     @ApiOperation(value = "Gets all the UGC (and sub-children) for the given target Id")
-    public Iterable<T> readUgcByTargetId(@ApiParam(name = "targetId", value = " Id of the target to get all UGC (and " +
+    public Iterable<T> readUgcByTargetId(@ApiParam(name = "target", value = " Id of the target to get all UGC (and " +
         "" + "its children(builds a tree for each children)") @NotEmpty @RequestParam(required = true,
-        value = "targetId") final String targetId) throws SocialException {
-        log.debug("Request for getting all UGC by targetID {}", targetId);
+        value = "target") final String target) throws SocialException {
+        log.debug("Request for getting all UGC by target {}", target);
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-        return ugcService.readByTargetId(targetId, tenant);
+        return ugcService.readByTargetId(target, tenant);
     }
 
     @RequestMapping(value = "/{ugcId}/attributes/remove", method = RequestMethod.POST)
@@ -203,11 +214,9 @@ public class UGCController<T extends UGC> {
     @RequestMapping(value = "/{ugcId}/attachment/remove/{attachmentId}", method = RequestMethod.POST)
     @ResponseBody()
     @ApiOperation("Deletes the given attachment for the UGC")
-    public boolean removeAttachment(@ApiParam("Id of the UGC")@NotBlank @PathVariable(value = "ugcId") final String ugcId,
-                                    @ApiParam("Id of the attachment to delete") @NotBlank @PathVariable(value =
-                                        "attachmentId") final String
-                                        attachmentId) throws
-        SocialException, IOException {
+    public boolean removeAttachment(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "ugcId") final String
+                                            ugcId, @ApiParam("Id of the attachment to delete") @NotBlank
+    @PathVariable(value = "attachmentId") final String attachmentId) throws SocialException, IOException {
         log.debug("Removing Attachment for UGC {} with Id {}", ugcId, attachmentId);
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
         ugcService.removeAttachment(ugcId, tenant, attachmentId);
@@ -216,12 +225,12 @@ public class UGCController<T extends UGC> {
 
     @RequestMapping(value = "/{ugcId}/attachment/{attachmentId}", method = RequestMethod.GET)
     @ResponseBody()
-    @ApiOperation(value = "Sends the attachment to the client",notes = "This will send the headers  content-type " +
+    @ApiOperation(value = "Sends the attachment to the client", notes = "This will send the headers  content-type " +
         "(based on extension),content-length,and content-disposition")
-    public void readAttachment(@ApiParam("Id of the UGC")@NotBlank @PathVariable(value = "ugcId") final String ugcId,
-                               @ApiParam("Id of the attachment")@NotBlank @PathVariable(value = "attachmentId") final
-                               String attachmentId,
-                               final HttpServletResponse response) throws SocialException, IOException {
+    public void readAttachment(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "ugcId") final String
+                                       ugcId, @ApiParam("Id of the attachment") @NotBlank @PathVariable(value =
+        "attachmentId") final String attachmentId, final HttpServletResponse response) throws SocialException,
+        IOException {
         log.debug("Reading Attachment for UGC {} with Id {}", ugcId, attachmentId);
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
         FileInfo fileInfo = ugcService.readAttachment(ugcId, tenant, attachmentId);

@@ -17,6 +17,7 @@ import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.IllegalSocialQueryException;
 import org.craftercms.social.exceptions.IllegalUgcException;
@@ -24,6 +25,7 @@ import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.repositories.UgcFactory;
 import org.craftercms.social.repositories.ugc.UGCRepository;
+import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.ugc.UGCService;
 import org.craftercms.social.services.ugc.pipeline.UgcPipeline;
 import org.slf4j.Logger;
@@ -41,6 +43,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     private UgcFactory ugcFactory;
 
     @Override
+    @HasPermission(type = SocialPermission.class, action = "save")
     public T create(final String tenantId, final String ugcParentId, final String targetId, final String textContent,
                     final String subject) throws SocialException {
         log.debug("Creating Ugc for tenantId {} target Id {} with parent {} subject {} and content {} with possible "
