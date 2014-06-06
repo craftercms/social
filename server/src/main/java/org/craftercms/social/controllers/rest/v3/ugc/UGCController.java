@@ -1,5 +1,8 @@
 package org.craftercms.social.controllers.rest.v3.ugc;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -8,6 +11,7 @@ import com.wordnik.swagger.annotations.ApiResponses;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletResponse;
@@ -59,24 +63,43 @@ public class UGCController<T extends UGC> {
     public T createUGG(@ApiParam(name = "content", required = true, value = "Text content of the UGC ") @NotBlank
                            @SafeHtml(whitelistType = SafeHtml.WhiteListType.RELAXED)
                        final String content, @ApiParam(value = "Subject of the UGC", name = "subject",
-        required = false) @SafeHtml(whitelistType = SafeHtml.WhiteListType.RELAXED)
-                      @RequestParam(defaultValue = "",required = false) final String subject,
-                       @ApiParam(value = "Target Id of the" +
+        required = false) @SafeHtml(whitelistType = SafeHtml.WhiteListType.RELAXED) @RequestParam(defaultValue = "",
+        required = false) final String subject, @ApiParam(value = "Target Id of the" +
         " " +
         "UGC. Its always " +
-                          "required but " +
+        "required but " +
         "for " +
         "security and structure concerns if parent param is given , It will use the parent UGC target",
-        name = "target") @RequestParam(defaultValue = "",required = false) @NotBlank final String target,
+        name = "target") @RequestParam(defaultValue = "", required = false) @NotBlank final String target,
                        @ApiParam(name = "parent",
         value = "Parent Id of the UGC that will be created") @RequestParam(required = false,
-        value = "parent") final String parent) throws SocialException, MissingServletRequestParameterException {
+        value = "parent") final String parent, @RequestParam(required = false,
+        defaultValue = "") @ApiParam(value = "Json string that defines and sets any extra attribute for new new UGC",
+        required = false, defaultValue = "") String attributes) throws SocialException,
+        MissingServletRequestParameterException {
+        Map<String, Object> attrs = null;
+        if (!StringUtils.isBlank(attributes)) {
+            attrs = parseAttributes(attributes);
+        }
         log.debug("Request for creating a new UGC");
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-        if(StringUtils.isBlank(parent) && StringUtils.isBlank(target)){
-            throw new MissingServletRequestParameterException("parent or target","String");
+        if (StringUtils.isBlank(parent) && StringUtils.isBlank(target)) {
+            throw new MissingServletRequestParameterException("parent or target", "String");
         }
-        return (T)ugcService.create(tenant, parent, target, content, subject);
+        return (T)ugcService.create(tenant, parent, target, content, subject, attrs);
+    }
+
+    private Map<String, Object> parseAttributes(final String attributes) throws
+        MissingServletRequestParameterException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonFactory factory = mapper.getJsonFactory(); // since 2.1 use mapper.getFactory() instead
+        try {
+            JsonParser jp = factory.createJsonParser(attributes);
+            return mapper.readValue(jp, HashMap.class);
+        } catch (IOException e) {
+            throw new MissingServletRequestParameterException("attributes", "Json");
+        }
+
     }
 
     @RequestMapping(value = "{ugcId}", method = RequestMethod.GET)

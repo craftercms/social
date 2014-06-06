@@ -32,12 +32,13 @@ public interface UGCService<T extends UGC> {
      * @param targetId    Target Id of the UGC.
      * @param textContent Actual content of the UGC Must be cleanup to prevent XSS.
      * @param subject     Subject of the UGC.
+     * @param attrs
      * @return A new Public (secure) UGC.
      * @throws org.craftercms.social.exceptions.SocialException If UGC can't be created.
      * @throws java.lang.IllegalArgumentException               If given parent UGC does not exist.
      */
-    public  T create(final String tenantId, final String ugcParentId, final String targetId,
-                                    final String textContent, final String subject) throws SocialException;
+    public T create(final String tenantId, final String ugcParentId, final String targetId, final String textContent,
+                    final String subject, final Map<String, Object> attrs) throws SocialException;
 
 
     /**
@@ -99,7 +100,8 @@ public interface UGCService<T extends UGC> {
      * @throws SocialException                    If the UGC can be updated.
      * @throws java.lang.IllegalArgumentException If given UGC does not exist.*
      */
-    public T update(final String ugcId, final String parentId, final String targetId, final String textContent, final String subject, final String userId, final String tenantId) throws SocialException;
+    public T update(final String ugcId, final String parentId, final String targetId, final String textContent,
+                    final String subject, final String userId, final String tenantId) throws SocialException;
 
 
     /**
@@ -116,8 +118,8 @@ public interface UGCService<T extends UGC> {
      *                                                          set to 0
      * @throws org.craftercms.social.exceptions.SocialException If is unable to get the UGC.
      */
-    public T  read(final String ugcId, final boolean includeChildren, final int childCount,
-                                  final String tenantId) throws UGCException;
+    public T read(final String ugcId, final boolean includeChildren, final int childCount,
+                  final String tenantId) throws UGCException;
 
     <T extends UGC> Iterable<T> readByTargetId(String targetId, String tenantId) throws UGCException;
 
@@ -131,8 +133,8 @@ public interface UGCService<T extends UGC> {
      * @param limit  How many results to return.
      * @return A list of all UGC that match the given criteria , if sort map is empty is unsorted
      */
-     Iterable<T> search(final String tenant, final String query, final String sort, final int start,
-                                       final int limit) throws UGCException;
+    Iterable<T> search(final String tenant, final String query, final String sort, final int start,
+                       final int limit) throws UGCException;
 
     /**
      * Adds and Attachment Information to the given UGC.
@@ -142,28 +144,31 @@ public interface UGCService<T extends UGC> {
      * @param attachment Attachment to add.
      */
     FileInfo addAttachment(final String ugcId, final String tenant, final InputStream attachment,
-                           final String fileName,final String contentType) throws FileExistsException, UGCException;
+                           final String fileName, final String contentType) throws FileExistsException, UGCException;
 
     /**
      * Deletes an attachment of the given UGC.
      *
      * @param ugcId        UGC id to delete the attachment.
-     * @param tenant Tenant Owner of the UGC.
+     * @param tenant       Tenant Owner of the UGC.
      * @param attachmentId attachment Id to delete.
      * @throws java.io.FileNotFoundException                        If file is not found
      * @throws org.craftercms.social.exceptions.IllegalUgcException If the given UGC id does not exists.
-     * @throws org.craftercms.social.exceptions.UGCException If unable to delete the attachment or update the UGC.
+     * @throws org.craftercms.social.exceptions.UGCException        If unable to delete the attachment or update the
+     * UGC.
      */
     void removeAttachment(String ugcId, String tenant, String attachmentId) throws UGCException, FileNotFoundException;
 
-    FileInfo readAttachment(String ugcId, String tenant, String attachmentId) throws FileNotFoundException, UGCException;
+    FileInfo readAttachment(String ugcId, String tenant, String attachmentId) throws FileNotFoundException,
+        UGCException;
 
     /**
-     *  @param tenant
+     * @param tenant
      * @param ugcId
      * @param limit
      * @param skip
      * @param childCount
      */
-    Iterable<T> readChildren(String tenant, String ugcId, int limit, int skip, final int childCount) throws UGCException;
+    Iterable<T> readChildren(String tenant, String ugcId, int limit, int skip,
+                             final int childCount) throws UGCException;
 }

@@ -17,7 +17,6 @@ import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.commons.mongo.MongoDataException;
-import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.IllegalSocialQueryException;
 import org.craftercms.social.exceptions.IllegalUgcException;
@@ -25,7 +24,6 @@ import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.repositories.UgcFactory;
 import org.craftercms.social.repositories.ugc.UGCRepository;
-import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.ugc.UGCService;
 import org.craftercms.social.services.ugc.pipeline.UgcPipeline;
 import org.slf4j.Logger;
@@ -34,6 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
+@SuppressWarnings("unchecked")
 public class UGCServiceImpl<T extends UGC> implements UGCService {
     private Logger log = LoggerFactory.getLogger(UGCServiceImpl.class);
 
@@ -43,12 +42,12 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     private UgcFactory ugcFactory;
 
     @Override
-    @HasPermission(type = SocialPermission.class, action = "save")
-    public T create(final String tenantId, final String ugcParentId, final String targetId, final String textContent,
-                    final String subject) throws SocialException {
-        log.debug("Creating Ugc for tenantId {} target Id {} with parent {} subject {} and content {} with possible "
-            + "attributes {}", tenantId, targetId, ugcParentId, subject);
+    public UGC create(final String tenantId, final String ugcParentId, final String targetId,
+                      final String textContent, final String subject, final Map attrs) throws SocialException {
+        log.debug("Creating Ugc for tenantId {} target Id {} with parent {} subject {} with possible "
+            + "attributes {}", tenantId, targetId, ugcParentId, subject,attrs);
         T newUgc = (T)ugcFactory.newInstance(new UGC(subject, textContent, targetId));
+        newUgc.setAttributes(attrs);
         try {
             if (ObjectId.isValid(ugcParentId)) {
                 setupAncestors(newUgc, ugcParentId, tenantId);
@@ -126,7 +125,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     }
 
     @Override
-    public T update(final String ugcId, final String parentId, final String targetId, final String textContent, final String subject, final String userId, final String tenantId) throws SocialException {
+    public T update(final String ugcId, final String parentId, final String targetId, final String textContent,
+                    final String subject, final String userId, final String tenantId) throws SocialException {
         log.debug("About to update UGC {}", ugcId);
         try {
             if (!ObjectId.isValid(ugcId)) {
@@ -140,7 +140,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             }
 
             if (ObjectId.isValid(parentId)) {
-                setupAncestors(toUpdate, parentId,tenantId);
+                setupAncestors(toUpdate, parentId, tenantId);
             } else {
                 throw new IllegalArgumentException("Given parent Id is not valid");
             }
@@ -173,7 +173,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             if (includeChildren) {
                 return getUgcTree(ugcId, childCount, tenantId);
             } else {
-                return (T)ugcRepository.findUGC(tenantId,ugcId);
+                return (T)ugcRepository.findUGC(tenantId, ugcId);
             }
         } catch (MongoDataException e) {
             log.error("Unable to find UGC by its Id");
@@ -183,10 +183,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
 
     @Override
-    public Iterable<T> readChildren(final String tenant, final String ugcId, final int limit, final int skip, final int
-        childCount) throws UGCException {
-        log.debug("Finding all UGC {} children for tenant {} starting from {} up to {} results", ugcId,tenant,limit,
-            skip);
+    public Iterable<T> readChildren(final String tenant, final String ugcId, final int limit, final int skip,
+                                    final int childCount) throws UGCException {
+        log.debug("Finding all UGC {} children for tenant {} starting from {} up to {} results", ugcId, tenant,
+            limit, skip);
         try {
             return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, tenant, limit, skip,
                 childCount)));
@@ -200,8 +200,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     public Iterable<T> readByTargetId(final String targetId, final String tenantId) throws UGCException {
         log.debug("Finding all UGC by targetId {} for tenantId {}", targetId, tenantId);
         try {
-            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findByTargetId(targetId,
-                tenantId)));
+            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findByTargetId(targetId, tenantId)));
         } catch (MongoDataException ex) {
             log.error("Unable to read ", ex);
             throw new UGCException("Unable to ", ex);
@@ -387,7 +386,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
      * @param ugcToTest Ugc to check.
      * @return True if a Parent or children is found. False if is a Root (not parents , or is a leaf).
      */
-    protected  boolean findRelatives(List<T> ugs, T ugcToTest) {
+    protected boolean findRelatives(List<T> ugs, T ugcToTest) {
         for (T ug : ugs) {
             if (ugcToTest.isMyParent(ug)) {
                 ug.getChildren().add(ugcToTest);
