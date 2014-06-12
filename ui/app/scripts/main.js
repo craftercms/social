@@ -31,7 +31,7 @@
             'view.barget.Share': 'view/barget/share',
             'view.barget.Reveal': 'view/barget/reveal',
             'view.barget.Rate': 'view/barget/rate',
-            'view.SocialBar': 'view/social-bar',
+            'view.SocialBar': 'view/comments-bar',
 
             jquery: '../libs/jquery/jquery',
             backbone: '../libs/backbone/backbone',

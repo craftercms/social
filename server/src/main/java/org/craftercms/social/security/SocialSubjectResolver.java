@@ -14,20 +14,9 @@ import org.craftercms.security.utils.SecurityUtils;
  */
 public class SocialSubjectResolver implements SubjectResolver<Profile> {
 
-    protected String anonymousRole;
     @Override
     public Profile getCurrentSubject() {
-        Authentication currentAuth = SecurityUtils.getCurrentAuthentication();
-        Profile profile;
-        if(currentAuth==null){
-            profile=new Profile();
-            profile.setUsername(anonymousRole);
-            profile.setRoles(new LinkedHashSet<>(Arrays.asList(anonymousRole)));
-            profile.setAttributes(new HashMap<String, Object>());
-        }else{
-            profile=currentAuth.getProfile();
-        }
-      return profile;
+        return SocialSecurityUtils.getCurrentProfile();
     }
 
 }

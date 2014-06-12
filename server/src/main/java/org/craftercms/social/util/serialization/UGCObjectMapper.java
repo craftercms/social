@@ -40,9 +40,8 @@ public class UGCObjectMapper extends ObjectMapper {
     public UGCObjectMapper(List<JsonSerializer> serializerList, Map<Class, JsonDeserializer> deserializerMap) {
         super();
         super.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        super.getSerializationConfig().without(SerializationFeature.FAIL_ON_EMPTY_BEANS,
-            SerializationFeature.WRITE_EMPTY_JSON_ARRAYS);
-        super.getSerializationConfig().with(SerializationFeature.WRITE_NULL_MAP_VALUES);
+        super.getSerializationConfig().without(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        super.getSerializationConfig().with(SerializationFeature.WRITE_NULL_MAP_VALUES,SerializationFeature.WRITE_EMPTY_JSON_ARRAYS);
 
         this.serializerList = serializerList;
         this.deserializerMap = deserializerMap;

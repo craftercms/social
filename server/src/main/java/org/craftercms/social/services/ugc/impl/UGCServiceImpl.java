@@ -44,8 +44,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     public UGC create(final String tenantId, final String ugcParentId, final String targetId,
                       final String textContent, final String subject, final Map attrs) throws SocialException {
-        log.debug("Creating Ugc for tenantId {} target Id {} with parent {} subject {} with possible "
-            + "attributes {}", tenantId, targetId, ugcParentId, subject,attrs);
+        log.debug("Creating Ugc for tenantId {} target Id {} with parent {} subject {} with possible " + "attributes " +
+            "{}", tenantId, targetId, ugcParentId, subject, attrs);
         T newUgc = (T)ugcFactory.newInstance(new UGC(subject, textContent, targetId));
         newUgc.setAttributes(attrs);
         try {
@@ -53,6 +53,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 setupAncestors(newUgc, ugcParentId, tenantId);
             } else {
                 log.debug("Given UGC parent Id is either null or is not a valid value");
+            }
+            if (StringUtils.isBlank(tenantId)) {
+                throw new IllegalArgumentException("Tenant cannot be null");
             }
             pipeline.processUgc(newUgc);
             ugcRepository.save(newUgc);
@@ -78,8 +81,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     /**
      * Generates the ancestors ordered list for the ugc.
      *
-     * @param newUgc
-     * @param ugcParentId
+     * @param newUgc UGC to setup ancestors.
+     * @param ugcParentId Parent Id.
      * @throws MongoDataException
      * @throws UGCException
      */
@@ -102,12 +105,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     public void deleteAttribute(final String ugcId, final String[] attributesName,
                                 final String tenantId) throws SocialException {
-        log.debug("Deleting Attribute {} for ugc Id {}");
+        log.debug("Deleting Attribute {} for ugc Id {} ",attributesName,ugcId);
         try {
-
             ugcRepository.deleteAttribute(ugcId, tenantId, attributesName);
         } catch (MongoDataException ex) {
-            log.debug("Unable to delete attribute " + attributesName + " for ugc " + ugcId, ex);
+            log.debug("Unable to delete attribute " + StringUtils.join(attributesName) + " for ugc " + ugcId, ex);
             throw new UGCException("Unable to delete attribute for ugc", ex);
         }
     }
@@ -125,8 +127,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     }
 
     @Override
-    public T update(final String ugcId, final String parentId, final String targetId, final String textContent,
-                    final String subject, final String userId, final String tenantId) throws SocialException {
+    public UGC update(final String ugcId, final String body, final String subject, final String userId,
+                      final String tenantId, final Map attributes) throws SocialException {
         log.debug("About to update UGC {}", ugcId);
         try {
             if (!ObjectId.isValid(ugcId)) {
@@ -139,24 +141,19 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 throw new IllegalArgumentException("UGC with Id " + ugcId + " does not exists");
             }
 
-            if (ObjectId.isValid(parentId)) {
-                setupAncestors(toUpdate, parentId, tenantId);
-            } else {
-                throw new IllegalArgumentException("Given parent Id is not valid");
-            }
-
-            if (StringUtils.isNotBlank(targetId)) {
-                toUpdate.setTargetId(targetId);
-            }
-            if (StringUtils.isNotBlank(textContent)) {
-                toUpdate.setTextContent(textContent);
+            if (StringUtils.isNotBlank(body)) {
+                toUpdate.setBody(body);
             }
             if (StringUtils.isNotBlank(subject)) {
-                toUpdate.setTextContent(subject);
+                toUpdate.setBody(subject);
             }
-
             pipeline.processUgc(toUpdate);
             ugcRepository.update(ugcId, toUpdate, false, false);
+
+            if (attributes != null) {
+                //ToDo This should be one query, problem is with deep attributes !!
+                setAttributes(toUpdate.getId().toString(), tenantId, attributes);
+            }
             log.info("UGC {} was updated ", ugcId);
             return toUpdate;
         } catch (MongoDataException ex) {
@@ -275,6 +272,38 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
 
     @Override
+    public FileInfo updateAttachment(final String ugcId, final String tenant, final String attachmentId,
+                                     final InputStream newAttachment) throws UGCException, FileNotFoundException {
+        if (!ObjectId.isValid(ugcId)) {
+            throw new IllegalArgumentException("Given Ugc Id is not valid");
+        }
+        if (!ObjectId.isValid(attachmentId)) {
+            throw new IllegalArgumentException("Given UGC Id is not valid");
+        }
+        try {
+            T ugc = (T)ugcRepository.findUGC(tenant, ugcId);
+            if (ugc == null) {
+                throw new IllegalUgcException("Given UGC Id does not exists");
+            }
+            FileInfo oldInfo = ugcRepository.getFileInfo(attachmentId);
+            ugc.getAttachments().remove(oldInfo);
+            FileInfo newInfo = ugcRepository.updateFile(new ObjectId(attachmentId), newAttachment,
+                oldInfo.getFileName(), oldInfo.getContentType(), true);
+            ugc.getAttachments().add(newInfo);
+            ugcRepository.update(ugcId, ugc);
+            return newInfo;
+        } catch (MongoDataException e) {
+            log.error("Unable to update Attachment");
+            throw new UGCException("Unable to update Attachment");
+        } catch (FileExistsException e) {
+            log.error("Unable to find attachment with Id {}", attachmentId);
+            throw new UGCException("Unable to find attachment with given id", e);
+        }
+
+
+    }
+
+    @Override
     public FileInfo readAttachment(final String ugcId, final String tenant, final String attachmentId) throws
         FileNotFoundException, UGCException {
         if (!ObjectId.isValid(ugcId)) {
@@ -297,6 +326,16 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         } catch (MongoDataException ex) {
             log.error("Unable to read file with id " + attachmentId, ex);
             throw new UGCException("Unable to read file", ex);
+        }
+    }
+
+    @Override
+    public UGC read(final String ugcId, final String tenant) throws UGCException {
+        try {
+            return ugcRepository.findUGC(tenant, ugcId);
+        } catch (MongoDataException e) {
+            log.error("Unable to find UGC with id " + ugcId + " for tenant " + tenant, e);
+            throw new UGCException("Unable to find UGC with given ID and tenant");
         }
     }
 

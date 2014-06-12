@@ -102,7 +102,7 @@
         },
 
         socialise: function () {
-            // var args = arguments, Director = social.get('crafter.social.component.Director');
+            // var args = arguments, Director = comments.get('crafter.comments.component.Director');
             // Director.socialise.apply(Director, args);
             // TODO ... should the app publish this from its root ?
         },
@@ -17309,7 +17309,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
 
         var _ = {
             /**
-             * The director class. Path can be relative to the social namespace or global.
+             * The director class. Path can be relative to the comments namespace or global.
              */
             director: 'component.Director',
             /**
@@ -17477,7 +17477,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
 
         /**
          *
-         * @param {Object} oConfig an object of configuration of the social target
+         * @param {Object} oConfig an object of configuration of the comments target
          *      {
          *          viewClass: UI controller that embeds into the elements/page
          *          tenant: ...
@@ -17722,7 +17722,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
         $ = S.$;
 
     var Base = S.Backbone.View.extend({
-        className: 'crafter-social-view',
+        className: 'crafter-comments-view',
         initialize: function ( oConfig ) {
             this.guid = U.guid();
             // Extend defaults
@@ -17869,7 +17869,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
     });
 
     CommentView.DEFAULTS = {
-        classes: 'crafter-social-comment',
+        classes: 'crafter-comments-comment',
         templates: {
             main: ('%@comment.hbs').fmt(S.Cfg('url.templates'))
         }
@@ -17952,7 +17952,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
     });
 
     Commenting.DEFAULTS = $.extend({}, {
-        classes: ['crafter-social-commenting-view'],
+        classes: ['crafter-comments-commenting-view'],
         templates: {
             main: ('%@commenting.hbs').fmt(S.Cfg('url.templates'))
         },
@@ -18031,7 +18031,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
     });
 
     Discussion.DEFAULTS = {
-        classes: 'crafter-social-discussion-view',
+        classes: 'crafter-comments-discussion-view',
         templates: {
             main: ('%@discussion.hbs').fmt(S.Cfg('url.templates'))
         },
@@ -18051,7 +18051,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
 (function (S) {
     'use strict';
 
-    // TODO Scope bootstrap stuff under social and clear $.fn.modal ? - same for popover view
+    // TODO Scope bootstrap stuff under comments and clear $.fn.modal ? - same for popover view
     if (!S.$.fn.modal) {
         throw new Error('Lightbox requires bootstrap modal');
     }
@@ -18090,7 +18090,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
 
             // remove the classes added by the commentable view
             // TODO Commentable should tell this component which classes should be removed
-            clone.removeClass('reveal crafter-social-commentable');
+            clone.removeClass('reveal crafter-comments-commentable');
 
             $container.html('');
             $container.append(clone);
@@ -18134,7 +18134,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
 
     Lightbox.DEFAULTS = $.extend({}, {
         /** @see view.Discussion for more */
-        classes: ['crafter-social-lightbox-view', 'modal', 'fade'],
+        classes: ['crafter-comments-lightbox-view', 'modal', 'fade'],
         templates: {
             main: ('%@lightbox.hbs').fmt(S.Cfg('url.templates'))
         },
@@ -18307,7 +18307,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
 
     Popover.DEFAULTS = $.extend({}, {
         /** @see view.Discussion for more */
-        classes: 'crafter-social-popover popover fade',
+        classes: 'crafter-comments-popover popover fade',
         templates: {
             main: ('%@popover.hbs').fmt(S.Cfg('url.templates')),
             comment: ('%@comment.hbs').fmt(S.Cfg('url.templates'))
@@ -18341,7 +18341,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
         hide: false,
         reveal: false,
         timeout: null,
-        className: 'crafter-social-commentable',
+        className: 'crafter-comments-commentable',
         events: {
             'mouseenter' : 'mouseenter',
             'mouseleave' : 'mouseleave'
@@ -18371,7 +18371,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
         createUI: function () {
 
             var me = this, $elem = this.element();
-            $elem.addClass('crafter-social-commentable');
+            $elem.addClass('crafter-comments-commentable');
 
             var $options = $(U.template(this.getTemplate('main'), { count: '' }));
             $options.find('a.action').tooltip();
@@ -18565,7 +18565,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
     });
 
     Widget.DEFAULTS = {
-        classes: ['crafter-social-bar-widget'],
+        classes: ['crafter-comments-bar-widget'],
         templates: {
             message: '<div class="alert alert-success"><i class="glyphicon glyphicon-{{icon}}"></i> {{msg}}</div>'
         }
@@ -18664,7 +18664,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
     });
 
     Class.DEFAULTS = {
-        classes: ['crafter-social-bar-form', 'crafter-social-bar-feedback'],
+        classes: ['crafter-comments-bar-form', 'crafter-comments-bar-feedback'],
         templates: {
             main: ('%@feedback-barget.hbs').fmt(S.Cfg('url.templates'))
         }
@@ -18711,7 +18711,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
     });
 
     Class.DEFAULTS = {
-        classes: ['crafter-social-bar-form', 'crafter-social-bar-share'],
+        classes: ['crafter-comments-bar-form', 'crafter-comments-bar-share'],
         templates: {
             main: ('%@share-barget.hbs').fmt(S.Cfg('url.templates'))
         }
@@ -18786,7 +18786,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
     });
 
     Class.DEFAULTS = {
-        classes: ['crafter-social-bar-form', 'crafter-social-bar-rate'],
+        classes: ['crafter-comments-bar-form', 'crafter-comments-bar-rate'],
         templates: {
             main: ('%@rate-barget.hbs').fmt(S.Cfg('url.templates'))
         }
@@ -18822,7 +18822,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
         initializeWidgets: function () {
 
             var widgetsCfg = this.cfg.widgets,
-                $items = this.$('.social-utilities'),
+                $items = this.$('.comments-utilities'),
                 widgetTpl = this.getTemplate('widget'),
                 widgets = {},
                 me = this;
@@ -18879,7 +18879,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
     /* jshint -W015 */
     Bar.DEFAULTS = {
         templates: {
-            main: ('%@social-bar.hbs').fmt(S.Cfg('url.templates')),
+            main: ('%@comments-bar.hbs').fmt(S.Cfg('url.templates')),
             widget: [
                 '<li class="subordinate">',
                     '<a data-activate-widget="{{guid}}">',
@@ -18888,7 +18888,7 @@ CKEDITOR.config.wsc_customDictionaryIds||"";a.config.wsc_userDictionaryName=a.co
                 '</li>'
             ].j()
         },
-        classes: ['crafter-social-bar'],
+        classes: ['crafter-comments-bar'],
         widgets: [
             { cls: 'crafter.social.view.barget.Reveal', cfg: { title: 'Reveal' }, instCfg: {  } },
             { cls: 'crafter.social.view.barget.Feedback' },

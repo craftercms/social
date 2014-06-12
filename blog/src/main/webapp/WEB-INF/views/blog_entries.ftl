@@ -59,8 +59,8 @@
 			configManager.getConfig("history").done(function(data1){
 				 jQuery('#ugc_div').ugc_blog_console({
 					clientId : 'CrafterCMS',
-					restUrl : '/crafter-social/api/2',
-					resourceUrl : '/crafter-social/resources', 
+					restUrl : '/crafter-comments/api/2',
+					resourceUrl : '/crafter-comments/resources',
 					target : data1.blogListForm.target,
 					tenant : data1.blogListForm.tenant,
 					actions: data1.blogListForm.actions,

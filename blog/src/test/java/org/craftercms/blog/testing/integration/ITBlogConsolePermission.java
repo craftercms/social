@@ -230,7 +230,7 @@ public class ITBlogConsolePermission extends IntegrationTestingBase {
 			ticket = client.getTicket(appToken, username, password,
 					"craftercms");
 
-			RestAssured.basePath = "/crafter-social";
+			RestAssured.basePath = "/crafter-comments";
 			String newContent = "{\"title\":\"NEW_ENTRY_AUTHOR\",\"image\":\"\",\"content\":\"<p>Hello World AUTHOR!</p>\"}";
 			String ugc = expect()
 					.statusCode(201)

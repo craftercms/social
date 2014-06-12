@@ -153,7 +153,7 @@ public class ITBlogPostPermission extends IntegrationTestingBase {
 	}
 	
 	private String myNewCommentPost(String ticket, String tenant) {
-		RestAssured.basePath = "/crafter-social";
+		RestAssured.basePath = "/crafter-comments";
 		String newContent = "Hello World!";
 		String ugc = expect()
 				.statusCode(201)
@@ -173,7 +173,7 @@ public class ITBlogPostPermission extends IntegrationTestingBase {
 	
 	protected String createNewPost(String ticket, String tenant) {
 		System.out.println(" Integration Test createNewPost child  ");
-		RestAssured.basePath = "/crafter-social";
+		RestAssured.basePath = "/crafter-comments";
 		
 		String newContent = "{\"title\":\"NEW_ENTRY\",\"image\":\"\",\"content\":\"<p>Hello World!</p>\"}";
 		String ugc = expect()

@@ -29,7 +29,7 @@ import com.jayway.restassured.path.json.JsonPath;
 
 public class IntegrationTestingBase {
 	
-	protected static final String WEB_APP_URL = "/crafter-social-blog-demo";
+	protected static final String WEB_APP_URL = "/crafter-comments-blog-demo";
 	
 	protected final transient Logger log = LoggerFactory.getLogger(IntegrationTestingBase.class);
 
@@ -126,7 +126,7 @@ public class IntegrationTestingBase {
 	}
 	
 	protected String createNewPost(String ticket, String tenant) {
-		RestAssured.basePath = "/crafter-social";
+		RestAssured.basePath = "/crafter-comments";
 		
 		String newContent = "{\"title\":\"NEW_ENTRY\",\"image\":\"\",\"content\":\"<p>Hello World!</p>\"}";
 		String ugc = expect()

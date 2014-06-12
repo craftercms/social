@@ -6,7 +6,7 @@
         $ = S.$;
 
     var Base = S.Backbone.View.extend({
-        className: 'crafter-social-view',
+        className: 'crafter-comments-view',
         initialize: function ( oConfig ) {
             if (!this.cache('initialised')) {
 

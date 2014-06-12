@@ -5,10 +5,10 @@
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-    <!--<bean id="crafter.socialSubjectResolver" class="org.craftercms.social.security.SocialSubjectResolver"/>-->
+    <!--<bean id="crafter.socialSubjectResolver" class="org.craftercms.comments.security.SocialSubjectResolver"/>-->
 
-    <!--<bean id="crafter.socialPermissionResolver" class="org.craftercms.social.security.SocialPermissionResolver">-->
-        <!--<property name="permissionRepository" ref="social.repository.permissionRepository"/>-->
+    <!--<bean id="crafter.socialPermissionResolver" class="org.craftercms.comments.security.SocialPermissionResolver">-->
+        <!--<property name="permissionRepository" ref="comments.repository.permissionRepository"/>-->
     <!--</bean>-->
 
     <!--<bean id="crafter.permissionEvaluator"-->
@@ -21,7 +21,7 @@
           <!--class="org.craftercms.commons.security.permissions.annotations.HasPermissionAnnotationHandler">-->
         <!--<property name="permissionEvaluators">-->
             <!--<map>-->
-                <!--<entry key=" org.craftercms.social.security.SocialPermission" value-ref="crafter.permissionEvaluator"/>-->
+                <!--<entry key=" org.craftercms.comments.security.SocialPermission" value-ref="crafter.permissionEvaluator"/>-->
             <!--</map>-->
         <!--</property>-->
     <!--</bean>-->

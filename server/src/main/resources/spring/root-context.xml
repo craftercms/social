@@ -20,7 +20,7 @@
     <import resource="moderation-context.xml"/>
     <import resource="scheduler-context.xml"/>
     <import resource="virus-scanner-context.xml"/>
-    <import resource="security-context.xml"/>
+    <!--<import resource="security-context.xml"/>-->
 
 
     <bean class="org.craftercms.social.services.ugc.impl.UGCServiceImpl" id="social.ugc.ugcService">
@@ -37,6 +37,7 @@
         <property name="pipeList">
             <list>
                 <bean class="org.craftercms.social.services.ugc.pipeline.MetadataPipe"/>
+                <bean class="org.craftercms.social.services.ugc.pipeline.HtmlCleanupPipe"/>
             </list>
         </property>
     </bean>

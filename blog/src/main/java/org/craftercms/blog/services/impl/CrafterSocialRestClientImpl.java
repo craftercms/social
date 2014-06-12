@@ -41,7 +41,7 @@ public class CrafterSocialRestClientImpl implements CrafterSocialClient {
 	private int port = 8080;
 	private String scheme = "http";
 	private String host = "localhost";
-	private String socialAppPath = "/crafter-social";
+	private String socialAppPath = "/crafter-comments";
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override

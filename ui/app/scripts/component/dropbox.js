@@ -116,7 +116,7 @@
          * Theming css classes for the UI */
         theme: {
             over: 'dropbox-dragover',
-            main: 'crafter-social-view crafter-social-dropbox-element',
+            main: 'crafter-comments-view crafter-comments-dropbox-element',
             fileDisplay: 'dropbox-file-display',
             fileError: 'dropbox-file-error',
             uploadError: 'dropbox-upload-error'

@@ -44,7 +44,7 @@ public class ModerationDecisionImpl implements ModerationDecision {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.craftercms.social.moderation.ModerationDecision#needModeration(org.craftercms.social.domain.UGC)
+	 * @see org.craftercms.comments.moderation.ModerationDecision#needModeration(org.craftercms.comments.domain.UGC)
 	 */
 	@Override
 	public boolean needModeration(final SocialUgc ugc) {

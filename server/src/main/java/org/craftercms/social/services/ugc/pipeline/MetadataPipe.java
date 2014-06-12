@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.SocialException;
+import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.ugc.UgcPipe;
 
 /**
@@ -14,14 +15,14 @@ public class MetadataPipe implements UgcPipe {
     @Override
     public <T extends UGC> void process(final T ugc) throws SocialException {
         if(ugc.getCreatedBy()==null){
-            ugc.setCreatedBy("GET IT FORM PROFILE");
+            ugc.setCreatedBy(SocialSecurityUtils.getCurrentProfile().getId().toString());
         }
         if (ugc.getCreatedDate() == null) {
             ugc.setCreatedDate(new Date());
         }
         ugc.setLastModifiedDate(new Date());
-        ugc.setCreatedBy("GET IT FORM PROFILE");
-        ugc.setTenantId("testTenant");
+        ugc.setLastModifiedBy(SocialSecurityUtils.getCurrentProfile().getId().toString());
+        ugc.setTenantId(SocialSecurityUtils.getCurrentProfile().getTenant());
         ugc.setChildren(null);
     }
 }

@@ -12,7 +12,7 @@
         className: [
             Modal.prototype.className,
             Discussion.prototype.className,
-            'crafter-social-lightbox-view'
+            'crafter-comments-lightbox-view'
         ].join(' '),
 
         initialize: function () {
@@ -62,11 +62,11 @@
 
             // styles might get lost based on class declaration and/or
             // the new position in the DOM. Also due to inherited styles
-            // from crafter-social-view class.
+            // from crafter-comments-view class.
             $clone.css(this.compileStyles($target, null, { 'margin-bottom': 0 }));
             $clone.find('>*, >*>*, >*>*>*').each(function () { $(this).css(me.compileStyles(this, include)); });
             // remove the classes added by the commentable view
-            $clone.removeClass('reveal crafter-social-commentable');
+            $clone.removeClass('reveal crafter-comments-commentable');
             // TODO Commentable should tell this component which classes should be removed
 
             var $container = this.$('.modal-body');
@@ -90,7 +90,7 @@
 
                     rules && $.each(rules, function (i, rule) {
                         var cssText = rule.cssText;
-                        if (cssText.indexOf('crafter-social') === -1) {
+                        if (cssText.indexOf('crafter-comments') === -1) {
 
                             var css = cssText.match(/\{(.+?)\}/g)[0]
                                 .replace(/\{/g, '')
@@ -174,7 +174,7 @@
             'comment-box': [
                 '<div class="modal-comment-box">',
                 '<h4 class="comment-box-title">Comments</h4>',
-                '<div class="comments crafter-social-comment-thread">',
+                '<div class="comments crafter-comments-comment-thread">',
                 '<div class="no-comments">(no comments)</div>',
                 '</div>',
                 '</div>'
@@ -186,7 +186,7 @@
             .concat(Modal.DEFAULTS.classes || [])
             .concat(Discussion.DEFAULTS.classes || []);
 
-    Lightbox.DEFAULTS.classes.push('crafter-social-lightbox-view');
+    Lightbox.DEFAULTS.classes.push('crafter-comments-lightbox-view');
 
     S.define('view.Lightbox', Lightbox);
 

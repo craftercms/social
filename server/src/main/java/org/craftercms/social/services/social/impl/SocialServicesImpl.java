@@ -39,6 +39,8 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
                     unvoteDown(ugc, userId);
                 case UNVOTE_UP:
                     unvoteUp(ugc, userId);
+                default:
+                    neutral(ugc,userId);
             }
             ugcRepository.save(ugc);
             return ugc;
@@ -46,6 +48,8 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             throw new UGCException("Unable to find UGC with given Id and TenantId");
         }
     }
+
+
 
     @Override
     public T moderate(final String ugcId, final SocialUgc.ModerationStatus moderationStatus, final String
@@ -66,6 +70,10 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
         }
     }
 
+    private void neutral(final T ugc, final String userId) {
+        ugc.getVotesDown().remove(userId);
+        ugc.getVotesUp().remove(userId);
+    }
     private void voteDown(final T ugc, final String userId) {
         unvoteUp(ugc,userId);
         ugc.getVotesDown().add(userId);

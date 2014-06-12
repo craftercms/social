@@ -32,15 +32,19 @@ public class SocialUgc extends UGC{
 
 
     public SocialUgc() {
-        votesUp =new HashSet<>();
-        votesDown =new HashSet<>();
-        flags=new HashSet<>();
+       init();
     }
 
     public <T extends UGC> SocialUgc(final T base) {
         super(base);
+        init();
     }
 
+    private void init(){
+        votesUp =new HashSet<>();
+        votesDown =new HashSet<>();
+        flags=new HashSet<>();
+    }
     public ModerationStatus getModerationStatus() {
         return moderationStatus;
     }

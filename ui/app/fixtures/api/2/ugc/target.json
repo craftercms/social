@@ -73,7 +73,7 @@
             "children": [
                 {
                     "id": "527c034e0364e99105586586",
-                    "_class": "org.craftercms.social.domain.UGC",
+                    "_class": "org.craftercms.comments.domain.UGC",
                     "textContent": "<p>test1 1</p>\n",
                     "profile": {
                         "id": "52571782036447c56863631c",
@@ -141,7 +141,7 @@
                     "children": [
                         {
                             "id": "527c034e0364e9910558658654",
-                            "_class": "org.craftercms.social.domain.UGC",
+                            "_class": "org.craftercms.comments.domain.UGC",
                             "profile": {
                                 "id": "52571782036447c56863631c",
                                 "userName": "author",
@@ -314,7 +314,7 @@
                                 "attachmentId": "5282ac830364dabc3c4634c5",
                                 "contentType": "image/jpeg",
                                 "filename": "acmeimages.jpg",
-                                "url": "/crafter-social/api/2/get_attachment/5282ac830364dabc3c4634c5?tenant=craftercms"
+                                "url": "/crafter-comments/api/2/get_attachment/5282ac830364dabc3c4634c5?tenant=craftercms"
                             }
                         ],
                         "regularAttach": [  ],

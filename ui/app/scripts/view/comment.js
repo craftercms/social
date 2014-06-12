@@ -12,7 +12,7 @@
 
         className: [
             Base.prototype.className,
-            'crafter-social-comment'
+            'crafter-comments-comment'
         ].join(' '),
 
         createUI: U.emptyFn,
@@ -263,7 +263,7 @@
 //                    ].j(),
 //
 //                    theme: {
-//                        fileDisplay: 'crafter-social-view crafter-social-file-view'
+//                        fileDisplay: 'crafter-comments-view crafter-comments-file-view'
 //                    }
 //
 //                });

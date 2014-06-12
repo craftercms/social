@@ -18,7 +18,7 @@
 		<link rel="stylesheet" href="/crafter-social/resources/css/style.css" type="text/css" media="screen"/>
 		<link href="/crafter-social/resources/js/video-js/video-js.css" rel="stylesheet">
 		<script src="/crafter-social/resources/js/video-js/video.js"></script>
-		<script>videojs.options.flash.swf = "/crafter-social/resources/js/video-js/video-js.swf"</script>
+		<script>videojs.options.flash.swf = "/crafter-comments/resources/js/video-js/video-js.swf"</script>
 </head>
 <body>
 	<div id="page" class="container">
@@ -57,8 +57,8 @@
 			configManager.getConfig("history").done(function(data1){
 				 jQuery('#ugc_div').ugc_blog_post({
 				 	clientId : 'CrafterCMS',
-					restUrl : '/crafter-social/api/2',
-					resourceUrl : '/crafter-social/resources', 
+					restUrl : '/crafter-comments/api/2',
+					resourceUrl : '/crafter-comments/resources',
 					target : data1.blogListForm.target,
 					tenant : data1.blogListForm.tenant,
 					isAuthenticate: data1.blogListForm.authenticate,

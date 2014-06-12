@@ -12,9 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileUploadBase;
+import org.apache.commons.io.FileExistsException;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.file.FileUtils;
 import org.craftercms.commons.security.exception.ActionDeniedException;
+import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.exceptions.IllegalSocialQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +55,14 @@ public class GlobalDefaultExceptionHandler {
         serializeError(e, resp, HttpStatus.FORBIDDEN, req);
     }
 
+    @ExceptionHandler(value = UGCNotFound.class)
+    public void ugcNotFound(HttpServletRequest req, HttpServletResponse resp, Exception e) throws IOException {
+        log.debug("Request {} for a non existent UGC (or does not belong to tenant)",req.getRequestURL());
+        serializeError(e, resp, HttpStatus.NOT_FOUND, req);
+    }
 
-        @ExceptionHandler(value = {MissingServletRequestParameterException.class,IllegalSocialQueryException.class})
+    @ExceptionHandler(value = {MissingServletRequestParameterException.class, IllegalSocialQueryException.class,
+        IllegalArgumentException.class, FileExistsException.class})
     public void missingParameterHandler(HttpServletRequest req, HttpServletResponse resp,
                                         Exception e) throws Exception {
         serializeError(e, resp, HttpStatus.BAD_REQUEST, req);
@@ -62,17 +70,16 @@ public class GlobalDefaultExceptionHandler {
 
     @ExceptionHandler(value = MaxUploadSizeExceededException.class)
     public void sizeLimitExceededException(HttpServletRequest req, HttpServletResponse response,
-                                        Exception ex) throws Exception {
+                                           Exception ex) throws Exception {
         log.error("Request: " + req.getRequestURL() + " raised and error {}", ex.toString());
         FileUploadBase.SizeLimitExceededException realEx = (FileUploadBase.SizeLimitExceededException)ex.getCause();
         String maxSize = FileUtils.readableFileSize(realEx.getPermittedSize());
-        String fileSize =  FileUtils.readableFileSize(realEx.getActualSize());
+        String fileSize = FileUtils.readableFileSize(realEx.getActualSize());
         Map<String, Object> error = new HashMap<>();
-        error.put("message",String.format("Unable to upload file due size limit is %s and upload size is %s",
-            maxSize,
-            fileSize));
-        error.put("maxSize",maxSize);
-        error.put("fileSize",fileSize);
+        error.put("message", String.format("Unable to upload file due size limit is %s and upload size is %s",
+            maxSize, fileSize));
+        error.put("maxSize", maxSize);
+        error.put("fileSize", fileSize);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         converter.writeValue(response.getOutputStream(), error);
