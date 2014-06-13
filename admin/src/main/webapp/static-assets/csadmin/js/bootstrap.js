@@ -2,8 +2,8 @@ jQuery(document).ready(function($){
 
     'use strict'
     
-    var PROPERTIES_PATH = '/crafter-social-admin/static-assets/csadmin/properties/',
-        APP_CONFIG = '/crafter-social/api/2/config/config.json',
+    var PROPERTIES_PATH = '/crafter-comments-admin/static-assets/csadmin/properties/',
+        APP_CONFIG = '/crafter-comments/api/2/config/config.json',
         appConfigDeferred = $.getJSON(APP_CONFIG),
         sectionsConfigDeferred = $.getJSON(PROPERTIES_PATH + "moderation_status_action.json");
 

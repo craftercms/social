@@ -9,7 +9,7 @@
 
         className: [
             Base.prototype.className,
-            'crafter-social-discussion-view'
+            'crafter-comments-discussion-view'
         ].join(' '),
 
         listen: function () {

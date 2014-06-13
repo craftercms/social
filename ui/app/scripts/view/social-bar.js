@@ -25,7 +25,7 @@
         initializeWidgets: function () {
 
             var widgetsCfg = this.cfg.widgets,
-                $items = this.$('.social-utilities'),
+                $items = this.$('.comments-utilities'),
                 widgetTpl = this.getTemplate('widget'),
                 widgets = {},
                 me = this;
@@ -85,22 +85,22 @@
     /* jshint -W015 */
     Bar.DEFAULTS = {
         templates: {
-            main: ('%@social-bar.hbs').fmt(S.Cfg('url.templates')),
+            main: ('%@comments-bar.hbs').fmt(S.Cfg('url.templates')),
             widget: [
                 '<li class="subordinate">',
                     '<a data-activate-widget="{{guid}}">',
-                        '<i class="crafter-social-icon cs-icon-{{icon}}"></i> <span class="text">{{title}}</span>',
+                        '<i class="crafter-comments-icon cs-icon-{{icon}}"></i> <span class="text">{{title}}</span>',
                     '</a>',
                 '</li>'
             ].j()
         },
-        classes: ['crafter-social-bar'],
+        classes: ['crafter-comments-bar'],
         widgets: [
             { cls: 'crafter.social.view.barget.Reveal', cfg: { title: 'Reveal' }, instCfg: {  } },
             { cls: 'crafter.social.view.barget.Disable', cfg: { title: 'Disable' }, instCfg: {  } }/*,
-            { cls: 'crafter.social.view.barget.Feedback' },
-            { cls: 'crafter.social.view.barget.Share' },
-            { cls: 'crafter.social.view.barget.Rate' }*/
+            { cls: 'crafter.comments.view.barget.Feedback' },
+            { cls: 'crafter.comments.view.barget.Share' },
+            { cls: 'crafter.comments.view.barget.Rate' }*/
         ]
     };
 

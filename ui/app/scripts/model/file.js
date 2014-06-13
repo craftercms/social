@@ -9,7 +9,7 @@
             'attachmentId'  : '5282ac830364dabc3c4634c5',
             'contentType'   : 'image/jpeg',
             'filename'      : 'acmeimages.jpg',
-            'url'           : '/crafter-social/api/2/get_attachment/5282ac830364dabc3c4634c5?tenant=craftercms'
+            'url'           : '/crafter-comments/api/2/get_attachment/5282ac830364dabc3c4634c5?tenant=craftercms'
         },
 
         url: function () {

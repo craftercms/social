@@ -137,7 +137,7 @@
                 }
             }
 
-            // if property wasn't found on the social
+            // if property wasn't found on the comments
             // scope, try to find it in the global scope
             if (root !== window && typeof value === 'undefined') {
                 return this.get(property, window);

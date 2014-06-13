@@ -90,9 +90,7 @@ public interface UGCService<T extends UGC> {
      * ugc tenantId.</p>.
      *
      * @param ugcId       Id of the Ugc to update.
-     * @param parentId    new Parent Id (in case of a Move)
-     * @param targetId    new Target Id (empty of null to leave current value).
-     * @param textContent new Text Content (empty of null to leave current value).
+     * @param body new Text Content (empty of null to leave current value).
      * @param subject     new subject (empty of null to leave current value).
      * @param userId      User id of
      * @param tenantId
@@ -100,8 +98,8 @@ public interface UGCService<T extends UGC> {
      * @throws SocialException                    If the UGC can be updated.
      * @throws java.lang.IllegalArgumentException If given UGC does not exist.*
      */
-    public T update(final String ugcId, final String parentId, final String targetId, final String textContent,
-                    final String subject, final String userId, final String tenantId) throws SocialException;
+    public T update(final String ugcId, final String body, final String subject, final String userId,
+                    final String tenantId,final Map<String,Object> attributes) throws SocialException;
 
 
     /**
@@ -159,6 +157,9 @@ public interface UGCService<T extends UGC> {
      */
     void removeAttachment(String ugcId, String tenant, String attachmentId) throws UGCException, FileNotFoundException;
 
+    FileInfo updateAttachment(String ugcId,String tenant,String attachmentId,InputStream newAttachment) throws
+        UGCException,FileNotFoundException;
+
     FileInfo readAttachment(String ugcId, String tenant, String attachmentId) throws FileNotFoundException,
         UGCException;
 
@@ -171,4 +172,12 @@ public interface UGCService<T extends UGC> {
      */
     Iterable<T> readChildren(String tenant, String ugcId, int limit, int skip,
                              final int childCount) throws UGCException;
+
+    /**
+     * Finds a single UGC.
+     * @param ugcId Id of the Ugc.
+     * @param tenant Tenant Owner of the UGC.
+     * @return The ugc with the given Id ,null if not found.
+     */
+    T read(String ugcId, String tenant) throws UGCException;
 }

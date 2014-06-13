@@ -53,7 +53,7 @@ public class BlogService {
 		return blogListForm;
 	}
 	
-	@Value("${crafter.social.app.blog.name}")
+	@Value("${crafter.comments.app.blog.name}")
 	public void setCrafterSocialAppBlogName(String blogName) {
 		this.appBlogName = blogName;
 	}

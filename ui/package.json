@@ -37,6 +37,6 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/craftercms/social.git"
+        "url": "https://github.com/craftercms/comments.git"
     }
 }

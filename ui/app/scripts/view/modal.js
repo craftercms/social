@@ -1,7 +1,7 @@
 (function (S) {
     'use strict';
 
-    // TODO Scope bootstrap stuff under social and clear $.fn.modal ? - same for popover view
+    // TODO Scope bootstrap stuff under comments and clear $.fn.modal ? - same for popover view
     if (!S.$.fn.modal) {
         throw new Error('Modal requires bootstrap modal');
     }
@@ -15,7 +15,7 @@
 
         className: [
             Base.prototype.className,
-            'crafter-social-modal-view',
+            'crafter-comments-modal-view',
             // TODO get rid of twitter default classes
             'fade'
         ].join(' '),
@@ -71,7 +71,7 @@
             $.fn.modal.Constructor.prototype.backdrop.apply(this, arguments);
             this.$backdrop && this.$backdrop
                 .removeClass('modal-backdrop')
-                .addClass('crafter-social-modal-view-backdrop');
+                .addClass('crafter-comments-modal-view-backdrop');
         },
 
         render: function () {

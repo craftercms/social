@@ -4,7 +4,7 @@
     /* jshint -W106 */
     var _ = {
         /**
-         * The director class. Path can be relative to the social namespace or global.
+         * The director class. Path can be relative to the comments namespace or global.
          */
         director: {
             cls: 'component.Director',

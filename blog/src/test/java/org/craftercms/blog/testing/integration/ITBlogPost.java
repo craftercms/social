@@ -235,7 +235,7 @@ public class ITBlogPost extends IntegrationTestingBase{
 
 	protected String createNewPost(String ticket, String tenant) {
 		System.out.println(" Integration Test createNewPost child  " + ticket +" tenant "+ tenant);
-		RestAssured.basePath = "/crafter-social";
+		RestAssured.basePath = "/crafter-comments";
 		
 		String newContent = "{\"title\":\"NEW_ENTRY\",\"image\":\"\",\"content\":\"<p>Hello World!</p>\"}";
 		String ugc = expect()

@@ -163,7 +163,7 @@ Step 3: Post new content
         "targetId": "test-123323TI",
         "targetUrl": "http://google.com",
         "targetDescription": "Don Quijote",
-        "textContent": "Quieren decir que tenía el sobrenombre de Quijada, o Quesada, que en esto hay alguna diferencia en los autores que deste caso escriben; aunque, por conjeturas verosímiles, se deja entender que se llamaba Quejana. Pero esto importa poco a nuestro cuento; basta que en la narración dél no se salga un punto de la verdad.",
+        "body": "Quieren decir que tenía el sobrenombre de Quijada, o Quesada, que en esto hay alguna diferencia en los autores que deste caso escriben; aunque, por conjeturas verosímiles, se deja entender que se llamaba Quejana. Pero esto importa poco a nuestro cuento; basta que en la narración dél no se salga un punto de la verdad.",
         "subject": "Ingenioso Hidalgo"
     }
    

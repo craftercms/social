@@ -7,7 +7,7 @@
 
     Inline = Discussion.extend({
 
-        className: [Discussion.prototype.className, 'crafter-social-inline-view', 'panel-group'].join(' '),
+        className: [Discussion.prototype.className, 'crafter-comments-inline-view', 'panel-group'].join(' '),
 
         render: function () {
             Discussion.prototype.render.apply(this, arguments);
@@ -69,7 +69,7 @@
                     '</div>',
                     '<div data-identifyme="panel" class="panel-collapse collapse in">',
                         '<div class="panel-body">',
-                            '<div class="comments crafter-social-comment-thread"></div>',
+                            '<div class="comments crafter-comments-comment-thread"></div>',
                             '<div class="create-comment-view reply-box"></div>',
                         '</div>',
                     '</div>',

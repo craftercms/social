@@ -95,7 +95,7 @@
                                              ng-hide="fullContent">{{ugc.teaser}}</div>
 
                                         <div class="ugc-content full" 
-                                             ng-show="fullContent">{{ugc.textContent}}</div>
+                                             ng-show="fullContent">{{ugc.body}}</div>
                                     </div>
                                     <div class="edit-mode" ng-show="editMode">
 
@@ -104,7 +104,7 @@
                                                 ng-show="editMode" 
                                                 type="text" />
                                         <textarea   class="content"
-                                                    ng-model="ugc.textContent" 
+                                                    ng-model="ugc.body"
                                                     ng-show="editMode" />
                                         <button type="submit" 
                                                 class="btn btn-primary btn-sm" 

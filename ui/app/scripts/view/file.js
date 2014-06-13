@@ -12,7 +12,7 @@
 
         className: [
             Base.prototype.className,
-            'crafter-social-file-view'
+            'crafter-comments-file-view'
         ].join(' '),
 
         open: function () {

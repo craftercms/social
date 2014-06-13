@@ -11,7 +11,7 @@
     Options = Base.extend({
 
         tagName: 'ul',
-        className: 'list-inline list-unstyled crafter-social-view-options-view',
+        className: 'list-inline list-unstyled crafter-comments-view-options-view',
 
         initialize: function () {
             Base.prototype.initialize.apply(this, arguments);

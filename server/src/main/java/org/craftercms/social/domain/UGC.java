@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-import org.craftercms.commons.jackson.mvc.annotations.Exclude;
 import org.craftercms.commons.mongo.Document;
 import org.craftercms.commons.mongo.FileInfo;
 import org.jongo.marshall.jackson.oid.Id;
@@ -41,7 +40,7 @@ public class UGC<T extends UGC> {
     private String targetId;
     private String tenantId;
     private String subject;
-    private String textContent;
+    private String body;
     private ObjectId[] attachmentId;
     private String createdBy;
     private String lastModifiedBy;
@@ -63,18 +62,18 @@ public class UGC<T extends UGC> {
         BeanUtils.copyProperties(base, this);
     }
 
-    public UGC(final String subject, final String textContent, final String targetId) {
+    public UGC(final String subject, final String body, final String targetId) {
         this();
         this.subject = subject;
-        this.textContent = textContent;
+        this.body = body;
         this.targetId = targetId;
     }
 
-    public UGC(final String subject, final String textContent, final String targetId,
+    public UGC(final String subject, final String body, final String targetId,
                final ArrayDeque<ObjectId> ancestors) {
         this();
         this.subject = subject;
-        this.textContent = textContent;
+        this.body = body;
         this.targetId = targetId;
         this.ancestors = ancestors;
     }
@@ -120,12 +119,12 @@ public class UGC<T extends UGC> {
         this.subject = subject;
     }
 
-    public String getTextContent() {
-        return textContent;
+    public String getBody() {
+        return body;
     }
 
-    public void setTextContent(final String textContent) {
-        this.textContent = textContent;
+    public void setBody(final String body) {
+        this.body = body;
     }
 
     public ObjectId[] getAttachmentId() {

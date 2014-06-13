@@ -17,28 +17,25 @@
 
 package org.craftercms.social.documentation.configuration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mangofactory.swagger.models.ModelProvider;
-import com.mangofactory.swagger.paths.RelativeSwaggerPathProvider;
-
-import org.craftercms.social.documentation.configuration.DocumentationPathProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import com.mangofactory.swagger.configuration.JacksonScalaSupport;
+import com.mangofactory.swagger.configuration.JacksonSwaggerSupport;
 import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
 import com.mangofactory.swagger.configuration.SwaggerGlobalSettings;
-import com.mangofactory.swagger.core.ClassOrApiAnnotationResourceGrouping;
 import com.mangofactory.swagger.core.SwaggerApiResourceListing;
+import com.mangofactory.swagger.paths.RelativeSwaggerPathProvider;
 import com.mangofactory.swagger.scanners.ApiListingReferenceScanner;
 import com.wordnik.swagger.model.ApiInfo;
 import com.wordnik.swagger.model.ApiKey;
 import com.wordnik.swagger.model.AuthorizationType;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Swagger configuration for REST API Documentation.
@@ -49,20 +46,19 @@ import com.wordnik.swagger.model.AuthorizationType;
 public class RestApiDocumentationSwaggerConfig {
 
     public static final List<String> DEFAULT_INCLUDE_PATTERNS = Arrays.asList(new String[] {"/api/3/.*"});
-    public static final String SWAGGER_GROUP = "social";
+    public static final String SWAGGER_GROUP = "comments";
 
     private
     @Value("${documentation.services.hostUrl}")
     String hostUrl;
 
     /**
-     *
      * Autowire the bundled swagger config
      */
     @Autowired
     private SpringSwaggerConfig springSwaggerConfig;
     //@Autowired
-   // private ModelProvider modelProvider;
+    // private ModelProvider modelProvider;
 
     /**
      * Adds the jackson scala module to the MappingJackson2HttpMessageConverter registered with spring
@@ -70,10 +66,10 @@ public class RestApiDocumentationSwaggerConfig {
      * Also registers some custom serializers needed to transform swagger models to swagger-ui required json format
      */
     @Bean
-    public JacksonScalaSupport jacksonScalaSupport() {
-        JacksonScalaSupport jacksonScalaSupport = new JacksonScalaSupport();
+    public JacksonSwaggerSupport jacksonScalaSupport() {
+        JacksonSwaggerSupport jacksonScalaSupport = new JacksonSwaggerSupport();
         //Set to false to disable
-        jacksonScalaSupport.setRegisterScalaModule(true);
+        //jacksonScalaSupport. setRegisterScalaModule(true);
         return jacksonScalaSupport;
     }
 
@@ -109,19 +105,15 @@ public class RestApiDocumentationSwaggerConfig {
      * API Info as it appears on the swagger-ui page
      */
     private ApiInfo apiInfo() {
-        ApiInfo apiInfo = new ApiInfo(
-            "Crafter Studio Spring MVC swagger 1.2 api",
-            "Crafter Studio api based on the swagger 1.2 spec",
-            "http://en.wikipedia.org/wiki/Terms_of_service",
-            "somecontact@somewhere.com",
-            "Apache 2.0",
-            "http://www.apache.org/licenses/LICENSE-2.0.html"
-        );
+        ApiInfo apiInfo = new ApiInfo("Crafter Studio Spring MVC swagger 1.2 api",
+            "Crafter Studio api based on the swagger 1.2 spec", "http://en.wikipedia.org/wiki/Terms_of_service",
+            "somecontact@somewhere.com", "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0.html");
         return apiInfo;
     }
 
     /**
-     * Configure a SwaggerApiResourceListing for each swagger instance within your app. e.g. 1. private  2. external apis
+     * Configure a SwaggerApiResourceListing for each swagger instance within your app. e.g. 1. private  2. external
+     * apis
      * Required to be a spring bean as spring will call the postConstruct method to bootstrap swagger scanning.
      *
      * @return
@@ -130,7 +122,8 @@ public class RestApiDocumentationSwaggerConfig {
     public SwaggerApiResourceListing swaggerApiResourceListing() {
         //The group name is important and should match the group set on ApiListingReferenceScanner
         //Note that swaggerCache() is by DefaultSwaggerController to serve the swagger json
-        SwaggerApiResourceListing swaggerApiResourceListing = new SwaggerApiResourceListing(springSwaggerConfig.swaggerCache(), SWAGGER_GROUP);
+        SwaggerApiResourceListing swaggerApiResourceListing = new SwaggerApiResourceListing(springSwaggerConfig
+            .swaggerCache(), SWAGGER_GROUP);
 
         //Set the required swagger settings
         swaggerApiResourceListing.setSwaggerGlobalSettings(swaggerGlobalSettings());
@@ -165,7 +158,8 @@ public class RestApiDocumentationSwaggerConfig {
         ApiListingReferenceScanner apiListingReferenceScanner = new ApiListingReferenceScanner();
 
         //Picks up all of the registered spring RequestMappingHandlerMappings for scanning
-        apiListingReferenceScanner.setRequestMappingHandlerMapping(springSwaggerConfig.swaggerRequestMappingHandlerMappings());
+        apiListingReferenceScanner.setRequestMappingHandlerMapping(springSwaggerConfig
+            .swaggerRequestMappingHandlerMappings());
 
         //Excludes any controllers with the supplied annotations
         apiListingReferenceScanner.setExcludeAnnotations(springSwaggerConfig.defaultExcludeAnnotations());

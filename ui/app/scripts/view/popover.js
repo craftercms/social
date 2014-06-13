@@ -14,7 +14,7 @@
 
         className: [
             Base.prototype.className,
-            'crafter-social-popover',
+            'crafter-comments-popover',
             // TODO get rid of twitter default classes
             'popover',
             'fade'
@@ -64,7 +64,7 @@
             Base.prototype.render();
             // TODO see how this works.
             // Are users comfortable with this behaviour or is it rather irksome?
-            var $elem = this.$('.crafter-social-comment-thread');
+            var $elem = this.$('.crafter-comments-comment-thread');
             $elem.on('mousewheel DOMMouseScroll', function (e) {
                 var top     = this.scrollTop;
                 var delta   = (e.originalEvent.detail < 0) || (e.originalEvent.wheelDelta > 0) ? 1 : -1;
