@@ -180,7 +180,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             parent = null;
             String query = getQueryFor("social.ugc.byAncestorsExact");
             Find find = getCollection().find(query, tenantId, targetId, ancestors);
-            return getUgcsToFind(find, targetId, tenantId, start, limit, sortOrder, upToLevel);
+            return getUgcsToFind(find, targetId, tenantId, start, limit, sortOrder, (ancestors.size()+upToLevel));
         } catch (MongoException ex) {
             log.error("Unable to find children of " + ugcId, ex);
             throw new MongoDataException("Unable to find children of given UGC", ex);
