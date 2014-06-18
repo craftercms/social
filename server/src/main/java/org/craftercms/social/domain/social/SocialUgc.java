@@ -28,7 +28,7 @@ public class SocialUgc extends UGC{
     /**
      * List of profiles that flag this.
      */
-    private Set<String> flags;
+    private Set<Flag> flags;
 
 
     public SocialUgc() {
@@ -69,11 +69,11 @@ public class SocialUgc extends UGC{
         this.votesDown = votesDown;
     }
 
-    public Set<String> getFlags() {
+    public Set<Flag> getFlags() {
         return flags;
     }
 
-    public void setFlags(final Set<String> flags) {
+    public void setFlags(final Set<Flag> flags) {
         this.flags = flags;
     }
 }

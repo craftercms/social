@@ -3,7 +3,6 @@ package org.craftercms.social.controllers.rest.v3.comments;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
-import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.services.social.VoteOptions;
 import org.slf4j.Logger;
@@ -16,9 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @Controller
-public class VotesController<T> extends AbstractCommentsController {
+public class VotesControllerController<T> extends AbstractCommentsController {
 
-    private Logger log = LoggerFactory.getLogger(VotesController.class);
+    private Logger log = LoggerFactory.getLogger(VotesControllerController.class);
 
     @RequestMapping(value = "{ugcId}/vote/up", method = RequestMethod.POST)
     @ResponseBody

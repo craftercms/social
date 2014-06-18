@@ -81,7 +81,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     /**
      * Generates the ancestors ordered list for the ugc.
      *
-     * @param newUgc UGC to setup ancestors.
+     * @param newUgc      UGC to setup ancestors.
      * @param ugcParentId Parent Id.
      * @throws MongoDataException
      * @throws UGCException
@@ -105,7 +105,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     public void deleteAttribute(final String ugcId, final String[] attributesName,
                                 final String tenantId) throws SocialException {
-        log.debug("Deleting Attribute {} for ugc Id {} ",attributesName,ugcId);
+        log.debug("Deleting Attribute {} for ugc Id {} ", attributesName, ugcId);
         try {
             ugcRepository.deleteAttribute(ugcId, tenantId, attributesName);
         } catch (MongoDataException ex) {
@@ -178,15 +178,27 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         }
     }
 
+    @Override
+    public List<T> read(final String targetId, final String tenantId, final int start, final int limit,
+                        final List sortOrder, final int upToLevel, final int childrenPerLevel) throws UGCException {
+        try {
+            Iterable<T> list = ugcRepository.findByTargetId(targetId, tenantId, start, limit, sortOrder, upToLevel);
+            return buildUgcTreeList(IterableUtils.toList(list), childrenPerLevel);
+        } catch (MongoDataException e) {
+            log.error("Unable to find UGC by its targetId");
+            throw new UGCException("Unable to find ugc by target");
+        }
+    }
 
     @Override
-    public Iterable<T> readChildren(final String tenant, final String ugcId, final int limit, final int skip,
-                                    final int childCount) throws UGCException {
-        log.debug("Finding all UGC {} children for tenant {} starting from {} up to {} results", ugcId, tenant,
-            limit, skip);
+    public List<T> readChildren(final String ugcId, final String targetId, final String tenantId,
+                                    final int start, final int limit, final List sortOrder, final int upToLevel,
+                                    final int childrenPerLevel) throws UGCException {
+        log.debug("Finding all UGC {} children for tenant {} starting from {} up to {} results", ugcId, tenantId,
+            limit, start);
         try {
-            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, tenant, limit, skip,
-                childCount)));
+            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, targetId, tenantId, start,
+                limit, sortOrder, upToLevel)), childrenPerLevel);
         } catch (MongoDataException ex) {
             log.error("Unable to read ", ex);
             throw new UGCException("Unable to ", ex);
@@ -197,7 +209,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     public Iterable<T> readByTargetId(final String targetId, final String tenantId) throws UGCException {
         log.debug("Finding all UGC by targetId {} for tenantId {}", targetId, tenantId);
         try {
-            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findByTargetId(targetId, tenantId)));
+            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findByTargetId(targetId, tenantId)),
+                Integer.MAX_VALUE);
         } catch (MongoDataException ex) {
             log.error("Unable to read ", ex);
             throw new UGCException("Unable to ", ex);
@@ -339,6 +352,12 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         }
     }
 
+    @Override
+    public long count(final String threadId, final String tenant) {
+        return 0;
+    }
+
+
     private void isQueryValid(final String query) {
         if (invalidQueryKeys.matcher(query).find()) {
             throw new IllegalSocialQueryException("Given Query '" + query + "' contains invalid selectors");
@@ -397,10 +416,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
      * <p>The main difference from {@link #buildUgcTree(java.util.List)} is that this method allows
      * for multiple Roots or not roots at all</p>
      *
-     * @param ugs Lis of the UGS to build the tree.
+     * @param ugs              Lis of the UGS to build the tree.
+     * @param childrenPerLevel
      * @return A List Ugcs (Roots) all roots have there children if any.
      */
-    protected List<T> buildUgcTreeList(List<T> ugs) {
+    protected List<T> buildUgcTreeList(List<T> ugs, final int childrenPerLevel) {
         if (ugs.isEmpty()) {
             return null;
         }
@@ -409,7 +429,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         stack.addAll(ugs);
         while (!stack.isEmpty()) {
             T tmp = stack.pop();
-            if (!findRelatives(ugs, tmp)) {
+            if (!findRelatives(ugs, tmp, childrenPerLevel)) {
                 toReturn.add(tmp);
             }
         }
@@ -421,19 +441,24 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
      * Using <i>ugcToTest</i> goes though <i>ugs</i> one by one and checks if the element
      * either it's parent or one of it's children.
      *
-     * @param ugs       List of UGC to check against.
-     * @param ugcToTest Ugc to check.
+     * @param ugs              List of UGC to check against.
+     * @param ugcToTest        Ugc to check.
+     * @param childrenPerLevel
      * @return True if a Parent or children is found. False if is a Root (not parents , or is a leaf).
      */
-    protected boolean findRelatives(List<T> ugs, T ugcToTest) {
+    protected boolean findRelatives(List<T> ugs, T ugcToTest, final int childrenPerLevel) {
         for (T ug : ugs) {
             if (ugcToTest.isMyParent(ug)) {
-                ug.getChildren().add(ugcToTest);
-                return true;
+                if (ug.getChildren().size() < childrenPerLevel) {
+                    ug.getChildren().add(ugcToTest);
+                    return true;
+                }
             }
             if (ug.isMyChild(ugcToTest)) {
-                ugcToTest.getChildren().add(ug);
-                return true;
+                if (ugcToTest.getChildren().size() < childrenPerLevel) {
+                    ugcToTest.getChildren().add(ug);
+                    return true;
+                }
             }
         }
         return false;
