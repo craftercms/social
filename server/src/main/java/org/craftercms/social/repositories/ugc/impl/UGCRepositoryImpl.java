@@ -1,8 +1,10 @@
 package org.craftercms.social.repositories.ugc.impl;
 
+import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.util.JSONParseException;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +16,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.repositories.SocialJongoRepository;
@@ -22,6 +25,7 @@ import org.craftercms.social.repositories.ugc.UGCRepository;
 import org.craftercms.social.repositories.ugc.support.BaseTreeUgc;
 import org.jongo.Aggregate;
 import org.jongo.Find;
+import org.jongo.ResultHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,56 +165,60 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
         }
     }
 
-    @Override
-    public Iterable<T> findChildren(final String ugcId, final String tenant, final int limit, final int skip, final
-    int childrenCount) throws MongoDataException {
-        if(childrenCount>=1){
-            return findChildrenFlat(ugcId,tenant,limit,skip);
-        }
-        try {
-            String pt1 = getQueryFor("social.ugc.getTree1");
-            String pt2 = getQueryFor("social.ugc.getTreeChildrenOnly");
-            String pt3 = getQueryFor("social.ugc.getTree3");
-            String pt4 = getQueryFor("social.ugc.getTree4");
-            String pt5 = getQueryFor("social.ugc.getTree5");
-            String pt6 = getQueryFor("social.ugc.getTree6");
-            String pt7 = getQueryFor("social.ugc.getTree7");
-            String pt8 = getQueryFor("social.ugc.getTree8");
-            String pt9 = getQueryFor("social.ugc.getTree9");
-            String pt10 = getQueryFor("social.ugc.getTree10");
 
+    @Override
+    public Iterable<T> findChildren(final String ugcId, final String targetId, final String tenantId,
+                                    final int start, final int limit, final List sortOrder,
+                                    final int upToLevel) throws MongoDataException {
+        try {
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC id is not valid");
             }
-            ObjectId id = new ObjectId(ugcId);
-            Aggregate aggregation = getCollection().aggregate(pt1);
-            aggregation.and(pt2, tenant, Arrays.asList(id));
-            aggregation.and(pt3).and(pt4).and(pt5).and(pt6).and(pt7).and(pt8);
-            aggregation.and(pt9, childrenCount);
-            aggregation.and(pt10);
-            return toUgcList(aggregation.as(super.ugcFactory.getTreeClass()));
-        } catch (Exception ex) {
-            log.error("Unable to ", ex);
+            T parent = findUGC(tenantId,ugcId);
+            ArrayDeque<ObjectId> ancestors = parent.getAncestors().clone();
+            ancestors.addLast(parent.getId());
+            parent = null;
+            String query = getQueryFor("social.ugc.byAncestorsExact");
+            Find find = getCollection().find(query, tenantId, targetId, ancestors);
+            return getUgcsToFind(find, targetId, tenantId, start, limit, sortOrder, upToLevel);
+        } catch (MongoException ex) {
+            log.error("Unable to find children of " + ugcId, ex);
             throw new MongoDataException("Unable to find children of given UGC", ex);
         }
     }
 
     @Override
-    public Iterable<T> findChildrenFlat(final String ugcId, final String tenant, final int limit,
-                                        final int skip) throws MongoDataException {
+    public Iterable<T> findByTargetId(final String targetId, final String tenantId, final int start, final int limit,
+                                      final List sortOrder, final int upToLevel) throws MongoDataException {
         try {
-            if (!ObjectId.isValid(ugcId)) {
-                throw new IllegalArgumentException("Given UGC id is not valid");
-            }
-            String query = getQueryFor("social.ugc.childrenOf");
-            String sort = getQueryFor("social.ugc.defaultSort");
-            Find find = getCollection().find(query, tenant, Arrays.asList(new ObjectId(ugcId))).sort(sort).skip(skip)
-                .limit(limit);
-            return find.as(clazz);
+            String query = getQueryFor("social.ugc.byTargetIdRootLvl");
+            Find find = getCollection().find(query, tenantId, targetId);
+            return getUgcsToFind(find, targetId, tenantId, start, limit, sortOrder, upToLevel);
         } catch (MongoException ex) {
-            log.error("Unable to Find UGC's " + ugcId + "children", ex);
+            log.error("Unable to Find UGC's " + targetId + "children", ex);
             throw new MongoDataException("Unable to find ugcs by user query", ex);
         }
+    }
+
+
+    private Iterable<T> getUgcsToFind(final Find initialFind, final String targetId, final String tenantId,
+                                      final int start, final int limit, final List sortOrder,
+                                      final int upToLevel) throws MongoDataException {
+        if (CollectionUtils.isEmpty(sortOrder)) {
+            initialFind.sort(getQueryFor("social.ugc.defaultSort"));
+        } else {
+            initialFind.sort(createSortQuery(sortOrder));
+        }
+        initialFind.projection("{_id:1}");
+        List<ObjectId> listOfIds = IterableUtils.toList(initialFind.skip(start).limit(limit).map(new ResultHandler<ObjectId>() {
+            @Override
+            public ObjectId map(final DBObject result) {
+                return (ObjectId)result.get("_id");
+            }
+        }));
+        String finalQuery = getQueryFor("social.ugc.byTargetIdRootNLvl");
+        finalQuery = finalQuery.replaceAll("%@", String.valueOf(upToLevel));
+        return find(finalQuery, targetId, tenantId, listOfIds, listOfIds);
     }
 
     // Always find UGC by id AND tenantId

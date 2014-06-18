@@ -88,6 +88,7 @@ public class GlobalDefaultExceptionHandler {
     private void serializeError(Exception ex, HttpServletResponse response, HttpStatus status,
                                 final HttpServletRequest req) throws IOException {
         log.error("Request: " + req.getRequestURL() + " raised and error {}", ex.toString());
+        log.error("Error processing request",ex);
         Map<String, Object> error = new HashMap<>();
         if (StringUtils.isBlank(ex.getMessage())) {
             error.put("error", ex.toString());

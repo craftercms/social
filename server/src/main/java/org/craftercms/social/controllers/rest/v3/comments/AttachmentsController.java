@@ -74,8 +74,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
 
     @RequestMapping(value = "/{ugcId}/attachments", method = RequestMethod.GET)
     @ResponseBody()
-    @ApiOperation(value = "Sends the attachment to the client", notes = "This will send the headers  content-type " +
-        "(based on extension),content-length,and content-disposition")
+    @ApiOperation(value = "Sends the information attachment to the client")
     public Iterable<FileInfo> listAttachments(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "ugcId")
                                                   final String ugcId) throws SocialException, UGCNotFound {
         log.debug("Listing all Attachments for UGC {}", ugcId);

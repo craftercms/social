@@ -40,21 +40,23 @@ public interface SocialServices<T extends SocialUgc> {
      * @param ugcId  Id of the UGC to flag.
      * @param reason The reason for this ugc is been flag.
      * @param userId Id of the user that is flagging this UGC.
+     * @param tenantId     Tenant Owner of the UGC.
      * @return A new (updated) Public (secure) UGC.
      */
-    T flag(final String ugcId, final String reason, final String userId);
+     T flag(String ugcId, String tenantId, String reason, String userId) throws SocialException;
 
     /**
-     * Unflags the given UGC for the given reason.
+     * Un flags the given UGC for the given reason.
      * <p>Implementers must check if the current user is allow to update UGC and that the user belongs to the same
      * ugc tenant</p>.
      *
-     * @param ugcId  Id of the UGC to unflag.
-     * @param reason The reason for this ugc is been unflag.
+     * @param ugcId  Id of the UGC to un flag.
+     * @param flagId Id of the flag to delete.
      * @param userId Id of the user that is unflagging this UGC.
+     * @param tenantId
      * @return A new (updated) Public (secure) UGC.
      */
-    T unFlag(final String ugcId, final String reason, final String userId);
+    boolean unFlag(final String ugcId, final String flagId, final String userId, final String tenantId) throws SocialException;
 
     /**
      * Change the moderation Status of the given UGC.

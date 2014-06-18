@@ -1,6 +1,8 @@
 package org.craftercms.social.services.social.impl;
 
+import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.social.domain.social.Flag;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalUgcException;
 import org.craftercms.social.exceptions.SocialException;
@@ -49,8 +51,6 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
         }
     }
 
-
-
     @Override
     public T moderate(final String ugcId, final SocialUgc.ModerationStatus moderationStatus, final String
         userId, final String tenant) throws UGCException {
@@ -70,12 +70,31 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
         }
     }
 
+
+    @Override
+    public T flag(final String ugcId, final String tenantId, final String reason, final String userId) throws SocialException {
+        log.debug("Flagging ugc {} due {}",ugcId,reason);
+        try{
+            T ugcToFlag = ugcRepository.findUGC(tenantId, ugcId);
+            if (ugcToFlag == null) {
+                throw new IllegalUgcException("Given ugc does not belong to given tenant");
+            }
+            Flag f = new Flag(reason,userId);
+            ugcToFlag.getFlags().add(f);
+            ugcRepository.save(ugcToFlag);
+            return ugcToFlag;
+        }catch (MongoDataException ex){
+            log.error("Unable to flag ugc "+ugcId, ex);
+            throw new SocialException("Unable to flag given ugc",ex);
+        }
+    }
+
     private void neutral(final T ugc, final String userId) {
         ugc.getVotesDown().remove(userId);
         ugc.getVotesUp().remove(userId);
     }
     private void voteDown(final T ugc, final String userId) {
-        unvoteUp(ugc,userId);
+        unvoteUp(ugc, userId);
         ugc.getVotesDown().add(userId);
     }
 
@@ -94,13 +113,20 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     }
 
     @Override
-    public T flag(final String ugcId, final String reason, final String userId) {
-        return null;
-    }
-
-    @Override
-    public T unFlag(final String ugcId, final String reason, final String userId) {
-        return null;
+    public boolean unFlag(final String ugcId, final String flagId, final String userId, final String tenantId) throws SocialException {
+        log.debug("Removing flag {} for ugc Id {}",flagId,ugcId);
+        try{
+            T ugcToUpdate = ugcRepository.findUGC(tenantId, ugcId);
+            if (ugcToUpdate == null) {
+                throw new IllegalUgcException("Given ugc does not belong to given tenant");
+            }
+            ugcToUpdate.getFlags().remove(new Flag(new ObjectId(flagId)));
+            ugcRepository.save(ugcToUpdate);
+            return true;
+        }catch (MongoDataException ex){
+            log.error("Unable to delete flag "+flagId+ " from "+ugcId,ex);
+            throw  new SocialException("Unable to delete flag from UGC");
+        }
     }
 
     public void setUgcRepository(final UGCRepository<T> ugcRepository) {

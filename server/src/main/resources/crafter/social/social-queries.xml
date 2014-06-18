@@ -35,7 +35,7 @@
     </entry>
 
     <entry key="social.ugc.getTree8">
-        {$sort:{ancesterSize:1,"doc.doc.createDate":1}}
+        {$sort:{ancesterSize:1,"doc.doc.createDate":-1}}
     </entry>
 
     <entry key="social.ugc.getTree9">
@@ -50,6 +50,25 @@
         {tenantId:#,targetId:#}
     </entry>
 
+    <entry key="social.ugc.byTargetIdRootLvl">
+        {tenantId:#,targetId:#,ancestors:{$size:0}}
+    </entry>
+
+    <entry key="social.ugc.byAncestorsExact">
+        {tenantId:#,targetId:#,ancestors:{$all:#}}
+    </entry>
+
+    <entry key="social.ugc.byTargetIdRootNLvl">
+    {
+        targetId:#,
+        tenantId:#,
+        $or:[
+            {ancestors:{$in:#}},
+            {_id:{$in:#}}
+            ],
+        $where:" %@ >= this.ancestors.length"
+    }
+    </entry>
     <entry key="social.ugc.byTenantAndId">
         {_id:#,tenantId:#}
     </entry>
@@ -69,7 +88,7 @@
         {tenantId:#,ancestors:{$in:#}}
     </entry>
     <entry key="social.ugc.defaultSort">
-        {createDate:1}
+        {createDate:-1}
     </entry>
     <entry key="social.permissions.isAllowed">
         {action:#,roles:{$in:#},tenantId:#}

@@ -3,6 +3,7 @@ package org.craftercms.social.repositories.ugc;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.UGC;
@@ -90,16 +91,20 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
     /**
      * Finds all the children of a given ugc.
      *
-     * @param ugcId  Id of the ugc to find and its children.
-     * @param tenant Tenant Owner of the Ugc to look for.
-     * @param limit  How many results
-     * @param skip   where to start.
-     * @param childrenCount
+     * @param ugcId     Id of the ugc to find and its children.
+     * @param tenantId  Tenant Owner of the Ugc to look for.
+     * @param limit     How many results
+     * @param start     where to start.
+     * @param upToLevel how many sub-children levels to lookup.
+     * @param targetId  Target Id which the ugs belong.
      * @return A iterate with the results.empty if noting is found.
      * @throws MongoDataException
      */
-    Iterable findChildren(String ugcId, String tenant, int limit, int skip, final int childrenCount) throws MongoDataException;
+    Iterable<T> findChildren(final String ugcId, final String targetId, final String tenantId, final int start,
+                             final int limit, final List sortOrder, final int upToLevel) throws MongoDataException;
 
 
-    Iterable<UGC> findChildrenFlat(String ugcId, String tenant, int limit, int skip) throws MongoDataException;
+    Iterable<T> findByTargetId(String targetId, String tenantId, int start, int limit,
+                               final List<DefaultKeyValue<String, Boolean>> sortOrder,
+                               final int upToLevel) throws MongoDataException;
 }

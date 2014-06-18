@@ -6,10 +6,12 @@ import com.wordnik.swagger.annotations.ApiParam;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.ws.rs.PathParam;
+
 
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.social.domain.social.Flag;
 import org.craftercms.social.domain.social.SocialUgc;
+import org.craftercms.social.exceptions.IllegalUgcException;
 import org.craftercms.social.exceptions.SocialException;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
@@ -55,10 +57,10 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         return newUgc;
     }
 
-    @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
+    @RequestMapping(value = "{id}",method = RequestMethod.PUT)
     @ApiOperation(value = "Updates the given comment",notes = "As Create some HTML/scripts tags will be scripted")
     @ResponseBody
-    public T update(@ApiParam(value = "Ugc id to update") @PathParam(value = "id")final String id,
+    public T update(@ApiParam(value = "Ugc id to update") @PathVariable("id")final String id,
                     @ApiParam(value = "New comment Body") @RequestParam() final String body,
                     @ApiParam(value = "Json String representing any extra attributes of the comment to create",
                     name = "attributes") @RequestParam(required = false,
@@ -70,18 +72,26 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         return (T)ugcService.update(id, body,"",userId(),tenant(),attributesMap);
     }
 
-    @RequestMapping(value = "/{id}",method = RequestMethod.DELETE)
+    @RequestMapping(value = "{id}",method = RequestMethod.DELETE)
     @ApiOperation(value = "Deletes the comment",notes = "As Create some HTML/scripts tags will be scripted," +
         "Also All children will be deleted")
     @ResponseBody
-    public boolean delete(@ApiParam(value = "Comment id to update") @PathParam(value = "id")final String id ) throws
+    public boolean delete(@ApiParam(value = "Comment id to update") @PathVariable("id")final String id ) throws
         SocialException{
        ugcService.deleteUgc(id,tenant());
         return true;
     }
 
+    @RequestMapping(value = "{id}",method = RequestMethod.GET)
+    @ApiOperation(value = "Gets a the comment")
+    @ResponseBody
+    public T read(@ApiParam(value = "Comment id to update") @PathVariable("id") final String id ) throws
+        SocialException{
+      return (T)ugcService.read(id,tenant());
+    }
 
-        @RequestMapping(value = "/{ugcId}/attributes", method ={RequestMethod.POST,RequestMethod.PUT})
+
+    @RequestMapping(value = "{id}/attributes", method ={RequestMethod.POST,RequestMethod.PUT})
         @ResponseBody()
         @ApiOperation(value = "Adds or updates the given attributes with there new value " + "if attribute does not " +
             "exists it will be created Json is expected to by the POST body",
@@ -92,18 +102,18 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
                 " there for its all non array-maps. this is valid for numbers,booleans and dates. keep this in mind where" +
                 " " +
                 "doing the search")
-        public boolean addAttributes(@ApiParam(value = "Id of the UGC") @NotBlank @PathVariable(value = "ugcId") final
-                                         String ugcId, @ApiParam(value = "Json of the attributes to be updated or created" +
+        public boolean addAttributes(@ApiParam(value = "Id of the UGC") @NotBlank @PathVariable(value = "id") final
+                                         String id, @ApiParam(value = "Json of the attributes to be updated or created" +
             ". All values are " + "save as string (booleans,numbers,dates)") @RequestBody
         final Map<String, Object> attributes) throws SocialException {
-            log.debug("Request for deleting form  UGC {} attributes {}", ugcId, attributes);
+            log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
             String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-            ugcService.setAttributes(ugcId, tenant, attributes);
+            ugcService.setAttributes(id, tenant, attributes);
             return true;//Always true unless exception.
         }
 
 
-    @RequestMapping(value = "/{id}/attributes", method = RequestMethod.DELETE)
+    @RequestMapping(value = "{id}/attributes", method = RequestMethod.DELETE)
     @ResponseBody()
     @ApiOperation(value = "Deletes all the attributes from the given UGC", notes = "All attributes must be in dot " +
         "notation where nested values should be in its full path, to remove multiple attributes send them separated " +
@@ -117,6 +127,35 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
         ugcService.deleteAttribute(id, attributes.split(","), tenant);
         return true;//Always true unless exception.
+    }
+
+
+    @RequestMapping(value = "{id}/flags",method = RequestMethod.POST)
+    @ApiOperation(value = "Flags the UGC",notes = "Reason will be cleanup for any HTML/Script")
+    public T flagUgc(@ApiParam(value = "Comment Id") @PathVariable(value = "id") final String id,
+                     @ApiParam(value = "Reason why the comment is been flag") @RequestParam final String reason)
+        throws SocialException{
+        return (T)socialServices.flag(id,tenant(),reason,userId());
+    }
+
+
+    @RequestMapping(value = "{id}/flags",method = RequestMethod.GET)
+    @ApiOperation(value = "Flags the UGC",notes = "Reason will be cleanup for any HTML/Script")
+    public Iterable<Flag> flagUgc(@ApiParam(value = "Comment Id") @PathVariable(value = "id") final String id)
+        throws SocialException{
+        T ugc= (T)ugcService.read(id, tenant());
+        if (ugc == null) {
+            throw new IllegalUgcException("Given UGC does not exist for tenant");
+        }
+        return ugc.getFlags();
+    }
+
+    @RequestMapping(value = "{id}/flags/{flagId}",method = RequestMethod.DELETE)
+    @ApiOperation(value = "Flags the UGC",notes = "Reason will be cleanup for any HTML/Script")
+    public boolean unflagUgc(@ApiParam(value = "Comment Id") @PathVariable(value = "id") final String id,
+                     @ApiParam(value = "Flag id to delete") @PathVariable(value = "flagId") final String flagId)
+        throws SocialException{
+        return socialServices.unFlag(id,flagId,userId(),tenant());
     }
 
 }

@@ -3,8 +3,10 @@ package org.craftercms.social.services.ugc;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.apache.commons.io.FileExistsException;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.social.domain.UGC;
@@ -89,17 +91,17 @@ public interface UGCService<T extends UGC> {
      * <p>Implementers must check if the current user is allow to update UGC and that the user belongs to the same
      * ugc tenantId.</p>.
      *
-     * @param ugcId       Id of the Ugc to update.
-     * @param body new Text Content (empty of null to leave current value).
-     * @param subject     new subject (empty of null to leave current value).
-     * @param userId      User id of
+     * @param ugcId    Id of the Ugc to update.
+     * @param body     new Text Content (empty of null to leave current value).
+     * @param subject  new subject (empty of null to leave current value).
+     * @param userId   User id of
      * @param tenantId
      * @return the updated Public (secure) UGC.
      * @throws SocialException                    If the UGC can be updated.
      * @throws java.lang.IllegalArgumentException If given UGC does not exist.*
      */
     public T update(final String ugcId, final String body, final String subject, final String userId,
-                    final String tenantId,final Map<String,Object> attributes) throws SocialException;
+                    final String tenantId, final Map<String, Object> attributes) throws SocialException;
 
 
     /**
@@ -153,31 +155,36 @@ public interface UGCService<T extends UGC> {
      * @throws java.io.FileNotFoundException                        If file is not found
      * @throws org.craftercms.social.exceptions.IllegalUgcException If the given UGC id does not exists.
      * @throws org.craftercms.social.exceptions.UGCException        If unable to delete the attachment or update the
-     * UGC.
+     *                                                              UGC.
      */
     void removeAttachment(String ugcId, String tenant, String attachmentId) throws UGCException, FileNotFoundException;
 
-    FileInfo updateAttachment(String ugcId,String tenant,String attachmentId,InputStream newAttachment) throws
-        UGCException,FileNotFoundException;
+    FileInfo updateAttachment(String ugcId, String tenant, String attachmentId, InputStream newAttachment) throws
+        UGCException, FileNotFoundException;
 
     FileInfo readAttachment(String ugcId, String tenant, String attachmentId) throws FileNotFoundException,
         UGCException;
 
-    /**
-     * @param tenant
-     * @param ugcId
-     * @param limit
-     * @param skip
-     * @param childCount
-     */
-    Iterable<T> readChildren(String tenant, String ugcId, int limit, int skip,
-                             final int childCount) throws UGCException;
+    List<T> read(String targetId, String tenantId, int start, int limit, List<DefaultKeyValue<String,
+        Boolean>> sortOrder, final int upToLevel, final int childrenPerLevel) throws UGCException;
 
+    public List<T> readChildren(final String ugcId, final String targetId, final String tenantId,
+                                    final int start, final int limit, final List sortOrder, final int upToLevel,
+                                    final int childrenPerLevel) throws UGCException;
     /**
      * Finds a single UGC.
-     * @param ugcId Id of the Ugc.
+     *
+     * @param ugcId  Id of the Ugc.
      * @param tenant Tenant Owner of the UGC.
      * @return The ugc with the given Id ,null if not found.
      */
     T read(String ugcId, String tenant) throws UGCException;
+
+    /**
+     * Counts all the First Level ugc of a target.
+     * @param threadId Id ot the target.
+     * @param tenant Tenant Owner of the target.
+     * @return A count of all possible first level comments.
+     */
+    long count(String threadId, String tenant);
 }
