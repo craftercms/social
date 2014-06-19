@@ -353,8 +353,23 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     }
 
     @Override
-    public long count(final String threadId, final String tenant) {
-        return 0;
+    public long count(final String threadId, final String tenant) throws UGCException {
+        try {
+            return ugcRepository.countByTargetId(tenant,threadId,0);
+        } catch (MongoDataException e) {
+            log.error("Unable to count comments by tenant and ugc");
+            throw new UGCException("Unable to count UGC by target and tenant",e);
+        }
+    }
+
+    @Override
+    public long countChildren(final String ugcId, final String tenantId) throws UGCException {
+          try{
+              return ugcRepository.countChildrenOf(tenantId,ugcId);
+          }catch (MongoDataException ex){
+              log.error("Unable to count children of ugc " + ugcId, ex);
+              throw new UGCException("Unable to count children of Ugc");
+          }
     }
 
 
@@ -463,6 +478,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         }
         return false;
     }
+
+
 
     public void setUGCRepositoryImpl(UGCRepository UGCRepositoryImpl) {
         ugcRepository = UGCRepositoryImpl;

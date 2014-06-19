@@ -178,7 +178,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             ArrayDeque<ObjectId> ancestors = parent.getAncestors().clone();
             ancestors.addLast(parent.getId());
             parent = null;
-            String query = getQueryFor("social.ugc.byAncestorsExact");
+            String query = getQueryFor("social.ugc.byTenantTargetAncestorsExact");
             Find find = getCollection().find(query, tenantId, targetId, ancestors);
             return getUgcsToFind(find, targetId, tenantId, start, limit, sortOrder, (ancestors.size()+upToLevel));
         } catch (MongoException ex) {
@@ -220,6 +220,34 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
         finalQuery = finalQuery.replaceAll("%@", String.valueOf(upToLevel));
         return find(finalQuery, targetId, tenantId, listOfIds, listOfIds);
     }
+
+    @Override
+    public long countByTargetId(final String tenant, final String threadId, final int levels) throws MongoDataException {
+        try{
+          return count(getQueryFor("social.ugc.byTargetIdWithFixLvl"),tenant,threadId,levels);
+        }catch (MongoException ex){
+            log.error("Unable to count ugc for tenant "+tenant+ "and target "+threadId,ex);
+            throw new MongoDataException("Unable to count ugc for tenant and target",ex);
+        }
+    }
+
+    @Override
+    public long countChildrenOf(final String tenant, final String ugcId) throws MongoDataException {
+        try{
+            if (!ObjectId.isValid(ugcId)) {
+                throw new IllegalArgumentException("Given UGC id is not valid");
+            }
+            T parent = findUGC(tenant,ugcId);
+            ArrayDeque<ObjectId> ancestors = parent.getAncestors().clone();
+            ancestors.addLast(parent.getId());
+            parent = null;
+            return count(getQueryFor("social.ugc.byTenantAncestorsExact"),tenant,ancestors,ancestors.size());
+        }catch (MongoException ex){
+            log.error("Unable to count ugc for tenant "+tenant+ "and id "+ugcId,ex);
+            throw new MongoDataException("Unable to count ugc for tenant and target",ex);
+        }
+    }
+
 
     // Always find UGC by id AND tenantId
     @Override
