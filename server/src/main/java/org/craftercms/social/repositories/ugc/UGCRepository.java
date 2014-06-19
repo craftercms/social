@@ -107,4 +107,8 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
     Iterable<T> findByTargetId(String targetId, String tenantId, int start, int limit,
                                final List<DefaultKeyValue<String, Boolean>> sortOrder,
                                final int upToLevel) throws MongoDataException;
+
+    long countByTargetId(String tenant, String threadId, int levels) throws MongoDataException;
+
+    long countChildrenOf(String tenant, String ugcId) throws MongoDataException;
 }

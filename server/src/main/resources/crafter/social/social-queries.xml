@@ -54,8 +54,16 @@
         {tenantId:#,targetId:#,ancestors:{$size:0}}
     </entry>
 
-    <entry key="social.ugc.byAncestorsExact">
+    <entry key="social.ugc.byTargetIdWithFixLvl">
+        {tenantId:#,targetId:#,ancestors:{$size:#}}
+    </entry>
+
+    <entry key="social.ugc.byTenantTargetAncestorsExact">
         {tenantId:#,targetId:#,ancestors:{$all:#}}
+    </entry>
+
+    <entry key="social.ugc.byTenantAncestorsExact">
+        {tenantId:#,ancestors:{$all:#},ancestors:{$size:#}}
     </entry>
 
     <entry key="social.ugc.byTargetIdRootNLvl">

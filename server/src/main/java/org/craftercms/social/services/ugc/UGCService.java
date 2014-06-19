@@ -186,5 +186,7 @@ public interface UGCService<T extends UGC> {
      * @param tenant Tenant Owner of the target.
      * @return A count of all possible first level comments.
      */
-    long count(String threadId, String tenant);
+    long count(String threadId, String tenant) throws UGCException;
+
+    long countChildren(String ugcId, String tenantId) throws UGCException;
 }

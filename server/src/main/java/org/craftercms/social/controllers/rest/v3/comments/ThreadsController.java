@@ -52,7 +52,7 @@ public class ThreadsController {
         }
         Thread thread = new Thread();
         final int upToLevel;
-        if (recursive <= 0) {
+        if (recursive < 0) {
             upToLevel = Integer.MAX_VALUE;
         } else {
             upToLevel = recursive;
@@ -61,11 +61,11 @@ public class ThreadsController {
             getSortOrder(sortBy, sortOrder), upToLevel, childrenCount));
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
-        thread.setTotal(thread.getComments().size());
+        thread.setTotal(ugcService.count(id,SocialSecurityUtils.getCurrentProfile().getTenant()));
         return thread;
     }
 
-    @RequestMapping(value = "{id}/comments/{commentId}", method = RequestMethod.GET)
+    @RequestMapping(value = "{id}/comments/{commentId}/children", method = RequestMethod.GET)
     @ApiOperation(value = "Gets all the comments for the given thread", notes = "The pageNumber and page size will " +
         "only work for top level comments. to restrict the amount of children for level for comment use childrenCount" +
         " Sort will apply for all levels")
@@ -85,7 +85,7 @@ public class ThreadsController {
         }
         Thread thread = new Thread();
         final int upToLevel;
-        if (recursive <= 0) {
+        if (recursive < 0) {
             upToLevel = Integer.MAX_VALUE;
         } else {
             upToLevel = recursive;
@@ -94,7 +94,7 @@ public class ThreadsController {
             pageSize, getSortOrder(sortBy, sortOrder), upToLevel, childrenCount));
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
-        thread.setTotal(thread.getComments().size());
+        thread.setTotal(ugcService.countChildren(commentId,SocialSecurityUtils.getCurrentProfile().getTenant()));
         return thread;
     }
 
