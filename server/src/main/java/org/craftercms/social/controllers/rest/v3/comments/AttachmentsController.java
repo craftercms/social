@@ -34,69 +34,69 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
 
     private Logger log = LoggerFactory.getLogger(AttachmentsController.class);
 
-    @RequestMapping(value = "/{ugcId}/attachments", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}/attachments", method = RequestMethod.POST)
     @ResponseBody()
     @ApiOperation(value = "Adds and attachment to the given UGC")
-    public FileInfo addAttachment(@ApiParam(value = "Id of the UGC", name = "ugcId") @NotBlank @PathVariable(value =
-        "ugcId") final String ugcId, @ApiParam(value = "File to upload, Do notice that the server will enforce ")
+    public FileInfo addAttachment(@ApiParam(value = "Id of the UGC", name = "id") @NotBlank @PathVariable(value =
+        "id") final String id, @ApiParam(value = "File to upload, Do notice that the server will enforce ")
     @RequestParam(required = true) CommonsMultipartFile attachment) throws SocialException, IOException {
-        log.debug("Adding Attachment for UGC {} ", ugcId);
+        log.debug("Adding Attachment for UGC {} ", id);
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-        return ugcService.addAttachment(ugcId, tenant, attachment.getInputStream(), attachment.getOriginalFilename(),
+        return ugcService.addAttachment(id, tenant, attachment.getInputStream(), attachment.getOriginalFilename(),
             new MimetypesFileTypeMap().getContentType(attachment.getOriginalFilename()));
     }
 
 
-    @RequestMapping(value = "/{ugcId}/attachments/{attachmentId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}/attachments/{attachmentId}", method = RequestMethod.DELETE)
     @ResponseBody()
     @ApiOperation("Deletes the given attachment for the UGC")
-    public boolean removeAttachment(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "ugcId") final String
-                                            ugcId, @ApiParam("Id of the attachment to delete") @NotBlank
+    public boolean removeAttachment(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "id") final String
+                                            id, @ApiParam("Id of the attachment to delete") @NotBlank
     @PathVariable(value = "attachmentId") final String attachmentId) throws SocialException, IOException {
-        log.debug("Removing Attachment for UGC {} with Id {}", ugcId, attachmentId);
+        log.debug("Removing Attachment for UGC {} with Id {}", id, attachmentId);
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-        ugcService.removeAttachment(ugcId, tenant, attachmentId);
+        ugcService.removeAttachment(id, tenant, attachmentId);
         return true;
     }
 
-    @RequestMapping(value = "/{ugcId}/attachments/{attachmentId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id}/attachments/{attachmentId}", method = RequestMethod.PUT)
     @ResponseBody()
     @ApiOperation("Updates the given attachment for the UGC")
-    public boolean updateAttachment(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "ugcId") final String
-                                            ugcId, @ApiParam("Id of the attachment to delete") @NotBlank
+    public boolean updateAttachment(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "id") final String
+                                            id, @ApiParam("Id of the attachment to delete") @NotBlank
     @PathVariable(value = "attachmentId") final String attachmentId, CommonsMultipartFile file) throws
         SocialException, IOException {
-        log.debug("Removing Attachment for UGC {} with Id {}", ugcId, attachmentId);
+        log.debug("Removing Attachment for UGC {} with Id {}", id, attachmentId);
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-        ugcService.updateAttachment(ugcId, tenant, attachmentId, file.getInputStream());
+        ugcService.updateAttachment(id, tenant, attachmentId, file.getInputStream());
         return true;
     }
 
-    @RequestMapping(value = "/{ugcId}/attachments", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}/attachments", method = RequestMethod.GET)
     @ResponseBody()
     @ApiOperation(value = "Sends the information attachment to the client")
-    public Iterable<FileInfo> listAttachments(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "ugcId")
-                                                  final String ugcId) throws SocialException, UGCNotFound {
-        log.debug("Listing all Attachments for UGC {}", ugcId);
+    public Iterable<FileInfo> listAttachments(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "id")
+                                                  final String id) throws SocialException, UGCNotFound {
+        log.debug("Listing all Attachments for UGC {}", id);
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-        T ugc = (T)ugcService.read(ugcId, tenant);
+        T ugc = (T)ugcService.read(id, tenant);
         if (ugc == null) {
-            throw new UGCNotFound("Ugc with Id " + ugcId + " does not Exists");
+            throw new UGCNotFound("Ugc with Id " + id + " does not Exists");
         }
         return ugc.getAttachments();
     }
 
-    @RequestMapping(value = "/{ugcId}/attachments/{attachmentId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}/attachments/{attachmentId}", method = RequestMethod.GET)
     @ResponseBody()
     @ApiOperation(value = "Sends the attachment to the client", notes = "This will send the headers  content-type " +
         "(based on extension),content-length,and content-disposition")
-    public void readAttachment(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "ugcId") final String
-                                       ugcId, @ApiParam("Id of the attachment") @NotBlank @PathVariable(value =
+    public void readAttachment(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "id") final String
+                                       id, @ApiParam("Id of the attachment") @NotBlank @PathVariable(value =
         "attachmentId") final String attachmentId, final HttpServletResponse response) throws SocialException,
         IOException {
-        log.debug("Reading Attachment for UGC {} with Id {}", ugcId, attachmentId);
+        log.debug("Reading Attachment for UGC {} with Id {}", id, attachmentId);
         String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-        FileInfo fileInfo = ugcService.readAttachment(ugcId, tenant, attachmentId);
+        FileInfo fileInfo = ugcService.readAttachment(id, tenant, attachmentId);
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(fileInfo.getContentType());
         String realName = fileInfo.getFileName().substring(fileInfo.getFileName().lastIndexOf(File.separator));

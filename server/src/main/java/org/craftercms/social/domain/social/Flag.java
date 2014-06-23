@@ -1,6 +1,7 @@
 package org.craftercms.social.domain.social;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.jackson.mvc.annotations.SecureProperty;
 import org.jongo.marshall.jackson.oid.Id;
 
 /**
@@ -11,8 +12,8 @@ public class Flag {
     @Id
     private ObjectId id;
     private String reason;
+    @SecureProperty(role = {"SOCIAL_ADMIN","SOCIAL_MODERATOR"})
     private String userId;
-
 
     public Flag() {
     }

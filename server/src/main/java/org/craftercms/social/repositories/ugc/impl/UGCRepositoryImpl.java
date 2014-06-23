@@ -19,6 +19,7 @@ import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.exceptions.IllegalUgcException;
 import org.craftercms.social.repositories.SocialJongoRepository;
 import org.craftercms.social.repositories.TreeUGC;
 import org.craftercms.social.repositories.ugc.UGCRepository;
@@ -175,6 +176,9 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
                 throw new IllegalArgumentException("Given UGC id is not valid");
             }
             T parent = findUGC(tenantId,ugcId);
+            if(parent==null){
+                throw new IllegalUgcException("Ugc does not exist for given id and tenant");
+            }
             ArrayDeque<ObjectId> ancestors = parent.getAncestors().clone();
             ancestors.addLast(parent.getId());
             parent = null;

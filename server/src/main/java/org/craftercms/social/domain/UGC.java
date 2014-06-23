@@ -16,6 +16,8 @@
  */
 package org.craftercms.social.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,8 +26,10 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.craftercms.commons.jackson.mvc.annotations.Exclude;
 import org.craftercms.commons.mongo.Document;
 import org.craftercms.commons.mongo.FileInfo;
+import org.craftercms.profile.api.Profile;
 import org.jongo.marshall.jackson.oid.Id;
 import org.springframework.beans.BeanUtils;
 
@@ -38,6 +42,7 @@ public class UGC<T extends UGC> {
     private ObjectId id;
     private ArrayDeque<ObjectId> ancestors;
     private String targetId;
+    @Exclude
     private String tenantId;
     private String subject;
     private String body;
@@ -50,11 +55,15 @@ public class UGC<T extends UGC> {
     private Map<String, Object> attributes;
     private ArrayDeque<T> children;
     private List<FileInfo> attachments;
+    private Profile user;
+
+
 
     public UGC() {
         ancestors = new ArrayDeque<>();
         children = new ArrayDeque<>();
         attachments=new ArrayList<>();
+        user=null;
     }
 
     public UGC(T base) {
@@ -197,6 +206,10 @@ public class UGC<T extends UGC> {
 
     public void setAttachments(final List<FileInfo> attachments) {
         this.attachments = attachments;
+    }
+
+    public Profile getUser() {
+        return user;
     }
 
     public boolean isMyParent(final T ugc) {

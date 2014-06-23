@@ -49,6 +49,7 @@
                         <beans:property name="annotationIntrospector" >
                             <beans:bean class="org.craftercms.commons.jackson.mvc.CrafterJacksonAnnotationIntrospector">
                                 <beans:property name="defaultFilter" value="gdata"/>
+                                <beans:property name="securityPropertyFilter" ref="social.utils.securePropertyHandler"/>
                             </beans:bean>
                         </beans:property>
                         <beans:constructor-arg name="serializerList">
