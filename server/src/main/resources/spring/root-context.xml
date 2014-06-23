@@ -42,5 +42,20 @@
         </property>
     </bean>
     <bean class="${studio.social.system.ugcClass}" id="social.ugc.factory"/>
+    <bean class="org.craftercms.social.util.SocialSecurePropertyHandler" id="social.utils.securePropertyHandler"/>
+    <bean class="org.craftercms.social.util.profile.ProfileAggregatorImpl">
+        <property name="profileService" ref="crafter.profileServiceRestClient"/>
+        <property name="cache" ref="crafter.ehCacheAuthenticationCache">
+        </property>
+    </bean>
 
+<bean id="social.support.ehCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="name" value="social.profileAggregationCache"/>
+    <property name="timeToLiveSeconds" value="${studio.social.system.profileAgg.cache.ttl}"/>
+    <property name="timeToIdleSeconds" value="${studio.social.system.profileAgg.cache.tti}"/>
+    <property name="maxEntriesLocalHeap" value="${studio.social.system.profileAgg.cache.maxElementsInMemory}"/>
+</bean>
+
+
+  
 </beans>

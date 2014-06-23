@@ -18,11 +18,13 @@ import org.craftercms.commons.file.FileUtils;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.exceptions.IllegalSocialQueryException;
+import org.craftercms.social.exceptions.IllegalUgcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -62,12 +64,18 @@ public class GlobalDefaultExceptionHandler {
     }
 
     @ExceptionHandler(value = {MissingServletRequestParameterException.class, IllegalSocialQueryException.class,
-        IllegalArgumentException.class, FileExistsException.class})
+        IllegalArgumentException.class, FileExistsException.class, IllegalUgcException.class})
     public void missingParameterHandler(HttpServletRequest req, HttpServletResponse resp,
                                         Exception e) throws Exception {
         serializeError(e, resp, HttpStatus.BAD_REQUEST, req);
     }
 
+
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    public void requestMethodNotSupportedException(HttpServletRequest req, HttpServletResponse resp,
+                                        Exception e) throws Exception {
+        serializeError(e, resp, HttpStatus.NOT_ACCEPTABLE, req);
+    }
     @ExceptionHandler(value = MaxUploadSizeExceededException.class)
     public void sizeLimitExceededException(HttpServletRequest req, HttpServletResponse response,
                                            Exception ex) throws Exception {
