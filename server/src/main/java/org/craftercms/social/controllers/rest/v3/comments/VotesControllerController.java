@@ -19,36 +19,36 @@ public class VotesControllerController<T> extends AbstractCommentsController {
 
     private Logger log = LoggerFactory.getLogger(VotesControllerController.class);
 
-    @RequestMapping(value = "{id}/vote/up", method = RequestMethod.POST)
+    @RequestMapping(value = "{id}/votes/up", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "Votes Up a comment for the current logged user.",notes = "If a user already vote the " +
         "current comment down, it will be remove before counting the vote up.")
     public T voteUp(@PathVariable(value = "id") @ApiParam(value = "Ugc id to vote up") final String id) throws
         SocialException {
-        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-        String userId = "testUserId"; //=ProfileUtils.getCurrentProfile().getTenant();
-        return (T)socialServices.vote(id, VoteOptions.VOTE_UP, userId, tenant);
+        String tenant = tenant();
+        String userId = userId();
+        return (T)socialServices.vote(id, VoteOptions.VOTE_UP,userId, tenant);
     }
 
-    @RequestMapping(value = "{id}/vote/down", method = RequestMethod.POST)
+    @RequestMapping(value = "{id}/votes/down", method = RequestMethod.POST)
          @ResponseBody
          @ApiOperation(value = "Votes Down a comment for the current logged user.",
              notes = "If a user already vote up the comment it will remove the up before counting the vote down.")
          public T voteDown(@PathVariable(value = "id") @ApiParam(value = "Ugc id to vote up") final String id) throws
         SocialException {
-        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-        String userId = "testUserId"; //=ProfileUtils.getCurrentProfile().getTenant();
+        String tenant = tenant();
+        String userId = userId();
         return (T)socialServices.vote(id, VoteOptions.VOTE_DOWN, userId, tenant);
     }
 
-    @RequestMapping(value = "{id}/vote/netural", method = RequestMethod.POST)
+    @RequestMapping(value = "{id}/votes/netural", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "Votes Neutral (removes user vote for either up or down)")
     public T voteNeutral(@PathVariable(value = "id") @ApiParam(value = "Ugc id to vote up") final String id)
         throws
         SocialException {
-        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
-        String userId = "testUserId"; //=ProfileUtils.getCurrentProfile().getTenant();
+        String tenant = tenant();
+        String userId = userId();
         return (T)socialServices.vote(id, VoteOptions.VOTE_NEUTRAL, userId, tenant);
     }
 
