@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
 
     <import resource="classpath:/crafter/security/rest-security-context.xml"/>
     <bean name="social.properties"
@@ -43,7 +45,7 @@
     </bean>
     <bean class="${studio.social.system.ugcClass}" id="social.ugc.factory"/>
     <bean class="org.craftercms.social.util.SocialSecurePropertyHandler" id="social.utils.securePropertyHandler"/>
-    <bean class="org.craftercms.social.util.profile.ProfileAggregatorImpl">
+    <bean class="org.craftercms.social.util.profile.ProfileAggregatorImpl" id="social.profileAggregator">
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
         <property name="cache" ref="crafter.ehCacheAuthenticationCache">
         </property>
@@ -56,6 +58,11 @@
     <property name="maxEntriesLocalHeap" value="${studio.social.system.profileAgg.cache.maxElementsInMemory}"/>
 </bean>
 
+ <bean class="org.craftercms.social.util.serialization.SocialInjectValueFactory" id="social.InjectValueHandler">
+     <property name="profileAggregator" ref="social.profileAggregator"/>
+ </bean>
 
-  
+
+
+
 </beans>

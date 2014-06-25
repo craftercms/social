@@ -8,6 +8,7 @@ import org.craftercms.social.domain.UGC;
 /**
  * Created by cortiz on 6/13/14.
  */
+
 public class Thread {
 
     private long total;

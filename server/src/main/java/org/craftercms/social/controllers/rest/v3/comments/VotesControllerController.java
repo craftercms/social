@@ -54,5 +54,4 @@ public class VotesControllerController<T> extends AbstractCommentsController {
 
 
 
-
 }

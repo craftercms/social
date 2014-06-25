@@ -32,6 +32,7 @@
                     >
                 <beans:property name="supportedMediaTypes" value="application/json"/>
                 <beans:property name="prettyPrint" value="false"/>
+                <!--<beans:property name="injectValueFactory" ref="social.InjectValueHandler"/>-->
                 <beans:property name="filter">
                     <beans:bean class="org.craftercms.commons.jackson.mvc.SelectorFilterFactory">
                         <beans:property name="filters">
@@ -45,8 +46,8 @@
                 </beans:property>
 
                 <beans:property name="objectMapper">
-                    <beans:bean class="org.craftercms.social.util.serialization.UGCObjectMapper" >
-                        <beans:property name="annotationIntrospector" >
+                    <beans:bean class="org.craftercms.social.util.serialization.UGCObjectMapper">
+                        <beans:property name="annotationIntrospector">
                             <beans:bean class="org.craftercms.commons.jackson.mvc.CrafterJacksonAnnotationIntrospector">
                                 <beans:property name="defaultFilter" value="gdata"/>
                                 <beans:property name="securityPropertyFilter" ref="social.utils.securePropertyHandler"/>

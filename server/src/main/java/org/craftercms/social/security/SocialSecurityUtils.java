@@ -28,7 +28,7 @@ public class SocialSecurityUtils {
             profile.setUsername(ANONYMOUS_ROLE);
             profile.setRoles(new LinkedHashSet<>(Arrays.asList(ANONYMOUS_ROLE)));
             profile.setAttributes(new HashMap<String, Object>());
-            profile.setId(new ObjectId());
+            profile.setId(new ObjectId("53a8c138b91d36008c85714f"));
             profile.setTenant("test");
         }else{
             profile=currentAuth.getProfile();
