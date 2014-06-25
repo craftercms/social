@@ -16,8 +16,6 @@
  */
 package org.craftercms.social.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +25,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.jackson.mvc.annotations.Exclude;
+
+import org.craftercms.commons.jackson.mvc.annotations.InjectValue;
 import org.craftercms.commons.mongo.Document;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.profile.api.Profile;
@@ -55,21 +55,20 @@ public class UGC<T extends UGC> {
     private Map<String, Object> attributes;
     private ArrayDeque<T> children;
     private List<FileInfo> attachments;
+    @InjectValue(useProperty = "createdBy")
     private Profile user;
-
-
 
     public UGC() {
         ancestors = new ArrayDeque<>();
         children = new ArrayDeque<>();
-        attachments=new ArrayList<>();
-        user=null;
+        attachments = new ArrayList<>();
+        user = null;
     }
 
     public UGC(T base) {
         this();
         BeanUtils.copyProperties(base, this);
-    }
+}
 
     public UGC(final String subject, final String body, final String targetId) {
         this();
@@ -78,8 +77,7 @@ public class UGC<T extends UGC> {
         this.targetId = targetId;
     }
 
-    public UGC(final String subject, final String body, final String targetId,
-               final ArrayDeque<ObjectId> ancestors) {
+    public UGC(final String subject, final String body, final String targetId, final ArrayDeque<ObjectId> ancestors) {
         this();
         this.subject = subject;
         this.body = body;
@@ -210,6 +208,10 @@ public class UGC<T extends UGC> {
 
     public Profile getUser() {
         return user;
+    }
+
+    public void setUser(final Profile user) {
+        this.user = user;
     }
 
     public boolean isMyParent(final T ugc) {
