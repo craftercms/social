@@ -10,6 +10,22 @@
         model: S.model.Comment,
         isWatched: false,
 
+        create: function (model, options) {
+
+            var data = new FormData();
+            var mdl = model.toJSON ? model.toJSON() : model;
+
+            $.each(mdl, function (key, value) {
+                data.append(key, key === 'attributes' ? JSON.stringify(value) : value);
+            });
+
+            return B.Collection.prototype.create.call(this, model, $.extend({
+                data: data,
+                contentType: false
+            }, options || {}));
+
+        },
+
         initialize: function ( models, oConfig ) {
             this.guid = U.guid();
             this.extendCfg(this.constructor.DEFAULTS, oConfig);
@@ -22,17 +38,13 @@
 
         url: function () {
             // TODO set order through class configuration
-            return S.url('ugc.target');
+            return S.url('threads.{id}.comments', { id: this.cfg.target });
         },
 
         parse: function ( response ) {
-            if (response.list.length) {
-                this.setIsWatched(
-                    response.list[0].userInfo.watched);
-            } else {
-                this.setIsWatched(null);
-            }
-            return response.list || response;
+            var comments = response.comments || response;
+            this.setIsWatched(response.watched || false);
+            return comments;
         },
 
         getGUID: function () {

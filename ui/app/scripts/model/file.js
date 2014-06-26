@@ -14,7 +14,7 @@
 
         url: function () {
             if (this.isNew()) {
-                return S.url('ugc.file');
+                return S.url('comments.{_id}.attachments');
             } else {
                 // TODO ... update?
             }

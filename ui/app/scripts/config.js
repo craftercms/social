@@ -16,15 +16,46 @@
         url: {
             base: '/',
             files: '/attachment/{attachmentId}?tenant=craftercms',
-            service: '/fixtures/api/2/',
+            service: '/api/3/',
             templates: 'templates/',
             security: '/login',
             subscriptions: {
                 'subscribe': '{target}.json',
                 'unsubscribe': '{target}.json'
             },
+
+            threads: {
+                '{id}': {
+                    'comments': {
+                        'value': '',
+                        '{id}': {
+
+                        }
+                    }
+                }
+            },
+            comments: {
+                'value': '',
+                '{_id}': {
+                    'value': '',
+                    'votes': {
+                        'value': '', // get comment votes
+                        'neutral': '',
+                        'down': '',
+                        'up': ''
+                    },
+                    'flags': {
+                        value: '' // Flag comment flags
+                    },
+                    'attachments': {
+                        'value': ''
+                    },
+                    'moderate': ''
+                }
+            },
+
             ugc: {
-                target: '.json?sortField=createdDate&sortOrder=ASC',
+                target: '.json',
                 create: '.json',
                 like: '/{id}.json',
                 unlike: '/{id}.json',

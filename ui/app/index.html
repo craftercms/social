@@ -101,37 +101,19 @@
 
 <script>
 
+    window.CKEDITOR_BASEPATH = '/libs/ckeditor/';
+
     /*
      * Social configuration attributes can be overwritten by
      * declaring this object before the social javascript is
      * imported into the page
      */
-    var crafterSocial_cfg = (function () {
+    var crafterSocial_cfg = {
 
-        var cfg = {
+        'url.service'                   : 'http://0.0.0.0:8090/crafter-social/api/3/',
+//        'url.security'                  : 'http://0.0.0.0:8090/social-auth/crafter-security-login'
 
-            'url.base'                      : '/',
-            'url.service'                   : '/fixtures/api/2/'/*,
-
-            'url.service'                   : 'http://0.0.0.0:8090/crafter-social/api/2/',
-            'url.templates'                 : 'http://0.0.0.0:9000/templates/',
-            'url.security'                  : 'http://0.0.0.0:8090/social-auth/crafter-security-login',
-            */
-
-            /**
-             * Overriding a director handler example:
-             *
-             'director.cfg.handlers.{CONST:EVENT_UNAUTHORISED_RESPONSE}' : {
-                    handler: function () {
-                        alert ('unauthorised!');
-                    }
-                 } */
-
-        };
-
-        return cfg;
-
-    }) ();
+    };
 
     /*
      * this function needs to be declared before the social javascript
@@ -143,23 +125,10 @@
      *
      */
     function crafterSocial_onAppReady ( director, CrafterSocial ) {
-        // console.log('Crafter Social is Ready!');
-
-
-//        var div = document.createElement('div');
-//        alert('ondragover' in div);
-
 
         director.socialise({
             target: '#jumbotron',
-            tenant: 'craftercms',
-            socialbar: {
-                cfg: {
-                    widgets: [
-                        { cls: 'crafter.social.view.barget.Reveal', cfg: { title: 'Reveal' }, instCfg: {  } }
-                    ]
-                }
-            }
+            tenant: 'craftercms'
         });
 
         director.socialise({

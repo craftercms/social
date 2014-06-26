@@ -5,19 +5,13 @@
 
     require.config({
         paths: {
-
-            // crafter: '?',
             'crafter.social': 'app',
             'crafter.social_api': 'api',
-
             'component.TemplateEngine': 'component/template-engine',
             'component.Director': 'component/director',
             'component.Editor': 'component/editor',
-
             'model.Comment': 'model/comment',
-
             'controller.Base': 'controller/base',
-
             'view.Base': 'view/base',
             'view.Discussion': 'view/discussion',
             'view.Commenting': 'view/commenting',
@@ -25,14 +19,12 @@
             'view.Lightbox': 'view/lightbox',
             'view.Popover': 'view/popover',
             'view.Commentable': 'view/commentable',
-
             'view.barget.Base': 'view/barget/base',
             'view.barget.Feedback': 'view/barget/feedback',
             'view.barget.Share': 'view/barget/share',
             'view.barget.Reveal': 'view/barget/reveal',
             'view.barget.Rate': 'view/barget/rate',
             'view.SocialBar': 'view/social-bar',
-
             jquery: '../libs/jquery/jquery',
             backbone: '../libs/backbone/backbone',
             underscore: '../libs/underscore/underscore',
@@ -50,125 +42,241 @@
             bootstrapScrollspy: '../libs/sass-bootstrap/js/scrollspy',
             bootstrapTab: '../libs/sass-bootstrap/js/tab',
             bootstrapTooltip: '../libs/sass-bootstrap/js/tooltip',
-            bootstrapTransition: '../libs/sass-bootstrap/js/transition'
-
+            bootstrapTransition: '../libs/sass-bootstrap/js/transition',
+            'blueimp-canvas-to-blob': '../libs/blueimp-canvas-to-blob/js/canvas-to-blob',
+            'blueimp-tmpl': '../libs/blueimp-tmpl/js/tmpl',
+            requirejs: '../libs/requirejs/require',
+            'sass-bootstrap': '../libs/sass-bootstrap/dist/js/bootstrap',
+            'load-image': '../libs/blueimp-load-image/js/load-image',
+            'load-image-ios': '../libs/blueimp-load-image/js/load-image-ios',
+            'load-image-orientation': '../libs/blueimp-load-image/js/load-image-orientation',
+            'load-image-meta': '../libs/blueimp-load-image/js/load-image-meta',
+            'load-image-exif': '../libs/blueimp-load-image/js/load-image-exif',
+            'load-image-exif-map': '../libs/blueimp-load-image/js/load-image-exif-map',
+            'jquery.postmessage-transport': '../libs/jquery-file-upload/js/cors/jquery.postmessage-transport',
+            'jquery.xdr-transport': '../libs/jquery-file-upload/js/cors/jquery.xdr-transport',
+            'jquery.ui.widget': '../libs/jquery-file-upload/js/vendor/jquery.ui.widget',
+            'jquery.fileupload': '../libs/jquery-file-upload/js/jquery.fileupload',
+            'jquery.fileupload-process': '../libs/jquery-file-upload/js/jquery.fileupload-process',
+            'jquery.fileupload-validate': '../libs/jquery-file-upload/js/jquery.fileupload-validate',
+            'jquery.fileupload-image': '../libs/jquery-file-upload/js/jquery.fileupload-image',
+            'jquery.fileupload-audio': '../libs/jquery-file-upload/js/jquery.fileupload-audio',
+            'jquery.fileupload-video': '../libs/jquery-file-upload/js/jquery.fileupload-video',
+            'jquery.fileupload-ui': '../libs/jquery-file-upload/js/jquery.fileupload-ui',
+            'jquery.fileupload-jquery-ui': '../libs/jquery-file-upload/js/jquery.fileupload-jquery-ui',
+            'jquery.fileupload-angular': '../libs/jquery-file-upload/js/jquery.fileupload-angular',
+            'jquery.iframe-transport': '../libs/jquery-file-upload/js/jquery.iframe-transport'
         },
         shim: {
-
-            // 'crafter':: { deps: [] },
-            'crafter.social': { deps: [] },
-            'crafter.social_api': {
-                deps: [ 'jquery', 'backbone', 'crafter.social' ]
+            'crafter.social': {
+                deps: [
+    
+                ]
             },
-
+            'crafter.social_api': {
+                deps: [
+                    'jquery',
+                    'backbone',
+                    'crafter.social'
+                ]
+            },
             'component.TemplateEngine': {
-                deps: [ 'crafter.social', 'handlebars' ]
+                deps: [
+                    'crafter.social',
+                    'handlebars'
+                ]
             },
             'component.Director': {
-                deps: [ 'crafter.social_api' ]
+                deps: [
+                    'crafter.social_api'
+                ]
             },
             'component.Editor': {
-                deps: [ 'crafter.social_api', 'ckeditor', 'ckeditor.plugins.autogrow' ]
+                deps: [
+                    'crafter.social_api',
+                    'ckeditor',
+                    'ckeditor.plugins.autogrow'
+                ]
             },
-
             'model.Comment': {
-                deps: [ 'crafter.social_api' ]
+                deps: [
+                    'crafter.social_api'
+                ]
             },
-
             'view.Base': {
-                deps: [ 'crafter.social_api', 'component.TemplateEngine' ]
+                deps: [
+                    'crafter.social_api',
+                    'component.TemplateEngine'
+                ]
             },
             'view.Discussion': {
-                deps: [ 'view.Base' ]
+                deps: [
+                    'view.Base'
+                ]
             },
             'view.Commenting': {
-                deps: [ 'component.Editor' ]
+                deps: [
+                    'component.Editor'
+                ]
             },
             'view.Comment': {
-                deps: [ 'component.Director', 'view.Base' ]
+                deps: [
+                    'component.Director',
+                    'view.Base'
+                ]
             },
             'view.Lightbox': {
-                deps: [ 'view.Discussion', 'view.Comment', 'view.Commenting', 'bootstrapModal' ]
+                deps: [
+                    'view.Discussion',
+                    'view.Comment',
+                    'view.Commenting',
+                    'bootstrapModal'
+                ]
             },
             'view.Popover': {
-                deps: [ 'view.Discussion', 'view.Comment', 'view.Commenting', 'bootstrapPopover' ]
+                deps: [
+                    'view.Discussion',
+                    'view.Comment',
+                    'view.Commenting',
+                    'bootstrapPopover'
+                ]
             },
             'view.Commentable': {
-                deps: [ 'view.Base', 'bootstrapTooltip', 'view.Popover', 'view.Lightbox' ]
+                deps: [
+                    'view.Base',
+                    'bootstrapTooltip',
+                    'view.Popover',
+                    'view.Lightbox'
+                ]
             },
             'view.SocialBar': {
-                deps: [ 'view.Base', 'view.barget.Feedback', 'view.barget.Rate', 'view.barget.Reveal', 'view.barget.Share' ]
+                deps: [
+                    'view.Base',
+                    'view.barget.Feedback',
+                    'view.barget.Rate',
+                    'view.barget.Reveal',
+                    'view.barget.Share'
+                ]
             },
             'view.barget.Base': {
-                deps: [ 'crafter.social_api', 'view.Base' ]
+                deps: [
+                    'crafter.social_api',
+                    'view.Base'
+                ]
             },
             'view.barget.Feedback': {
-                deps: [ 'crafter.social_api', 'view.barget.Base' ]
+                deps: [
+                    'crafter.social_api',
+                    'view.barget.Base'
+                ]
             },
             'view.barget.Rate': {
-                deps: [ 'crafter.social_api', 'view.barget.Base' ]
+                deps: [
+                    'crafter.social_api',
+                    'view.barget.Base'
+                ]
             },
             'view.barget.Reveal': {
-                deps: [ 'crafter.social_api', 'view.barget.Base' ]
+                deps: [
+                    'crafter.social_api',
+                    'view.barget.Base'
+                ]
             },
             'view.barget.Share': {
-                deps: [ 'crafter.social_api', 'view.barget.Base' ]
+                deps: [
+                    'crafter.social_api',
+                    'view.barget.Base'
+                ]
             },
-
             'controller.Base': {
-                deps: [ 'crafter.social_api', 'model.Comment' ]
+                deps: [
+                    'crafter.social_api',
+                    'model.Comment'
+                ]
             },
-
-            /*
-             * libs
-             */
-
             backbone: {
-                deps: [ 'jquery', 'underscore' ]
+                deps: [
+                    'jquery',
+                    'underscore'
+                ]
             },
             ckeditor: {
-                deps: []
+                deps: [
+    
+                ]
             },
             'ckeditor.plugins.autogrow': {
-                deps: [ 'ckeditor' ]
+                deps: [
+                    'ckeditor'
+                ]
             },
             bootstrapAffix: {
-                deps: [ 'jquery' ]
+                deps: [
+                    'jquery'
+                ]
             },
             bootstrapAlert: {
-                deps: [ 'jquery', 'bootstrapTransition' ]
+                deps: [
+                    'jquery',
+                    'bootstrapTransition'
+                ]
             },
             bootstrapButton: {
-                deps: [ 'jquery' ]
+                deps: [
+                    'jquery'
+                ]
             },
             bootstrapCarousel: {
-                deps: [ 'jquery', 'bootstrapTransition' ]
+                deps: [
+                    'jquery',
+                    'bootstrapTransition'
+                ]
             },
             bootstrapCollapse: {
-                deps: [ 'jquery', 'bootstrapTransition' ]
+                deps: [
+                    'jquery',
+                    'bootstrapTransition'
+                ]
             },
             bootstrapDropdown: {
-                deps: [ 'jquery' ]
+                deps: [
+                    'jquery'
+                ]
             },
-            bootstrapModal:{
-                deps: [ 'jquery', 'bootstrapTransition' ]
+            bootstrapModal: {
+                deps: [
+                    'jquery',
+                    'bootstrapTransition'
+                ]
             },
             bootstrapPopover: {
-                deps: [ 'jquery', 'bootstrapTooltip' ]
+                deps: [
+                    'jquery',
+                    'bootstrapTooltip'
+                ]
             },
             bootstrapScrollspy: {
-                deps: [ 'jquery' ]
+                deps: [
+                    'jquery'
+                ]
             },
             bootstrapTab: {
-                deps: [ 'jquery', 'bootstrapTransition' ]
+                deps: [
+                    'jquery',
+                    'bootstrapTransition'
+                ]
             },
             bootstrapTooltip: {
-                deps: [ 'jquery', 'bootstrapTransition' ]
+                deps: [
+                    'jquery',
+                    'bootstrapTransition'
+                ]
             },
             bootstrapTransition: {
-                deps: [ 'jquery' ]
+                deps: [
+                    'jquery'
+                ]
             }
-
         }
     });
 

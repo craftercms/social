@@ -94,8 +94,9 @@
             e.preventDefault();
 
             var me = this;
+            var isFlagged = false;
             // TODO fixed type once backed fixes (flaged)
-            var isFlagged = this.model.get('userInfo').flaged;
+            // var isFlagged = this.model.flaggedBy(Director.getProfile().get('id'));
 
             var modal = S.util.instance('view.Modal', {
                 modal: { show: true },
@@ -147,7 +148,6 @@
             var model = this.model;
 
             var files   = S.util.instance('controller.Files', null, {
-                tenant: this.cfg.tenant,
                 comment: model
             });
 
@@ -164,13 +164,13 @@
 
             modal.$el.on('hidden.bs.modal', function () {
                 me.model.fetch();
-                modal.uploader.fileupload('destroy');
+                modal.uploader && modal.uploader.fileupload('destroy');
                 modal.destroy();
             });
 
-            if (this.model.get('flags') === 0) {
+            if (true || this.model.get('flags').length === 0) {
 
-                var URL = S.url('ugc.{id}.add_attachment', model.toJSON());
+                var URL = S.url('comments.{_id}.attachments', model.toJSON());
 
                 modal.$el.on('shown.bs.modal', function () {
 
@@ -180,11 +180,11 @@
                         dataType: 'json',
                         // dropZone: view.$el,
                         singleFileUploads: true,
-                        url: S.url('ugc.{id}.add_attachment', model.toJSON()),
+                        url: URL,
                         xhrFields: { withCredentials: true },
                         paramName: 'attachment',
                         uploadPostKey: 'attachment',
-                        formData: { tenant: model.get('tenant') },
+                        // formData: {  },
                         getFilesFromResponse: function (data) {
                             return data.files || [];
                         }
@@ -196,7 +196,7 @@
 
             } else {
 
-                modal.$('.modal-body').prepend([
+                view.$el.html([
                     '<div class="alert alert-warning">',
                     'This comment is flagged. File attachments are disabled.',
                     '</div>'

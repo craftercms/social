@@ -6,52 +6,34 @@
         $       = S.$;
 
     function POST (url, attributes, data) {
-        this.save(attributes, {
-            url: S.url(url, this.toJSON()),
-            type: 'POST', // TODO REMOVE OR ADJUST
-            data: $.param($.extend({ tenant: this.get('tenant') }, data || {}))
-        });
+        return SUBMIT(url, attributes, data, 'POST');
+    }
+
+    function SUBMIT (url, data, method) {
+
+        var options = {
+            type: method || 'POST',
+            url: S.url(url, this.toJSON())
+        };
+
+        data && (options.data = $.param(data));
+        return this.save(null, options);
+
     }
 
     var Comment = Model.extend({
 
-        idAttribute: 'id',
+        idAttribute: '_id',
         defaults: {
-            // 'actions': ACTIONS,
-            'anonymousFlag' : false,
-            'childCount' : 0,
-            'children' : [],
-            'createdDate' : Date.now(),
-            'dateAdded' : Date.now(),
-            'extraChildCount' : 0,
-            'flagCount' : 0,
-            'id' : null,
-            'lastModifiedDate' : Date.now(),
-            'likeCount' : 0,
-            'moderationStatus' : 'UNMODERATED',
-            'offenceCount' : 0,
-            'profile' : {},
-            'profileId' : '',
-            'targetDescription' : '',
-            'targetId' : '',
-            'targetUrl' : '',
-            'tenant' : '',
-            'textContent' : '', // '{ "content": "" }',
-            'timesModerated' : 0
+            'body': '',
+            'thread': '',
+            'children': [],
+            'attributes': {},
+            'createdDate' : Date.now()
         },
 
         url: function () {
-            if (this.isNew()) {
-                return S.url('ugc.create');
-            } else {
-                // TODO ... update?
-            }
-        },
-
-        fetch: function ( options ) {
-            return Model.prototype.fetch.call(this, $.extend({
-                url: S.url('ugc.get_ugc', this.toJSON())
-            }, options || {}));
+            return S.url(this.isNew() ? 'comments' : 'comments.{_id}', this.toJSON());
         },
 
         isTrashed: function () {
@@ -59,24 +41,37 @@
         },
 
         like: function () {
-            POST.call(this, 'ugc.like', { likes: this.get('likes') + 1 });
+            SUBMIT.call(this, 'comments.{_id}.votes.up');
         },
         unlike: function () {
-            POST.call(this, 'ugc.unlike', { likes: this.get('likes') - 1 });
+            SUBMIT.call(this, 'comments.{_id}.votes.neutral');
+        },
+        dislike: function () {
+            SUBMIT.call(this, 'comments.{_id}.votes.down');
         },
 
         flag: function ( reason ) {
-            POST.call(this, 'ugc.flag', { likes: this.get('flags') + 1 }, { reason: reason });
+            SUBMIT.call(this, 'comments.{_id}.flags', { reason: reason });
         },
         unflag: function ( reason ) {
-            POST.call(this, 'ugc.unflag', { likes: this.get('flags') - 1 }, { reason: reason });
+            // TODO
+            this.save(null, {
+                type: 'DELETE',
+                url: S.url('comments.{_id}.flags', this.toJSON())
+            });
+            POST.call(this, 'comments.{_id}.flags', { likes: this.get('flags') - 1 }, { reason: reason });
         },
-
-        dislike: function () {
-            POST.call(this, 'ugc.dislike', { likes: this.get('dislikes') + 1 });
-        },
-        undoDislike: function () {
-            POST.call(this, 'ugc.undislike', { likes: this.get('dislikes') - 1 });
+        flaggedBy: function (profileId) {
+            var flags = this.attributes.flags,
+                l = flags.length, i;
+            if (flags && flags.length) {
+                for (i = 0; i < l; ++i) {
+                    if (flags[i] === profileId) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         },
 
         trash: function () {
@@ -84,7 +79,7 @@
         },
 
         moderate: function ( status ) {
-            POST.call(this, 'ugc.moderation.{id}', { moderationStatus: status }, { moderationStatus: status, ugcId: this.get('id') });
+            SUBMIT.call(this, 'comments.{_id}.moderate', { status: status }, 'PUT');
         },
 
         reply: function () {

@@ -32,10 +32,7 @@
             this.delegateActions(this, this.$options);
 
             this.collection.fetch({
-                data : {
-                    target: this.cfg.target,
-                    tenant: this.cfg.tenant
-                }
+                data : { id: this.cfg.target }
             });
 
         },

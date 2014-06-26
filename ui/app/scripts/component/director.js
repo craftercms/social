@@ -222,7 +222,8 @@
 
             var controller = new Ctrl(null, {
                 target: oCfg.target,
-                tenant: oCfg.tenant
+                tenant: oCfg.tenant,
+                model: S.model.Comment
             });
 
             this.cache(S.string.fmt('controller.%@.%@', oCfg.tenant, oCfg.target), controller);

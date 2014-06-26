@@ -108,8 +108,9 @@
         return new Handlebars.SafeString( condition ? question : colon );
     });
 
-    Handlebars.registerHelper('multiplicity', function( number, plural, singular ) {
-        return new Handlebars.SafeString( (number > 1) ? plural : singular );
+    Handlebars.registerHelper('multiplicity', function( number, plural, singular, zero ) {
+        var string = (number === 0 ? zero : (number > 1) ? plural : singular).fmt(number);
+        return new Handlebars.SafeString( string );
     });
 
     Handlebars.registerHelper('minusOne', function( number ) {

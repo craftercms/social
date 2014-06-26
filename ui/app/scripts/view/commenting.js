@@ -80,15 +80,16 @@
             if (!content) { return; }
 
             var data = {
-                profile: app.getProfile().toJSON(),
-                textContent: content,
+                body: content,
                 dateAdded: Date.now(),
-                tenant: this.cfg.tenant,
-                targetId: this.cfg.target
+                thread: this.cfg.target,
+                attributes: {}
             };
 
             // TODO evaluate if this should stay. Might not be great for security.
-            app.trigger('social.view.Commenting.beforecreate', data);
+            app.trigger('social.view.Commenting.beforecreate', data.attributes);
+
+            data.attributes.hello = 'world';
 
             var collection = this.collection;
             collection.create(data, {

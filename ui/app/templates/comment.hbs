@@ -6,57 +6,45 @@
         <div class="comment-data">
             <header>
                 <!-- TODO fixed type once backed fixes (flaged) -->
-                <a class="pull-right" data-action-flag title="{{flags}} flags. {{ternary userInfo.flaged 'You flagged this' ''}}">
+                <a class="pull-right" data-action-flag title="{{multiplicity flags.length 'Flagged %@ times' 'Flagged one time' 'Never flagged'}}.">
                     <i class="crafter-social-icon cs-icon-flag"></i>
                 </a>
-                {{#mif userInfo.actions 'has' 'moderate'}}
+
                 <a class="pull-right" data-action="trash">
                     <i class="crafter-social-icon cs-icon-trash"></i>
                 </a>
-                {{/mif}}
+                {{#mif userInfo.actions 'has' 'moderate'}}{{/mif}}
                 <strong>
                     {{#if profile.displayName}}
                         {{profile.displayName}}
                     {{else}}
-                        {{profile.userName}}
+                        Anonymous
                     {{/if}}
                 </strong>
-                <small>{{date dateAdded}}</small>
+                <small>{{date lastModifiedDate}}</small>
             </header>
             <section class="comment-body">
-                {{html textContent}}
+                {{html body}}
             </section>
         </div>
     </div>
     <footer class="comment-actions">
         <div class="clearfix">
             <ul class="list-inline list-unstyled pull-left">
-                {{#unless userInfo.liked}}
-                    {{#unless userInfo.disliked}}
-                        <li>
-                            <a data-action="like">
-                                Like
-                            </a>
-                        </li>
-                        <li>
-                            <a data-action="dislike">
-                                Dislike
-                            </a>
-                        </li>
-                    {{/unless}}
-                {{/unless}}
-                {{#if userInfo.liked}}
-                    <a data-action="unlike">
-                        Unlike
+                <li>
+                    <span class="vote-up-count" title="{{#if votesUp}}{{votesUp.length}} {{multiplicity votesUp.length 'people like' 'person likes'}} this.{{else}}No one has liked this{{/if}}">
+                        +{{votesUp.length}}
+                    </span>
+                    <a data-action="like">
+                        <i class="crafter-social-icon cs-icon-chevron-up"></i>
+                    </a> |
+                    <a data-action="dislike">
+                        <i class="crafter-social-icon cs-icon-chevron-down"></i>
                     </a>
-                {{/if}}
-                {{#if userInfo.disliked}}
-                    <li>
-                        <a data-action="undoDislike">
-                            Undo dislike
-                        </a>
-                    </li>
-                {{/if}}
+                    <span class="vote-down-count" title="{{#if votesDown}}{{votesDown.length}} {{multiplicity votesDown.length 'people don\'t' 'person doesn\'t'}} like this.{{else}}No one has disliked this{{/if}}">
+                        -{{votesDown.length}}
+                    </span>
+                </li>
                 <li class="hide">
                     <a data-action-reply><i class="crafter-social-icon cs-icon-transfer"></i> Reply ({{childCount}})</a>
                 </li>
@@ -67,44 +55,6 @@
                 </li>
             </ul>
         </div>
-        {{#mif likes 'or' dislikes}}
-            <div class="like-data">
-                {{#if likes}}
-                    {{#if userInfo.liked}}
-                        {{#eq likes 1}}
-                            You like this
-                        {{else}}
-                            {{#eq likes 2}}
-                                You and 1 person like this
-                            {{else}}
-                                You and {{minusOne likes}} people like this
-                            {{/eq}}
-                        {{/eq}}
-                    {{else}}
-                        {{likes}} {{multiplicity likes 'people like' 'person likes'}} this
-                    {{/if}}
-                {{else}}
-                    No likes
-                {{/if}} ·
-                {{#if dislikes}}
-                    {{#if userInfo.disliked}}
-                        {{#eq dislikes 1}}
-                            You dislike this
-                        {{else}}
-                            {{#eq dislikes 2}}
-                                You and 1 person dislike this
-                            {{else}}
-                                You and {{minusOne dislikes}} people dislike this
-                            {{/eq}}
-                        {{/eq}}
-                    {{else}}
-                        {{dislikes}} {{multiplicity dislikes 'people dislike' 'person dislikes'}} this
-                    {{/if}}
-                {{else}}
-                    No dislikes
-                {{/if}}
-            </div>
-        {{/mif}}
     </footer>
     <div class="comment-children"></div>
 </article>

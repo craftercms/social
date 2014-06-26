@@ -9,9 +9,8 @@
         model: S.model.File,
 
         url: function () {
-            return S.url('ugc.{id}.get_attachments', {
-                id: this.cfg.comment.get('id'),
-                tenant: this.cfg.comment.get('tenant')
+            return S.url('comments.{_id}.attachments', {
+                _id: this.cfg.comment.get('_id')
             });
         },
 
