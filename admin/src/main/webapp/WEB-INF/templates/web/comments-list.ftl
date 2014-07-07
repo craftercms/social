@@ -12,8 +12,12 @@
         <label for="status">Status:</label>
         <select name="status" class="form-control"
                 ng-model="selectedStatus" ng-options="status.value as status.label for status in moderationStatus"
-                ng-change="getComments(selectedStatus)">
+                ng-change="resetCommentList(selectedStatus)">
         </select>
+    </div>
+    <div class="form-group pull-right">
+        <pagination total-items="totalItems" class="no-margin" ng-model="currentPage" ng-change="pageChanged()">
+        </pagination>
     </div>
 </form>
 
@@ -25,11 +29,12 @@
                 <p>{{comment.profile.attributes.displayName | truncateIfTooLarge}}<p>
             </div>
             <div class="form-group col-sm-8">
-                <textarea class="form-control comment-body" ng-model="comment.body" disabled></textarea>
+                <textarea class="form-control comment-body" ng-model="comment.body"></textarea>
                 <div class="comment-date">{{comment.lastModifiedDate | date:'MM/dd/yyyy @ h:mm a'}}</div>
                 <div class="comment-action-btns">
                     <button type="button" class="btn btn-primary"
-                            ng-repeat="action in moderationStatusActions[selectedStatus]">{{action.label}}</button>
+                            ng-repeat="action in moderationStatusActions[selectedStatus]"
+                            ng-click="action.action(comment, commentsService)">{{action.label}}</button>
                 </div>
             </div>
         </div>

@@ -1,7 +1,7 @@
 /**
  * Angular Module
  */
-var app = angular.module('CrafterAdminConsole', ['ngRoute']);
+var app = angular.module('CrafterAdminConsole', ['ngRoute', 'ui.bootstrap']);
 
 /**
  * Global variables
@@ -33,57 +33,123 @@ var moderationStatus = [
 var moderationStatusActions = {
     Unmoderated: [
         {
-            label: 'Approve'
+            label: 'Approve',
+            action: function(comment, commentsService) {
+                commentsService.updateStatus(comment, 'Approved');
+            }
         },
         {
-            label: 'Mark as Spam'
+            label: 'Mark as Spam',
+            action: function(comment, commentsService) {
+                commentsService.updateStatus(comment, 'Spam');
+            }
         },
         {
-            label: 'Mark as Trash'
+            label: 'Mark as Trash',
+            action: function(comment, commentsService) {
+                commentsService.updateStatus(comment, 'Trash');
+            }
         },
         {
-            label: 'Edit'
+            label: 'Save Changes',
+            action: function(comment, commentsService) {
+                commentsService.updateBody(comment);
+            }
+        }
+        ,
+        {
+            label: 'Reset',
+            action: function(comment, commentsService) {
+                commentsService.resetBody(comment);
+            }
         }
     ],
     Approved: [
         {
-            label: 'Mark as Spam'
+            label: 'Mark as Spam',
+            action: function(comment, commentsService) {
+                commentsService.updateStatus(comment, 'Spam');
+            }
         },
         {
-            label: 'Mark as Trash'
+            label: 'Mark as Trash',
+            action: function(comment, commentsService) {
+                commentsService.updateStatus(comment, 'Trash');
+            }
         },
         {
-            label: 'Mark as Unmoderated'
+            label: 'Mark as Unmoderated',
+            action: function(comment, commentsService) {
+                commentsService.updateStatus(comment, 'Unmoderated');
+            }
         },
         {
-            label: 'Edit'
+            label: 'Save Changes',
+            action: function(comment, commentsService) {
+                commentsService.updateBody(comment);
+            }
+        }
+        ,
+        {
+            label: 'Reset',
+            action: function(comment, commentsService) {
+                commentsService.resetBody(comment);
+            }
         }
     ],
     Pending: [
         {
-            label: 'Approve'
+            label: 'Approve',
+            action: function(comment, commentsService) {
+                commentsService.updateStatus(comment, 'Approved');
+            }
         },
         {
-            label: 'Mark as Trash'
+            label: 'Mark as Trash',
+            action: function(comment, commentsService) {
+                commentsService.updateStatus(comment, 'Trash');
+            }
         },
         {
-            label: 'Edit'
+            label: 'Save Changes',
+            action: function(comment, commentsService) {
+                commentsService.updateBody(comment);
+            }
+        }
+        ,
+        {
+            label: 'Reset',
+            action: function(comment, commentsService) {
+                commentsService.resetBody(comment);
+            }
         }
     ],
     Spam: [
         {
-            label: 'Permanently delete'
+            label: 'Permanently delete',
+            action: function(comment, commentsService) {
+                commentsService.deleteComment(comment);
+            }
         },
         {
-            label: 'Mark as Unmoderated'
+            label: 'Mark as Unmoderated',
+            action: function(comment, commentsService) {
+                commentsService.updateStatus(comment, 'Unmoderated');
+            }
         }
     ],
     Trash: [
         {
-            label: 'Permanently delete'
+            label: 'Permanently delete',
+            action: function(comment, commentsService) {
+                commentsService.deleteComment(comment);
+            }
         },
         {
-            label: 'Mark as Unmoderated'
+            label: 'Mark as Unmoderated',
+            action: function(comment, commentsService) {
+                commentsService.updateStatus(comment, 'Unmoderated');
+            }
         }
     ]
 };
@@ -92,6 +158,186 @@ var paginationConfig = {
     size: 5,
     itemsPerPage: 10
 };
+
+var mockComments = {
+    Unmoderated : [
+        {
+            id: '182930461947591',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #1',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'avasquez'
+                }
+            }
+        },
+        {
+            id: '375827582749010',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #2',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'cortiz'
+                }
+            }
+        },
+        {
+            id: '182930461947501',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #1',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'avasquez'
+                }
+            }
+        }
+        ,
+        {
+            id: '182930461947502',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #1',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'avasquez'
+                }
+            }
+        }
+        ,
+        {
+            id: '182930461947503',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #1',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'avasquez'
+                }
+            }
+        }
+        ,
+        {
+            id: '182930461947504',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #1',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'avasquez'
+                }
+            }
+        },
+        {
+            id: '182930461947505',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #1',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'avasquez'
+                }
+            }
+        },
+        {
+            id: '182930461947506',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #1',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'avasquez'
+                }
+            }
+        },
+        {
+            id: '182930461947507',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #1',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'avasquez'
+                }
+            }
+        },
+        {
+            id: '182930461947508',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #1',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'avasquez'
+                }
+            }
+        },
+        {
+            id: '182930461947509',
+            moderationStatus: 'Unmoderated',
+            createdDate: new Date(),
+            lastModifiedDate: new Date(),
+            subject: 'Comment #1',
+            body: 'This is a test comment',
+            bodyOrig: 'This is a test comment',
+            profile: {
+                attributes: {
+                    displayName: 'avasquez'
+                }
+            }
+        }
+    ],
+    Approved: [],
+    Pending: [],
+    Spam: [],
+    Trash: []
+};
+
+/**
+ * Constants
+ */
+app.constant('paginationConfig', {
+    itemsPerPage: 5,
+    boundaryLinks: true,
+    directionLinks: true,
+    previousText: '‹',
+    nextText: '›',
+    firstText: '«',
+    lastText: '»',
+    rotate: true
+});
 
 /**
  * Filters
@@ -127,6 +373,18 @@ function deleteObject(url, $http) {
     });
 }
 
+function showGrowlMessage(type, message) {
+    $.growl(message, {
+        type: type,
+        pause_on_mouseover: true,
+        position: {
+            from: 'top',
+            align: 'center'
+        },
+        offset: 40
+    });
+}
+
 /**
  * Http Interceptors
  */
@@ -146,15 +404,7 @@ app.factory('httpErrorHandler', function ($q) {
                 message += '. Please contact IT support for more information';
             }
 
-            $.growl(message, {
-                type: 'danger',
-                pause_on_mouseover: true,
-                position: {
-                    from: 'top',
-                    align: 'center'
-                },
-                offset: 40
-            });
+            showGrowlMessage('danger', message);
 
             return $q.reject(rejection);
         }
@@ -170,105 +420,57 @@ app.config(['$httpProvider', function($httpProvider) {
  */
 app.factory('commentsService', function($http) {
     return {
-        getComments: function(status) {
-            if (status == 'Unmoderated') {
-                return [
-                    {
-                        id: '182930461947591',
-                        moderationStatus: 'Unmoderated',
-                        createdDate: new Date(),
-                        lastModifiedDate: new Date(),
-                        subject: 'Comment #1',
-                        body: 'This is a test comment',
-                        profile: {
-                            attributes: {
-                                displayName: 'avasquez'
-                            }
-                        }
-                    },
-                    {
-                        id: '375827582749010',
-                        moderationStatus: 'Unmoderated',
-                        createdDate: new Date(),
-                        lastModifiedDate: new Date(),
-                        subject: 'Comment #2',
-                        body: 'This is a test comment',
-                        profile: {
-                            attributes: {
-                                displayName: 'cortiz'
-                            }
-                        }
-                    },
-                    {
-                        id: '375827582749010',
-                        moderationStatus: 'Unmoderated',
-                        createdDate: new Date(),
-                        lastModifiedDate: new Date(),
-                        subject: 'Comment #2',
-                        body: 'This is a test comment',
-                        profile: {
-                            attributes: {
-                                displayName: 'cortiz'
-                            }
-                        }
-                    },
-                    {
-                        id: '375827582749010',
-                        moderationStatus: 'Unmoderated',
-                        createdDate: new Date(),
-                        lastModifiedDate: new Date(),
-                        subject: 'Comment #2',
-                        body: 'This is a test comment',
-                        profile: {
-                            attributes: {
-                                displayName: 'cortiz'
-                            }
-                        }
-                    },
-                    {
-                        id: '375827582749010',
-                        moderationStatus: 'Unmoderated',
-                        createdDate: new Date(),
-                        lastModifiedDate: new Date(),
-                        subject: 'Comment #2',
-                        body: 'This is a test comment',
-                        profile: {
-                            attributes: {
-                                displayName: 'cortiz'
-                            }
-                        }
-                    },
-                    {
-                        id: '375827582749010',
-                        moderationStatus: 'Unmoderated',
-                        createdDate: new Date(),
-                        lastModifiedDate: new Date(),
-                        subject: 'Comment #2',
-                        body: 'This is a test comment',
-                        profile: {
-                            attributes: {
-                                displayName: 'cortiz'
-                            }
-                        }
-                    },
-                    {
-                        id: '375827582749010',
-                        moderationStatus: 'Unmoderated',
-                        createdDate: new Date(),
-                        lastModifiedDate: new Date(),
-                        subject: 'Comment #2',
-                        body: 'This is a test comment',
-                        profile: {
-                            attributes: {
-                                displayName: 'cortiz'
-                            }
-                        }
-                    }
-                ];
+        getCommentsCount: function(status) {
+            return mockComments[status].length;
+        },
+        getComments: function(status, start, count) {
+            return mockComments[status].slice(start, start + count);
+        },
+        updateStatus: function(comment, newStatus) {
+            var commentIdx = -1;
+
+            for (var i = 0; i < mockComments[comment.moderationStatus].length; i++) {
+                if (mockComments[comment.moderationStatus][i].id == comment.id) {
+                    commentIdx = i;
+                    break;
+                }
             }
+
+            if (commentIdx >= 0) {
+                mockComments[comment.moderationStatus].splice(commentIdx, 1);
+            }
+
+            comment.moderationStatus = newStatus;
+
+            mockComments[newStatus].push(comment);
+
+            showGrowlMessage('info', 'Status of comment \'' + comment.id + '\' changed to \'' + newStatus + '\'');
+        },
+        updateBody: function(comment) {
+            comment.bodyOrig = comment.body;
+
+            showGrowlMessage('info', 'Comment \'' + comment.id + '\' updated');
+        },
+        resetBody: function(comment) {
+            comment.body = comment.bodyOrig;
+        },
+        deleteComment: function(comment) {
+            var commentIdx = -1;
+
+            for (var i = 0; i < mockComments[comment.moderationStatus].length; i++) {
+                if (mockComments[comment.moderationStatus][i].id == comment.id) {
+                    commentIdx = i;
+                    break;
+                }
+            }
+
+            if (commentIdx >= 0) {
+                mockComments[comment.moderationStatus].splice(commentIdx, 1);
+            }
+
+            showGrowlMessage('info', 'Comment \'' + comment.id + '\' deleted');
         }
     }
-
 });
 
 
@@ -298,9 +500,10 @@ app.config(function($routeProvider) {
 /**
  * Controllers
  */
-app.controller('CommentListController', function($scope, $location, commentsService) {
+app.controller('CommentListController', function($scope, $location, paginationConfig, commentsService) {
     $scope.moderationStatus = moderationStatus;
     $scope.moderationStatusActions = moderationStatusActions;
+    $scope.commentsService = commentsService;
 
     for (var i = 0; i < moderationStatus.length; i++) {
         if (moderationStatus[i].default) {
@@ -310,60 +513,23 @@ app.controller('CommentListController', function($scope, $location, commentsServ
         }
     }
 
-    $scope.getComments = function(status) {
-        $scope.comments = commentsService.getComments(status);
+    $scope.getComments = function(status, start, count) {
+        $scope.comments = commentsService.getComments(status, start, count);
     };
 
-    $scope.getComments($scope.selectedStatus);
-});
+    $scope.pageChanged = function() {
+        var start = ($scope.currentPage - 1) * paginationConfig.itemsPerPage;
+        var count = paginationConfig.itemsPerPage;
 
-/**
- * Directives
- */
-app.directive('checkboxList', function() {
-    return {
-        restrict: 'E',
-        scope: {
-            name: '@',
-            selected: '=',
-            options: '='
-        },
-        controller: function($scope) {
-            $scope.toggleOption = function(option) {
-                var index = $scope.selected.indexOf(option);
-                if (index > -1) {
-                    $scope.selected.splice(index, 1);
-                } else {
-                    $scope.selected.push(option);
-                }
-            };
-        },
-        templateUrl: contextPath + '/directives/checkbox-list',
-        replace: true
+        $scope.getComments($scope.selectedStatus, start, count);
     };
-});
 
-app.directive('editableList', function() {
-    return {
-        restrict: 'E',
-        scope: {
-            name: '@',
-            items: '='
-        },
-        controller: function($scope) {
-            if ($scope.items === undefined || $scope.items === null) {
-                $scope.items = [];
-            }
+    $scope.resetCommentList = function(status) {
+        $scope.totalItems = commentsService.getCommentsCount(status);
+        $scope.currentPage = 1;
 
-            $scope.addItem = function(item) {
-                $scope.items.push(item);
-            };
-
-            $scope.deleteItemAt = function(index) {
-                $scope.items.splice(index, 1);
-            };
-        },
-        templateUrl: contextPath + '/directives/editable-list',
-        replace: true
+        $scope.pageChanged();
     };
+
+    $scope.resetCommentList($scope.selectedStatus);
 });
