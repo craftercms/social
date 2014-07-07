@@ -40,7 +40,7 @@
 		<module>virus-scanner</module>
 		<module>server</module>
 		<!--<module>blog</module>-->
-		<!--<module>admin</module>-->
+		<module>admin</module>
         <!--<module>ui-plugin</module>-->
 	</modules>
 	<profiles>
