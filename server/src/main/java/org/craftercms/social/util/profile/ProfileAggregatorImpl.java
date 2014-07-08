@@ -62,7 +62,14 @@ public class ProfileAggregatorImpl implements ProfileAggregator {
 
     private Profile getProfileFromServer(final String profileId) {
         try {
-            return profileService.getProfile(profileId, "displayName", "avatar");
+            Profile profile = profileService.getProfile(profileId, "displayName", "avatar");
+            if(profile==null){
+                return null;
+            }
+            Profile toReturn = new Profile();
+            toReturn.setId(profile.getId());
+            toReturn.setAttributes(profile.getAttributes());
+            return toReturn;
         } catch (ProfileException ex) {
             log.error("Unable to get profile \"" + profileId + "\"from server ", ex);
             return null; // Can't do much about this.

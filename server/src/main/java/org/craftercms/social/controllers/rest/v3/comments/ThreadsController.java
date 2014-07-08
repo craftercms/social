@@ -26,11 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/api/3/threads")
 public class ThreadsController {
 
-    private static final String MAX_INT = "666";
+    public static final String MAX_INT = "666";
     @Autowired
     private UGCService ugcService;
-    @Value("${studio.social.web.defaultSortOrder}")
-    private SocialSortOrder defaultSortOrder;
+
 
 
     @RequestMapping(value = "{id}/comments", method = RequestMethod.GET)
@@ -98,7 +97,7 @@ public class ThreadsController {
         return thread;
     }
 
-    private List<DefaultKeyValue<String, Boolean>> getSortOrder(final List<String> sortFields,
+    public static List<DefaultKeyValue<String, Boolean>> getSortOrder(final List<String> sortFields,
                                                                 final List<SocialSortOrder> sortOrder) {
         if (CollectionUtils.isEmpty(sortFields)) {
             return null;
@@ -107,7 +106,7 @@ public class ThreadsController {
         for (int i = 0; i < sortFields.size(); i++) {
             DefaultKeyValue<String, Boolean> mapSort;
             if (CollectionUtils.isEmpty(sortOrder) || i >= sortOrder.size()) {
-                mapSort = new DefaultKeyValue(sortFields.get(i), defaultSortOrder.value());
+                mapSort = new DefaultKeyValue(sortFields.get(i), SocialSortOrder.DESC.value());
             } else {
                 mapSort = new DefaultKeyValue(sortFields.get(i), sortOrder.get(i));
             }
@@ -116,7 +115,7 @@ public class ThreadsController {
         return toReturn;
     }
 
-    private int getStart(int page, int pageSize) {
+    public static int getStart(int page, int pageSize) {
         if (page <= 0) {
             return 0;
         }

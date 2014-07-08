@@ -4,6 +4,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,13 +31,14 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Controller
 public class CommentsController<T extends SocialUgc> extends AbstractCommentsController {
+
     private Logger log = LoggerFactory.getLogger(CommentsController.class);
 
     @RequestMapping(method = RequestMethod.POST)
     @ApiOperation(value = "Creates a new comment", consumes = MimeTypeUtils.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public T create(@ApiParam(value = "Body of the Comment,Some Html/scripts tags will be strip") @RequestParam()
-                        final String body, @ApiParam(name = "thread",
+                    final String body, @ApiParam(name = "thread",
         value = "Id of the thread to attach this comment") @RequestParam(required = true) final String thread,
                     @ApiParam(value = "Id of the parent for the new comment", name = "parentId") @RequestParam
                         (required = false, defaultValue = "") final String parent,
@@ -107,7 +109,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         ". All values are " + "save as string (booleans,numbers,dates)") @RequestBody
     final Map<String, Object> attributes) throws SocialException {
         log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
-        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
+        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
         ugcService.setAttributes(id, tenant, attributes);
         return true;//Always true unless exception.
     }
@@ -124,7 +126,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         (required = true)
     final String attributes) throws SocialException {
         log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
-        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
+        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
         ugcService.deleteAttribute(id, attributes.split(","), tenant);
         return true;//Always true unless exception.
     }
@@ -169,5 +171,34 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
                           status) throws UGCException {
         return (T)socialServices.moderate(id, status, userId(), tenant());
     }
+
+
+    @RequestMapping(value = "moderation/{status}", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Gets all Moderation comments with the given moderation status")
+    public Iterable<T> byStatus(@PathVariable("status") @RequestParam final SocialUgc.ModerationStatus status,
+                                @RequestParam(defaultValue = "", required = false) final String thread,
+                                @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+                                @ApiParam("Comments per Page") @RequestParam(required = false,
+        defaultValue = ThreadsController.MAX_INT) final int pageSize, @ApiParam("List of fields to order by")
+    @RequestParam(required = false) final List<String> sortBy, @ApiParam("Sort Order") @RequestParam(required =
+        false) final List<SocialSortOrder> sortOrder) throws UGCException {
+        int start = 0;
+        if (pageNumber > 0 && pageSize > 0) {
+            start = ThreadsController.getStart(pageNumber, pageSize);
+        }
+        return socialServices.findByModerationStatus(status, thread, start, pageSize, tenant(),
+            ThreadsController.getSortOrder(sortBy, sortOrder));
+    }
+
+    @RequestMapping(value = "moderation/{status}/count", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Counts all Moderation comments with the given moderation status")
+    public long byStatusCount(@PathVariable("status") @RequestParam final SocialUgc.ModerationStatus status,
+                                     @RequestParam(defaultValue = "", required = false) final String thread) throws
+        UGCException {
+        return socialServices.countByModerationStatus(status, thread,tenant());
+    }
+
 
 }

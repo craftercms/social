@@ -99,6 +99,25 @@
         {createDate:-1}
     </entry>
     <entry key="social.permissions.isAllowed">
-        {action:#,roles:{$in:#},tenantId:#}
+        {actionName:#,roles:{$in:#},tenantId:#}
+    </entry>
+    <entry key="social.permissions.byTenant">
+        {tenantId:#}
+    </entry>
+    <entry key="social.permissions.byTenantAndActionName">
+        {tenantId:#,actionName:#}
+    </entry>
+
+    <entry key="social.permissions.updateRoles">
+        {$set:{roles:#}}
+    </entry>
+    <entry key="social.context.byId">
+        {_id:#}
+    </entry>
+    <entry key="social.ugc.byModerationStatus">
+        {moderationStatus:#,tenant:#}
+    </entry>
+    <entry key="social.ugc.byModerationStatusAndTenant">
+        {moderationStatus:#,tenant:#,targetId:#}
     </entry>
 </properties>

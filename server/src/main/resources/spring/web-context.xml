@@ -32,7 +32,7 @@
                     >
                 <beans:property name="supportedMediaTypes" value="application/json"/>
                 <beans:property name="prettyPrint" value="false"/>
-                <!--<beans:property name="injectValueFactory" ref="social.InjectValueHandler"/>-->
+                <beans:property name="injectValueFactory" ref="social.InjectValueHandler"/>
                 <beans:property name="filter">
                     <beans:bean class="org.craftercms.commons.jackson.mvc.SelectorFilterFactory">
                         <beans:property name="filters">
