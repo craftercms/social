@@ -14,11 +14,13 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
+import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalUgcException;
 import org.craftercms.social.repositories.SocialJongoRepository;
 import org.craftercms.social.repositories.TreeUGC;
@@ -44,7 +46,12 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     public UGCRepositoryImpl() throws Exception {
     }
 
-    //TODO cortiz Fix this To many queries, Jongo Aggregation limitation for now wait for release 1.1 or make a patch
+    @Override
+    public Iterable<UGC> findAll() throws MongoDataException {
+        throw new UnsupportedOperationException("Disable for security reasons , use findAllUgc(String,String)");
+    }    //TODO cortiz Fix this To many queries, Jongo Aggregation limitation for now wait for release 1.1 or make a
+    // patch
+
     @Override
     public List<T> findChildrenOf(final String ugcId, final int childrenCount,
                                   final String tenantId) throws MongoDataException {
@@ -74,6 +81,12 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             log.error("Unable to ", ex);
             throw new MongoDataException("Unable to find children of given UGC", ex);
         }
+    }
+
+    // Always find UGC by id AND tenantId
+    @Override
+    public UGC findById(final String id) throws MongoDataException {
+        throw new UnsupportedOperationException("Disable for security reasons , use findUgc(String,String)");
     }
 
     @Override
@@ -175,8 +188,8 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC id is not valid");
             }
-            T parent = findUGC(tenantId,ugcId);
-            if(parent==null){
+            T parent = findUGC(tenantId, ugcId);
+            if (parent == null) {
                 throw new IllegalUgcException("Ugc does not exist for given id and tenant");
             }
             ArrayDeque<ObjectId> ancestors = parent.getAncestors().clone();
@@ -184,7 +197,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             parent = null;
             String query = getQueryFor("social.ugc.byTenantTargetAncestorsExact");
             Find find = getCollection().find(query, tenantId, targetId, ancestors);
-            return getUgcsToFind(find, targetId, tenantId, start, limit, sortOrder, (ancestors.size()+upToLevel));
+            return getUgcsToFind(find, targetId, tenantId, start, limit, sortOrder, (ancestors.size() + upToLevel));
         } catch (MongoException ex) {
             log.error("Unable to find children of " + ugcId, ex);
             throw new MongoDataException("Unable to find children of given UGC", ex);
@@ -226,42 +239,53 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     }
 
     @Override
-    public long countByTargetId(final String tenant, final String threadId, final int levels) throws MongoDataException {
-        try{
-          return count(getQueryFor("social.ugc.byTargetIdWithFixLvl"),tenant,threadId,levels);
-        }catch (MongoException ex){
-            log.error("Unable to count ugc for tenant "+tenant+ "and target "+threadId,ex);
-            throw new MongoDataException("Unable to count ugc for tenant and target",ex);
+    public long countByTargetId(final String tenant, final String threadId,
+                                final int levels) throws MongoDataException {
+        try {
+            return count(getQueryFor("social.ugc.byTargetIdWithFixLvl"), tenant, threadId, levels);
+        } catch (MongoException ex) {
+            log.error("Unable to count ugc for tenant " + tenant + "and target " + threadId, ex);
+            throw new MongoDataException("Unable to count ugc for tenant and target", ex);
         }
     }
 
     @Override
     public long countChildrenOf(final String tenant, final String ugcId) throws MongoDataException {
-        try{
+        try {
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC id is not valid");
             }
-            T parent = findUGC(tenant,ugcId);
+            T parent = findUGC(tenant, ugcId);
             ArrayDeque<ObjectId> ancestors = parent.getAncestors().clone();
             ancestors.addLast(parent.getId());
             parent = null;
-            return count(getQueryFor("social.ugc.byTenantAncestorsExact"),tenant,ancestors,ancestors.size());
-        }catch (MongoException ex){
-            log.error("Unable to count ugc for tenant "+tenant+ "and id "+ugcId,ex);
-            throw new MongoDataException("Unable to count ugc for tenant and target",ex);
+            return count(getQueryFor("social.ugc.byTenantAncestorsExact"), tenant, ancestors, ancestors.size());
+        } catch (MongoException ex) {
+            log.error("Unable to count ugc for tenant " + tenant + "and id " + ugcId, ex);
+            throw new MongoDataException("Unable to count ugc for tenant and target", ex);
         }
     }
 
-
-    // Always find UGC by id AND tenantId
     @Override
-    public UGC findById(final String id) throws MongoDataException {
-        throw new UnsupportedOperationException("Disable for security reasons , use findUgc(String,String)");
+    public Iterable<T> findByModerationStatus(final SocialUgc.ModerationStatus status, final String thread,
+    final int skip, final int pageSize, final String tenant, final List sortOrder) throws MongoDataException {
+        Find query;
+        if (StringUtils.isBlank(thread)) {
+            query = getCollection().find(getQueryFor("social.ugc.byModerationStatus"), status, tenant);
+        } else {
+            query = getCollection().find(getQueryFor("social.ugc.byModerationStatusAndTenant"), status, tenant, thread);
+        }
+        return query.sort(createSortQuery(sortOrder)).skip(skip).limit(pageSize).as(clazz);
     }
 
     @Override
-    public Iterable<UGC> findAll() throws MongoDataException {
-        throw new UnsupportedOperationException("Disable for security reasons , use findAllUgc(String,String)");
+    public long countFindByModerationStatus(final SocialUgc.ModerationStatus status, final String thread, final
+    String tenant) throws MongoDataException {
+        if (StringUtils.isBlank(thread)) {
+            return count(getQueryFor("social.ugc.byModerationStatus"), status, tenant);
+        } else {
+            return count(getQueryFor("social.ugc.byModerationStatusAndTenant"), status, tenant, thread);
+        }
     }
 
     private List<T> toUgcList(final List<BaseTreeUgc> as) {

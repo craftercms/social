@@ -1,5 +1,9 @@
 package org.craftercms.social.services.social;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
@@ -66,4 +70,28 @@ public interface SocialServices<T extends SocialUgc> {
      * @param tenant Tenant Owner of the Ugc.
      */
     T moderate(String ugcId, SocialUgc.ModerationStatus moderationStatus, String userId, String tenant) throws UGCException;
+
+
+    /**
+     * Finds all Comments with the given Moderation status. Optional filter the thread
+     * @param status ModerationStatus to filter.
+     * @param thread Thread owner of the comments (optional)
+     * @param start Where to to start the count.
+     * @param pageSize Amount of Comments to return.
+     * @param tenant Tenant Owner of the Ugc.
+     * @param sort Sort Fields.
+     * @return A Iterable with the results.
+     */
+    Iterable<T> findByModerationStatus(SocialUgc.ModerationStatus status, String thread, int start, int pageSize,
+                                       final String tenant, final List<DefaultKeyValue<String, Boolean>> sort) throws UGCException;
+
+
+    /**
+     * Counts all Comments with the given Moderation status. Optional filter the thread
+     * @param status ModerationStatus to filter.
+     * @param thread Thread owner of the comments (optional)
+     * @param tenant Tenant Owner of the Ugc.
+     * @return Number of Results.
+     */
+    long countByModerationStatus(SocialUgc.ModerationStatus status, String thread, String tenant) throws UGCException;
 }

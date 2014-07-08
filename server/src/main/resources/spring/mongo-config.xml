@@ -38,6 +38,17 @@
         <property name="dbName" value="${studio.social.mongodb.connection.db}"/>
     </bean>
 
+
+    <bean id="crafter.mongoInitScriptRunner" class="org.craftercms.commons.mongo.MongoScriptRunner">
+        <property name="mongo" ref="social.mongodb.mongoClient"/>
+        <property name="dbName" value="${studio.social.mongodb.connection.db}"/>
+        <property name="username" value="${studio.social.mongodb.connection.dbUser}"/>
+        <property name="password" value="${studio.social.mongodb.connection.dbPassword}"/>
+        <property name="runOnInit" value="${studio.social.mongodb.scripts.runOnInit}"/>
+        <property name="scriptPaths" value="${studio.social.mongodb.scripts.paths}"/>
+    </bean>
+
+
     <bean id="social.mongodb.queries" class="org.craftercms.commons.mongo.JongoQueries" init-method="init">
         <property name="resources">
             <list>
@@ -65,5 +76,11 @@
           parent="social.mongodb.socialRepository"/>
 
     <bean id="social.repository.permissionRepository"
-          class="org.craftercms.social.repositories.security.impl.PermissionRepositoryImpl" parent="social.mongodb.baseRepository"/>
+          class="org.craftercms.social.repositories.security.impl.PermissionRepositoryImpl"
+          parent="social.mongodb.baseRepository"/>
+
+    <bean id="social.repository.socialContextRepository"
+          class="org.craftercms.social.repositories.security.impl.SocialContextRepositoryImpl"
+          parent="social.mongodb.baseRepository"/>
+
 </beans>
