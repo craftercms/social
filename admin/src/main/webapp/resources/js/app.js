@@ -154,11 +154,6 @@ var moderationStatusActions = {
     ]
 };
 
-var paginationConfig = {
-    size: 5,
-    itemsPerPage: 10
-};
-
 var mockComments = {
     Unmoderated : [
         {
