@@ -19,6 +19,8 @@ package org.craftercms.social.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import clover.org.apache.commons.collections.CollectionUtils;
+
 public class Action {
 	
 	private String name;
@@ -48,6 +50,9 @@ public class Action {
 		this.roles = roles;
 	}
 
+    public boolean canPerformAction(final List<String> possibleRoles){
+        return CollectionUtils.containsAny(roles,possibleRoles);
+    }
     @Override
     public boolean equals(final Object object) {
         if (this == object) {
