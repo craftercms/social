@@ -4,19 +4,21 @@
 
 <form class="form-inline" role="form">
     <div class="form-group">
-        <label for="tenant">Tenant:</label>
-        <select name="tenant" class="form-control">
+        <label for="context">Contex: </label>
+        <select name="context" class="form-control" ng-model="selectedContext"
+                ng-options="context._id as context.contextName for context in socialContexts"
+                ng-change="resetStatusAndCommentList()">
         </select>
     </div>
     <div class="form-group">
-        <label for="status">Status:</label>
-        <select name="status" class="form-control"
-                ng-model="selectedStatus" ng-options="status.value as status.label for status in moderationStatus"
-                ng-change="resetCommentList(selectedStatus)">
+        <label for="status">Status: </label>
+        <select name="status" class="form-control" ng-model="selectedStatus"
+                ng-options="status.value as status.label for status in moderationStatus"
+                ng-change="resetCommentList()">
         </select>
     </div>
     <div class="form-group pull-right">
-        <pagination total-items="totalItems" class="no-margin" ng-model="currentPage" ng-change="pageChanged()">
+        <pagination total-items="totalItems" class="no-margin" ng-model="currentPage" ng-change="getComments()">
         </pagination>
     </div>
 </form>
@@ -25,8 +27,11 @@
     <form>
         <div class="row comment" ng-repeat="comment in comments">
             <div class="col-sm-2 col-avatar">
-                <img class="avatar-img" src="<@spring.url '/resources/image/profile.jpg'/>"/>
-                <p>{{comment.profile.attributes.displayName | truncateIfTooLarge}}<p>
+                <img ng-if="comment.user.attributes.avatarLink" class="avatar-img"
+                     ng-src="{{comment.user.attributes.avatarLink}}"/>
+                <img ng-if="!comment.user.attributes.avatarLink" class="avatar-img"
+                     src="<@spring.url '/resources/image/profile.jpg'/>"/>
+                <p>{{comment.user.attributes.displayName | truncateIfTooLarge}}<p>
             </div>
             <div class="form-group col-sm-8">
                 <textarea class="form-control comment-body" ng-model="comment.body"></textarea>
@@ -34,7 +39,9 @@
                 <div class="comment-action-btns">
                     <button type="button" class="btn btn-primary"
                             ng-repeat="action in moderationStatusActions[selectedStatus]"
-                            ng-click="action.action(comment, commentsService)">{{action.label}}</button>
+                            ng-click="action.action(selectedContext, comment, commentsService)">
+                        {{action.label}}
+                    </button>
                 </div>
             </div>
         </div>

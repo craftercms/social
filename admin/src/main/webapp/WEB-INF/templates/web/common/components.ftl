@@ -66,5 +66,7 @@
 <script src="<@spring.url '/resources/js/app.js'/>"></script>
 <script type="text/javascript">
     var contextPath = "${requestContext.contextPath}";
+    var socialAppUrl = "${socialAppUrl}";
+    var socialRestBaseUrl = socialAppUrl + "/api/3";
 </script>
 </#macro>

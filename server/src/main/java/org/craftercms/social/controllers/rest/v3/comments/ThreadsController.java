@@ -2,23 +2,17 @@ package org.craftercms.social.controllers.rest.v3.comments;
 
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.ugc.UGCService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  */
@@ -26,11 +20,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/api/3/threads")
 public class ThreadsController {
 
-    private static final String MAX_INT = "666";
+    public static final String MAX_INT = "666";
     @Autowired
     private UGCService ugcService;
-    @Value("${studio.social.web.defaultSortOrder}")
-    private SocialSortOrder defaultSortOrder;
+
 
 
     @RequestMapping(value = "{id}/comments", method = RequestMethod.GET)
@@ -98,7 +91,7 @@ public class ThreadsController {
         return thread;
     }
 
-    private List<DefaultKeyValue<String, Boolean>> getSortOrder(final List<String> sortFields,
+    public static List<DefaultKeyValue<String, Boolean>> getSortOrder(final List<String> sortFields,
                                                                 final List<SocialSortOrder> sortOrder) {
         if (CollectionUtils.isEmpty(sortFields)) {
             return null;
@@ -107,16 +100,16 @@ public class ThreadsController {
         for (int i = 0; i < sortFields.size(); i++) {
             DefaultKeyValue<String, Boolean> mapSort;
             if (CollectionUtils.isEmpty(sortOrder) || i >= sortOrder.size()) {
-                mapSort = new DefaultKeyValue(sortFields.get(i), defaultSortOrder.value());
+                mapSort = new DefaultKeyValue(sortFields.get(i), SocialSortOrder.DESC.value());
             } else {
-                mapSort = new DefaultKeyValue(sortFields.get(i), sortOrder.get(i));
+                mapSort = new DefaultKeyValue(sortFields.get(i), sortOrder.get(i).value());
             }
             toReturn.add(mapSort);
         }
         return toReturn;
     }
 
-    private int getStart(int page, int pageSize) {
+    public static int getStart(int page, int pageSize) {
         if (page <= 0) {
             return 0;
         }

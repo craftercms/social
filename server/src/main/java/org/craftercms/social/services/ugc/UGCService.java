@@ -1,17 +1,17 @@
 package org.craftercms.social.services.ugc;
 
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.apache.commons.io.FileExistsException;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Defines all Rest Services for UGCs.
@@ -94,14 +94,13 @@ public interface UGCService<T extends UGC> {
      * @param ugcId    Id of the Ugc to update.
      * @param body     new Text Content (empty of null to leave current value).
      * @param subject  new subject (empty of null to leave current value).
-     * @param userId   User id of
      * @param tenantId
      * @return the updated Public (secure) UGC.
      * @throws SocialException                    If the UGC can be updated.
      * @throws java.lang.IllegalArgumentException If given UGC does not exist.*
      */
-    public T update(final String ugcId, final String body, final String subject, final String userId,
-                    final String tenantId, final Map<String, Object> attributes) throws SocialException;
+    public T update(final String ugcId, final String body, final String subject, final String tenantId,
+                    final Map<String, Object> attributes) throws SocialException;
 
 
     /**

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
-
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
     <import resource="classpath:/crafter/security/rest-security-context.xml"/>
     <bean name="social.properties"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="order" value="0"/>
         <property name="locations">
@@ -22,7 +21,7 @@
     <import resource="moderation-context.xml"/>
     <import resource="scheduler-context.xml"/>
     <import resource="virus-scanner-context.xml"/>
-    <!--<import resource="security-context.xml"/>-->
+    <import resource="security-context.xml"/>
 
 
     <bean class="org.craftercms.social.services.ugc.impl.UGCServiceImpl" id="social.ugc.ugcService">
@@ -43,26 +42,36 @@
             </list>
         </property>
     </bean>
+
     <bean class="${studio.social.system.ugcClass}" id="social.ugc.factory"/>
     <bean class="org.craftercms.social.util.SocialSecurePropertyHandler" id="social.utils.securePropertyHandler"/>
     <bean class="org.craftercms.social.util.profile.ProfileAggregatorImpl" id="social.profileAggregator">
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
-        <property name="cache" ref="crafter.ehCacheAuthenticationCache">
-        </property>
+        <property name="cache" ref="crafter.ehCacheAuthenticationCache"/>
+        <property name="attributesToReturn" value="${studio.social.system.profileAgg.attributesToReturn}"/>
     </bean>
 
-<bean id="social.support.ehCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-    <property name="name" value="social.profileAggregationCache"/>
-    <property name="timeToLiveSeconds" value="${studio.social.system.profileAgg.cache.ttl}"/>
-    <property name="timeToIdleSeconds" value="${studio.social.system.profileAgg.cache.tti}"/>
-    <property name="maxEntriesLocalHeap" value="${studio.social.system.profileAgg.cache.maxElementsInMemory}"/>
-</bean>
+    <bean id="social.support.ehCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="name" value="social.profileAggregationCache"/>
+        <property name="timeToLiveSeconds" value="${studio.social.system.profileAgg.cache.ttl}"/>
+        <property name="timeToIdleSeconds" value="${studio.social.system.profileAgg.cache.tti}"/>
+        <property name="maxEntriesLocalHeap" value="${studio.social.system.profileAgg.cache.maxElementsInMemory}"/>
+    </bean>
 
- <bean class="org.craftercms.social.util.serialization.SocialInjectValueFactory" id="social.InjectValueHandler">
-     <property name="profileAggregator" ref="social.profileAggregator"/>
- </bean>
+    <bean class="org.craftercms.social.util.serialization.SocialInjectValueFactory" id="social.InjectValueHandler">
+        <property name="profileAggregator" ref="social.profileAggregator"/>
+    </bean>
 
+    <bean class="org.craftercms.social.services.system.impl.SecurityActionsServiceImpl"
+          id="social.system.securityActionsService">
+        <property name="permissionRepositoryImpl" ref="social.repository.permissionRepository"/>
+    </bean>
 
+    <bean class="org.craftercms.social.services.system.impl.SocialContextServiceImpl"
+          id="social.system.socialContextService">
+        <property name="socialContextRepositoryImpl" ref="social.repository.socialContextRepository"/>
+        <property name="profileServiceRestClient" ref="crafter.profileServiceRestClient"/>
+    </bean>
 
 
 </beans>

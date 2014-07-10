@@ -45,7 +45,7 @@
         </property>
         <property name="dateFormat">
             <bean class="java.text.SimpleDateFormat">
-                <constructor-arg value="${crafter.profile.management.date.format}"/>
+                <constructor-arg value="${crafter.social.management.date.format}"/>
             </bean>
         </property>
     </bean>
@@ -64,7 +64,9 @@
 
     <!-- Controllers -->
 
-    <bean id="crafter.mainController" class="org.craftercms.social.management.web.controllers.MainController"/>
+    <bean id="crafter.mainController" class="org.craftercms.social.management.web.controllers.MainController">
+        <property name="socialAppUrl" value="${crafter.social.app.url}"/>
+    </bean>
 
     <bean id="crafter.fallbackController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
 

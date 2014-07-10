@@ -6,318 +6,156 @@ var app = angular.module('CrafterAdminConsole', ['ngRoute', 'ui.bootstrap']);
 /**
  * Global variables
  */
+var defaultContext = 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9';
+var commentsSortBy = 'lastModifiedDate';
+var commentsSortOrder = 'ASC';
+
 var moderationStatus = [
     {
         label: 'Unmoderated',
-        value: 'Unmoderated',
+        value: 'UNMODERATED',
         default: true
     },
     {
         label: 'Approved',
-        value: 'Approved'
+        value: 'APPROVED'
     },
     {
         label: 'Pending',
-        value: 'Pending'
+        value: 'PENDING'
     },
     {
         label: 'Spam',
-        value: 'Spam'
+        value: 'SPAM'
     },
     {
         label: 'Trash',
-        value: 'Trash'
+        value: 'TRASH'
     }
 ];
 
 var moderationStatusActions = {
-    Unmoderated: [
+    'UNMODERATED': [
         {
             label: 'Approve',
-            action: function(comment, commentsService) {
-                commentsService.updateStatus(comment, 'Approved');
+            action: function(context, comment, commentsService) {
+                commentsService.updateStatus(context, comment, 'APPROVED');
             }
         },
         {
             label: 'Mark as Spam',
-            action: function(comment, commentsService) {
-                commentsService.updateStatus(comment, 'Spam');
+            action: function(context, comment, commentsService) {
+                commentsService.updateStatus(context, comment, 'SPAM');
             }
         },
         {
             label: 'Mark as Trash',
-            action: function(comment, commentsService) {
-                commentsService.updateStatus(comment, 'Trash');
+            action: function(context, comment, commentsService) {
+                commentsService.updateStatus(context, comment, 'TRASH');
             }
         },
         {
             label: 'Save Changes',
-            action: function(comment, commentsService) {
-                commentsService.updateBody(comment);
+            action: function(context, comment, commentsService) {
+                commentsService.updateBody(context, comment);
             }
         }
         ,
         {
             label: 'Reset',
-            action: function(comment, commentsService) {
-                commentsService.resetBody(comment);
+            action: function(context, comment, commentsService) {
+                commentsService.resetBody(context, comment);
             }
         }
     ],
-    Approved: [
+    'APPROVED': [
         {
             label: 'Mark as Spam',
-            action: function(comment, commentsService) {
-                commentsService.updateStatus(comment, 'Spam');
+            action: function(context, comment, commentsService) {
+                commentsService.updateStatus(context, comment, 'SPAM');
             }
         },
         {
             label: 'Mark as Trash',
-            action: function(comment, commentsService) {
-                commentsService.updateStatus(comment, 'Trash');
+            action: function(context, comment, commentsService) {
+                commentsService.updateStatus(context, comment, 'TRASH');
             }
         },
         {
             label: 'Mark as Unmoderated',
-            action: function(comment, commentsService) {
-                commentsService.updateStatus(comment, 'Unmoderated');
+            action: function(context, comment, commentsService) {
+                commentsService.updateStatus(context, comment, 'UNMODERATED');
             }
         },
         {
             label: 'Save Changes',
-            action: function(comment, commentsService) {
-                commentsService.updateBody(comment);
+            action: function(context, comment, commentsService) {
+                commentsService.updateBody(context, comment);
             }
         }
         ,
         {
             label: 'Reset',
-            action: function(comment, commentsService) {
+            action: function(context, comment, commentsService) {
                 commentsService.resetBody(comment);
             }
         }
     ],
-    Pending: [
+    'PENDING': [
         {
             label: 'Approve',
-            action: function(comment, commentsService) {
-                commentsService.updateStatus(comment, 'Approved');
+            action: function(context, comment, commentsService) {
+                commentsService.updateStatus(context, comment, 'APPROVED');
             }
         },
         {
             label: 'Mark as Trash',
-            action: function(comment, commentsService) {
-                commentsService.updateStatus(comment, 'Trash');
+            action: function(context, comment, commentsService) {
+                commentsService.updateStatus(context, comment, 'TRASH');
             }
         },
         {
             label: 'Save Changes',
-            action: function(comment, commentsService) {
-                commentsService.updateBody(comment);
+            action: function(context, comment, commentsService) {
+                commentsService.updateBody(context, comment);
             }
         }
         ,
         {
             label: 'Reset',
-            action: function(comment, commentsService) {
+            action: function(context, comment, commentsService) {
                 commentsService.resetBody(comment);
             }
         }
     ],
-    Spam: [
+    'SPAM': [
         {
             label: 'Permanently delete',
-            action: function(comment, commentsService) {
-                commentsService.deleteComment(comment);
+            action: function(context, comment, commentsService) {
+                commentsService.deleteComment(context, comment);
             }
         },
         {
             label: 'Mark as Unmoderated',
-            action: function(comment, commentsService) {
-                commentsService.updateStatus(comment, 'Unmoderated');
+            action: function(context, comment, commentsService) {
+                commentsService.updateStatus(context, comment, 'UNMODERATED');
             }
         }
     ],
-    Trash: [
+    'TRASH': [
         {
             label: 'Permanently delete',
-            action: function(comment, commentsService) {
-                commentsService.deleteComment(comment);
+            action: function(context, comment, commentsService) {
+                commentsService.deleteComment(context, comment);
             }
         },
         {
             label: 'Mark as Unmoderated',
-            action: function(comment, commentsService) {
-                commentsService.updateStatus(comment, 'Unmoderated');
+            action: function(context, comment, commentsService) {
+                commentsService.updateStatus(context, comment, 'UNMODERATED');
             }
         }
     ]
-};
-
-var mockComments = {
-    Unmoderated : [
-        {
-            id: '182930461947591',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #1',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'avasquez'
-                }
-            }
-        },
-        {
-            id: '375827582749010',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #2',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'cortiz'
-                }
-            }
-        },
-        {
-            id: '182930461947501',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #1',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'avasquez'
-                }
-            }
-        }
-        ,
-        {
-            id: '182930461947502',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #1',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'avasquez'
-                }
-            }
-        }
-        ,
-        {
-            id: '182930461947503',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #1',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'avasquez'
-                }
-            }
-        }
-        ,
-        {
-            id: '182930461947504',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #1',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'avasquez'
-                }
-            }
-        },
-        {
-            id: '182930461947505',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #1',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'avasquez'
-                }
-            }
-        },
-        {
-            id: '182930461947506',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #1',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'avasquez'
-                }
-            }
-        },
-        {
-            id: '182930461947507',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #1',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'avasquez'
-                }
-            }
-        },
-        {
-            id: '182930461947508',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #1',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'avasquez'
-                }
-            }
-        },
-        {
-            id: '182930461947509',
-            moderationStatus: 'Unmoderated',
-            createdDate: new Date(),
-            lastModifiedDate: new Date(),
-            subject: 'Comment #1',
-            body: 'This is a test comment',
-            bodyOrig: 'This is a test comment',
-            profile: {
-                attributes: {
-                    displayName: 'avasquez'
-                }
-            }
-        }
-    ],
-    Approved: [],
-    Pending: [],
-    Spam: [],
-    Trash: []
 };
 
 /**
@@ -351,19 +189,21 @@ app.filter('truncateIfTooLarge', function() {
  * Global functions
  */
 function getObject(url, $http) {
-    return $http.get(contextPath + url).then(function(result){
+    return $http.get(url).then(function(result){
         return result.data;
     });
 }
 
-function postObject(url, obj, $http) {
-    return $http.post(contextPath + url, obj).then(function(result){
-        return result.data;
-    });
+function putParams(url, params, $http) {
+    return $http.put(url, $.param(params), { headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(
+        function(result){
+            return result.data;
+        }
+    );
 }
 
 function deleteObject(url, $http) {
-    return $http.delete(contextPath + url).then(function(result){
+    return $http.delete(url).then(function(result){
         return result.data;
     });
 }
@@ -413,57 +253,62 @@ app.config(['$httpProvider', function($httpProvider) {
 /**
  * Services
  */
+app.factory('socialContextServices', function($http) {
+    return {
+        getAllContexts: function() {
+            var url = socialRestBaseUrl + '/system/context/all?tenant=' + defaultContext;
+
+            return getObject(url, $http);
+        }
+    }
+});
+
 app.factory('commentsService', function($http) {
     return {
-        getCommentsCount: function(status) {
-            return mockComments[status].length;
-        },
-        getComments: function(status, start, count) {
-            return mockComments[status].slice(start, start + count);
-        },
-        updateStatus: function(comment, newStatus) {
-            var commentIdx = -1;
+        getCommentsCount: function(context, status) {
+            var url = socialRestBaseUrl + '/comments/moderation/' + status + '/count?tenant=' + context;
 
-            for (var i = 0; i < mockComments[comment.moderationStatus].length; i++) {
-                if (mockComments[comment.moderationStatus][i].id == comment.id) {
-                    commentIdx = i;
-                    break;
-                }
+            return getObject(url, $http);
+        },
+        getComments: function(context, status, pageNumber, pageSize) {
+            var url = socialRestBaseUrl + '/comments/moderation/' + status + '?tenant=' + context;
+            if (pageNumber != undefined && pageNumber != null) {
+                url += '&pageNumber=' + pageNumber;
+            }
+            if (pageSize != undefined && pageSize != null) {
+                url += '&pageSize=' + pageSize;
             }
 
-            if (commentIdx >= 0) {
-                mockComments[comment.moderationStatus].splice(commentIdx, 1);
-            }
+            url += '&sortBy=' + commentsSortBy;
+            url += '&sortOrder=' + commentsSortOrder;
 
-            comment.moderationStatus = newStatus;
-
-            mockComments[newStatus].push(comment);
-
-            showGrowlMessage('info', 'Status of comment \'' + comment.id + '\' changed to \'' + newStatus + '\'');
+            return getObject(url, $http);
         },
-        updateBody: function(comment) {
-            comment.bodyOrig = comment.body;
+        updateStatus: function(context, comment, newStatus) {
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '/moderate?tenant=' + context;
 
-            showGrowlMessage('info', 'Comment \'' + comment.id + '\' updated');
+            putParams(url, { status: newStatus }, $http).then(function() {
+                showGrowlMessage('info', 'Status of comment \'' + comment._id + '\' changed to \'' + newStatus + '\'');
+            });
+        },
+        updateBody: function(context, comment) {
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '?tenant=' + context;
+
+            putParams(url, { body: comment.body }, $http).then(function() {
+                comment.bodyOrig = comment.body;
+
+                showGrowlMessage('info', 'Comment \'' + comment._id + '\' updated');
+            });
         },
         resetBody: function(comment) {
             comment.body = comment.bodyOrig;
         },
-        deleteComment: function(comment) {
-            var commentIdx = -1;
+        deleteComment: function(context, comment) {
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '?tenant=' + context;
 
-            for (var i = 0; i < mockComments[comment.moderationStatus].length; i++) {
-                if (mockComments[comment.moderationStatus][i].id == comment.id) {
-                    commentIdx = i;
-                    break;
-                }
-            }
-
-            if (commentIdx >= 0) {
-                mockComments[comment.moderationStatus].splice(commentIdx, 1);
-            }
-
-            showGrowlMessage('info', 'Comment \'' + comment.id + '\' deleted');
+            deleteObject(url, $http).then(function() {
+                showGrowlMessage('info', 'Comment \'' + comment._id + '\' deleted');
+            });
         }
     }
 });
@@ -477,6 +322,9 @@ app.config(function($routeProvider) {
         controller: 'CommentListController',
         templateUrl: contextPath + '/comments-list',
         resolve: {
+            socialContexts: function(socialContextServices) {
+                return socialContextServices.getAllContexts();
+            }
         }
     });
 
@@ -495,36 +343,43 @@ app.config(function($routeProvider) {
 /**
  * Controllers
  */
-app.controller('CommentListController', function($scope, $location, paginationConfig, commentsService) {
+app.controller('CommentListController', function($scope, $location, paginationConfig, commentsService, socialContexts) {
     $scope.moderationStatus = moderationStatus;
     $scope.moderationStatusActions = moderationStatusActions;
     $scope.commentsService = commentsService;
+    $scope.socialContexts = socialContexts;
+    $scope.selectedContext = socialContexts[0]._id;
 
-    for (var i = 0; i < moderationStatus.length; i++) {
-        if (moderationStatus[i].default) {
-            $scope.selectedStatus = moderationStatus[i].value;
+    $scope.getComments = function() {
+        commentsService.getComments($scope.selectedContext, $scope.selectedStatus, $scope.currentPage,
+            paginationConfig.itemsPerPage).then(function(comments) {
+                $scope.comments = comments;
+            });
+    };
 
-            break;
+    $scope.resetStatus = function() {
+        for (var i = 0; i < moderationStatus.length; i++) {
+            if (moderationStatus[i].default) {
+                $scope.selectedStatus = moderationStatus[i].value;
+
+                break;
+            }
         }
-    }
-
-    $scope.getComments = function(status, start, count) {
-        $scope.comments = commentsService.getComments(status, start, count);
     };
 
-    $scope.pageChanged = function() {
-        var start = ($scope.currentPage - 1) * paginationConfig.itemsPerPage;
-        var count = paginationConfig.itemsPerPage;
+    $scope.resetCommentList = function() {
+        commentsService.getCommentsCount($scope.selectedContext, $scope.selectedStatus).then(function(count) {
+            $scope.totalItems = count;
+            $scope.currentPage = 1;
 
-        $scope.getComments($scope.selectedStatus, start, count);
+            $scope.getComments();
+        });
     };
 
-    $scope.resetCommentList = function(status) {
-        $scope.totalItems = commentsService.getCommentsCount(status);
-        $scope.currentPage = 1;
-
-        $scope.pageChanged();
+    $scope.resetStatusAndCommentList = function() {
+        $scope.resetStatus();
+        $scope.resetCommentList($scope.selectedContext, $scope.selectedStatus);
     };
 
-    $scope.resetCommentList($scope.selectedStatus);
+    $scope.resetStatusAndCommentList();
 });

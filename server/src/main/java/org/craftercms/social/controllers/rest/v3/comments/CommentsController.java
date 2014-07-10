@@ -2,11 +2,8 @@ package org.craftercms.social.controllers.rest.v3.comments;
 
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-
-import java.io.IOException;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.social.domain.social.Flag;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalUgcException;
@@ -18,25 +15,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  */
 @Controller
 public class CommentsController<T extends SocialUgc> extends AbstractCommentsController {
+
     private Logger log = LoggerFactory.getLogger(CommentsController.class);
 
     @RequestMapping(method = RequestMethod.POST)
     @ApiOperation(value = "Creates a new comment", consumes = MimeTypeUtils.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public T create(@ApiParam(value = "Body of the Comment,Some Html/scripts tags will be strip") @RequestParam()
-                        final String body, @ApiParam(name = "thread",
+                    final String body, @ApiParam(name = "thread",
         value = "Id of the thread to attach this comment") @RequestParam(required = true) final String thread,
                     @ApiParam(value = "Id of the parent for the new comment", name = "parentId") @RequestParam
                         (required = false, defaultValue = "") final String parent,
@@ -69,7 +66,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         if (!StringUtils.isBlank(attributes)) {
             attributesMap = parseAttributes(attributes);
         }
-        return (T)ugcService.update(id, body, "", userId(), tenant(), attributesMap);
+        return (T)ugcService.update(id, body, "", tenant(), attributesMap);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
@@ -107,7 +104,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         ". All values are " + "save as string (booleans,numbers,dates)") @RequestBody
     final Map<String, Object> attributes) throws SocialException {
         log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
-        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
+        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
         ugcService.setAttributes(id, tenant, attributes);
         return true;//Always true unless exception.
     }
@@ -124,7 +121,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         (required = true)
     final String attributes) throws SocialException {
         log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
-        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenant();
+        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
         ugcService.deleteAttribute(id, attributes.split(","), tenant);
         return true;//Always true unless exception.
     }
@@ -169,5 +166,36 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
                           status) throws UGCException {
         return (T)socialServices.moderate(id, status, userId(), tenant());
     }
+
+
+    @RequestMapping(value = "moderation/{status}", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Gets all Moderation comments with the given moderation status")
+    public Iterable<T> byStatus(@PathVariable("status") final SocialUgc.ModerationStatus status,
+                                @RequestParam(defaultValue = "", required = false) final String thread,
+                                @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+                                @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT)
+                                final int pageSize,
+                                @RequestParam(required = false) final List<String> sortBy,
+                                @RequestParam(required = false) final List<SocialSortOrder> sortOrder)
+            throws UGCException {
+        int start = 0;
+        if (pageNumber > 0 && pageSize > 0) {
+            start = ThreadsController.getStart(pageNumber, pageSize);
+        }
+
+        return IterableUtils.toList(socialServices.findByModerationStatus(status, thread, tenant(), start, pageSize,
+                ThreadsController.getSortOrder(sortBy, sortOrder)));
+    }
+
+    @RequestMapping(value = "moderation/{status}/count", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Counts all Moderation comments with the given moderation status")
+    public long byStatusCount(@PathVariable("status") final SocialUgc.ModerationStatus status,
+                              @RequestParam(defaultValue = "", required = false) final String thread) throws
+        UGCException {
+        return socialServices.countByModerationStatus(status, thread, tenant());
+    }
+
 
 }
