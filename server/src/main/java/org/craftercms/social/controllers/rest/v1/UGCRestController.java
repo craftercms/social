@@ -32,6 +32,7 @@ import org.bson.types.ObjectId;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.social.controllers.rest.v1.to.PublicUGC;
 import org.craftercms.social.controllers.rest.v1.to.UGCRequest;
+import org.craftercms.social.domain.Action;
 import org.craftercms.social.domain.AttachmentModel;
 import org.craftercms.social.domain.Subscriptions;
 import org.craftercms.social.domain.UGC;
@@ -393,8 +394,14 @@ public class UGCRestController {
         return roles;
     }
 
-    private List<String> getPossibleActionsForUGC(String ugcId) {
-        return ugcService.findPossibleActionsForUGC(ugcId, getProfileRoles());
+    private List<String> getPossibleActionsForUGC(UGC ugc) {
+        List<String> actions = new ArrayList<String>();
+        for (Action action : ugc.getActions()) {
+            if(action.canPerformAction(getProfileRoles())){
+                actions.add(action.getName());
+            }
+        }
+        return actions;
     }
 
     private Map<String, Object> parseAttibutes(HttpServletRequest request) {
@@ -435,8 +442,8 @@ public class UGCRestController {
         List<String> roles = getProfileRoles();
         String profileId = getProfileId();
         boolean isWatching = userWatchTarget(ugc.getTargetId());
-        List<String> posibleActions = getPossibleActionsForUGC(ugc.getId().toString());
-        return new PublicUGC(ugc, profileId, posibleActions, isWatching, roles);
+        List<String> possibleActions = getPossibleActionsForUGC(ugc);
+        return new PublicUGC(ugc, profileId, possibleActions, isWatching, roles);
     }
 
 
