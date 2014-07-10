@@ -1,9 +1,9 @@
 package org.craftercms.social.domain.social;
 
+import org.craftercms.social.domain.UGC;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import org.craftercms.social.domain.UGC;
 
 /**
  *
@@ -41,9 +41,9 @@ public class SocialUgc extends UGC{
     }
 
     private void init(){
-        votesUp =new HashSet<>();
-        votesDown =new HashSet<>();
-        flags=new HashSet<>();
+        votesUp = new HashSet<>();
+        votesDown = new HashSet<>();
+        flags = new HashSet<>();
     }
     public ModerationStatus getModerationStatus() {
         return moderationStatus;

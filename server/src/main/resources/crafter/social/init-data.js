@@ -25,7 +25,8 @@ if(db.socialContext.count() ==0){
 }
 /** Create Default Permissions for Default Tenant**/
 if(db.securityActions.count()==0){
-    var defaultTenant=db.socialContext.findOne();
+    var defaultTenant = db.socialContext.findOne();
+
     db.securityActions.insert([
         {
             actionName:"ugc.update",

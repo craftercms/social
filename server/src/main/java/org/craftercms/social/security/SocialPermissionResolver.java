@@ -8,7 +8,7 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.repositories.security.PermissionRepository;
-import org.craftercms.social.services.ugc.impl.UGCServiceImpl;
+import org.craftercms.social.services.ugc.UGCService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public class SocialPermissionResolver<T> implements PermissionResolver<Profile, T> {
 
     protected PermissionRepository permissionRepository;
-    protected UGCServiceImpl ugcService;
+    protected UGCService ugcService;
     private Logger log = LoggerFactory.getLogger(SocialPermissionResolver.class);
 
     @Override
@@ -48,4 +48,9 @@ public class SocialPermissionResolver<T> implements PermissionResolver<Profile, 
     public void setPermissionRepository(final PermissionRepository permissionRepository) {
         this.permissionRepository = permissionRepository;
     }
+
+    public void setUgcService(UGCService ugcService) {
+        this.ugcService = ugcService;
+    }
+
 }

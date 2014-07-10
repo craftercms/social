@@ -17,12 +17,6 @@
 
 package org.craftercms.social.services.system.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -40,6 +34,8 @@ import org.craftercms.social.services.system.SocialContextService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
+
 /**
  *
  */
@@ -50,8 +46,8 @@ public class SocialContextServiceImpl implements SocialContextService {
     private Logger log = LoggerFactory.getLogger(SocialContextServiceImpl.class);
 
     @Override
-    @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_GET_CONTEXT)
-    public Iterable<SocialContext> getAllContext() throws SocialException {
+    @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_GET_ALL_CONTEXTS)
+    public Iterable<SocialContext> getAllContexts() throws SocialException {
         try {
             return socialContextRepository.findAll();
         } catch (MongoDataException e) {

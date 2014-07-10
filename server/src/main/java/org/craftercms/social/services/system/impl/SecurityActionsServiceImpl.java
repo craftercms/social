@@ -17,9 +17,6 @@
 
 package org.craftercms.social.services.system.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.social.domain.social.system.SocialSecurityAction;
@@ -29,6 +26,9 @@ import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.system.SecurityActionsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Security Actions Service Default implementation.

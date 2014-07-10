@@ -1,12 +1,5 @@
 package org.craftercms.social.security;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.commons.http.RequestContext;
@@ -14,6 +7,8 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.social.exceptions.ProfileConfigurationException;
+
+import java.util.*;
 
 /**
  */

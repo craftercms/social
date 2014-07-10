@@ -1,14 +1,13 @@
 package org.craftercms.social.repositories.ugc;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.SocialUgc;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * UGC Repository Definitions.
@@ -114,8 +113,10 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
 
     long countChildrenOf(String tenant, String ugcId) throws MongoDataException;
 
-    Iterable<T>  findByModerationStatus(SocialUgc.ModerationStatus status, String thread, int skip, int pageSize,
-                                        String tenant, final List<DefaultKeyValue<String,
-        Boolean>> sortOrder) throws MongoDataException;
-    long countFindByModerationStatus(SocialUgc.ModerationStatus status, String thread, String tenant) throws MongoDataException;
+    Iterable<T>  findByModerationStatus(SocialUgc.ModerationStatus status, String targetId, String tenant, int start,
+                                        int limit, List<DefaultKeyValue<String, Boolean>> sortOrder)
+            throws MongoDataException;
+
+    long countFindByModerationStatus(SocialUgc.ModerationStatus status, String targetId, String tenant)
+            throws MongoDataException;
 }

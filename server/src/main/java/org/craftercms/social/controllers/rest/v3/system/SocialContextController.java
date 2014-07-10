@@ -42,13 +42,13 @@ public class SocialContextController {
     @Autowired
     private SocialContextService socialContextService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/all", method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<SocialContext> getSocialContext() throws SocialException {
-        return socialContextService.getAllContext();
+    public Iterable<SocialContext> getAllContexts() throws SocialException {
+        return socialContextService.getAllContexts();
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public SocialContext create(@RequestParam final String contextName) throws SocialException {
         return socialContextService.createNewContext(contextName);
