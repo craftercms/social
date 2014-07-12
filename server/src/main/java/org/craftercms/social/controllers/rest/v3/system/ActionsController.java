@@ -38,12 +38,12 @@ public class ActionsController {
     @ApiOperation(value = "Updates the given action name with the Roles", notes = "Notice that this is not a partial "
         + "" + "update of roles, this will replace the current action Roles with the new ones (send)")
     public SocialSecurityAction update(@RequestParam("actionName") final String actionName,
-                                       @RequestParam() final String roles) throws SocialException {
-        if (roles.toUpperCase().contains("SOCIAL_GOD")) {
-            throw new IllegalArgumentException("SOCIAL_GOD is not a valid role");
-        }
+                                       @RequestParam final String roles) throws SocialException {
+//        if (roles.toUpperCase().contains("SOCIAL_SUPER_ADMIN")) {
+//            throw new IllegalArgumentException("SOCIAL_SUPER_ADMIN is not a valid role");
+//        }
         return actionsService.update(SocialSecurityUtils.getCurrentProfile().getTenant(), actionName,
-            Arrays.asList(roles.split(",")));
+                Arrays.asList(roles.split(",")));
     }
 
 

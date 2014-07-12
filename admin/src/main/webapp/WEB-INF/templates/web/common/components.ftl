@@ -51,7 +51,8 @@
 <#macro navSidebar>
 <div class="col-sm-3 col-md-2 sidebar">
     <ul class="nav nav-sidebar">
-        <li><a href="#/comments/list">List Comments</a></li>
+        <li><a href="#/moderation-dashboard">Moderation Dashboard</a></li>
+        <li><a href="#/security-actions">Security Actions</a></li>
     </ul>
 </div>
 </#macro>

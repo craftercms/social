@@ -57,7 +57,7 @@ public class SecurityActionsServiceImpl implements SecurityActionsService {
         log.debug("Updating Roles for {} of tenant {} to {}", actionName, tenant, roles);
         try {
             if (actionName.toLowerCase().startsWith("system.")) {
-                throw new IllegalArgumentException("System Actions can't be changes");
+                throw new IllegalArgumentException("System Actions can't be changed");
             }
             return permissionRepository.updateSecurityAction(tenant, actionName, roles);
         } catch (MongoDataException ex) {

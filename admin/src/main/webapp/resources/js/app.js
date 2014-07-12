@@ -38,65 +38,65 @@ var moderationStatusActions = {
     'UNMODERATED': [
         {
             label: 'Approve',
-            action: function(context, comment, commentsService) {
-                commentsService.updateStatus(context, comment, 'APPROVED');
+            action: function(context, commentsService, comment, comments) {
+                commentsService.updateStatus(context, comment, 'APPROVED', comments);
             }
         },
         {
             label: 'Mark as Spam',
-            action: function(context, comment, commentsService) {
-                commentsService.updateStatus(context, comment, 'SPAM');
+            action: function(context, commentsService, comment, comments) {
+                commentsService.updateStatus(context, comment, 'SPAM', comments);
             }
         },
         {
             label: 'Mark as Trash',
-            action: function(context, comment, commentsService) {
-                commentsService.updateStatus(context, comment, 'TRASH');
+            action: function(context, commentsService, comment, comments) {
+                commentsService.updateStatus(context, comment, 'TRASH', comments);
             }
         },
         {
             label: 'Save Changes',
-            action: function(context, comment, commentsService) {
+            action: function(context, commentsService, comment) {
                 commentsService.updateBody(context, comment);
             }
         }
         ,
         {
             label: 'Reset',
-            action: function(context, comment, commentsService) {
-                commentsService.resetBody(context, comment);
+            action: function(context, commentsService, comment) {
+                commentsService.resetBody(comment);
             }
         }
     ],
     'APPROVED': [
         {
             label: 'Mark as Spam',
-            action: function(context, comment, commentsService) {
-                commentsService.updateStatus(context, comment, 'SPAM');
+            action: function(context, commentsService, comment, comments) {
+                commentsService.updateStatus(context, comment, 'SPAM', comments);
             }
         },
         {
             label: 'Mark as Trash',
-            action: function(context, comment, commentsService) {
-                commentsService.updateStatus(context, comment, 'TRASH');
+            action: function(context, commentsService, comment, comments) {
+                commentsService.updateStatus(context, comment, 'TRASH', comments);
             }
         },
         {
             label: 'Mark as Unmoderated',
-            action: function(context, comment, commentsService) {
-                commentsService.updateStatus(context, comment, 'UNMODERATED');
+            action: function(context, commentsService, comment, comments) {
+                commentsService.updateStatus(context, comment, 'UNMODERATED', comments);
             }
         },
         {
             label: 'Save Changes',
-            action: function(context, comment, commentsService) {
+            action: function(context, commentsService, comment) {
                 commentsService.updateBody(context, comment);
             }
         }
         ,
         {
             label: 'Reset',
-            action: function(context, comment, commentsService) {
+            action: function(context, commentsService, comment) {
                 commentsService.resetBody(comment);
             }
         }
@@ -104,26 +104,26 @@ var moderationStatusActions = {
     'PENDING': [
         {
             label: 'Approve',
-            action: function(context, comment, commentsService) {
-                commentsService.updateStatus(context, comment, 'APPROVED');
+            action: function(context, commentsService, comment, comments) {
+                commentsService.updateStatus(context, comment, 'APPROVED', comments);
             }
         },
         {
             label: 'Mark as Trash',
-            action: function(context, comment, commentsService) {
-                commentsService.updateStatus(context, comment, 'TRASH');
+            action: function(context, commentsService, comment, comments) {
+                commentsService.updateStatus(context, comment, 'TRASH', comments);
             }
         },
         {
             label: 'Save Changes',
-            action: function(context, comment, commentsService) {
+            action: function(context, commentsService, comment) {
                 commentsService.updateBody(context, comment);
             }
         }
         ,
         {
             label: 'Reset',
-            action: function(context, comment, commentsService) {
+            action: function(context, commentsService, comment) {
                 commentsService.resetBody(comment);
             }
         }
@@ -131,30 +131,30 @@ var moderationStatusActions = {
     'SPAM': [
         {
             label: 'Permanently delete',
-            action: function(context, comment, commentsService) {
-                commentsService.deleteComment(context, comment);
+            action: function(context, commentsService, comment, comments) {
+                commentsService.deleteComment(context, comment, comments);
             }
         },
         {
             label: 'Mark as Unmoderated',
-            action: function(context, comment, commentsService) {
-                commentsService.updateStatus(context, comment, 'UNMODERATED');
+            action: function(context, commentsService, comment, comments) {
+                commentsService.updateStatus(context, comment, 'UNMODERATED', comments);
             }
         }
     ],
     'TRASH': [
         {
             label: 'Permanently delete',
-            action: function(context, comment, commentsService) {
-                commentsService.deleteComment(context, comment);
+            action: function(context, commentsService, comment, comments) {
+                commentsService.deleteComment(context, comment, comments);
             }
-        },
+        }/*,
         {
             label: 'Mark as Unmoderated',
-            action: function(context, comment, commentsService) {
-                commentsService.updateStatus(context, comment, 'UNMODERATED');
+            action: function(context, commentsService, comment, comments) {
+                commentsService.updateStatus(context, comment, 'UNMODERATED', comments);
             }
-        }
+        }*/
     ]
 };
 
@@ -188,6 +188,16 @@ app.filter('truncateIfTooLarge', function() {
 /**
  * Global functions
  */
+function findComment(comments, id) {
+    for (var i = 0; i < comments.length; i++) {
+        if (comments[i]._id == id) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 function getObject(url, $http) {
     return $http.get(url).then(function(result){
         return result.data;
@@ -284,10 +294,14 @@ app.factory('commentsService', function($http) {
 
             return getObject(url, $http);
         },
-        updateStatus: function(context, comment, newStatus) {
+        updateStatus: function(context, comment, newStatus, comments) {
             var url = socialRestBaseUrl + '/comments/' + comment._id + '/moderate?tenant=' + context;
 
             putParams(url, { status: newStatus }, $http).then(function() {
+                var idx = findComment(comments, comment._id);
+
+                comments.splice(idx, 1);
+
                 showGrowlMessage('info', 'Status of comment \'' + comment._id + '\' changed to \'' + newStatus + '\'');
             });
         },
@@ -303,24 +317,44 @@ app.factory('commentsService', function($http) {
         resetBody: function(comment) {
             comment.body = comment.bodyOrig;
         },
-        deleteComment: function(context, comment) {
+        deleteComment: function(context, comment, comments) {
             var url = socialRestBaseUrl + '/comments/' + comment._id + '?tenant=' + context;
 
             deleteObject(url, $http).then(function() {
+                var idx = findComment(comments, comment._id);
+
+                comments.splice(idx, 1);
+
                 showGrowlMessage('info', 'Comment \'' + comment._id + '\' deleted');
             });
         }
     }
 });
 
+app.factory('actionsService', function($http) {
+    return {
+        getActions: function(context) {
+            var url = socialRestBaseUrl + '/system/actions?tenant=' + context;
+
+            return getObject(url, $http);
+        },
+        updateAction: function(context, actionName, roles) {
+            var url = socialRestBaseUrl + '/system/actions?tenant=' + context;
+
+            putParams(url, { actionName: actionName, roles: roles.join() }, $http).then(function() {
+                showGrowlMessage('info', 'Action \'' + actionName + '\' updated');
+            });
+        }
+    }
+});
 
 /**
  * Routing
  */
 app.config(function($routeProvider) {
     $routeProvider.when('/', {
-        controller: 'CommentListController',
-        templateUrl: contextPath + '/comments-list',
+        controller: 'ModerationDashboardController',
+        templateUrl: contextPath + '/moderation-dashboard',
         resolve: {
             socialContexts: function(socialContextServices) {
                 return socialContextServices.getAllContexts();
@@ -328,10 +362,23 @@ app.config(function($routeProvider) {
         }
     });
 
-    $routeProvider.when('/comment/list', {
-        controller: 'CommentListController',
-        templateUrl: contextPath + '/comments-list',
+    $routeProvider.when('/moderation-dashboard', {
+        controller: 'ModerationDashboardController',
+        templateUrl: contextPath + '/moderation-dashboard',
         resolve: {
+            socialContexts: function(socialContextServices) {
+                return socialContextServices.getAllContexts();
+            }
+        }
+    });
+
+    $routeProvider.when('/security-actions', {
+        controller: 'SecurityActionsController',
+        templateUrl: contextPath + '/security-actions',
+        resolve: {
+            socialContexts: function(socialContextServices) {
+                return socialContextServices.getAllContexts();
+            }
         }
     });
 
@@ -343,7 +390,7 @@ app.config(function($routeProvider) {
 /**
  * Controllers
  */
-app.controller('CommentListController', function($scope, $location, paginationConfig, commentsService, socialContexts) {
+app.controller('ModerationDashboardController', function($scope, paginationConfig, commentsService, socialContexts) {
     $scope.moderationStatus = moderationStatus;
     $scope.moderationStatusActions = moderationStatusActions;
     $scope.commentsService = commentsService;
@@ -382,4 +429,22 @@ app.controller('CommentListController', function($scope, $location, paginationCo
     };
 
     $scope.resetStatusAndCommentList();
+});
+
+app.controller('SecurityActionsController', function($scope, actionsService, socialContexts) {
+    $scope.socialContexts = socialContexts;
+    $scope.selectedContext = socialContexts[0]._id;
+    $scope.actionsOrderedBy = '+actionName';
+
+    $scope.getActions = function() {
+        actionsService.getActions($scope.selectedContext).then(function(actions) {
+            $scope.actions = actions;
+        });
+    };
+
+    $scope.updateAction = function(action) {
+        actionsService.updateAction($scope.selectedContext, action.actionName, action.roles);
+    };
+
+    $scope.getActions();
 });

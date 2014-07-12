@@ -59,20 +59,18 @@ public class SocialContextController {
     public Profile addProfileToContext(@PathVariable("id") final String contextId,
                                        @PathVariable("profileId") final String profileId,
                                        @RequestParam final  String roles) throws SocialException {
-        if (roles.toUpperCase().contains("SOCIAL_GOD")) {
-            throw new IllegalArgumentException("SOCIAL_GOD is not a valid role");
+        if (roles.toUpperCase().contains("SOCIAL_SUPER_ADMIN")) {
+            throw new IllegalArgumentException("SOCIAL_SUPER_ADMIN is not a valid role");
         }
+
         return socialContextService.addProfileToContext(profileId, contextId, roles.split(","));
     }
 
     @RequestMapping(value = "/{id}/{profileId}", method = RequestMethod.DELETE)
     @ResponseBody
     public Profile removeProfileFromContext(@PathVariable("id") final String contextId,
-                                       @PathVariable("profileId") final String profileId) throws SocialException {
-
-        return socialContextService.removeProfileFromContext(contextId,profileId);
+                                            @PathVariable("profileId") final String profileId) throws SocialException {
+        return socialContextService.removeProfileFromContext(contextId, profileId);
     }
-
-
 
 }

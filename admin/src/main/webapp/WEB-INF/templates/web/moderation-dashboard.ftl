@@ -1,10 +1,10 @@
 <#import "spring.ftl" as spring/>
 
-<h1 class="page-header">Comments List</h1>
+<h1 class="page-header">Moderation Dashboard</h1>
 
 <form class="form-inline" role="form">
     <div class="form-group">
-        <label for="context">Contex: </label>
+        <label for="context">Context: </label>
         <select name="context" class="form-control" ng-model="selectedContext"
                 ng-options="context._id as context.contextName for context in socialContexts"
                 ng-change="resetStatusAndCommentList()">
@@ -34,12 +34,13 @@
                 <p>{{comment.user.attributes.displayName | truncateIfTooLarge}}<p>
             </div>
             <div class="form-group col-sm-8">
+                <h4 class="comment-header"><span class="text-muted">Thread:</span> {{comment.targetId}}</h4>
                 <textarea class="form-control comment-body" ng-model="comment.body"></textarea>
                 <div class="comment-date">{{comment.lastModifiedDate | date:'MM/dd/yyyy @ h:mm a'}}</div>
                 <div class="comment-action-btns">
                     <button type="button" class="btn btn-primary"
                             ng-repeat="action in moderationStatusActions[selectedStatus]"
-                            ng-click="action.action(selectedContext, comment, commentsService)">
+                            ng-click="action.action(selectedContext, commentsService, comment, comments)">
                         {{action.label}}
                     </button>
                 </div>

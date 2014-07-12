@@ -61,12 +61,14 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC id is not valid");
             }
+
             ObjectId id = new ObjectId(ugcId);
             Aggregate aggregation = getCollection().aggregate(pt1);
             aggregation.and(pt2, tenantId, Arrays.asList(id), id);
             aggregation.and(pt3).and(pt4).and(pt5).and(pt6).and(pt7).and(pt8);
             aggregation.and(pt9, childrenCount);
             aggregation.and(pt10);
+
             return toUgcList(aggregation.as(super.ugcFactory.getTreeClass()));
         } catch (Exception ex) {
             log.error("Unable to ", ex);
@@ -148,7 +150,8 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
                 public ObjectId transform(final UGC input) {
                     return input.getId();
                 }
-            });
+            }
+        );
         log.debug("Deleting UGC's {}", toDelete);
         remove(delete, toDelete);
     }

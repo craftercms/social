@@ -95,6 +95,10 @@ a {
     margin-top: 20px;
 }
 
+.comment-header {
+    margin: 0 0 5px 0;
+}
+
 .col-avatar {
     width: 175px;
     text-align: center;
@@ -131,4 +135,11 @@ a {
 
 .comment-action-btns > button {
     margin-left: 5px;
+}
+
+/*
+ * Actions
+ */
+.table-responsive .form-group {
+    margin: 0;
 }
