@@ -1,6 +1,7 @@
 package org.craftercms.social.util;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -15,8 +16,7 @@ public class SocialSecurePropertyHandler implements SecurePropertyHandler {
 
     @Override
     public boolean suppressProperty(final String propertyName, final String[] roles) {
-        Set<String> currentRoles = SocialSecurityUtils.getCurrentProfile().getRoles();
-
+        List<String> currentRoles = SocialSecurityUtils.getRolesForSocialContext();
         return CollectionUtils.containsAny(currentRoles, Arrays.asList(roles));
     }
 }

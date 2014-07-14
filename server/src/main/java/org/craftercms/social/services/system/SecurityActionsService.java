@@ -42,4 +42,10 @@ public interface SecurityActionsService {
      * @return the updated SecurityAction,null if unable to find action for the given tenant.
      */
     SocialSecurityAction update(String tenant, String actionName, List<String> roles) throws SocialException;
+
+    /**
+     * Saves a new Action
+     * @param action Action to be save.
+     */
+    void save(SocialSecurityAction action) throws SocialException;
 }
