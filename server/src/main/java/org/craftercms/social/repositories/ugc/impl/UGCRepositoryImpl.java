@@ -149,6 +149,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
                     return input.getId();
                 }
             });
+
         log.debug("Deleting UGC's {}", toDelete);
         remove(delete, toDelete);
     }

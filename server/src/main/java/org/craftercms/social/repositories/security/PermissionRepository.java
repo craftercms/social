@@ -40,4 +40,10 @@ public interface PermissionRepository {
         MongoDataException;
 
 
+    /**
+     * Saves a new Action.
+     * @param action New Action to save.
+     * @throws MongoDataException If unable to save.
+     */
+    void save(SocialSecurityAction action) throws MongoDataException;
 }

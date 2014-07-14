@@ -17,6 +17,13 @@
 
 package org.craftercms.social.services.system.impl;
 
+import java.security.Security;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -24,12 +31,14 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.social.domain.social.system.SocialContext;
+import org.craftercms.social.domain.social.system.SocialSecurityAction;
 import org.craftercms.social.exceptions.ProfileConfigurationException;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.repositories.SocialContextRepository;
 import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.security.SocialSecurityUtils;
+import org.craftercms.social.services.system.SecurityActionsService;
 import org.craftercms.social.services.system.SocialContextService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +52,7 @@ public class SocialContextServiceImpl implements SocialContextService {
 
     private SocialContextRepository socialContextRepository;
     private ProfileService profileService;
+    private SecurityActionsService securityActionsService;
     private Logger log = LoggerFactory.getLogger(SocialContextServiceImpl.class);
 
     @Override
@@ -62,10 +72,22 @@ public class SocialContextServiceImpl implements SocialContextService {
         SocialContext context = new SocialContext(contextName);
         try {
             socialContextRepository.save(context);
+            createDefaultActionsForContext(context,SecurityActionNames.TEMPLATE_TENANT_ACTIONS);
             return context;
         } catch (MongoDataException ex) {
             log.error("Unable to save new social Context", ex);
             throw new SocialException("Unable to save Social Context", ex);
+        }
+    }
+
+
+    @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_CREATE_CONTEXT)
+    private void createDefaultActionsForContext(final SocialContext context,final String tenant) throws SocialException {
+        final Iterable<SocialSecurityAction> actions = securityActionsService.get(tenant);
+        for (SocialSecurityAction action : actions) {
+            action.setId(null);
+            action.setTenantId(context.getId());
+            securityActionsService.save(action);
         }
     }
 
@@ -127,7 +149,7 @@ public class SocialContextServiceImpl implements SocialContextService {
             if (p == null) {
                 throw new ProfileConfigurationException("Given Profile \"" + profileId + "\" does not exist");
             }
-            SocialContext ctx = (SocialContext)socialContextRepository.findById(contextId);
+            SocialContext ctx = socialContextRepository.findById(contextId);
             if (ctx == null) {
                 throw new ProfileConfigurationException("Given Context \"" + contextId + "\" does not exist");
             }
@@ -158,6 +180,9 @@ public class SocialContextServiceImpl implements SocialContextService {
         this.socialContextRepository = socialContextRepository;
     }
 
+    public void setSecurityActionsService(final SecurityActionsService securityActionsService) {
+        this.securityActionsService = securityActionsService;
+    }
 
     public void setProfileServiceRestClient(ProfileService profileService) {
         this.profileService = profileService;

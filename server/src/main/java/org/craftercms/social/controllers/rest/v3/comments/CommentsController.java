@@ -70,8 +70,8 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Deletes the comment", notes = "As Create some HTML/scripts tags will be scripted," +
-        "" + "Also All children will be deleted")
+    @ApiOperation(value = "Deletes the comment", notes = "As Create some HTML/scripts tags will be scripted, "
+        + "Also All children will be deleted")
     @ResponseBody
     public boolean delete(@ApiParam(value = "Comment id to update") @PathVariable("id") final String id) throws
         SocialException {

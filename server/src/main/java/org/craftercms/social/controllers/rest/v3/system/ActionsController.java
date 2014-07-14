@@ -30,7 +30,7 @@ public class ActionsController {
     @ResponseBody
     @ApiOperation(value = "Gets all Security Actions for current User tenant.")
     public Iterable<SocialSecurityAction> getCurrentActions() {
-        return actionsService.get(SocialSecurityUtils.getCurrentProfile().getTenant());
+        return actionsService.get(SocialSecurityUtils.getTenant());
     }
 
     @RequestMapping(method = RequestMethod.PUT)
@@ -39,10 +39,10 @@ public class ActionsController {
         + "" + "update of roles, this will replace the current action Roles with the new ones (send)")
     public SocialSecurityAction update(@RequestParam("actionName") final String actionName,
                                        @RequestParam() final String roles) throws SocialException {
-        if (roles.toUpperCase().contains("SOCIAL_GOD")) {
-            throw new IllegalArgumentException("SOCIAL_GOD is not a valid role");
+        if (roles.toUpperCase().contains("SOCIAL_SUPERADMIN")) {
+            throw new IllegalArgumentException("SOCIAL_SUPERADMIN is not a valid role");
         }
-        return actionsService.update(SocialSecurityUtils.getCurrentProfile().getTenant(), actionName,
+        return actionsService.update(SocialSecurityUtils.getTenant(), actionName,
             Arrays.asList(roles.split(",")));
     }
 

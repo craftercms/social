@@ -59,8 +59,8 @@ public class SocialContextController {
     public Profile addProfileToContext(@PathVariable("id") final String contextId,
                                        @PathVariable("profileId") final String profileId,
                                        @RequestParam final  String roles) throws SocialException {
-        if (roles.toUpperCase().contains("SOCIAL_GOD")) {
-            throw new IllegalArgumentException("SOCIAL_GOD is not a valid role");
+        if (roles.toUpperCase().contains("SOCIAL_SUPERADMIN")) {
+            throw new IllegalArgumentException("SOCIAL_SUPERADMIN is not a valid role");
         }
         return socialContextService.addProfileToContext(profileId, contextId, roles.split(","));
     }

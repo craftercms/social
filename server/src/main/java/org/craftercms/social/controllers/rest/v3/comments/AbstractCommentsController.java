@@ -57,7 +57,7 @@ public class AbstractCommentsController<T extends SocialUgc> {
      * @return Current Tenant, Never Null.
      */
     protected String tenant() {
-        return getCurrentProfile().getTenant();
+        return SocialSecurityUtils.getTenant();
     }
 
     /**

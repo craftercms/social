@@ -22,7 +22,7 @@ public class MetadataPipe implements UgcPipe {
         }
         ugc.setLastModifiedDate(new Date());
         ugc.setLastModifiedBy(SocialSecurityUtils.getCurrentProfile().getId().toString());
-        ugc.setTenantId(SocialSecurityUtils.getCurrentProfile().getTenant());
+        ugc.setTenantId(SocialSecurityUtils.getTenant());
         ugc.setChildren(null);
     }
 }
