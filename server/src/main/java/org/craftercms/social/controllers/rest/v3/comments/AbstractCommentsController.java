@@ -4,12 +4,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.activation.MimetypesFileTypeMap;
-
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.security.SocialSecurityUtils;
@@ -19,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.activation.MimetypesFileTypeMap;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Generic Information about all Comments related Rest Services
@@ -57,7 +56,7 @@ public class AbstractCommentsController<T extends SocialUgc> {
      * @return Current Tenant, Never Null.
      */
     protected String tenant() {
-        return getCurrentProfile().getTenant();
+        return SocialSecurityUtils.getTenant();
     }
 
     /**

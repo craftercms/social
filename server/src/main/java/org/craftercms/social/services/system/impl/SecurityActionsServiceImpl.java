@@ -66,6 +66,17 @@ public class SecurityActionsServiceImpl implements SecurityActionsService {
         }
     }
 
+    @Override
+    public void save(final SocialSecurityAction action) throws SocialException {
+        log.debug("Creating new Action {}",action);
+        try{
+            permissionRepository.save(action);
+        }catch (MongoDataException ex){
+            log.error("Unable to save new action", ex);
+            throw new SocialException("Unable to save new Action");
+        }
+    }
+
     public void setPermissionRepositoryImpl(PermissionRepository permissionRepository) {
         this.permissionRepository = permissionRepository;
     }

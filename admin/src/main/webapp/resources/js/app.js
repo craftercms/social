@@ -204,6 +204,14 @@ function getObject(url, $http) {
     });
 }
 
+function postParams(url, params, $http) {
+    return $http.post(url, $.param(params), { headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(
+        function(result){
+            return result.data;
+        }
+    );
+}
+
 function putParams(url, params, $http) {
     return $http.put(url, $.param(params), { headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(
         function(result){
@@ -263,12 +271,17 @@ app.config(['$httpProvider', function($httpProvider) {
 /**
  * Services
  */
-app.factory('socialContextServices', function($http) {
+app.factory('contextService', function($http) {
     return {
         getContexts: function() {
             var url = socialRestBaseUrl + '/system/context/all?tenant=' + defaultContext;
 
             return getObject(url, $http);
+        },
+        createContext: function(name) {
+            var url = socialRestBaseUrl + '/system/context?tenant=' + defaultContext;
+
+            return postParams(url, { contextName: name }, $http);
         }
     }
 });
@@ -390,8 +403,8 @@ app.config(function($routeProvider) {
         controller: 'ModerationDashboardController',
         templateUrl: contextPath + '/moderation-dashboard',
         resolve: {
-            socialContexts: function(socialContextServices) {
-                return socialContextServices.getContexts();
+            contexts: function(contextService) {
+                return contextService.getContexts();
             }
         }
     });
@@ -400,8 +413,18 @@ app.config(function($routeProvider) {
         controller: 'ModerationDashboardController',
         templateUrl: contextPath + '/moderation-dashboard',
         resolve: {
-            socialContexts: function(socialContextServices) {
-                return socialContextServices.getContexts();
+            contexts: function(contextService) {
+                return contextService.getContexts();
+            }
+        }
+    });
+
+    $routeProvider.when('/contexts', {
+        controller: 'ContextsController',
+        templateUrl: contextPath + '/contexts',
+        resolve: {
+            contexts: function(contextService) {
+                return contextService.getContexts();
             }
         }
     });
@@ -410,8 +433,8 @@ app.config(function($routeProvider) {
         controller: 'SecurityActionsController',
         templateUrl: contextPath + '/security-actions',
         resolve: {
-            socialContexts: function(socialContextServices) {
-                return socialContextServices.getContexts();
+            contexts: function(contextService) {
+                return contextService.getContexts();
             }
         }
     });
@@ -444,12 +467,12 @@ app.config(function($routeProvider) {
 /**
  * Controllers
  */
-app.controller('ModerationDashboardController', function($scope, commentService, socialContexts) {
+app.controller('ModerationDashboardController', function($scope, commentService, contexts) {
     $scope.moderationStatus = moderationStatus;
     $scope.moderationStatusActions = moderationStatusActions;
     $scope.commentService = commentService;
-    $scope.socialContexts = socialContexts;
-    $scope.selectedContext = socialContexts[0]._id;
+    $scope.contexts = contexts;
+    $scope.selectedContext = contexts[0]._id;
     $scope.itemsPerPage = 5;
 
     $scope.getComments = function() {
@@ -486,9 +509,22 @@ app.controller('ModerationDashboardController', function($scope, commentService,
     $scope.resetStatusAndCommentList();
 });
 
-app.controller('SecurityActionsController', function($scope, actionsService, socialContexts) {
-    $scope.socialContexts = socialContexts;
-    $scope.selectedContext = socialContexts[0]._id;
+app.controller('ContextsController', function($scope, contexts, contextService) {
+    $scope.contexts = contexts;
+    $scope.contextName = '';
+
+    $scope.createContext = function() {
+        contextService.createContext($scope.contextName).then(function(context) {
+            contexts.push(context);
+
+            showGrowlMessage('info', 'Context \'' + context.id + '\' created');
+        });
+    }
+});
+
+app.controller('SecurityActionsController', function($scope, actionsService, contexts) {
+    $scope.contexts = contexts;
+    $scope.selectedContext = contexts[0]._id;
     $scope.actionsOrderedBy = '+actionName';
 
     $scope.getActions = function() {

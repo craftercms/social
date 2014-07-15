@@ -52,6 +52,7 @@
 <div class="col-sm-3 col-md-2 sidebar">
     <ul class="nav nav-sidebar">
         <li><a href="#/moderation-dashboard">Moderation Dashboard</a></li>
+        <li><a href="#/contexts">Contexts</a></li>
         <li><a href="#/security-actions">Security Actions</a></li>
         <li><a href="#/search-profiles">Search Profiles</a></li>
     </ul>

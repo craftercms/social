@@ -6,7 +6,7 @@
     <div class="form-group">
         <label for="context">Context: </label>
         <select name="context" class="form-control" ng-model="selectedContext"
-                ng-options="context._id as context.contextName for context in socialContexts"
+                ng-options="context._id as context.contextName for context in contexts"
                 ng-change="resetStatusAndCommentList()">
         </select>
     </div>

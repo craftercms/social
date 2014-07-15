@@ -71,6 +71,7 @@
           id="social.system.socialContextService">
         <property name="socialContextRepositoryImpl" ref="social.repository.socialContextRepository"/>
         <property name="profileServiceRestClient" ref="crafter.profileServiceRestClient"/>
+        <property name="securityActionsService" ref="social.system.securityActionsService"/>
     </bean>
 
 

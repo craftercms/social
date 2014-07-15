@@ -50,11 +50,11 @@
 
             <table class="table table-striped">
                 <thead>
-                <tr>
-                    <th>Context</th>
-                    <th>Roles</th>
-                    <th></th>
-                </tr>
+                    <tr>
+                        <th>Context</th>
+                        <th>Roles</th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="context in profile.attributes.socialTenants">

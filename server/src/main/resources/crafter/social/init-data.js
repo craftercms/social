@@ -66,7 +66,7 @@ if(db.securityActions.count()==0){
         {
             actionName:"system.securityActions.read",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN,"]
+            roles:["SOCIAL_ADMIN"]
         },
         {
             actionName:"system.securityActions.update",
@@ -76,22 +76,89 @@ if(db.securityActions.count()==0){
         {
             actionName:"system.socialctx.all",
             tenantId:defaultTenant._id,
-            roles:[]
+            roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.create",
             tenantId:defaultTenant._id,
-            roles:[]
+            roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.addProfile",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN"]
+            roles:["SOCIAL_SUPERADMIN","SOCIAL_ADMIN"]
         },
         {
             actionName:"system.socialctx.removeProfile",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN"]
+            roles:["SOCIAL_SUPERADMIN","SOCIAL_ADMIN"]
         }
-    ])
+    ]);
+    db.securityActions.insert([
+        {
+            actionName:"ugc.update",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER"]
+        },
+        {
+            actionName:"ugc.moderate",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR"]
+        },
+        {
+            actionName:"ugc.unflag",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR"]
+        },
+        {
+            actionName:"ugc.flag",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"]
+        },
+        {
+            actionName:"ugc.create",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"]
+        },
+        {
+            actionName:"ugc.delete",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER"]
+        },
+        {
+            actionName:"ugc.read",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["ANONYMOUS","SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"]
+        },
+        {
+            actionName:"system.securityActions.read",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_ADMIN"]
+        },
+        {
+            actionName:"system.securityActions.update",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_ADMIN"]
+        },
+        {
+            actionName:"system.socialctx.all",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_SUPERADMIN"]
+        },
+        {
+            actionName:"system.socialctx.create",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_SUPERADMIN"]
+        },
+        {
+            actionName:"system.socialctx.addProfile",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_SUPERADMIN","SOCIAL_ADMIN"]
+        },
+        {
+            actionName:"system.socialctx.removeProfile",
+            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            roles:["SOCIAL_SUPERADMIN","SOCIAL_ADMIN"]
+        }
+    ]);
 }

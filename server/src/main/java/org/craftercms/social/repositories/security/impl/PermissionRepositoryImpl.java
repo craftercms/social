@@ -55,4 +55,5 @@ public class PermissionRepositoryImpl extends AbstractJongoRepository<SocialSecu
 
         return findOne(query, tenant, actionName);
     }
+
 }

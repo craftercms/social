@@ -16,6 +16,7 @@ public final class SecurityActionNames {
     public static final String SYSTEM_CREATE_CONTEXT = "system.socialctx.create";
     public static final String SYSTEM_ADD_PROFILE_CONTEXT = "system.socialctx.addProfile";
     public static final String SYSTEM_REMOVE_PROFILE_CONTEXT = "system.socialctx.removeProfile";
+    public static final String TEMPLATE_TENANT_ACTIONS = "TEMPLATE_TENANT_ACTIONS";
 
     private SecurityActionNames(){}
 
