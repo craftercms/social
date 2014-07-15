@@ -30,47 +30,47 @@ if(db.securityActions.count()==0){
         {
             actionName:"ugc.update",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.moderate",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.unflag",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.flag",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.create",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.delete",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.read",
             tenantId:defaultTenant._id,
-            roles:["ANONYMOUS","SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"]
+            roles:["ANONYMOUS","SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.securityActions.read",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN"]
+            roles:["SOCIAL_ADMIN","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.securityActions.update",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN"]
+            roles:["SOCIAL_ADMIN","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.all",
@@ -97,47 +97,47 @@ if(db.securityActions.count()==0){
         {
             actionName:"ugc.update",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.moderate",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.unflag",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.flag",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.create",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.delete",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER"]
+            roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.read",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["ANONYMOUS","SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"]
+            roles:["ANONYMOUS","SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.securityActions.read",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["SOCIAL_ADMIN"]
+            roles:["SOCIAL_ADMIN","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.securityActions.update",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["SOCIAL_ADMIN"]
+            roles:["SOCIAL_ADMIN","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.all",
