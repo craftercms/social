@@ -13,6 +13,7 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>
+                <value>classpath:crafter/profile/client-config.properties</value>
                 <value>classpath:crafter/social/management/server-config.properties</value>
                 <value>classpath*:crafter/social/management/extension/server-config.properties</value>
             </list>
@@ -66,6 +67,8 @@
 
     <bean id="crafter.mainController" class="org.craftercms.social.management.web.controllers.MainController">
         <property name="socialAppUrl" value="${crafter.social.app.url}"/>
+        <property name="profileAppUrl" value="${crafter.profile.app.url}"/>
+        <property name="profileAccessToken" value="${crafter.profile.rest.client.accessToken.id}"/>
     </bean>
 
     <bean id="crafter.fallbackController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />

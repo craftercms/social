@@ -27,12 +27,15 @@ public class SocialSecurityUtils {
     public static Profile getCurrentProfile() {
         Authentication currentAuth = SecurityUtils.getCurrentAuthentication();
         Profile profile;
+
         String tenant = RequestContext.getCurrent().getRequest().getParameter(SecurityUtils
-            .TENANT_REQUEST_ATTRIBUTE_NAME);
+                .TENANT_REQUEST_ATTRIBUTE_NAME);
+
         if (StringUtils.isBlank(tenant)) {
-            throw new IllegalArgumentException("Parameter \"" + SecurityUtils.TENANT_REQUEST_ATTRIBUTE_NAME + " \" "
-                + "is" + " " + "needed on the request");
+            throw new IllegalArgumentException("Parameter '" + SecurityUtils.TENANT_REQUEST_ATTRIBUTE_NAME +
+                    "' is missing from the request");
         }
+
         if (currentAuth == null) {
             profile = new Profile();
             profile.setUsername(ANONYMOUS);
@@ -40,32 +43,37 @@ public class SocialSecurityUtils {
             profile.setAttributes(new HashMap<String, Object>());
             //This is The Social Tenant 1
             profile.setTenant(tenant);
+
             return profile;
         } else {
             profile = currentAuth.getProfile();
+
             List<Map<String, Object>> socialTenants = (List<Map<String, Object>>)profile.getAttribute(SOCIAL_TENANTS);
             if (socialTenants == null || CollectionUtils.isEmpty(socialTenants)) {
-                throw new ProfileConfigurationException("Current profile tenant is not complete, "
-                    + "" + "missing '" + SOCIAL_TENANTS + "'");
+                throw new ProfileConfigurationException("Current profile tenant is not complete, missing '" +
+                        SOCIAL_TENANTS + "'");
             }
+
             for (Map<String, Object> socialTenant : socialTenants) {
                 String id = (String)socialTenant.get(SOCIAL_TENANT_ID);
                 if (StringUtils.isBlank(id)) {
-                    throw new ProfileConfigurationException("Current profile tenant is not complete, "
-                        + "" + "missing '" + SOCIAL_TENANT_ID + "'");
+                    throw new ProfileConfigurationException("Current profile tenant is not complete, missing '" +
+                            SOCIAL_TENANT_ID + "'");
                 }
+
                 if (id.equals(tenant)) {
                     profile.setTenant(id);
+
                     List<String> roles = (List<String>)socialTenant.get(SOCIAL_TENANT_ROLES);
-                    if (CollectionUtils.isEmpty(roles)) {
-                        throw new ProfileConfigurationException("Current profile tenant is not complete, "
-                            + "missing '" + SOCIAL_TENANT_ROLES + "' list");
+                    if (CollectionUtils.isNotEmpty(roles)) {
+                        profile.getRoles().addAll(roles);
                     }
-                    profile.getRoles().addAll(roles);
+
                     return profile;
                 }
             }
         }
+
         throw new ProfileConfigurationException("Current Profile is not assign to the given tenant");
     }
 }

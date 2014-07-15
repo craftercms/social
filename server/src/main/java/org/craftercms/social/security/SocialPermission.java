@@ -1,11 +1,11 @@
 package org.craftercms.social.security;
 
-import java.util.Set;
-
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.Permission;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.social.repositories.security.PermissionRepository;
+
+import java.util.Set;
 
 /**
  *
@@ -26,7 +26,8 @@ public class SocialPermission implements Permission {
     @Override
     public boolean isAllowed(final String action) {
         try {
-            return repository.isAllowed(action, profileRoles, tenantId);
+            // The super admin can do anything
+            return profileRoles.contains("SOCIAL_SUPER_ADMIN") || repository.isAllowed(action, profileRoles, tenantId);
         } catch (MongoDataException e) {
             throw new AccessDeniedException("Unable to find Action", e);
         }
