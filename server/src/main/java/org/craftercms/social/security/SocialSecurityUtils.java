@@ -36,7 +36,10 @@ public class SocialSecurityUtils {
             return Arrays.asList(ANONYMOUS);
         }
         List<String> list=getSocialTenantValue(profile,SOCIAL_TENANT_ROLES);
-        list.addAll(profile.getRoles());
+        if(list==null){
+            list=new ArrayList<>();
+        }
+       list.addAll(profile.getRoles());
         return list;
     }
 
@@ -67,7 +70,11 @@ public class SocialSecurityUtils {
                 return (T)socialTenant.get(key);
             }
         }
-        throw new ProfileConfigurationException("Current Profile is not assign to the given tenant");
+        if(profile.getRoles().contains(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)){
+            return null;
+        }else {
+            throw new ProfileConfigurationException("Current Profile is not assign to the given tenant");
+        }
     }
 
 
