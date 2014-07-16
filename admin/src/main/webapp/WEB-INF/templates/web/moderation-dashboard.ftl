@@ -6,7 +6,7 @@
     <div class="form-group">
         <label for="context">Context: </label>
         <select name="context" class="form-control" ng-model="selectedContext"
-                ng-options="context._id as context.contextName for context in contexts"
+                ng-options="context.contextName for context in contexts"
                 ng-change="resetStatusAndCommentList()">
         </select>
     </div>
@@ -31,7 +31,7 @@
                  ng-src="{{comment.user.attributes.avatarLink}}"/>
             <img ng-if="!comment.user.attributes.avatarLink" class="avatar-img avatar-img-small"
                  src="<@spring.url '/resources/image/profile.jpg'/>"/>
-            <p>{{comment.user.attributes.displayName | truncateIfTooLarge}}<p>
+            <p>{{comment.user.username | truncateIfTooLarge}}<p>
         </div>
         <div class="form-group col-sm-8">
             <h4 class="comment-header"><span class="text-muted">Thread:</span> {{comment.targetId}}</h4>
@@ -40,7 +40,7 @@
             <div class="comment-action-btns">
                 <button type="button" class="btn btn-primary"
                         ng-repeat="action in moderationStatusActions[selectedStatus]"
-                        ng-click="action.action(selectedContext, commentService, comment, comments)">
+                        ng-click="action.action(selectedContext._id, commentService, comment, comments)">
                     {{action.label}}
                 </button>
             </div>

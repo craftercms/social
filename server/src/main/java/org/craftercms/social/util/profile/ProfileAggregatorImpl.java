@@ -73,6 +73,8 @@ public class ProfileAggregatorImpl implements ProfileAggregator {
 
             Profile toReturn = new Profile();
             toReturn.setId(profile.getId());
+            toReturn.setUsername(profile.getUsername());
+            toReturn.setEmail(profile.getEmail());
             toReturn.setAttributes(profile.getAttributes());
 
             return toReturn;

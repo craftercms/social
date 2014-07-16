@@ -24,6 +24,9 @@
             <strong>Email:</strong> {{profile.email}}
         </div>
         <div class="block">
+            <strong>Tenant:</strong> {{profile.tenant}}
+        </div>
+        <div class="block">
             <strong>Roles:</strong> {{profile.roles.join(', ')}}
         </div>
         <div class="panel panel-default">
@@ -31,19 +34,19 @@
                 <span class="form-panel-title">Associated Contexts</span>
             </div>
             <div class="panel-body">
-                <form class="form-inline" role="form">
+                <form class="form-inline" ng-if="contexts.length > 0">
                     <div class="form-group">
-                        <label for="contextName">Context:</label>
-                        <input type="text" style="width: 125px" name="contextName" class="form-control"
-                               ng-model="contextName"/>
+                        <label>Context:</label>
+                        <select class="form-control" ng-model="selectedContext"
+                                ng-options="context.contextName for context in contexts">
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="roles">Roles:</label>
-                        <input type="text" name="roles" style="width: 300px" class="form-control"
-                               ng-model="contextRoles"/>
+                        <label>Roles:</label>
+                        <input style="width: 300px" class="form-control" ng-model="contextRoles" ng-list/>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-default" type="button">Add</button>
+                        <button class="btn btn-default" type="button" ng-click="addProfileToContext()">Add</button>
                     </div>
                 </form>
             </div>
@@ -58,9 +61,10 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="context in profile.attributes.socialTenants">
-                        <td style="vertical-align: middle">{{context.tenant}}</td>
+                        <td style="vertical-align: middle">{{context.name}}</td>
                         <td style="vertical-align: middle">{{context.roles.join(', ')}}</td>
-                        <td><button class="btn btn-default" type="button">Delete</button></td>
+                        <td><button class="btn btn-default" type="button"
+                                    ng-click="removeProfileFromContext(context.id)">Delete</button></td>
                     </tr>
                 </tbody>
             </table>

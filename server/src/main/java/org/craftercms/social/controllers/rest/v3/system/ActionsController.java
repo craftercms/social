@@ -39,11 +39,7 @@ public class ActionsController {
         + "" + "update of roles, this will replace the current action Roles with the new ones (send)")
     public SocialSecurityAction update(@RequestParam("actionName") final String actionName,
                                        @RequestParam() final String roles) throws SocialException {
-        if (roles.toUpperCase().contains("SOCIAL_SUPERADMIN")) {
-            throw new IllegalArgumentException("SOCIAL_SUPERADMIN is not a valid role");
-        }
-        return actionsService.update(SocialSecurityUtils.getTenant(), actionName,
-            Arrays.asList(roles.split(",")));
+        return actionsService.update(SocialSecurityUtils.getTenant(), actionName, Arrays.asList(roles.split(",")));
     }
 
 

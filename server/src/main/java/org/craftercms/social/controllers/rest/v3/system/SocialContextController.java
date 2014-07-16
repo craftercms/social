@@ -18,18 +18,15 @@
 package org.craftercms.social.controllers.rest.v3.system;
 
 import com.wordnik.swagger.annotations.Api;
-
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.domain.social.system.SocialContext;
 import org.craftercms.social.exceptions.SocialException;
+import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.services.system.SocialContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -58,18 +55,20 @@ public class SocialContextController {
     @ResponseBody
     public Profile addProfileToContext(@PathVariable("id") final String contextId,
                                        @PathVariable("profileId") final String profileId,
-                                       @RequestParam final  String roles) throws SocialException {
-        if (roles.toUpperCase().contains("SOCIAL_SUPERADMIN")) {
-            throw new IllegalArgumentException("SOCIAL_SUPERADMIN is not a valid role");
+                                       @RequestParam final String roles) throws SocialException {
+        if (roles.toUpperCase().contains(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
+            throw new IllegalArgumentException(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN + " is not a valid role");
         }
-        return socialContextService.addProfileToContext(profileId, contextId, roles.split(","));
+
+        return socialContextService.addProfileToContext(profileId, contextId, StringUtils.split(roles, ','));
     }
 
     @RequestMapping(value = "/{id}/{profileId}", method = RequestMethod.DELETE)
     @ResponseBody
     public Profile removeProfileFromContext(@PathVariable("id") final String contextId,
                                             @PathVariable("profileId") final String profileId) throws SocialException {
-        return socialContextService.removeProfileFromContext(contextId,profileId);
+        return socialContextService.removeProfileFromContext(contextId, profileId);
     }
+
 
 }
