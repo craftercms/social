@@ -10,21 +10,12 @@ import java.io.InputStream;
  */
 public class NullVirusScannerImpl implements VirusScanner {
 
-    /**
-     *
-     * @param filename
-     * @return null
-     */
-	public String scan(String filename) {
-		return null;
-	}
+    @Override
+    public void scan(final String filename) {
 
-    /**
-     *
-     * @param inputStream
-     * @return null
-     */
-	public String scan(InputStream inputStream) {
-		return null;
-	}
+    }
+
+    @Override
+    public void scan(final InputStream inputStream) {
+    }
 }

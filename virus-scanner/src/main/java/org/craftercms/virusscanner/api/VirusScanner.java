@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 public interface VirusScanner {
 
-    String scan(String filename);
-    String scan(InputStream inputStream);
+    void scan(String filename);
+    void scan(InputStream inputStream);
 
 }
