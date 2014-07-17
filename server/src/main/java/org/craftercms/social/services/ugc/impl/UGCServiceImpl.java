@@ -18,11 +18,14 @@ import org.craftercms.social.repositories.ugc.UGCRepository;
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.ugc.UGCService;
 import org.craftercms.social.services.ugc.pipeline.UgcPipeline;
+import org.craftercms.virusscanner.api.VirusScanner;
+import org.craftercms.virusscanner.impl.VirusScannerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -42,6 +45,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     private UgcPipeline pipeline;
     private Pattern invalidQueryKeys;
     private UgcFactory ugcFactory;
+    private VirusScanner virusScanner;
 
     @Override
     @HasPermission(action = UGC_CREATE, type = SocialPermission.class)
@@ -200,6 +204,13 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         String internalFileName = File.separator + tenant + File.separator + ugcId + File.separator +
             fileName;
         try {
+            checkForVirus(attachment);
+        } catch (IOException | VirusScannerException ex) {
+            log.error("Unable to scan virus not saving attachment", ex);
+            return null;
+        }
+
+        try {
             UGC ugc = ugcRepository.findUGC(tenant, ugcId);
             if (ugc == null) {
                 throw new IllegalUgcException("UGC with given Id does not exist");
@@ -212,6 +223,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             log.error("Unable to save File " + internalFileName, e);
             throw new UGCException("Unable to save File to UGC");
         }
+    }
+
+    private void checkForVirus(final InputStream attachment) throws IOException {
+        virusScanner.scan(attachment);
+        attachment.reset();
     }
 
     @Override
@@ -509,5 +525,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     private T getUgcTree(final String ugcId, final int childCount, final String tenantId) throws MongoDataException {
         List<T> list = ugcRepository.findChildrenOf(ugcId, childCount, tenantId);
         return buildUgcTree(list);
+    }
+
+    public void setVirusScanner(final VirusScanner virusScanner) {
+        this.virusScanner = virusScanner;
     }
 }
