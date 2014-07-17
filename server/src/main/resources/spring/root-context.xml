@@ -33,10 +33,7 @@
     </bean>
 
     <bean id="social.ugc.virusScanner"
-          class="#{ studio.social.ugc.useVirusScanner ?
-                   'org.craftercms.virusscanner.impl.ClamavVirusScannerImpl'
-                   :'org.craftercms.virusscanner.impl.NullVirusScannerImpl' }"/>
-
+          class="${studio.social.ugc.virusScanner}"/>
     <bean class="org.craftercms.social.services.social.impl.SocialServicesImpl" id="social.ugc.socialServices">
         <property name="ugcRepository" ref="social.repository.ugcRepository"/>
     </bean>
