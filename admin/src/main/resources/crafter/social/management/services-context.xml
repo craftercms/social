@@ -22,7 +22,7 @@
 
     <util:map id="crafter.urlRestrictions">
         <entry key="/login" value="permitAll()"/>
-        <entry key="/**" value="hasRole('SOCIAL_GOD')"/>
+        <entry key="/**" value="hasRole('SOCIAL_SUPERADMIN')"/>
     </util:map>
 
     <import resource="classpath*:crafter/social/management/extension/services-context.xml"/>

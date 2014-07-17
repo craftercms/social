@@ -51,7 +51,10 @@
 <#macro navSidebar>
 <div class="col-sm-3 col-md-2 sidebar">
     <ul class="nav nav-sidebar">
-        <li><a href="#/comments/list">List Comments</a></li>
+        <li><a href="#/moderation-dashboard">Moderation Dashboard</a></li>
+        <li><a href="#/contexts">Contexts</a></li>
+        <li><a href="#/security-actions">Security Actions</a></li>
+        <li><a href="#/search-profiles">Search Profiles</a></li>
     </ul>
 </div>
 </#macro>
@@ -67,6 +70,9 @@
 <script type="text/javascript">
     var contextPath = "${requestContext.contextPath}";
     var socialAppUrl = "${socialAppUrl}";
+    var profileAppUrl = "${profileAppUrl}";
+    var profileAccessToken = "${profileAccessToken}";
     var socialRestBaseUrl = socialAppUrl + "/api/3";
+    var profileRestBaseUrl = profileAppUrl + "/api/1";
 </script>
 </#macro>

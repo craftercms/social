@@ -18,21 +18,15 @@
 package org.craftercms.social.controllers.rest.v3.system;
 
 import com.wordnik.swagger.annotations.Api;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.domain.social.system.SocialContext;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.security.SecurityActionNames;
-import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.system.SocialContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -54,9 +48,7 @@ public class SocialContextController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public SocialContext create(@RequestParam final String contextName) throws SocialException {
-        final SocialContext ctx = socialContextService.createNewContext(contextName);
-        addProfileToContext(ctx.getId(), SocialSecurityUtils.getCurrentProfile().getId().toString(), "");
-        return ctx;
+        return socialContextService.createNewContext(contextName);
     }
 
     @RequestMapping(value = "/{id}/{profileId}", method = RequestMethod.POST)
@@ -67,20 +59,14 @@ public class SocialContextController {
         if (roles.toUpperCase().contains(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
             throw new IllegalArgumentException(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN + " is not a valid role");
         }
-        String[] assignedRoles;
-        if (StringUtils.isBlank(roles)) {
-            assignedRoles = new String[0];
-        } else {
-            assignedRoles = roles.split(",");
-        }
-        return socialContextService.addProfileToContext(profileId, contextId, assignedRoles);
+
+        return socialContextService.addProfileToContext(profileId, contextId, StringUtils.split(roles, ','));
     }
 
     @RequestMapping(value = "/{id}/{profileId}", method = RequestMethod.DELETE)
     @ResponseBody
     public Profile removeProfileFromContext(@PathVariable("id") final String contextId,
                                             @PathVariable("profileId") final String profileId) throws SocialException {
-
         return socialContextService.removeProfileFromContext(contextId, profileId);
     }
 

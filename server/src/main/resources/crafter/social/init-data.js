@@ -66,12 +66,12 @@ if(db.securityActions.count()==0){
         {
             actionName:"system.securityActions.read",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN","SOCIAL_SUPERADMIN"]
+            roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.securityActions.update",
             tenantId:defaultTenant._id,
-            roles:["SOCIAL_ADMIN","SOCIAL_SUPERADMIN"]
+            roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.all",
@@ -133,12 +133,12 @@ if(db.securityActions.count()==0){
         {
             actionName:"system.securityActions.read",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["SOCIAL_ADMIN","SOCIAL_SUPERADMIN"]
+            roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.securityActions.update",
             tenantId:"TEMPLATE_TENANT_ACTIONS",
-            roles:["SOCIAL_ADMIN","SOCIAL_SUPERADMIN"]
+            roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.all",
