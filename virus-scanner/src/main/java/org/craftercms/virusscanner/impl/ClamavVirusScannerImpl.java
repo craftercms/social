@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.InputStream;
 
 /**
@@ -47,68 +48,21 @@ public class ClamavVirusScannerImpl implements VirusScanner {
      * @param filename full path
      * @return  null for a successful scan (the file is clean) or an error message if the scan fails or a threat is found
      */
-	public String scan(String filename) {
+	public void scan(String filename) {
+        try {
+            scan(new FileInputStream(filename));
+        } catch (FileNotFoundException e) {
+            throw new VirusScannerException("Unable to read given file",e);
+        }
 
-		String userMessage = null;
-
-		File file;
-		FileInputStream fileInputStream;
-
-		ClamScan clamScan;
-		ScanResult scanResult;
-
-		if (filename != null && !filename.isEmpty()) {
-
-			String result;
-			String statusName;
-			String signature;
-
-			try {
-
-				file = new File(filename);
-				fileInputStream = new FileInputStream(file);
-
-				clamScan = new ClamScan(this.host, this.port, this.timeout);
-
-				scanResult = clamScan.scan(fileInputStream);
-
-				result = scanResult.getResult();
-				signature = scanResult.getSignature();
-				statusName = scanResult.getStatus().name();
-
-				if (scanResult.getStatus().compareTo(ScanResult.Status.ERROR) == 0) {
-					userMessage = SCAN_FAILED_MESSAGE;
-					log.error("STATUS: " + statusName + " - RESULT: " + result + " - EXCEPTION: " + scanResult.getException() + " - USER MESSAGE: " + userMessage);
-				} else if (scanResult.getStatus().compareTo(ScanResult.Status.FAILED) == 0) {
-					userMessage = THREAT_FOUND_MESSAGE;
-					log.error("STATUS: " + statusName + " - RESULT: " + result + " - SIGNATURE " + signature + " - USER MESSAGE: " + userMessage);
-				} else {
-					log.debug("STATUS: " + statusName + " - RESULT: " + result);
-				}
-
-			} catch (FileNotFoundException e) {
-				userMessage = FILE_NOT_FOUND_MESSAGE;
-				log.error(e + " - USER MESSAGE: " + userMessage);
-			}
-
-		} else {
-			userMessage = FILE_NOT_FOUND_MESSAGE;
-			log.error(new IllegalArgumentException() + userMessage);
-		}
-
-		return userMessage;
-
-	}
+    }
 
     /**
      *
      * @param inputStream
      * @return  null for a successful scan (the input stream is clean) or an error message if the scan fails or a threat is found
      */
-	public String scan(InputStream inputStream) {
-
-		String userMessage = null;
-
+	public void scan(InputStream inputStream) {
 		ClamScan clamScan;
 		ScanResult scanResult;
 
@@ -127,22 +81,20 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 			statusName = scanResult.getStatus().name();
 
 			if (scanResult.getStatus().compareTo(ScanResult.Status.ERROR) == 0) {
-				userMessage = SCAN_FAILED_MESSAGE;
-				log.error("STATUS: " + statusName + " - RESULT: " + result + " - EXCEPTION: " + scanResult.getException() + " - USER MESSAGE: " + userMessage);
+                final String msg = "STATUS: " + statusName + " - RESULT: " + result + " - EXCEPTION: " + scanResult
+                    .getException() ;
+				log.error(msg);
+                throw new VirusScannerException(msg,scanResult.getException());
 			} else if (scanResult.getStatus().compareTo(ScanResult.Status.FAILED) == 0) {
-				userMessage = THREAT_FOUND_MESSAGE;
-				log.error("STATUS: " + statusName + " - RESULT: " + result + " - SIGNATURE " + signature + " - USER MESSAGE: " + userMessage);
+                final String msg = "STATUS: " + statusName + " - RESULT: " + result + " - SIGNATURE " + signature +
+                    "" + " - USER ";
+                throw new VirusScannerException(msg,scanResult.getException());
 			} else {
 				log.debug("STATUS: " + statusName + " - RESULT: " + result);
 			}
-
 		} else {
-			userMessage = SCAN_FAILED_MESSAGE;
-			log.error(new IllegalArgumentException("null inputStream") + userMessage);
+			throw new IllegalArgumentException("null inputStream");
 		}
-
-		return userMessage;
-
 	}
 
     /**
