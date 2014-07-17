@@ -9,6 +9,7 @@
 
     <bean id="crafter.socialPermissionResolver" class="org.craftercms.social.security.SocialPermissionResolver">
         <property name="permissionRepository" ref="social.repository.permissionRepository"/>
+        <property name="ugcService" ref="social.ugc.ugcService"/>
     </bean>
 
     <bean id="crafter.permissionEvaluator"

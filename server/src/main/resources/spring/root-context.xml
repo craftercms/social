@@ -52,12 +52,13 @@
             </list>
         </property>
     </bean>
+
     <bean class="${studio.social.system.ugcClass}" id="social.ugc.factory"/>
     <bean class="org.craftercms.social.util.SocialSecurePropertyHandler" id="social.utils.securePropertyHandler"/>
     <bean class="org.craftercms.social.util.profile.ProfileAggregatorImpl" id="social.profileAggregator">
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
-        <property name="cache" ref="crafter.ehCacheAuthenticationCache">
-        </property>
+        <property name="cache" ref="crafter.ehCacheAuthenticationCache"/>
+        <property name="attributesToReturn" value="${studio.social.system.profileAgg.attributesToReturn}"/>
     </bean>
 
     <bean id="social.support.ehCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">

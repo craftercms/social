@@ -12,7 +12,7 @@ public final class SecurityActionNames {
     public static final String UGC_CREATE = "ugc.create";
     public static final String UGC_DELETE = "ugc.delete";
     public static final String UGC_READ = "ugc.read";
-    public static final String SYSTEM_GET_CONTEXT = "system.socialctx.all";
+    public static final String SYSTEM_GET_ALL_CONTEXTS = "system.socialctx.all";
     public static final String SYSTEM_CREATE_CONTEXT = "system.socialctx.create";
     public static final String SYSTEM_ADD_PROFILE_CONTEXT = "system.socialctx.addProfile";
     public static final String SYSTEM_REMOVE_PROFILE_CONTEXT = "system.socialctx.removeProfile";

@@ -1,7 +1,5 @@
 package org.craftercms.social.util.profile;
 
-import java.util.List;
-
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.craftercms.profile.api.Profile;
@@ -10,16 +8,22 @@ import org.craftercms.profile.api.services.ProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
  *
  */
 public class ProfileAggregatorImpl implements ProfileAggregator {
 
-
     private ProfileService profileService;
     private Ehcache cache;
     private Logger log = LoggerFactory.getLogger(ProfileAggregatorImpl.class);
 
+    private String[] attributesToReturn;
+
+    public void setAttributesToReturn(String[] attributesToReturn) {
+        this.attributesToReturn = attributesToReturn;
+    }
 
     @Override
     public void clearProfileCache(final List<String> profileIds) {
@@ -62,13 +66,17 @@ public class ProfileAggregatorImpl implements ProfileAggregator {
 
     private Profile getProfileFromServer(final String profileId) {
         try {
-            Profile profile = profileService.getProfile(profileId, "displayName", "avatar");
-            if(profile==null){
+            Profile profile = profileService.getProfile(profileId, attributesToReturn);
+            if(profile == null){
                 return null;
             }
+
             Profile toReturn = new Profile();
             toReturn.setId(profile.getId());
+            toReturn.setUsername(profile.getUsername());
+            toReturn.setEmail(profile.getEmail());
             toReturn.setAttributes(profile.getAttributes());
+
             return toReturn;
         } catch (ProfileException ex) {
             log.error("Unable to get profile \"" + profileId + "\"from server ", ex);
@@ -83,4 +91,5 @@ public class ProfileAggregatorImpl implements ProfileAggregator {
     public void setCache(final Ehcache cache) {
         this.cache = cache;
     }
+
 }

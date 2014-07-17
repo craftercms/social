@@ -1,17 +1,5 @@
 package org.craftercms.social.services.ugc.impl;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -35,10 +23,13 @@ import org.craftercms.virusscanner.impl.VirusScannerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.craftercms.social.security.SecurityActionNames.UGC_CREATE;
-import static org.craftercms.social.security.SecurityActionNames.UGC_DELETE;
-import static org.craftercms.social.security.SecurityActionNames.UGC_READ;
-import static org.craftercms.social.security.SecurityActionNames.UGC_UPDATE;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.regex.Pattern;
+
+import static org.craftercms.social.security.SecurityActionNames.*;
 
 /**
  *
@@ -124,7 +115,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public UGC update(@SecuredObject final String ugcId, final String body, final String subject,
-                      final String userId, final String tenantId, final Map attributes) throws SocialException {
+                      final String tenantId, final Map attributes) throws SocialException {
         log.debug("About to update UGC {}", ugcId);
         try {
             if (!ObjectId.isValid(ugcId)) {
@@ -143,6 +134,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             if (StringUtils.isNotBlank(subject)) {
                 toUpdate.setBody(subject);
             }
+
             pipeline.processUgc(toUpdate);
             ugcRepository.update(ugcId, toUpdate, false, false);
 

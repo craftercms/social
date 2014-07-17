@@ -3,18 +3,8 @@ package org.craftercms.social.repositories.ugc.impl;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.util.JSONParseException;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
-import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
@@ -32,11 +22,12 @@ import org.jongo.ResultHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
+
 /**
  *
  */
 public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository implements UGCRepository {
-
 
     private Logger log = LoggerFactory.getLogger(UGCRepositoryImpl.class);
 
@@ -70,12 +61,14 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC id is not valid");
             }
+
             ObjectId id = new ObjectId(ugcId);
             Aggregate aggregation = getCollection().aggregate(pt1);
             aggregation.and(pt2, tenantId, Arrays.asList(id), id);
             aggregation.and(pt3).and(pt4).and(pt5).and(pt6).and(pt7).and(pt8);
             aggregation.and(pt9, childrenCount);
             aggregation.and(pt10);
+
             return toUgcList(aggregation.as(super.ugcFactory.getTreeClass()));
         } catch (Exception ex) {
             log.error("Unable to ", ex);
@@ -157,8 +150,8 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
                 public ObjectId transform(final UGC input) {
                     return input.getId();
                 }
-            });
-
+            }
+        );
         log.debug("Deleting UGC's {}", toDelete);
         remove(delete, toDelete);
     }
@@ -189,16 +182,16 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC id is not valid");
             }
-            T parent = findUGC(tenantId, ugcId);
-            if (parent == null) {
+            T parent = findUGC(tenantId,ugcId);
+            if(parent==null){
                 throw new IllegalUgcException("Ugc does not exist for given id and tenant");
             }
             ArrayDeque<ObjectId> ancestors = parent.getAncestors().clone();
             ancestors.addLast(parent.getId());
-            parent = null;
+
             String query = getQueryFor("social.ugc.byTenantTargetAncestorsExact");
             Find find = getCollection().find(query, tenantId, targetId, ancestors);
-            return getUgcsToFind(find, targetId, tenantId, start, limit, sortOrder, (ancestors.size() + upToLevel));
+            return getUgcsToFind(find, targetId, tenantId, start, limit, sortOrder, (ancestors.size()+upToLevel));
         } catch (MongoException ex) {
             log.error("Unable to find children of " + ugcId, ex);
             throw new MongoDataException("Unable to find children of given UGC", ex);
@@ -259,7 +252,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             T parent = findUGC(tenant, ugcId);
             ArrayDeque<ObjectId> ancestors = parent.getAncestors().clone();
             ancestors.addLast(parent.getId());
-            parent = null;
+
             return count(getQueryFor("social.ugc.byTenantAncestorsExact"), tenant, ancestors, ancestors.size());
         } catch (MongoException ex) {
             log.error("Unable to count ugc for tenant " + tenant + "and id " + ugcId, ex);
@@ -268,34 +261,36 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     }
 
     @Override
-    public Iterable<T> findByModerationStatus(final SocialUgc.ModerationStatus status, final String thread,
-    final int skip, final int pageSize, final String tenant, final List sortOrder) throws MongoDataException {
+    public Iterable<T> findByModerationStatus(final SocialUgc.ModerationStatus status, final String targetId,
+                                              final String tenant, final int start, final int limit,
+                                              final List sortOrder)
+            throws MongoDataException {
         Find query;
-        if (StringUtils.isBlank(thread)) {
+        if (StringUtils.isBlank(targetId)) {
             query = getCollection().find(getQueryFor("social.ugc.byModerationStatus"), status, tenant);
         } else {
-            query = getCollection().find(getQueryFor("social.ugc.byModerationStatusAndTenant"), status, tenant, thread);
+            query = getCollection().find(getQueryFor("social.ugc.byModerationStatusAndTargetId"), status, tenant, targetId);
         }
-        return query.sort(createSortQuery(sortOrder)).skip(skip).limit(pageSize).as(clazz);
+
+        return query.sort(createSortQuery(sortOrder)).skip(start).limit(limit).as(clazz);
     }
 
     @Override
-    public long countFindByModerationStatus(final SocialUgc.ModerationStatus status, final String thread, final
-    String tenant) throws MongoDataException {
-        if (StringUtils.isBlank(thread)) {
+    public long countFindByModerationStatus(final SocialUgc.ModerationStatus status, final String targetId,
+                                            final String tenant) throws MongoDataException {
+        if (StringUtils.isBlank(targetId)) {
             return count(getQueryFor("social.ugc.byModerationStatus"), status, tenant);
         } else {
-            return count(getQueryFor("social.ugc.byModerationStatusAndTenant"), status, tenant, thread);
+            return count(getQueryFor("social.ugc.byModerationStatusAndTargetId"), status, tenant, targetId);
         }
     }
 
-    private List<T> toUgcList(final List<BaseTreeUgc> as) {
+    protected List<T> toUgcList(final List<BaseTreeUgc> as) {
         ArrayList<T> ugcList = new ArrayList<>(as.size());
         for (TreeUGC a : as) {
             ugcList.add((T)a.getUGC());
         }
         return ugcList;
     }
-
 
 }

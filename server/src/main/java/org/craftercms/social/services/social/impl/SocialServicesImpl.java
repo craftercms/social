@@ -1,8 +1,5 @@
 package org.craftercms.social.services.social.impl;
 
-import java.util.List;
-
-import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -19,10 +16,9 @@ import org.craftercms.social.services.social.VoteOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.craftercms.social.security.SecurityActionNames.UGC_FLAG;
-import static org.craftercms.social.security.SecurityActionNames.UGC_MODERATE;
-import static org.craftercms.social.security.SecurityActionNames.UGC_UNFLAG;
-import static org.craftercms.social.security.SecurityActionNames.UGC_UPDATE;
+import java.util.List;
+
+import static org.craftercms.social.security.SecurityActionNames.*;
 
 /**
  *
@@ -108,7 +104,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     public SocialUgc moderate(final String ugcId, final SocialUgc.ModerationStatus moderationStatus,
                               final String userId, final String tenant) throws UGCException {
         try {
-            T ugc = ugcRepository.findUGC(ugcId, tenant);
+            T ugc = ugcRepository.findUGC(tenant, ugcId);
             if (ugc == null) {
                 throw new IllegalUgcException("Given UGC does not exist for current user's tenant");
             }
@@ -124,10 +120,11 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     }
 
     @Override
-    public Iterable<T> findByModerationStatus(final SocialUgc.ModerationStatus status, final String thread, final int
-        start, final int pageSize, final String tenant, final List sort) throws UGCException {
+    public Iterable<T> findByModerationStatus(final SocialUgc.ModerationStatus status, final String thread,
+                                              final String tenant, final int start, final int limit, final List sort)
+            throws UGCException {
         try {
-            return ugcRepository.findByModerationStatus(status, thread,start, pageSize, tenant, sort);
+            return ugcRepository.findByModerationStatus(status, thread, tenant, start, limit, sort);
         } catch (MongoDataException ex) {
             log.error("Unable to find by Moderation Status.", ex);
             throw new UGCException("Unable to find by status", ex);

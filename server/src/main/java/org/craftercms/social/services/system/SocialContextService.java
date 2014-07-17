@@ -25,7 +25,7 @@ import org.craftercms.social.exceptions.SocialException;
  *
  */
 public interface SocialContextService {
-    Iterable<SocialContext> getAllContext() throws SocialException;
+    Iterable<SocialContext> getAllContexts() throws SocialException;
     SocialContext createNewContext(final String contextName) throws SocialException;
     Profile addProfileToContext(String profileId, String contextId, String[] roles) throws SocialException;
     Profile removeProfileFromContext(String contextId, String profileId) throws SocialException;

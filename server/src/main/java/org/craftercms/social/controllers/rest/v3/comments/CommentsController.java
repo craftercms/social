@@ -2,12 +2,8 @@ package org.craftercms.social.controllers.rest.v3.comments;
 
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.social.domain.social.Flag;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalUgcException;
@@ -19,13 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  */
@@ -71,7 +66,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         if (!StringUtils.isBlank(attributes)) {
             attributesMap = parseAttributes(attributes);
         }
-        return (T)ugcService.update(id, body, "", userId(), tenant(), attributesMap);
+        return (T)ugcService.update(id, body, "", tenant(), attributesMap);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
@@ -176,28 +171,30 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "moderation/{status}", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Gets all Moderation comments with the given moderation status")
-    public Iterable<T> byStatus(@PathVariable("status") @RequestParam final SocialUgc.ModerationStatus status,
+    public Iterable<T> byStatus(@PathVariable("status") final SocialUgc.ModerationStatus status,
                                 @RequestParam(defaultValue = "", required = false) final String thread,
                                 @RequestParam(required = false, defaultValue = "0") final int pageNumber,
-                                @ApiParam("Comments per Page") @RequestParam(required = false,
-        defaultValue = ThreadsController.MAX_INT) final int pageSize, @ApiParam("List of fields to order by")
-    @RequestParam(required = false) final List<String> sortBy, @ApiParam("Sort Order") @RequestParam(required =
-        false) final List<SocialSortOrder> sortOrder) throws UGCException {
+                                @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT)
+                                final int pageSize,
+                                @RequestParam(required = false) final List<String> sortBy,
+                                @RequestParam(required = false) final List<SocialSortOrder> sortOrder)
+            throws UGCException {
         int start = 0;
         if (pageNumber > 0 && pageSize > 0) {
             start = ThreadsController.getStart(pageNumber, pageSize);
         }
-        return socialServices.findByModerationStatus(status, thread, start, pageSize, tenant(),
-            ThreadsController.getSortOrder(sortBy, sortOrder));
+
+        return IterableUtils.toList(socialServices.findByModerationStatus(status, thread, tenant(), start, pageSize,
+                ThreadsController.getSortOrder(sortBy, sortOrder)));
     }
 
     @RequestMapping(value = "moderation/{status}/count", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Counts all Moderation comments with the given moderation status")
-    public long byStatusCount(@PathVariable("status") @RequestParam final SocialUgc.ModerationStatus status,
-                                     @RequestParam(defaultValue = "", required = false) final String thread) throws
+    public long byStatusCount(@PathVariable("status") final SocialUgc.ModerationStatus status,
+                              @RequestParam(defaultValue = "", required = false) final String thread) throws
         UGCException {
-        return socialServices.countByModerationStatus(status, thread,tenant());
+        return socialServices.countByModerationStatus(status, thread, tenant());
     }
 
 

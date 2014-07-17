@@ -18,7 +18,6 @@
 package org.craftercms.social.repositories;
 
 import org.craftercms.commons.mongo.CrudRepository;
-import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.social.system.SocialContext;
 
 /**

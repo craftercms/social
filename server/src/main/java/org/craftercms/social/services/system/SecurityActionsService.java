@@ -17,10 +17,10 @@
 
 package org.craftercms.social.services.system;
 
-import java.util.List;
-
 import org.craftercms.social.domain.social.system.SocialSecurityAction;
 import org.craftercms.social.exceptions.SocialException;
+
+import java.util.List;
 
 /**
  * SecurityActions Service Definition

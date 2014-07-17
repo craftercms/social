@@ -115,9 +115,9 @@
         {_id:#}
     </entry>
     <entry key="social.ugc.byModerationStatus">
-        {moderationStatus:#,tenant:#}
+        {moderationStatus:#,tenantId:#}
     </entry>
-    <entry key="social.ugc.byModerationStatusAndTenant">
-        {moderationStatus:#,tenant:#,targetId:#}
+    <entry key="social.ugc.byModerationStatusAndTargetId">
+        {moderationStatus:#,tenantId:#,targetId:#}
     </entry>
 </properties>
