@@ -34,7 +34,7 @@
                 <span class="form-panel-title">Associated Contexts</span>
             </div>
             <div class="panel-body">
-                <form class="form-inline" ng-if="contexts.length > 0">
+                <form class="form-inline">
                     <div class="form-group">
                         <label>Context:</label>
                         <select class="form-control" ng-model="selectedContext"

@@ -7,19 +7,19 @@
         <label for="context">Context: </label>
         <select name="context" class="form-control" ng-model="selectedContext"
                 ng-options="context.contextName for context in contexts"
-                ng-change="resetStatusAndCommentList()">
+                ng-change="resetStatusAndGetComments()">
         </select>
     </div>
     <div class="form-group">
         <label for="status">Status: </label>
         <select name="status" class="form-control" ng-model="selectedStatus"
                 ng-options="status.value as status.label for status in moderationStatus"
-                ng-change="resetCommentList()">
+                ng-change="getComments()">
         </select>
     </div>
     <div class="form-group pull-right">
         <pagination total-items="totalItems" items-per-page="itemsPerPage" class="no-margin" ng-model="currentPage"
-                    ng-change="getComments()">
+                    ng-change="getCurrentPage()">
         </pagination>
     </div>
 </form>
@@ -40,7 +40,7 @@
             <div class="comment-action-btns">
                 <button type="button" class="btn btn-primary"
                         ng-repeat="action in moderationStatusActions[selectedStatus]"
-                        ng-click="action.action(selectedContext._id, commentService, comment, comments)">
+                        ng-click="executeAction(action, comment)">
                     {{action.label}}
                 </button>
             </div>

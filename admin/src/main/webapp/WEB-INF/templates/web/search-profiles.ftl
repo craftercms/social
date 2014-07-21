@@ -10,10 +10,12 @@
     <div class="form-group">
         <input type="text" class="form-control search-box" placeholder="Search by username" ng-model="searchText"/>
         <button class="btn btn-default" type="button" ng-disabled="searchText == null || searchText == ''"
-                ng-click="findProfilesByUsername()">Search</button>
+                ng-click="doSearch()">Search</button>
     </div>
     <div class="form-group pull-right">
-
+        <pagination ng-if="profiles" total-items="totalItems" items-per-page="itemsPerPage" class="no-margin"
+                    ng-model="currentPage" ng-change="getCurrentPage()">
+        </pagination>
     </div>
 </form>
 

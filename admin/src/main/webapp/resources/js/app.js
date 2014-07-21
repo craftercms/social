@@ -38,40 +38,40 @@ var moderationStatusActions = {
     'UNMODERATED': [
         {
             label: 'Approve',
-            action: function(context, commentService, comment, comments) {
-                commentService.updateStatus(context, comment, 'APPROVED', comments).then(function(comment) {
-                    commentStatusUpdatedCallback(comment, comments);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateStatus(ctxId, comment, 'APPROVED').then(function(comment) {
+                    $scope.commentStatusUpdatedCallback(comment);
                 });
             }
         },
         {
             label: 'Mark as Spam',
-            action: function(context, commentService, comment, comments) {
-                commentService.updateStatus(context, comment, 'SPAM', comments).then(function(comment) {
-                    commentStatusUpdatedCallback(comment, comments);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateStatus(ctxId, comment, 'SPAM').then(function(comment) {
+                    $scope.commentStatusUpdatedCallback(comment);
                 });
             }
         },
         {
             label: 'Mark as Trash',
-            action: function(context, commentService, comment, comments) {
-                commentService.updateStatus(context, comment, 'TRASH', comments).then(function(comment) {
-                    commentStatusUpdatedCallback(comment, comments);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateStatus(ctxId, comment, 'TRASH').then(function(comment) {
+                    $scope.commentStatusUpdatedCallback(comment);
                 });
             }
         },
         {
             label: 'Save Changes',
-            action: function(context, commentService, comment) {
-                commentService.updateBody(context, comment).then(function(comment) {
-                    commentBodyUpdatedCallback(comment);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateBody(ctxId, comment).then(function(comment) {
+                    $scope.commentBodyUpdatedCallback(comment);
                 });
             }
         }
         ,
         {
             label: 'Reset',
-            action: function(context, commentService, comment) {
+            execute: function(ctxId, comment) {
                 resetBody(comment);
             }
         }
@@ -79,42 +79,40 @@ var moderationStatusActions = {
     'APPROVED': [
         {
             label: 'Mark as Spam',
-            action: function(context, commentService, comment, comments) {
-                commentService.updateStatus(context, comment, 'SPAM', comments).then(function(comment) {
-                    commentStatusUpdatedCallback(comment, comments);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateStatus(ctxId, comment, 'SPAM').then(function(comment) {
+                    $scope.commentStatusUpdatedCallback(comment);
                 });
             }
         },
         {
             label: 'Mark as Trash',
-            action: function(context, commentService, comment, comments) {
-                commentService.updateStatus(context, comment, 'TRASH', comments).then(function(comment) {
-                    commentStatusUpdatedCallback(comment, comments);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateStatus(ctxId, comment, 'TRASH').then(function(comment) {
+                    $scope.commentStatusUpdatedCallback(comment);
                 });
             }
         },
         {
             label: 'Mark as Unmoderated',
-            action: function(context, commentService, comment, comments) {
-                commentService.updateStatus(context, comment, 'UNMODERATED', comments).then(function(comment) {
-                    commentStatusUpdatedCallback(comment, comments).then(function(comment) {
-                        commentBodyUpdatedCallback(comment);
-                    });
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateStatus(ctxId, comment, 'UNMODERATED').then(function(comment) {
+                    $scope.commentStatusUpdatedCallback(comment);
                 });
             }
         },
         {
             label: 'Save Changes',
-            action: function(context, commentService, comment) {
-                commentService.updateBody(context, comment).then(function(comment) {
-                    commentBodyUpdatedCallback(comment);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateBody(ctxId, comment).then(function(comment) {
+                    $scope.commentBodyUpdatedCallback(comment);
                 });
             }
         }
         ,
         {
             label: 'Reset',
-            action: function(context, commentService, comment) {
+            execute: function(ctxId, comment) {
                 resetBody(comment);
             }
         }
@@ -122,32 +120,31 @@ var moderationStatusActions = {
     'PENDING': [
         {
             label: 'Approve',
-            action: function(context, commentService, comment, comments) {
-                commentService.updateStatus(context, comment, 'APPROVED', comments).then(function(comment) {
-                    commentStatusUpdatedCallback(comment, comments);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateStatus(ctxId, comment, 'APPROVED').then(function(comment) {
+                    $scope.commentStatusUpdatedCallback(comment);
                 });
             }
         },
         {
             label: 'Mark as Trash',
-            action: function(context, commentService, comment, comments) {
-                commentService.updateStatus(context, comment, 'TRASH', comments).then(function(comment) {
-                    commentStatusUpdatedCallback(comment, comments);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateStatus(ctxId, comment, 'TRASH').then(function(comment) {
+                    $scope.commentStatusUpdatedCallback(comment);
                 });
             }
         },
         {
             label: 'Save Changes',
-            action: function(context, commentService, comment) {
-                commentService.updateBody(context, comment).then(function(comment) {
-                    commentBodyUpdatedCallback(comment);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateBody(ctxId, comment).then(function(comment) {
+                    $scope.commentBodyUpdatedCallback(comment);
                 });
             }
-        }
-        ,
+        },
         {
             label: 'Reset',
-            action: function(context, commentService, comment) {
+            execute: function(ctxId, comment) {
                 resetBody(comment);
             }
         }
@@ -155,17 +152,17 @@ var moderationStatusActions = {
     'SPAM': [
         {
             label: 'Permanently delete',
-            action: function(context, commentService, comment, comments) {
-                commentService.deleteComment(context, comment, comments).then(function(comment) {
-                    commentDeletedCallback(comment);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.deleteComment(ctxId, comment).then(function() {
+                    $scope.commentDeletedCallback(comment);
                 });
             }
         },
         {
             label: 'Mark as Unmoderated',
-            action: function(context, commentService, comment, comments) {
-                commentService.updateStatus(context, comment, 'UNMODERATED', comments).then(function(comment) {
-                    commentStatusUpdatedCallback(comment, comments);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.updateStatus(ctxId, comment, 'UNMODERATED').then(function(comment) {
+                    $scope.commentStatusUpdatedCallback(comment);
                 });
             }
         }
@@ -173,9 +170,9 @@ var moderationStatusActions = {
     'TRASH': [
         {
             label: 'Permanently delete',
-            action: function(context, commentService, comment, comments) {
-                commentService.deleteComment(context, comment, comments).then(function(comment) {
-                    commentDeletedCallback(comment);
+            execute: function(ctxId, comment, $scope) {
+                $scope.commentService.deleteComment(ctxId, comment).then(function() {
+                    $scope.commentDeletedCallback(comment);
                 });
             }
         }
@@ -266,26 +263,8 @@ function resetBody(comment) {
     comment.body = comment.bodyOrig;
 }
 
-function commentStatusUpdatedCallback(comment, comments) {
-    var idx = findComment(comments, comment._id);
-
-    comments.splice(idx, 1);
-
-    showGrowlMessage('info', 'Comment \'' + comment._id + '\' moderated to \'' + comment.moderationStatus + '\'');
-}
-
-function commentBodyUpdatedCallback(comment) {
-    comment.bodyOrig = comment.body;
-
-    showGrowlMessage('info', 'Comment \'' + comment._id + '\' updated');
-}
-
-function commentDeletedCallback(comment, comments) {
-    var idx = findComment(comments, comment._id);
-
-    comments.splice(idx, 1);
-
-    showGrowlMessage('info', 'Comment \'' + comment._id + '\' deleted');
+function createFinalProfileQuery(query) {
+    return encodeURIComponent('{username: {$regex: ".*' + query + '.*", $options: "i"}}');
 }
 
 /**
@@ -300,8 +279,8 @@ app.factory('httpErrorHandler', function ($q) {
                 message = 'Unable to communicate with the server. Please try again later or contact IT support';
             } else {
                 message = 'Server responded with ' + rejection.status + ' error';
-                if (rejection.data.message) {
-                    message += ': <strong>' + rejection.data.message + '</strong>';
+                if (rejection.data.error) {
+                    message += ': <strong>' + rejection.data.error + '</strong>';
                 }
 
                 message += '. Please contact IT support for more information';
@@ -348,13 +327,13 @@ app.factory('contextService', function($http) {
 
 app.factory('commentService', function($http) {
     return {
-        getCommentsCount: function(context, status) {
-            var url = socialRestBaseUrl + '/comments/moderation/' + status + '/count?tenant=' + context;
+        getCommentsCount: function(ctxId, status) {
+            var url = socialRestBaseUrl + '/comments/moderation/' + status + '/count?tenant=' + ctxId;
 
             return getObject(url, $http);
         },
-        getComments: function(context, status, pageNumber, pageSize) {
-            var url = socialRestBaseUrl + '/comments/moderation/' + status + '?tenant=' + context;
+        getComments: function(ctxId, status, pageNumber, pageSize) {
+            var url = socialRestBaseUrl + '/comments/moderation/' + status + '?tenant=' + ctxId;
             if (pageNumber != undefined && pageNumber != null) {
                 url += '&pageNumber=' + pageNumber;
             }
@@ -367,18 +346,18 @@ app.factory('commentService', function($http) {
 
             return getObject(url, $http);
         },
-        updateStatus: function(context, comment, newStatus, comments) {
-            var url = socialRestBaseUrl + '/comments/' + comment._id + '/moderate?tenant=' + context;
+        updateStatus: function(ctxId, comment, newStatus) {
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '/moderate?tenant=' + ctxId;
 
             return putParams(url, { status: newStatus }, $http);
         },
-        updateBody: function(context, comment) {
-            var url = socialRestBaseUrl + '/comments/' + comment._id + '?tenant=' + context;
+        updateBody: function(ctxId, comment) {
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '?tenant=' + ctxId;
 
             return putParams(url, { body: comment.body }, $http);
         },
-        deleteComment: function(context, comment, comments) {
-            var url = socialRestBaseUrl + '/comments/' + comment._id + '?tenant=' + context;
+        deleteComment: function(ctxId, comment) {
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '?tenant=' + ctxId;
 
             return deleteObject(url, $http);
         }
@@ -387,16 +366,16 @@ app.factory('commentService', function($http) {
 
 app.factory('actionsService', function($http) {
     return {
-        getActions: function(context) {
-            var url = socialRestBaseUrl + '/system/actions?tenant=' + context;
+        getActions: function(ctxId) {
+            var url = socialRestBaseUrl + '/system/actions?tenant=' + ctxId;
 
             return getObject(url, $http);
         },
-        updateAction: function(context, actionName, roles) {
-            var url = socialRestBaseUrl + '/system/actions?tenant=' + context;
+        updateAction: function(ctxId, actionName, roles) {
+            var url = socialRestBaseUrl + '/system/actions?tenant=' + ctxId;
 
             putParams(url, { actionName: actionName, roles: roles.join() }, $http).then(function() {
-                showGrowlMessage('info', 'Action \'' + actionName + '\' updated');
+                showGrowlMessage('success', 'Action \'' + actionName + '\' updated');
             });
         }
     }
@@ -414,10 +393,17 @@ app.factory('tenantService', function($http) {
 
 app.factory('profileService', function($http) {
     return {
-        findProfilesByUsername: function(tenantName, username, start, count) {
+        getCountByQuery: function(tenantName, query) {
+            var url = profileRestBaseUrl + '/profile/count_by_query?accessTokenId=' + profileAccessToken;
+            url += '&tenantName=' + tenantName;
+            url += '&query=' + createFinalProfileQuery(query);
+
+            return getObject(url, $http);
+        },
+        findProfiles: function(tenantName, query, start, count) {
             var url = profileRestBaseUrl + '/profile/by_query?accessTokenId=' + profileAccessToken;
             url += '&tenantName=' + tenantName;
-            url += '&query=' + encodeURIComponent('{username: {$regex: ".*' + username + '.*", $options: "i"}}');
+            url += '&query=' + createFinalProfileQuery(query);
 
             if (start != undefined && start != null) {
                 url += '&start=' + start;
@@ -519,9 +505,13 @@ app.controller('ModerationDashboardController', function($scope, commentService,
     $scope.selectedContext = $scope.contexts[0];
     $scope.itemsPerPage = 5;
 
-    $scope.getComments = function() {
+    $scope.getCurrentPage = function() {
         commentService.getComments($scope.selectedContext._id, $scope.selectedStatus, $scope.currentPage,
             $scope.itemsPerPage).then(function(comments) {
+                for (var i = 0; i < comments.length; i++) {
+                    comments[i].bodyOrig = comments[i].body;
+                }
+
                 $scope.comments = comments;
             });
     };
@@ -536,21 +526,44 @@ app.controller('ModerationDashboardController', function($scope, commentService,
         }
     };
 
-    $scope.resetCommentList = function() {
+    $scope.getComments = function() {
         commentService.getCommentsCount($scope.selectedContext._id, $scope.selectedStatus).then(function(count) {
             $scope.totalItems = count;
             $scope.currentPage = 1;
 
-            $scope.getComments();
+            $scope.getCurrentPage();
         });
     };
 
-    $scope.resetStatusAndCommentList = function() {
+    $scope.resetStatusAndGetComments = function() {
         $scope.resetStatus();
-        $scope.resetCommentList($scope.selectedContext._id, $scope.selectedStatus);
+        $scope.getComments();
     };
 
-    $scope.resetStatusAndCommentList();
+    $scope.executeAction = function(action, comment) {
+        action.execute($scope.selectedContext._id, comment, $scope);
+    };
+
+    $scope.commentStatusUpdatedCallback = function(comment) {
+        $scope.getComments();
+
+        showGrowlMessage('success', 'Status of comment \'' + comment._id + '\' changed to \'' +
+            comment.moderationStatus + '\'');
+    };
+
+    $scope.commentBodyUpdatedCallback = function(comment) {
+        comment.bodyOrig = comment.body;
+
+        showGrowlMessage('success', 'Comment \'' + comment._id + '\' updated');
+    };
+
+    $scope.commentDeletedCallback = function(comment) {
+        $scope.getComments();
+
+        showGrowlMessage('success', 'Comment \'' + comment._id + '\' deleted');
+    };
+
+    $scope.resetStatusAndGetComments();
 });
 
 app.controller('ContextsController', function($scope, contexts, contextService) {
@@ -561,7 +574,7 @@ app.controller('ContextsController', function($scope, contexts, contextService) 
         contextService.createContext($scope.contextName).then(function(context) {
             contexts.push(context);
 
-            showGrowlMessage('info', 'Context \'' + context._id + '\' created');
+            showGrowlMessage('success', 'Context \'' + context._id + '\' created');
         });
     }
 });
@@ -584,20 +597,34 @@ app.controller('SecurityActionsController', function($scope, actionsService, con
     $scope.getActions();
 });
 
-app.controller('SearchProfilesController', function($scope, tenants, paginationConfig, profileService) {
+app.controller('SearchProfilesController', function($scope, tenants, profileService) {
     $scope.tenants = tenants;
     $scope.selectedTenantName = $scope.tenants[0].name;
     $scope.searchText = '';
+    $scope.itemsPerPage = 10;
 
     $scope.isValidUsername = function(text) {
         return /^\w+$/.test(text);
     };
 
-    $scope.findProfilesByUsername = function() {
-        if ($scope.isValidUsername($scope.searchText)) {
-            profileService.findProfilesByUsername($scope.selectedTenantName, $scope.searchText, 0,
-                paginationConfig.itemsPerPage).then(function(profiles) {
+    $scope.getCurrentPage = function() {
+        var count = $scope.itemsPerPage;
+        var start = ($scope.currentPage - 1) * count;
+
+        profileService.findProfiles($scope.selectedTenantName, $scope.searchText, start, count).then(
+            function(profiles) {
                 $scope.profiles = profiles;
+            }
+        );
+    };
+
+    $scope.doSearch = function() {
+        if ($scope.isValidUsername($scope.searchText)) {
+            profileService.getCountByQuery($scope.selectedTenantName, $scope.searchText).then(function(count) {
+                $scope.totalItems = count;
+                $scope.currentPage = 1;
+
+                $scope.getCurrentPage();
             });
         } else {
             showGrowlMessage('info', 'Search term must be a word with no spaces');
@@ -619,42 +646,16 @@ app.controller('SearchProfilesController', function($scope, tenants, paginationC
 
 app.controller('ProfileController', function($scope, profile, contexts, contextService) {
     $scope.profile = profile;
-
-    $scope.getNonAssociatedContexts = function() {
-        var nonAssociatedContexts = [];
-
-        for (var i = 0; i < contexts.length; i++) {
-            var contextAlreadyAssociated = false;
-
-            if ($scope.profile .attributes.socialTenants) {
-                for (var j = 0; j < $scope.profile .attributes.socialTenants.length; j++) {
-                    if (contexts[i]._id == $scope.profile.attributes.socialTenants[j].id) {
-                        contextAlreadyAssociated = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!contextAlreadyAssociated) {
-                nonAssociatedContexts.push(contexts[i]);
-            }
-        }
-
-        return nonAssociatedContexts;
-    };
-
-    $scope.contexts = $scope.getNonAssociatedContexts();
-    $scope.selectedContext = $scope.contexts.length > 0 ? $scope.contexts[0] : null;
+    $scope.contexts = contexts;
+    $scope.selectedContext = $scope.contexts[0];
     $scope.contextRoles = [];
 
     $scope.addProfileToContext = function() {
         contextService.addProfileToContext($scope.selectedContext._id, $scope.profile.id, $scope.contextRoles).then(
             function(profile) {
                 $scope.profile = profile;
-                $scope.contexts = $scope.getNonAssociatedContexts();
-                $scope.selectedContext = $scope.contexts.length > 0 ? $scope.contexts[0] : null;
 
-                showGrowlMessage('info', 'Profile added to context \'' + $scope.selectedContext._id + '\'');
+                showGrowlMessage('success', 'Profile added to context \'' + $scope.selectedContext._id + '\'');
             }
         )
     };
@@ -662,11 +663,13 @@ app.controller('ProfileController', function($scope, profile, contexts, contextS
     $scope.removeProfileFromContext = function(ctxId) {
         contextService.removeProfileFromContext(ctxId, $scope.profile.id).then(function(profile) {
             $scope.profile = profile;
-            $scope.contexts = $scope.getNonAssociatedContexts();
-            $scope.selectedContext = $scope.contexts.length > 0 ? $scope.contexts[0] : null;
 
-            showGrowlMessage('info', 'Profile removed from context \'' + ctxId + '\'');
+            showGrowlMessage('success', 'Profile removed from context \'' + ctxId + '\'');
         });
+    };
+
+    $scope.test = function() {
+        alert($scope.selectedContext.contextName);
     }
 });
 
