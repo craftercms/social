@@ -364,6 +364,23 @@ app.factory('commentService', function($http) {
     }
 });
 
+app.factory('attachmentService', function($http) {
+    return {
+        getAttachmentUrl: function(ctxId, comment, attachmentInfo) {
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '/attachments/' + attachmentInfo.fileId;
+                url += '?tenant=' + ctxId;
+
+            return url;
+        },
+        deleteAttachment: function(ctxId, comment, attachmentInfo) {
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '/attachments/' + attachmentInfo.fileId;
+                url += '?tenant=' + ctxId;
+
+            return deleteObject(url, $http);
+        }
+    }
+});
+
 app.factory('actionsService', function($http) {
     return {
         getActions: function(ctxId) {
@@ -395,15 +412,15 @@ app.factory('profileService', function($http) {
     return {
         getCountByQuery: function(tenantName, query) {
             var url = profileRestBaseUrl + '/profile/count_by_query?accessTokenId=' + profileAccessToken;
-            url += '&tenantName=' + tenantName;
-            url += '&query=' + createFinalProfileQuery(query);
+                url += '&tenantName=' + tenantName;
+                url += '&query=' + createFinalProfileQuery(query);
 
             return getObject(url, $http);
         },
         findProfiles: function(tenantName, query, start, count) {
             var url = profileRestBaseUrl + '/profile/by_query?accessTokenId=' + profileAccessToken;
-            url += '&tenantName=' + tenantName;
-            url += '&query=' + createFinalProfileQuery(query);
+                url += '&tenantName=' + tenantName;
+                url += '&query=' + createFinalProfileQuery(query);
 
             if (start != undefined && start != null) {
                 url += '&start=' + start;
@@ -497,7 +514,7 @@ app.config(function($routeProvider) {
 /**
  * Controllers
  */
-app.controller('ModerationDashboardController', function($scope, commentService, contexts) {
+app.controller('ModerationDashboardController', function($scope, commentService, attachmentService, contexts) {
     $scope.moderationStatus = moderationStatus;
     $scope.moderationStatusActions = moderationStatusActions;
     $scope.commentService = commentService;
@@ -561,6 +578,37 @@ app.controller('ModerationDashboardController', function($scope, commentService,
         $scope.getComments();
 
         showGrowlMessage('success', 'Comment \'' + comment._id + '\' deleted');
+    };
+
+    $scope.showAttachmentsModal = function(comment) {
+        $scope.selectedComment = comment;
+
+        $('#attachmentsModal').modal('show');
+    };
+
+    $scope.getAttachmentUrl = function(attachmentInfo) {
+        return attachmentService.getAttachmentUrl($scope.selectedContext._id, $scope.selectedComment, attachmentInfo);
+    };
+
+    $scope.deleteAttachment = function(attachmentInfo) {
+        attachmentService.deleteAttachment($scope.selectedContext._id, $scope.selectedComment, attachmentInfo).then(
+            function() {
+                var attachmentIdx = -1;
+                for (var i = 0; i < $scope.selectedComment.attachments.length; i++) {
+                    if (attachmentInfo.fileId == $scope.selectedComment.attachments[i].fileId) {
+                        attachmentIdx = i;
+                    }
+                }
+
+                $scope.selectedComment.attachments.splice(attachmentIdx, 1);
+
+                $('#attachmentsModal').modal('hide');
+
+                var fileName = attachmentInfo.fileName.substring(attachmentInfo.fileName.lastIndexOf('/') + 1);
+
+                showGrowlMessage('success', 'Attachment \'' + fileName + '\' deleted');
+            }
+        );
     };
 
     $scope.resetStatusAndGetComments();
@@ -667,10 +715,6 @@ app.controller('ProfileController', function($scope, profile, contexts, contextS
             showGrowlMessage('success', 'Profile removed from context \'' + ctxId + '\'');
         });
     };
-
-    $scope.test = function() {
-        alert($scope.selectedContext.contextName);
-    }
 });
 
 
