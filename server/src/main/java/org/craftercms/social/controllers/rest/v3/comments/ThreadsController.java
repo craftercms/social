@@ -50,11 +50,11 @@ public class ThreadsController {
         } else {
             upToLevel = recursive;
         }
-        thread.setComments(ugcService.read(id, SocialSecurityUtils.getTenant(), start, pageSize,
+        thread.setComments(ugcService.read(id, SocialSecurityUtils.getContext(), start, pageSize,
             getSortOrder(sortBy, sortOrder), upToLevel, childrenCount));
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
-        thread.setTotal(ugcService.count(id, SocialSecurityUtils.getTenant()));
+        thread.setTotal(ugcService.count(id, SocialSecurityUtils.getContext()));
         return thread;
     }
 
@@ -83,11 +83,11 @@ public class ThreadsController {
         } else {
             upToLevel = recursive;
         }
-        thread.setComments(ugcService.readChildren(commentId, id, SocialSecurityUtils.getTenant(), start, pageSize,
+        thread.setComments(ugcService.readChildren(commentId, id, SocialSecurityUtils.getContext(), start, pageSize,
             getSortOrder(sortBy, sortOrder), upToLevel, childrenCount));
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
-        thread.setTotal(ugcService.countChildren(commentId,SocialSecurityUtils.getTenant()));
+        thread.setTotal(ugcService.countChildren(commentId,SocialSecurityUtils.getContext()));
         return thread;
     }
 

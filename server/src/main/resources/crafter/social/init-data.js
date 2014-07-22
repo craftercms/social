@@ -25,139 +25,139 @@ if(db.socialContext.count() ==0){
 }
 /** Create Default Permissions for Default Tenant**/
 if(db.securityActions.count()==0){
-    var defaultTenant = db.socialContext.findOne();
+    var defaultContext = db.socialContext.findOne();
 
     db.securityActions.insert([
         {
             actionName:"ugc.update",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.moderate",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.unflag",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.flag",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.create",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.delete",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.read",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["ANONYMOUS","SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.securityActions.read",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.securityActions.update",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.all",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.create",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.addProfile",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_SUPERADMIN","SOCIAL_ADMIN"]
         },
         {
             actionName:"system.socialctx.removeProfile",
-            tenantId:defaultTenant._id,
+            contextId:defaultContext._id,
             roles:["SOCIAL_SUPERADMIN","SOCIAL_ADMIN"]
         }
     ]);
     db.securityActions.insert([
         {
             actionName:"ugc.update",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.moderate",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.unflag",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.flag",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.create",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.delete",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"ugc.read",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["ANONYMOUS","SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER","SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.securityActions.read",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.securityActions.update",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.all",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.create",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_SUPERADMIN"]
         },
         {
             actionName:"system.socialctx.addProfile",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_SUPERADMIN","SOCIAL_ADMIN"]
         },
         {
             actionName:"system.socialctx.removeProfile",
-            tenantId:"TEMPLATE_TENANT_ACTIONS",
+            contextId:"TEMPLATE_CONTEXT_ACTIONS",
             roles:["SOCIAL_SUPERADMIN","SOCIAL_ADMIN"]
         }
     ]);

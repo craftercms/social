@@ -18,7 +18,7 @@ public class SocialSecurityAction {
 
     private Set<String> roles;
 
-    private String tenantId;
+    private String contextId;
 
     public SocialSecurityAction() {
     }
@@ -39,12 +39,12 @@ public class SocialSecurityAction {
         this.roles = roles;
     }
 
-    public String getTenantId() {
-        return tenantId;
+    public String getContextId() {
+        return contextId;
     }
 
-    public void setTenantId(final String tenantId) {
-        this.tenantId = tenantId;
+    public void setContextId(final String contextId) {
+        this.contextId = contextId;
     }
 
     public ObjectId getId() {

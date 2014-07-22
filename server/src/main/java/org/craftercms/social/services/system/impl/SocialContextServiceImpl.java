@@ -65,7 +65,7 @@ public class SocialContextServiceImpl implements SocialContextService {
         SocialContext context = new SocialContext(contextName);
         try {
             socialContextRepository.save(context);
-            createDefaultActionsForContext(context,SecurityActionNames.TEMPLATE_TENANT_ACTIONS);
+            createDefaultActionsForContext(context,SecurityActionNames.TEMPLATE_CONTEXT_ACTIONS);
             return context;
         } catch (MongoDataException ex) {
             log.error("Unable to save new social Context", ex);
@@ -79,7 +79,7 @@ public class SocialContextServiceImpl implements SocialContextService {
         final Iterable<SocialSecurityAction> actions = securityActionsService.get(tenant);
         for (SocialSecurityAction action : actions) {
             action.setId(null);
-            action.setTenantId(context.getId());
+            action.setContextId(context.getId());
             securityActionsService.save(action);
         }
     }
@@ -95,7 +95,7 @@ public class SocialContextServiceImpl implements SocialContextService {
             }
             final HashMap<String, Object> attributesToUpdate = new HashMap<>();
             List<Map<String, Object>> socialContexts = (List<Map<String, Object>>)p.getAttribute(SocialSecurityUtils
-                .SOCIAL_TENANTS);
+                .SOCIAL_CONTEXT);
             SocialContext ctx = socialContextRepository.findById(contextId);
             if (ctx == null) {
                 throw new ProfileConfigurationException("Given Context \"" + contextId + "\" does not exist");
@@ -123,8 +123,8 @@ public class SocialContextServiceImpl implements SocialContextService {
                     socialContexts.add(newCtx);
                 }
             }
-            attributesToUpdate.put(SocialSecurityUtils.SOCIAL_TENANTS, socialContexts);
-            return profileService.updateAttributes(profileId, attributesToUpdate, SocialSecurityUtils.SOCIAL_TENANTS);
+            attributesToUpdate.put(SocialSecurityUtils.SOCIAL_CONTEXT, socialContexts);
+            return profileService.updateAttributes(profileId, attributesToUpdate, SocialSecurityUtils.SOCIAL_CONTEXT);
         } catch (ProfileException e) {
             log.error("Unable to find profile with given id " + profileId, e);
             throw new SocialException("Unable to find profile ", e);
@@ -149,7 +149,7 @@ public class SocialContextServiceImpl implements SocialContextService {
             List<Map<String,Object>> updatedList=new ArrayList<>();
             final HashMap<String, Object> attributesToUpdate = new HashMap<>();
             List<Map<String, Object>> socialContexts = (List<Map<String, Object>>)p.getAttribute(SocialSecurityUtils
-                .SOCIAL_TENANTS);
+                .SOCIAL_CONTEXT);
             if (socialContexts == null) {
                     return p;
             }
@@ -158,8 +158,8 @@ public class SocialContextServiceImpl implements SocialContextService {
                     updatedList.add(socialContext);
                 }
             }
-            attributesToUpdate.put(SocialSecurityUtils.SOCIAL_TENANTS, updatedList);
-            return profileService.updateAttributes(profileId, attributesToUpdate, SocialSecurityUtils.SOCIAL_TENANTS);
+            attributesToUpdate.put(SocialSecurityUtils.SOCIAL_CONTEXT, updatedList);
+            return profileService.updateAttributes(profileId, attributesToUpdate, SocialSecurityUtils.SOCIAL_CONTEXT);
         }catch (ProfileException ex){
             log.error("Unable to find profile with given id " + profileId, ex);
             throw new SocialException("Unable to find profile ", ex);

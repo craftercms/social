@@ -104,7 +104,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         ". All values are " + "save as string (booleans,numbers,dates)") @RequestBody
     final Map<String, Object> attributes) throws SocialException {
         log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
-        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
         ugcService.setAttributes(id, tenant, attributes);
         return true;//Always true unless exception.
     }
@@ -121,7 +121,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         (required = true)
     final String attributes) throws SocialException {
         log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
-        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
         ugcService.deleteAttribute(id, attributes.split(","), tenant);
         return true;//Always true unless exception.
     }
