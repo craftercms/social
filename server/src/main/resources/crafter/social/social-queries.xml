@@ -7,11 +7,11 @@
     </entry>
 
     <entry key="social.ugc.getTree2">
-        {$match:{"doc.tenantId":#,$or:[{ancestors:{$in:#}},{_id:#}]}}
+        {$match:{"doc.contextId":#,$or:[{ancestors:{$in:#}},{_id:#}]}}
     </entry>
 
     <entry key="social.ugc.getTreeChildrenOnly">
-        {$match:{"doc.tenantId":#,{ancestors:{$in:#}}}
+        {$match:{"doc.contextId":#,{ancestors:{$in:#}}}
     </entry>
 
     <entry key="social.ugc.getTree3">
@@ -47,29 +47,29 @@
     </entry>
 
     <entry key="social.ugc.byTargetId">
-        {tenantId:#,targetId:#}
+        {contextId:#,targetId:#}
     </entry>
 
     <entry key="social.ugc.byTargetIdRootLvl">
-        {tenantId:#,targetId:#,ancestors:{$size:0}}
+        {contextId:#,targetId:#,ancestors:{$size:0}}
     </entry>
 
     <entry key="social.ugc.byTargetIdWithFixLvl">
-        {tenantId:#,targetId:#,ancestors:{$size:#}}
+        {contextId:#,targetId:#,ancestors:{$size:#}}
     </entry>
 
     <entry key="social.ugc.byTenantTargetAncestorsExact">
-        {tenantId:#,targetId:#,ancestors:{$all:#}}
+        {contextId:#,targetId:#,ancestors:{$all:#}}
     </entry>
 
     <entry key="social.ugc.byTenantAncestorsExact">
-        {tenantId:#,ancestors:{$all:#},ancestors:{$size:#}}
+        {contextId:#,ancestors:{$all:#},ancestors:{$size:#}}
     </entry>
 
     <entry key="social.ugc.byTargetIdRootNLvl">
     {
         targetId:#,
-        tenantId:#,
+        contextId:#,
         $or:[
             {ancestors:{$in:#}},
             {_id:{$in:#}}
@@ -78,10 +78,10 @@
     }
     </entry>
     <entry key="social.ugc.byTenantAndId">
-        {_id:#,tenantId:#}
+        {_id:#,contextId:#}
     </entry>
     <entry key="social.ugc.byTargetId">
-        {tenantId:#,targetId:#}
+        {contextId:#,targetId:#}
     </entry>
     <entry key="social.ugc.deleteAttribute">
         { $unset:#}
@@ -93,19 +93,19 @@
         {_id:{$in:#}}
     </entry>
     <entry key="social.ugc.childrenOf">
-        {tenantId:#,ancestors:{$in:#}}
+        {contextId:#,ancestors:{$in:#}}
     </entry>
     <entry key="social.ugc.defaultSort">
         {createDate:-1}
     </entry>
     <entry key="social.permissions.isAllowed">
-        {actionName:#,roles:{$in:#},tenantId:#}
+        {actionName:#,roles:{$in:#},contextId:#}
     </entry>
     <entry key="social.permissions.byTenant">
-        {tenantId:#}
+        {contextId:#}
     </entry>
     <entry key="social.permissions.byTenantAndActionName">
-        {tenantId:#,actionName:#}
+        {contextId:#,actionName:#}
     </entry>
 
     <entry key="social.permissions.updateRoles">
@@ -115,9 +115,9 @@
         {_id:#}
     </entry>
     <entry key="social.ugc.byModerationStatus">
-        {moderationStatus:#,tenantId:#}
+        {moderationStatus:#,contextId:#}
     </entry>
     <entry key="social.ugc.byModerationStatusAndTargetId">
-        {moderationStatus:#,tenantId:#,targetId:#}
+        {moderationStatus:#,contextId:#,targetId:#}
     </entry>
 </properties>

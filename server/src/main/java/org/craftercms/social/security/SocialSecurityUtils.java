@@ -15,11 +15,10 @@ import java.util.*;
  */
 public class SocialSecurityUtils {
 
-
-    public static final String SOCIAL_TENANTS = "socialTenants";
+    public static final String SOCIAL_CONTEXT = "socialContext";
     public static final String ANONYMOUS = "ANONYMOUS";
-    public static final String SOCIAL_TENANT_ID = "id";
-    public static final String SOCIAL_TENANT_ROLES = "roles";
+    public static final String SOCIAL_CONTEXT_ID = "id";
+    public static final String SOCIAL_CONTEXT_ROLES = "roles";
 
     private SocialSecurityUtils() {
     }
@@ -29,45 +28,40 @@ public class SocialSecurityUtils {
         if(profile.getUsername().equals(ANONYMOUS)){
             return Arrays.asList(ANONYMOUS);
         }
-
-        List<String> list = getSocialTenantValue(profile, SOCIAL_TENANT_ROLES);
+        List<String> list = getSocialContextValue(profile, SOCIAL_CONTEXT_ROLES);
         if(list == null){
             list = new ArrayList<>();
         }
-
         list.addAll(profile.getRoles());
 
         return list;
     }
 
-    public static String getTenant(){
+    public static String getContext(){
         HttpServletRequest request = RequestContext.getCurrent().getRequest();
-        String tenant = request.getParameter(SecurityUtils.TENANT_REQUEST_ATTRIBUTE_NAME);
+        String context = request.getParameter("context");
 
-        if (StringUtils.isBlank(tenant)) {
+        if (StringUtils.isBlank(context)) {
             throw new IllegalArgumentException("Parameter '" + SecurityUtils.TENANT_REQUEST_ATTRIBUTE_NAME +
                     "' is needed on the request");
         }
-
-        return tenant;
+        return context;
     }
 
-    private static <T> T getSocialTenantValue(final Profile profile, final String key){
-        String tenant = getTenant();
-        List<Map<String, Object>> socialTenants = (List<Map<String, Object>>) profile.getAttribute(SOCIAL_TENANTS);
+    private static <T> T getSocialContextValue(final Profile profile, final String key){
+        String tenant = getContext();
+        List<Map<String, Object>> socialTenants = (List<Map<String, Object>>) profile.getAttribute(SOCIAL_CONTEXT);
 
         if (CollectionUtils.isNotEmpty(socialTenants)) {
             for (Map<String, Object> socialTenant : socialTenants) {
-                String id = (String) socialTenant.get(SOCIAL_TENANT_ID);
+                String id = (String) socialTenant.get(SOCIAL_CONTEXT_ID);
                 if (StringUtils.isBlank(id)) {
-                    throw new ProfileConfigurationException("Social tenant missing '" + SOCIAL_TENANT_ID + "'");
+                    throw new ProfileConfigurationException("Social context missing '" + SOCIAL_CONTEXT_ID + "'");
                 }
-
                 if (id.equals(tenant)) {
                     return (T)socialTenant.get(key);
                 }
             }
-
             if (profile.hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)){
                 return null;
             }else {
@@ -76,7 +70,7 @@ public class SocialSecurityUtils {
         } else if (profile.hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
             return null;
         } else {
-            throw new ProfileConfigurationException("Profile missing attribute '" + SOCIAL_TENANTS + "'");
+            throw new ProfileConfigurationException("Profile missing attribute '" + SOCIAL_CONTEXT + "'");
         }
     }
 

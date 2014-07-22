@@ -82,7 +82,7 @@
 //            attrs = parseAttributes(attributes);
 //        }
 //        log.debug("Request for creating a new UGC");
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        if (StringUtils.isBlank(parent) && StringUtils.isBlank(target)) {
 //            throw new MissingServletRequestParameterException("parent or target", "String");
 //        }
@@ -108,7 +108,7 @@
 //        defaultValue = MAX_INTEGER_STRING) final int treeDeepLevel) throws SocialException {
 //        log.debug("Request for get a UGC with id {} with including Children {} and children deep {}", ugcId,
 //            includeChildren, treeDeepLevel);
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        return (T)ugcService.read(ugcId, includeChildren, treeDeepLevel, tenant);
 //    }
 //
@@ -127,7 +127,7 @@
 //        defaultValue = "0")
 //                                       final int childrenLevel) throws SocialException {
 //        log.debug("Request for get all children of {} with a limit of , and starting in ", ugcId, limit, skip);
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        return ugcService.readChildren(tenant, ugcId, limit, skip, childrenLevel);
 //    }
 //
@@ -138,7 +138,7 @@
 //        "" + "its children(builds a tree for each children)") @NotEmpty @RequestParam(required = true,
 //        value = "target") final String target) throws SocialException {
 //        log.debug("Request for getting all UGC by target {}", target);
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        return ugcService.readByTargetId(target, tenant);
 //    }
 //
@@ -153,7 +153,7 @@
 //        (required = true)
 //    final String attributes) throws SocialException {
 //        log.debug("Request for deleting form  UGC {} attributes {}", ugcId, attributes);
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        ugcService.deleteAttribute(ugcId, attributes.split(","), tenant);
 //        return true;//Always true unless exception.
 //    }
@@ -175,7 +175,7 @@
 //        ". All values are " + "save as string (booleans,numbers,dates)") @RequestBody
 //    final Map<String, Object> attributes) throws SocialException {
 //        log.debug("Request for deleting form  UGC {} attributes {}", ugcId, attributes);
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        ugcService.setAttributes(ugcId, tenant, attributes);
 //        return true;//Always true unless exception.
 //    }
@@ -187,7 +187,7 @@
 //    public boolean deleteUgc(@ApiParam(value = "Id of the UGC", name = "ugcId") @NotBlank @PathVariable(value =
 //        "ugcId") final String ugcId) throws SocialException {
 //        log.debug("Request for deleting  UGC {}", ugcId);
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        ugcService.deleteUgc(ugcId, tenant);
 //        return true;//Always true unless exception.
 //    }
@@ -206,7 +206,7 @@
 //        name = "skip") @RequestParam(required = false,
 //        defaultValue = "0") final int skip) throws SocialException {
 //        log.debug("Searching using query {} sort {} limit {} skip {}", query, sort, limit, skip);
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        return ugcService.search(tenant, query, sort, skip, limit);
 //
 //    }
@@ -218,7 +218,7 @@
 //        "ugcId") final String ugcId, @ApiParam(value = "File to upload, Do notice that the server will enforce ")
 //    @RequestParam(required = true) CommonsMultipartFile attachment) throws SocialException, IOException {
 //        log.debug("Adding Attachment for UGC {} ", ugcId);
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        return ugcService.addAttachment(ugcId, tenant, attachment.getInputStream(), attachment.getOriginalFilename(),
 //            new MimetypesFileTypeMap().getContentType(attachment.getOriginalFilename()));
 //    }
@@ -230,7 +230,7 @@
 //                                            ugcId, @ApiParam("Id of the attachment to delete") @NotBlank
 //    @PathVariable(value = "attachmentId") final String attachmentId) throws SocialException, IOException {
 //        log.debug("Removing Attachment for UGC {} with Id {}", ugcId, attachmentId);
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        ugcService.removeAttachment(ugcId, tenant, attachmentId);
 //        return true;
 //    }
@@ -244,7 +244,7 @@
 //        "attachmentId") final String attachmentId, final HttpServletResponse response) throws SocialException,
 //        IOException {
 //        log.debug("Reading Attachment for UGC {} with Id {}", ugcId, attachmentId);
-//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getTenantId();
+//        String tenant = "testTenant"; //=ProfileUtils.getCurrentProfile().getContextId();
 //        FileInfo fileInfo = ugcService.readAttachment(ugcId, tenant, attachmentId);
 //        response.setStatus(HttpServletResponse.SC_OK);
 //        response.setContentType(fileInfo.getContentType());

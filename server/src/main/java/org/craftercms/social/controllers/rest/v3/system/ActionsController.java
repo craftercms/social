@@ -30,7 +30,7 @@ public class ActionsController {
     @ResponseBody
     @ApiOperation(value = "Gets all Security Actions for current User tenant.")
     public Iterable<SocialSecurityAction> getCurrentActions() {
-        return actionsService.get(SocialSecurityUtils.getTenant());
+        return actionsService.get(SocialSecurityUtils.getContext());
     }
 
     @RequestMapping(method = RequestMethod.PUT)
@@ -39,7 +39,7 @@ public class ActionsController {
         + "" + "update of roles, this will replace the current action Roles with the new ones (send)")
     public SocialSecurityAction update(@RequestParam("actionName") final String actionName,
                                        @RequestParam() final String roles) throws SocialException {
-        return actionsService.update(SocialSecurityUtils.getTenant(), actionName, Arrays.asList(roles.split(",")));
+        return actionsService.update(SocialSecurityUtils.getContext(), actionName, Arrays.asList(roles.split(",")));
     }
 
 
