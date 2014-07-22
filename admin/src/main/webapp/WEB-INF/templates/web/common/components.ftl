@@ -70,9 +70,6 @@
 <script type="text/javascript">
     var contextPath = "${requestContext.contextPath}";
     var socialAppUrl = "${socialAppUrl}";
-    var profileAppUrl = "${profileAppUrl}";
-    var profileAccessToken = "${profileAccessToken}";
     var socialRestBaseUrl = socialAppUrl + "/api/3";
-    var profileRestBaseUrl = profileAppUrl + "/api/1";
 </script>
 </#macro>

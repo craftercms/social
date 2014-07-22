@@ -65,10 +65,18 @@
 
     <!-- Controllers -->
 
+    <bean id="crafter.exceptionHandlers" class="org.craftercms.social.management.web.controllers.ExceptionHandlers"/>
+
     <bean id="crafter.mainController" class="org.craftercms.social.management.web.controllers.MainController">
         <property name="socialAppUrl" value="${crafter.social.app.url}"/>
-        <property name="profileAppUrl" value="${crafter.profile.app.url}"/>
-        <property name="profileAccessToken" value="${crafter.profile.rest.client.accessToken.id}"/>
+    </bean>
+
+    <bean id="crafter.profileController" class="org.craftercms.social.management.web.controllers.ProfileController">
+        <property name="profileService" ref="crafter.profileServiceRestClient"/>
+    </bean>
+
+    <bean id="crafter.tenantController" class="org.craftercms.social.management.web.controllers.TenantController">
+        <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
     </bean>
 
     <bean id="crafter.fallbackController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />

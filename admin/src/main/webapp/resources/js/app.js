@@ -263,10 +263,6 @@ function resetBody(comment) {
     comment.body = comment.bodyOrig;
 }
 
-function createFinalProfileQuery(query) {
-    return encodeURIComponent('{username: {$regex: ".*' + query + '.*", $options: "i"}}');
-}
-
 /**
  * Http Interceptors
  */
@@ -400,8 +396,8 @@ app.factory('actionsService', function($http) {
 
 app.factory('tenantService', function($http) {
     return {
-        getTenants: function() {
-            var url = profileRestBaseUrl + '/tenant/all?accessTokenId=' + profileAccessToken;
+        getTenantNames: function() {
+            var url = contextPath + '/tenant/names';
 
             return getObject(url, $http);
         }
@@ -411,16 +407,12 @@ app.factory('tenantService', function($http) {
 app.factory('profileService', function($http) {
     return {
         getCountByQuery: function(tenantName, query) {
-            var url = profileRestBaseUrl + '/profile/count_by_query?accessTokenId=' + profileAccessToken;
-                url += '&tenantName=' + tenantName;
-                url += '&query=' + createFinalProfileQuery(query);
+            var url = contextPath + '/profile/count?tenantName=' + tenantName + '&query=' + query;
 
             return getObject(url, $http);
         },
         findProfiles: function(tenantName, query, start, count) {
-            var url = profileRestBaseUrl + '/profile/by_query?accessTokenId=' + profileAccessToken;
-                url += '&tenantName=' + tenantName;
-                url += '&query=' + createFinalProfileQuery(query);
+            var url = contextPath + '/profile/find?tenantName=' + tenantName + '&query=' + query;
 
             if (start != undefined && start != null) {
                 url += '&start=' + start;
@@ -432,7 +424,7 @@ app.factory('profileService', function($http) {
             return getObject(url, $http);
         },
         getProfile: function(id) {
-            var url = profileRestBaseUrl + '/profile/' + id + '?accessTokenId=' + profileAccessToken;
+            var url = contextPath + '/profile/' + id;
 
             return getObject(url, $http);
         }
@@ -487,8 +479,8 @@ app.config(function($routeProvider) {
         controller: 'SearchProfilesController',
         templateUrl: contextPath + '/search-profiles',
         resolve: {
-            tenants: function(tenantService) {
-                return tenantService.getTenants();
+            tenantNames: function(tenantService) {
+                return tenantService.getTenantNames();
             }
         }
     });
@@ -645,9 +637,9 @@ app.controller('SecurityActionsController', function($scope, actionsService, con
     $scope.getActions();
 });
 
-app.controller('SearchProfilesController', function($scope, tenants, profileService) {
-    $scope.tenants = tenants;
-    $scope.selectedTenantName = $scope.tenants[0].name;
+app.controller('SearchProfilesController', function($scope, tenantNames, profileService) {
+    $scope.tenantNames = tenantNames;
+    $scope.selectedTenantName = $scope.tenantNames[0];
     $scope.searchText = '';
     $scope.itemsPerPage = 10;
 

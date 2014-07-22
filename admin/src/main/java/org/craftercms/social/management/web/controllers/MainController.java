@@ -40,26 +40,12 @@ public class MainController {
 
     public static final String MODEL_LOGGED_IN_USER = "loggedInUser";
     public static final String MODEL_SOCIAL_APP_URL = "socialAppUrl";
-    public static final String MODEL_PROFILE_APP_URL = "profileAppUrl";
-    public static final String MODEL_PROFILE_ACCESS_TOKEN = "profileAccessToken";
 
     private String socialAppUrl;
-    private String profileAppUrl;
-    private String profileAccessToken;
 
     @Required
     public void setSocialAppUrl(String socialAppUrl) {
         this.socialAppUrl = socialAppUrl;
-    }
-
-    @Required
-    public void setProfileAppUrl(String profileAppUrl) {
-        this.profileAppUrl = profileAppUrl;
-    }
-
-    @Required
-    public void setProfileAccessToken(String profileAccessToken) {
-        this.profileAccessToken = profileAccessToken;
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -67,8 +53,6 @@ public class MainController {
         ModelAndView mav = new ModelAndView(VIEW_MAIN);
         mav.addObject(MODEL_LOGGED_IN_USER, getLoggedInUser(request));
         mav.addObject(MODEL_SOCIAL_APP_URL, socialAppUrl);
-        mav.addObject(MODEL_PROFILE_APP_URL, profileAppUrl);
-        mav.addObject(MODEL_PROFILE_ACCESS_TOKEN, profileAccessToken);
 
         return mav;
     }

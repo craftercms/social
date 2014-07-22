@@ -4,7 +4,7 @@
     <div class="form-group">
         <label for="tenant">Tenant:</label>
         <select name="tenant" class="form-control"
-                ng-model="selectedTenantName" ng-options="tenant.name as tenant.name for tenant in tenants">
+                ng-model="selectedTenantName" ng-options="tenantName for tenantName in tenantNames">
         </select>
     </div>
     <div class="form-group">
