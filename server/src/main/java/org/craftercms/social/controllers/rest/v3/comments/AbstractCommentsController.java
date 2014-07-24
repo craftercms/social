@@ -4,6 +4,12 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.activation.MimetypesFileTypeMap;
+
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.security.SocialSecurityUtils;
@@ -13,11 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.activation.MimetypesFileTypeMap;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Generic Information about all Comments related Rest Services
@@ -35,6 +36,7 @@ public class AbstractCommentsController<T extends SocialUgc> {
 
     /**
      * Parse the json String to a map.
+     *
      * @param attributes Json String to be parse.
      * @return A map with the values of the JSON String
      * @throws MissingServletRequestParameterException If String can't be parse.
@@ -42,9 +44,9 @@ public class AbstractCommentsController<T extends SocialUgc> {
     protected Map<String, Object> parseAttributes(final String attributes) throws
         MissingServletRequestParameterException {
         ObjectMapper mapper = new ObjectMapper();
-        JsonFactory factory = mapper.getJsonFactory(); // since 2.1 use mapper.getFactory() instead
+        JsonFactory factory = mapper.getFactory(); // since 2.1 use mapper.getFactory() instead
         try {
-            JsonParser jp = factory.createJsonParser(attributes);
+            JsonParser jp = factory.createParser(attributes);
             return mapper.readValue(jp, HashMap.class);
         } catch (IOException e) {
             throw new MissingServletRequestParameterException("attributes", "Json");
@@ -52,15 +54,17 @@ public class AbstractCommentsController<T extends SocialUgc> {
     }
 
     /**
-     * Gets Current User's tenant.
-     * @return Current Tenant, Never Null.
+     * Gets current context.
+     *
+     * @return current context, never null.
      */
-    protected String tenant() {
-        return SocialSecurityUtils.getTenant();
+    protected String context() {
+        return SocialSecurityUtils.getContext();
     }
 
     /**
      * Current's user id.
+     *
      * @return Current User Id,Empty if a user is not logged.
      */
     protected String userId() {
@@ -69,6 +73,7 @@ public class AbstractCommentsController<T extends SocialUgc> {
 
     /**
      * Gets Current User profile.
+     *
      * @return Profile of current Logged User.
      */
     protected Profile getCurrentProfile() {
@@ -77,6 +82,7 @@ public class AbstractCommentsController<T extends SocialUgc> {
 
     /**
      * Gets the content type of the file based on the file extension.
+     *
      * @param filename File name to check.
      * @return Content Type of the file based on filename.
      */

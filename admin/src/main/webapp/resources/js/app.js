@@ -299,22 +299,22 @@ app.config(['$httpProvider', function($httpProvider) {
 app.factory('contextService', function($http) {
     return {
         getContexts: function() {
-            var url = socialRestBaseUrl + '/system/context/all?tenant=' + defaultContext;
+            var url = socialRestBaseUrl + '/system/context/all?context=' + defaultContext;
 
             return getObject(url, $http);
         },
         createContext: function(name) {
-            var url = socialRestBaseUrl + '/system/context?tenant=' + defaultContext;
+            var url = socialRestBaseUrl + '/system/context?context=' + defaultContext;
 
             return postParams(url, { contextName: name }, $http);
         },
         addProfileToContext: function(ctxId, profileId, roles) {
-            var url = socialRestBaseUrl + '/system/context/' + ctxId + '/' + profileId + '?tenant=' + defaultContext;
+            var url = socialRestBaseUrl + '/system/context/' + ctxId + '/' + profileId + '?context=' + defaultContext;
 
             return postParams(url, { roles: roles.join() }, $http);
         },
         removeProfileFromContext: function(ctxId, profileId) {
-            var url = socialRestBaseUrl + '/system/context/' + ctxId + '/' + profileId + '?tenant=' + defaultContext;
+            var url = socialRestBaseUrl + '/system/context/' + ctxId + '/' + profileId + '?context=' + defaultContext;
 
             return deleteObject(url, $http);
         }
@@ -324,12 +324,12 @@ app.factory('contextService', function($http) {
 app.factory('commentService', function($http) {
     return {
         getCommentsCount: function(ctxId, status) {
-            var url = socialRestBaseUrl + '/comments/moderation/' + status + '/count?tenant=' + ctxId;
+            var url = socialRestBaseUrl + '/comments/moderation/' + status + '/count?context=' + ctxId;
 
             return getObject(url, $http);
         },
         getComments: function(ctxId, status, pageNumber, pageSize) {
-            var url = socialRestBaseUrl + '/comments/moderation/' + status + '?tenant=' + ctxId;
+            var url = socialRestBaseUrl + '/comments/moderation/' + status + '?context=' + ctxId;
             if (pageNumber != undefined && pageNumber != null) {
                 url += '&pageNumber=' + pageNumber;
             }
@@ -343,17 +343,17 @@ app.factory('commentService', function($http) {
             return getObject(url, $http);
         },
         updateStatus: function(ctxId, comment, newStatus) {
-            var url = socialRestBaseUrl + '/comments/' + comment._id + '/moderate?tenant=' + ctxId;
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '/moderate?context=' + ctxId;
 
             return putParams(url, { status: newStatus }, $http);
         },
         updateBody: function(ctxId, comment) {
-            var url = socialRestBaseUrl + '/comments/' + comment._id + '?tenant=' + ctxId;
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '?context=' + ctxId;
 
             return putParams(url, { body: comment.body }, $http);
         },
         deleteComment: function(ctxId, comment) {
-            var url = socialRestBaseUrl + '/comments/' + comment._id + '?tenant=' + ctxId;
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '?context=' + ctxId;
 
             return deleteObject(url, $http);
         }
@@ -364,13 +364,13 @@ app.factory('attachmentService', function($http) {
     return {
         getAttachmentUrl: function(ctxId, comment, attachmentInfo) {
             var url = socialRestBaseUrl + '/comments/' + comment._id + '/attachments/' + attachmentInfo.fileId;
-                url += '?tenant=' + ctxId;
+                url += '?context=' + ctxId;
 
             return url;
         },
         deleteAttachment: function(ctxId, comment, attachmentInfo) {
             var url = socialRestBaseUrl + '/comments/' + comment._id + '/attachments/' + attachmentInfo.fileId;
-                url += '?tenant=' + ctxId;
+                url += '?context=' + ctxId;
 
             return deleteObject(url, $http);
         }
@@ -380,12 +380,12 @@ app.factory('attachmentService', function($http) {
 app.factory('actionsService', function($http) {
     return {
         getActions: function(ctxId) {
-            var url = socialRestBaseUrl + '/system/actions?tenant=' + ctxId;
+            var url = socialRestBaseUrl + '/system/actions?context=' + ctxId;
 
             return getObject(url, $http);
         },
         updateAction: function(ctxId, actionName, roles) {
-            var url = socialRestBaseUrl + '/system/actions?tenant=' + ctxId;
+            var url = socialRestBaseUrl + '/system/actions?context=' + ctxId;
 
             putParams(url, { actionName: actionName, roles: roles.join() }, $http).then(function() {
                 showGrowlMessage('success', 'Action \'' + actionName + '\' updated');
@@ -674,9 +674,9 @@ app.controller('SearchProfilesController', function($scope, tenantNames, profile
     $scope.getSocialContextNames = function(profile) {
         var names = [];
 
-        if (profile.attributes.socialTenants) {
-            for (var i = 0; i < profile.attributes.socialTenants.length; i++) {
-                names.push(profile.attributes.socialTenants[i].tenant);
+        if (profile.attributes.socialContexts) {
+            for (var i = 0; i < profile.attributes.socialContexts.length; i++) {
+                names.push(profile.attributes.socialContexts[i].name);
             }
         }
 

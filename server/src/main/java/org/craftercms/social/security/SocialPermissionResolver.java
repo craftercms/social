@@ -31,7 +31,7 @@ public class SocialPermissionResolver<T> implements PermissionResolver<Profile, 
             String ugcId = (String)object;
             if (ObjectId.isValid(ugcId)) {
                 try {
-                    final UGC ugc = ugcService.read(ugcId, SocialSecurityUtils.getTenant());
+                    final UGC ugc = ugcService.read(ugcId, SocialSecurityUtils.getContext());
                     if (ugc != null) {
                         if (subject.getId().equals(ugc.getCreatedBy())) {
                             subject.getRoles().add("OWNER");
@@ -42,8 +42,8 @@ public class SocialPermissionResolver<T> implements PermissionResolver<Profile, 
                 }
             }
         }
-        return new SocialPermission(SocialSecurityUtils.getRolesForSocialContext(), permissionRepository,
-            SocialSecurityUtils.getTenant());
+        return new SocialPermission(SocialSecurityUtils.getSocialRoles(), permissionRepository,
+            SocialSecurityUtils.getContext());
     }
 
     public void setPermissionRepository(final PermissionRepository permissionRepository) {

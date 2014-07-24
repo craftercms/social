@@ -20,7 +20,7 @@ package org.craftercms.social.services.ugc.pipeline;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
-import org.craftercms.social.moderation.ModerationFilter;
+import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.services.ugc.UgcPipe;
 
 /**
@@ -28,10 +28,16 @@ import org.craftercms.social.services.ugc.UgcPipe;
  */
 public class ModerationPipe implements UgcPipe{
 
-    private ModerationFilter moderationFilter;
+    private ModerationDecision moderationDecision;
+
     @Override
     public <T extends UGC> void process(final T ugc) throws SocialException {
         if(ugc instanceof SocialUgc)
-            moderationFilter.needModeration((SocialUgc)ugc);
+            moderationDecision.needModeration((SocialUgc)ugc);
+    }
+
+
+    public void setModerationDecision(final ModerationDecision moderationDecision) {
+        this.moderationDecision = moderationDecision;
     }
 }

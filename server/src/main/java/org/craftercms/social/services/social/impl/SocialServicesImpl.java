@@ -1,5 +1,7 @@
 package org.craftercms.social.services.social.impl;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -16,9 +18,10 @@ import org.craftercms.social.services.social.VoteOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
-import static org.craftercms.social.security.SecurityActionNames.*;
+import static org.craftercms.social.security.SecurityActionNames.UGC_FLAG;
+import static org.craftercms.social.security.SecurityActionNames.UGC_MODERATE;
+import static org.craftercms.social.security.SecurityActionNames.UGC_UNFLAG;
+import static org.craftercms.social.security.SecurityActionNames.UGC_UPDATE;
 
 /**
  *
@@ -32,12 +35,12 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public SocialUgc vote(@SecuredObject final String ugcId, final VoteOptions voteOptions, final String userId,
-                          final String tenantId) throws SocialException {
+                          final String contextId) throws SocialException {
         try {
-            T ugc = ugcRepository.findUGC(tenantId, ugcId);
+            T ugc = ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
-                log.debug("Given UGC does not exist with that id {} for that tenant {}", ugcId, tenantId);
-                throw new IllegalUgcException("Given UGC does not exist for given tenant");
+                log.debug("Given UGC does not exist with that id {} for that context {}", ugcId, contextId);
+                throw new IllegalUgcException("Given UGC does not exist for given context");
             }
             switch (voteOptions) {
                 case VOTE_UP:
@@ -56,19 +59,19 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             ugcRepository.save(ugc);
             return ugc;
         } catch (MongoDataException ex) {
-            throw new UGCException("Unable to find UGC with given Id and TenantId");
+            throw new UGCException("Unable to find UGC with given Id and contextId");
         }
     }
 
     @Override
     @HasPermission(action = UGC_FLAG, type = SocialPermission.class)
-    public SocialUgc flag(final String ugcId, final String tenantId, final String reason,
+    public SocialUgc flag(final String ugcId, final String contextId, final String reason,
                           final String userId) throws SocialException {
         log.debug("Flagging ugc {} due {}", ugcId, reason);
         try {
-            T ugcToFlag = ugcRepository.findUGC(tenantId, ugcId);
+            T ugcToFlag = ugcRepository.findUGC(contextId, ugcId);
             if (ugcToFlag == null) {
-                throw new IllegalUgcException("Given ugc does not belong to given tenant");
+                throw new IllegalUgcException("Given ugc does not belong to given context");
             }
             Flag f = new Flag(reason, userId);
             ugcToFlag.getFlags().add(f);
@@ -83,12 +86,12 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     @Override
     @HasPermission(action = UGC_UNFLAG, type = SocialPermission.class)
     public boolean unFlag(final String ugcId, final String flagId, final String userId,
-                          final String tenantId) throws SocialException {
+                          final String contextId) throws SocialException {
         log.debug("Removing flag {} for ugc Id {}", flagId, ugcId);
         try {
-            T ugcToUpdate = ugcRepository.findUGC(tenantId, ugcId);
+            T ugcToUpdate = ugcRepository.findUGC(contextId, ugcId);
             if (ugcToUpdate == null) {
-                throw new IllegalUgcException("Given ugc does not belong to given tenant");
+                throw new IllegalUgcException("Given ugc does not belong to given context");
             }
             ugcToUpdate.getFlags().remove(new Flag(new ObjectId(flagId)));
             ugcRepository.save(ugcToUpdate);
@@ -102,11 +105,11 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     @Override
     @HasPermission(action = UGC_MODERATE, type = SocialPermission.class)
     public SocialUgc moderate(final String ugcId, final SocialUgc.ModerationStatus moderationStatus,
-                              final String userId, final String tenant) throws UGCException {
+                              final String userId, final String contextId) throws UGCException {
         try {
-            T ugc = ugcRepository.findUGC(tenant, ugcId);
+            T ugc = ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
-                throw new IllegalUgcException("Given UGC does not exist for current user's tenant");
+                throw new IllegalUgcException("Given UGC does not exist for current user's context");
             }
             if (ugc.getModerationStatus() != SocialUgc.ModerationStatus.TRASH) { // Once is trash stays thrash (TBC)
                 ugc.setModerationStatus(moderationStatus);
@@ -121,10 +124,10 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
 
     @Override
     public Iterable<T> findByModerationStatus(final SocialUgc.ModerationStatus status, final String thread,
-                                              final String tenant, final int start, final int limit, final List sort)
+                                              final String contextId, final int start, final int limit, final List sort)
             throws UGCException {
         try {
-            return ugcRepository.findByModerationStatus(status, thread, tenant, start, limit, sort);
+            return ugcRepository.findByModerationStatus(status, thread, contextId, start, limit, sort);
         } catch (MongoDataException ex) {
             log.error("Unable to find by Moderation Status.", ex);
             throw new UGCException("Unable to find by status", ex);
@@ -132,11 +135,10 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     }
 
     @Override
-    public long countByModerationStatus(final SocialUgc.ModerationStatus status, final String thread, final String
-        tenant) throws UGCException {
+    public long countByModerationStatus(final SocialUgc.ModerationStatus status, final String thread, final String contextId) throws UGCException {
 
         try {
-            return ugcRepository.countFindByModerationStatus(status,thread,tenant);
+            return ugcRepository.countFindByModerationStatus(status,thread, contextId);
         } catch (MongoDataException e) {
             log.error("Unable to count comments by Moderation Status", e);
             throw new UGCException("Unable to count comments by there status",e);

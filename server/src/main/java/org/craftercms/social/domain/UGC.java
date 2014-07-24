@@ -33,6 +33,7 @@ import org.craftercms.profile.api.Profile;
 import org.jongo.marshall.jackson.oid.Id;
 import org.springframework.beans.BeanUtils;
 
+@SuppressWarnings("unchecked")
 @Document(collectionName = UGC.COLLECTION_NAME)
 public class UGC<T extends UGC> {
 
@@ -43,7 +44,7 @@ public class UGC<T extends UGC> {
     private ArrayDeque<ObjectId> ancestors;
     private String targetId;
     @Exclude
-    private String tenantId;
+    private String contextId;
     private String subject;
     private String body;
     private ObjectId[] attachmentId;
@@ -110,12 +111,12 @@ public class UGC<T extends UGC> {
         this.targetId = targetId;
     }
 
-    public String getTenantId() {
-        return tenantId;
+    public String getContextId() {
+        return contextId;
     }
 
-    public void setTenantId(final String tenantId) {
-        this.tenantId = tenantId;
+    public void setContextId(final String contextId) {
+        this.contextId = contextId;
     }
 
     public String getSubject() {
@@ -231,6 +232,7 @@ public class UGC<T extends UGC> {
 
     @Override
     public String toString() {
+
         return "UGC{" +
             "id=" + id +
             ", ancestors=" + StringUtils.join(ancestors) +

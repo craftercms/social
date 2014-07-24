@@ -17,10 +17,10 @@
 
 package org.craftercms.social.services.system;
 
+import java.util.List;
+
 import org.craftercms.social.domain.social.system.SocialSecurityAction;
 import org.craftercms.social.exceptions.SocialException;
-
-import java.util.List;
 
 /**
  * SecurityActions Service Definition
@@ -28,20 +28,20 @@ import java.util.List;
 public interface SecurityActionsService {
 
     /**
-     * Gets All SecurityAction for the given Tenant.
-     * @param tenant Tenant to search for.
-     * @return All SecurityActions for the given tenant empty Iterator if nothing if found
+     * Gets All SecurityAction for the given context.
+     * @param context the context.
+     * @return All SecurityActions for the given context empty Iterator if nothing if found
      */
-    Iterable<SocialSecurityAction> get(final String tenant);
+    Iterable<SocialSecurityAction> get(final String context);
 
     /**
-     * Updates the Roles for the given Action of the Tenant.
-     * @param tenant Tenant owner of the Action.
+     * Updates the Roles for the given Action of the Context.
+     * @param context context of the action.
      * @param actionName Action name to update.
      * @param roles New roles to assigned the action.
-     * @return the updated SecurityAction,null if unable to find action for the given tenant.
+     * @return the updated SecurityAction,null if unable to find action for the given context.
      */
-    SocialSecurityAction update(String tenant, String actionName, List<String> roles) throws SocialException;
+    SocialSecurityAction update(String context, String actionName, List<String> roles) throws SocialException;
 
     /**
      * Saves a new Action

@@ -29,7 +29,11 @@
         <property name="pipeline" ref="social.services.pipeline"/>
         <property name="invalidQueryKeys" value="${studio.social.ugc.invalidQueryKeys}"/>
         <property name="socialUgcFactory" ref="social.ugc.factory"/>
+        <property name="virusScanner" ref="social.ugc.virusScanner"/>
     </bean>
+
+    <bean id="social.ugc.virusScanner"
+          class="${studio.social.ugc.virusScanner}"/>
     <bean class="org.craftercms.social.services.social.impl.SocialServicesImpl" id="social.ugc.socialServices">
         <property name="ugcRepository" ref="social.repository.ugcRepository"/>
     </bean>
@@ -39,6 +43,9 @@
             <list>
                 <bean class="org.craftercms.social.services.ugc.pipeline.MetadataPipe"/>
                 <bean class="org.craftercms.social.services.ugc.pipeline.HtmlCleanupPipe"/>
+                <bean class="org.craftercms.social.services.ugc.pipeline.ModerationPipe">
+                    <property name="moderationDecision" ref="moderationDecisionManager"/>
+                </bean>
             </list>
         </property>
     </bean>

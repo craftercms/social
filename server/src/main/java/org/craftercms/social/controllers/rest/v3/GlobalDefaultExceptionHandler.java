@@ -59,7 +59,7 @@ public class GlobalDefaultExceptionHandler {
 
     @ExceptionHandler(value = UGCNotFound.class)
     public void ugcNotFound(HttpServletRequest req, HttpServletResponse resp, Exception e) throws IOException {
-        log.debug("Request {} for a non existent UGC (or does not belong to tenant)",req.getRequestURL());
+        log.debug("Request {} for a non existent UGC (or does not belong to context)",req.getRequestURL());
         serializeError(e, resp, HttpStatus.NOT_FOUND, req);
     }
 

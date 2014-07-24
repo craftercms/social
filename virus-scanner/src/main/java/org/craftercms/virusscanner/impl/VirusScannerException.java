@@ -15,26 +15,19 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.craftercms.social.repositories.security.impl;
-
-import org.craftercms.commons.mongo.AbstractJongoRepository;
-import org.craftercms.commons.mongo.MongoDataException;
-import org.craftercms.social.domain.social.system.SocialContext;
-import org.craftercms.social.repositories.SocialContextRepository;
+package org.craftercms.virusscanner.impl;
 
 /**
- *
+ * Created by cortiz on 7/15/14.
  */
-public class SocialContextRepositoryImpl extends AbstractJongoRepository<SocialContext> implements
-    SocialContextRepository {
+public class VirusScannerException extends RuntimeException {
+    private static final long serialVersionUID = -4890432595979626298L;
 
-    public SocialContextRepositoryImpl() {
-        super();
+    public VirusScannerException(final String message) {
+        super(message);
     }
 
-    @Override
-    public SocialContext findById(final String id) throws MongoDataException {
-        String query = getQueryFor("social.context.byId");
-        return findOne(query, id);
+    public VirusScannerException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }
