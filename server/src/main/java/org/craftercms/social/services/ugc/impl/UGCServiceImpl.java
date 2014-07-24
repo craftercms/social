@@ -1,6 +1,8 @@
 package org.craftercms.social.services.ugc.impl;
 
 import org.apache.commons.io.FileExistsException;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
@@ -226,8 +228,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     }
 
     private void checkForVirus(final InputStream attachment) throws IOException {
-        virusScanner.scan(attachment);
-        attachment.reset();
+        virusScanner.scan(new CloseShieldInputStream(attachment));
     }
 
     @Override
