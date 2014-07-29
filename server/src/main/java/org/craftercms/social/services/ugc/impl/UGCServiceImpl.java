@@ -1,5 +1,17 @@
 package org.craftercms.social.services.ugc.impl;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CloseShieldInputStream;
@@ -25,14 +37,10 @@ import org.craftercms.virusscanner.impl.VirusScannerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.regex.Pattern;
-
-import static org.craftercms.social.security.SecurityActionNames.*;
+import static org.craftercms.social.security.SecurityActionNames.UGC_CREATE;
+import static org.craftercms.social.security.SecurityActionNames.UGC_DELETE;
+import static org.craftercms.social.security.SecurityActionNames.UGC_READ;
+import static org.craftercms.social.security.SecurityActionNames.UGC_UPDATE;
 
 /**
  *
@@ -51,20 +59,20 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_CREATE, type = SocialPermission.class)
-    public UGC create(final String tenantId, final String ugcParentId, final String targetId,
+    public UGC create(final String contextId, final String ugcParentId, final String targetId,
                       final String textContent, final String subject, final Map attrs) throws SocialException {
-        log.debug("Creating Ugc for tenantId {} target Id {} with parent {} subject {} with possible " + "attributes " +
-            "{}", tenantId, targetId, ugcParentId, subject, attrs);
+        log.debug("Creating Ugc for contextId {} target Id {} with parent {} subject {} with possible " + "attributes " +
+            "{}", contextId, targetId, ugcParentId, subject, attrs);
         T newUgc = (T)ugcFactory.newInstance(new UGC(subject, textContent, targetId));
         newUgc.setAttributes(attrs);
         try {
             if (ObjectId.isValid(ugcParentId)) {
-                setupAncestors(newUgc, ugcParentId, tenantId);
+                setupAncestors(newUgc, ugcParentId, contextId);
             } else {
                 log.debug("Given UGC parent Id is either null or is not a valid value");
             }
-            if (StringUtils.isBlank(tenantId)) {
-                throw new IllegalArgumentException("Tenant cannot be null");
+            if (StringUtils.isBlank(contextId)) {
+                throw new IllegalArgumentException("context cannot be null");
             }
             pipeline.processUgc(newUgc);
             ugcRepository.save(newUgc);
@@ -78,13 +86,13 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public void setAttributes(@SecuredObject final String ugcId, final String tenantId,
+    public void setAttributes(@SecuredObject final String ugcId, final String contextId,
                               final Map attributes) throws SocialException {
-        log.debug("Adding {} to ugc {} of tenantId {}", attributes, ugcId, tenantId);
+        log.debug("Adding {} to ugc {} of contextId {}", attributes, ugcId, contextId);
         try {
-            ugcRepository.setAttributes(ugcId, tenantId, attributes);
+            ugcRepository.setAttributes(ugcId, contextId, attributes);
         } catch (MongoDataException ex) {
-            log.debug("Unable to add  attributes " + ugcId + " to ugc " + ugcId + " of tenantId " + tenantId, ex);
+            log.debug("Unable to add  attributes " + ugcId + " to ugc " + ugcId + " of contextId " + contextId, ex);
             throw new UGCException("Unable to add Attributes to UGC", ex);
         }
     }
@@ -92,10 +100,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public void deleteAttribute(@SecuredObject final String ugcId, final String[] attributesName,
-                                final String tenantId) throws SocialException {
+                                final String contextId) throws SocialException {
         log.debug("Deleting Attribute {} for ugc Id {} ", attributesName, ugcId);
         try {
-            ugcRepository.deleteAttribute(ugcId, tenantId, attributesName);
+            ugcRepository.deleteAttribute(ugcId, contextId, attributesName);
         } catch (MongoDataException ex) {
             log.debug("Unable to delete attribute " + StringUtils.join(attributesName) + " for ugc " + ugcId, ex);
             throw new UGCException("Unable to delete attribute for ugc", ex);
@@ -104,12 +112,12 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_DELETE, type = SocialPermission.class)
-    public boolean deleteUgc(final String ugcId, final String tenantId) throws SocialException {
+    public boolean deleteUgc(final String ugcId, final String contextId) throws SocialException {
         log.debug("About to delete ugc with id {}", ugcId);
         try {
-            ugcRepository.deleteUgc(ugcId, tenantId);
+            ugcRepository.deleteUgc(ugcId, contextId);
         } catch (MongoDataException ex) {
-            log.error("Unable to delete UGC with id " + ugcId + " Of tenant " + tenantId, ex);
+            log.error("Unable to delete UGC with id " + ugcId + " Of context " + contextId, ex);
             throw new UGCException("Unable to delete UGC", ex);
         }
         return false;
@@ -118,14 +126,14 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public UGC update(@SecuredObject final String ugcId, final String body, final String subject,
-                      final String tenantId, final Map attributes) throws SocialException {
+                      final String contextId, final Map attributes) throws SocialException {
         log.debug("About to update UGC {}", ugcId);
         try {
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC Id is not valid");
             }
 
-            T toUpdate = (T)ugcRepository.findUGC(tenantId, ugcId);
+            T toUpdate = (T)ugcRepository.findUGC(contextId, ugcId);
 
             if (toUpdate == null) {
                 throw new IllegalArgumentException("UGC with Id " + ugcId + " does not exists");
@@ -143,7 +151,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
             if (attributes != null) {
                 //ToDo This should be one query, problem is with deep attributes !!
-                setAttributes(toUpdate.getId().toString(), tenantId, attributes);
+                setAttributes(toUpdate.getId().toString(), contextId, attributes);
             }
             log.info("UGC {} was updated ", ugcId);
             return toUpdate;
@@ -156,13 +164,13 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
     public T read(final String ugcId, final boolean includeChildren, final int childCount,
-                  final String tenantId) throws UGCException {
+                  final String contextId) throws UGCException {
 
         try {
             if (includeChildren) {
-                return getUgcTree(ugcId, childCount, tenantId);
+                return getUgcTree(ugcId, childCount, contextId);
             } else {
-                return (T)ugcRepository.findUGC(tenantId, ugcId);
+                return (T)ugcRepository.findUGC(contextId, ugcId);
             }
         } catch (MongoDataException e) {
             log.error("Unable to find UGC by its Id");
@@ -172,10 +180,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public Iterable<T> readByTargetId(final String targetId, final String tenantId) throws UGCException {
-        log.debug("Finding all UGC by targetId {} for tenantId {}", targetId, tenantId);
+    public Iterable<T> readByTargetId(final String targetId, final String contextId) throws UGCException {
+        log.debug("Finding all UGC by targetId {} for contextId {}", targetId, contextId);
         try {
-            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findByTargetId(targetId, tenantId)),
+            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findByTargetId(targetId, contextId)),
                 Integer.MAX_VALUE);
         } catch (MongoDataException ex) {
             log.error("Unable to read ", ex);
@@ -185,13 +193,12 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public Iterable<T> search(final String tenant, final String query, final String sort, final int start,
+    public Iterable<T> search(final String contextId, final String query, final String sort, final int start,
                               final int limit) throws UGCException {
-        log.debug("Finding all ugc of tenant {} with user query {} sorted by {} skipping {} and with a limit of {}",
-            tenant, query, sort, start, limit);
+        log.debug("Finding all ugc of context {} with user query {} sorted by {} skipping {} and with a limit of {}", contextId, query, sort, start, limit);
         isQueryValid(query);
         try {
-            return ugcRepository.findByUserQuery(tenant, query, sort, start, limit);
+            return ugcRepository.findByUserQuery(contextId, query, sort, start, limit);
         } catch (MongoDataException ex) {
             log.error("Unable to find User with given query" + query + " sorted by " + sort, ex);
             throw new UGCException("Unable to find Ugc with user query ", ex);
@@ -200,10 +207,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public FileInfo addAttachment(@SecuredObject final String ugcId, final String tenant,
+    public FileInfo addAttachment(@SecuredObject final String ugcId, final String contextId,
                                   final InputStream attachment, final String fileName,
                                   final String contentType) throws FileExistsException, UGCException {
-        String internalFileName = File.separator + tenant + File.separator + ugcId + File.separator +
+        String internalFileName = File.separator + contextId + File.separator + ugcId + File.separator +
             fileName;
         try {
             checkForVirus(attachment);
@@ -213,7 +220,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         }
 
         try {
-            UGC ugc = ugcRepository.findUGC(tenant, ugcId);
+            UGC ugc = ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
                 throw new IllegalUgcException("UGC with given Id does not exist");
             }
@@ -233,10 +240,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public void removeAttachment(@SecuredObject final String ugcId, final String tenant,
+    public void removeAttachment(@SecuredObject final String ugcId, final String contextId,
                                  final String attachmentId) throws UGCException, FileNotFoundException {
         try {
-            UGC ugc = ugcRepository.findUGC(tenant, ugcId);
+            UGC ugc = ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
                 throw new IllegalUgcException("UGC with given Id does not exist");
             }
@@ -245,8 +252,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             }
             ObjectId attachmentOid = new ObjectId(attachmentId);
             FileInfo info = ugcRepository.getFileInfo(attachmentOid);
-            if (!info.getFileName().startsWith(File.separator + tenant)) {
-                throw new IllegalSocialQueryException("Given Attachment does not belong to the given tenant");
+            if (!info.getFileName().startsWith(File.separator + contextId)) {
+                throw new IllegalSocialQueryException("Given Attachment does not belong to the given context");
             }
             ugc.getAttachments().remove(info);
             ugcRepository.deleteFile(attachmentOid);
@@ -259,7 +266,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public FileInfo updateAttachment(@SecuredObject final String ugcId, final String tenant,
+    public FileInfo updateAttachment(@SecuredObject final String ugcId, final String contextId,
                                      final String attachmentId, final InputStream newAttachment) throws UGCException,
         FileNotFoundException {
         if (!ObjectId.isValid(ugcId)) {
@@ -269,7 +276,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             throw new IllegalArgumentException("Given UGC Id is not valid");
         }
         try {
-            T ugc = (T)ugcRepository.findUGC(tenant, ugcId);
+            T ugc = (T)ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
                 throw new IllegalUgcException("Given UGC Id does not exists");
             }
@@ -293,7 +300,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public FileInfo readAttachment(final String ugcId, final String tenant, final String attachmentId) throws
+    public FileInfo readAttachment(final String ugcId, final String contextId, final String attachmentId) throws
         FileNotFoundException, UGCException {
         if (!ObjectId.isValid(ugcId)) {
             throw new IllegalArgumentException("Given Ugc Id is not valid");
@@ -302,14 +309,14 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             throw new IllegalArgumentException("Given attachment Id is not valid");
         }
         try {
-            UGC ugc = ugcRepository.findUGC(tenant, ugcId);
+            UGC ugc = ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
                 throw new IllegalUgcException("UGC with given Id does not exist");
             }
             ObjectId attachmentOid = new ObjectId(attachmentId);
             FileInfo info = ugcRepository.readFile(attachmentOid);
-            if (!info.getFileName().startsWith(File.separator + tenant)) {
-                throw new IllegalSocialQueryException("Given Attachment does not belong to the given tenant");
+            if (!info.getFileName().startsWith(File.separator + contextId)) {
+                throw new IllegalSocialQueryException("Given Attachment does not belong to the given context");
             }
             return info;
         } catch (MongoDataException ex) {
@@ -320,10 +327,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public List<T> read(final String targetId, final String tenantId, final int start, final int limit,
+    public List<T> read(final String targetId, final String contextId, final int start, final int limit,
                         final List sortOrder, final int upToLevel, final int childrenPerLevel) throws UGCException {
         try {
-            Iterable<T> list = ugcRepository.findByTargetId(targetId, tenantId, start, limit, sortOrder, upToLevel);
+            Iterable<T> list = ugcRepository.findByTargetId(targetId, contextId, start, limit, sortOrder, upToLevel);
             return buildUgcTreeList(IterableUtils.toList(list), childrenPerLevel);
         } catch (MongoDataException e) {
             log.error("Unable to find UGC by its targetId");
@@ -333,13 +340,13 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public List<T> readChildren(final String ugcId, final String targetId, final String tenantId, final int start,
+    public List<T> readChildren(final String ugcId, final String targetId, final String contextId, final int start,
                                 final int limit, final List sortOrder, final int upToLevel,
                                 final int childrenPerLevel) throws UGCException {
-        log.debug("Finding all UGC {} children for tenant {} starting from {} up to {} results", ugcId, tenantId,
+        log.debug("Finding all UGC {} children for context {} starting from {} up to {} results", ugcId, contextId,
             limit, start);
         try {
-            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, targetId, tenantId, start,
+            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, targetId, contextId, start,
                 limit, sortOrder, upToLevel)), childrenPerLevel);
         } catch (MongoDataException ex) {
             log.error("Unable to read ", ex);
@@ -349,31 +356,31 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public UGC read(final String ugcId, final String tenant) throws UGCException {
+    public UGC read(final String ugcId, final String contextId) throws UGCException {
         try {
-            return ugcRepository.findUGC(tenant, ugcId);
+            return ugcRepository.findUGC(contextId, ugcId);
         } catch (MongoDataException e) {
-            log.error("Unable to find UGC with id " + ugcId + " for tenant " + tenant, e);
-            throw new UGCException("Unable to find UGC with given ID and tenant");
+            log.error("Unable to find UGC with id " + ugcId + " for context " + contextId, e);
+            throw new UGCException("Unable to find UGC with given ID and context");
         }
     }
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public long count(final String threadId, final String tenant) throws UGCException {
+    public long count(final String threadId, final String contextId) throws UGCException {
         try {
-            return ugcRepository.countByTargetId(tenant, threadId, 0);
+            return ugcRepository.countByTargetId(contextId, threadId, 0);
         } catch (MongoDataException e) {
-            log.error("Unable to count comments by tenant and ugc");
-            throw new UGCException("Unable to count UGC by target and tenant", e);
+            log.error("Unable to count comments by context and ugc");
+            throw new UGCException("Unable to count UGC by target and context", e);
         }
     }
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public long countChildren(final String ugcId, final String tenantId) throws UGCException {
+    public long countChildren(final String ugcId, final String contextId) throws UGCException {
         try {
-            return ugcRepository.countChildrenOf(tenantId, ugcId);
+            return ugcRepository.countChildrenOf(contextId, ugcId);
         } catch (MongoDataException ex) {
             log.error("Unable to count children of ugc " + ugcId, ex);
             throw new UGCException("Unable to count children of Ugc");
@@ -447,8 +454,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
      * @throws UGCException
      */
     private void setupAncestors(final UGC newUgc, final String ugcParentId,
-                                final String tenantId) throws MongoDataException, UGCException {
-        UGC parent = ugcRepository.findUGC(tenantId, ugcParentId);
+                                final String contextId) throws MongoDataException, UGCException {
+        UGC parent = ugcRepository.findUGC(contextId, ugcParentId);
         if (parent == null) {
             throw new UGCException("Parent UGC does not exist");
         }
@@ -523,8 +530,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         }
     }
 
-    private T getUgcTree(final String ugcId, final int childCount, final String tenantId) throws MongoDataException {
-        List<T> list = ugcRepository.findChildrenOf(ugcId, childCount, tenantId);
+    private T getUgcTree(final String ugcId, final int childCount, final String contextId) throws MongoDataException {
+        List<T> list = ugcRepository.findChildrenOf(ugcId, childCount, contextId);
         return buildUgcTree(list);
     }
 

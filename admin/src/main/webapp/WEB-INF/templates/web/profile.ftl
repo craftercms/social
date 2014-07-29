@@ -34,7 +34,7 @@
                 <span class="form-panel-title">Associated Contexts</span>
             </div>
             <div class="panel-body">
-                <form class="form-inline" ng-if="contexts.length > 0">
+                <form class="form-inline">
                     <div class="form-group">
                         <label>Context:</label>
                         <select class="form-control" ng-model="selectedContext"
@@ -60,7 +60,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="context in profile.attributes.socialTenants">
+                    <tr ng-repeat="context in profile.attributes.socialContexts">
                         <td style="vertical-align: middle">{{context.name}}</td>
                         <td style="vertical-align: middle">{{context.roles.join(', ')}}</td>
                         <td><button class="btn btn-default" type="button"

@@ -1,11 +1,11 @@
 package org.craftercms.social.services.ugc.pipeline;
 
+import java.util.Date;
+
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.ugc.UgcPipe;
-
-import java.util.Date;
 
 /**
  * Created by cortiz on 5/29/14.

@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- /**Create Default Social Tenant.**/
+ /**Create Default Social Context.**/
 if(db.socialContext.count() ==0){
     db.socialContext.insert(
         {
@@ -23,7 +23,7 @@ if(db.socialContext.count() ==0){
         }
     );
 }
-/** Create Default Permissions for Default Tenant**/
+/** Create Default Permissions for Default Context**/
 if(db.securityActions.count()==0){
     var defaultContext = db.socialContext.findOne();
 

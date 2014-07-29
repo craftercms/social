@@ -35,6 +35,6 @@ public class SocialContextRepositoryImpl extends AbstractJongoRepository<SocialC
     @Override
     public SocialContext findById(final String id) throws MongoDataException {
         String query = getQueryFor("social.context.byId");
-        return (SocialContext)findOne(query, id);
+        return findOne(query, id);
     }
 }

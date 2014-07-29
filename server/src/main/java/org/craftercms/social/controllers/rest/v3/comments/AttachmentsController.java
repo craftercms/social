@@ -41,7 +41,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
         "id") final String id, @ApiParam(value = "File to upload, Do notice that the server will enforce ")
     @RequestParam(required = true) CommonsMultipartFile attachment) throws SocialException, IOException {
         log.debug("Adding Attachment for UGC {} ", id);
-        return ugcService.addAttachment(id, tenant(), attachment.getInputStream(), attachment.getOriginalFilename(),
+        return ugcService.addAttachment(id, context(), attachment.getInputStream(), attachment.getOriginalFilename(),
             new MimetypesFileTypeMap().getContentType(attachment.getOriginalFilename()));
     }
 
@@ -54,7 +54,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
     @PathVariable(value = "attachmentId") final String attachmentId) throws SocialException, IOException {
         log.debug("Removing Attachment for UGC {} with Id {}", id, attachmentId);
 
-        ugcService.removeAttachment(id, tenant(), attachmentId);
+        ugcService.removeAttachment(id, context(), attachmentId);
         return true;
     }
 
@@ -67,7 +67,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
         SocialException, IOException {
         log.debug("Removing Attachment for UGC {} with Id {}", id, attachmentId);
 
-        ugcService.updateAttachment(id, tenant(), attachmentId, file.getInputStream());
+        ugcService.updateAttachment(id, context(), attachmentId, file.getInputStream());
         return true;
     }
 
@@ -78,7 +78,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
                                                   final String id) throws SocialException, UGCNotFound {
         log.debug("Listing all Attachments for UGC {}", id);
 
-        T ugc = (T)ugcService.read(id, tenant());
+        T ugc = (T)ugcService.read(id, context());
         if (ugc == null) {
             throw new UGCNotFound("Ugc with Id " + id + " does not Exists");
         }
@@ -95,7 +95,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
         IOException {
         log.debug("Reading Attachment for UGC {} with Id {}", id, attachmentId);
 
-        FileInfo fileInfo = ugcService.readAttachment(id, tenant(), attachmentId);
+        FileInfo fileInfo = ugcService.readAttachment(id, context(), attachmentId);
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(fileInfo.getContentType());
         String realName = fileInfo.getFileName().substring(fileInfo.getFileName().lastIndexOf(File.separator));

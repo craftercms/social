@@ -58,11 +58,11 @@
         {contextId:#,targetId:#,ancestors:{$size:#}}
     </entry>
 
-    <entry key="social.ugc.byTenantTargetAncestorsExact">
+    <entry key="social.ugc.byContextTargetAncestorsExact">
         {contextId:#,targetId:#,ancestors:{$all:#}}
     </entry>
 
-    <entry key="social.ugc.byTenantAncestorsExact">
+    <entry key="social.ugc.byContextAncestorsExact">
         {contextId:#,ancestors:{$all:#},ancestors:{$size:#}}
     </entry>
 
@@ -77,7 +77,7 @@
         $where:" %@ >= this.ancestors.length"
     }
     </entry>
-    <entry key="social.ugc.byTenantAndId">
+    <entry key="social.ugc.byContextAndId">
         {_id:#,contextId:#}
     </entry>
     <entry key="social.ugc.byTargetId">
@@ -101,10 +101,10 @@
     <entry key="social.permissions.isAllowed">
         {actionName:#,roles:{$in:#},contextId:#}
     </entry>
-    <entry key="social.permissions.byTenant">
+    <entry key="social.permissions.byContextId">
         {contextId:#}
     </entry>
-    <entry key="social.permissions.byTenantAndActionName">
+    <entry key="social.permissions.byContextIdAndActionName">
         {contextId:#,actionName:#}
     </entry>
 

@@ -26,10 +26,10 @@ public class PermissionRepositoryImpl extends AbstractJongoRepository<SocialSecu
 
     @Override
     public boolean isAllowed(final String action, final Set<String> profileRoles,
-                             String tenant) throws MongoDataException {
+                             String context) throws MongoDataException {
         try {
             String query = getQueryFor("social.permissions.isAllowed");
-            return findOne(query, action, profileRoles, tenant) != null;
+            return findOne(query, action, profileRoles, context) != null;
         } catch (MongoDataException ex) {
             log.error("Unable to check if action belongs to given profile", ex);
             throw new MongoDataException("Unable to check action for given profile roles");
@@ -37,23 +37,23 @@ public class PermissionRepositoryImpl extends AbstractJongoRepository<SocialSecu
     }
 
     @Override
-    public Iterable<SocialSecurityAction> findActions(final String tenant) throws MongoDataException {
-        String query = getQueryFor("social.permissions.byTenant");
-        return find(query, tenant);
+    public Iterable<SocialSecurityAction> findActions(final String context) throws MongoDataException {
+        String query = getQueryFor("social.permissions.byContextId");
+        return find(query, context);
     }
 
     @Override
-    public SocialSecurityAction updateSecurityAction(final String tenant, final String actionName,
+    public SocialSecurityAction updateSecurityAction(final String context, final String actionName,
                                                      final List<String> roles) throws MongoDataException {
-        String query = getQueryFor("social.permissions.byTenantAndActionName");
+        String query = getQueryFor("social.permissions.byContextIdAndActionName");
         String update = getQueryFor("social.permissions.updateRoles");
-        SocialSecurityAction securityAction = findOne(query, tenant, actionName);
+        SocialSecurityAction securityAction = findOne(query, context, actionName);
         if (securityAction == null) {
             return null;
         }
         update(securityAction.getId().toString(), update, false, false, roles);
 
-        return findOne(query, tenant, actionName);
+        return findOne(query, context, actionName);
     }
 
 }

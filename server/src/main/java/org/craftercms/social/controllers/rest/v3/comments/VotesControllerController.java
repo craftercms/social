@@ -25,9 +25,9 @@ public class VotesControllerController<T> extends AbstractCommentsController {
         "current comment down, it will be remove before counting the vote up.")
     public T voteUp(@PathVariable(value = "id") @ApiParam(value = "Ugc id to vote up") final String id) throws
         SocialException {
-        String tenant = tenant();
+        String context = context();
         String userId = userId();
-        return (T)socialServices.vote(id, VoteOptions.VOTE_UP,userId, tenant);
+        return (T)socialServices.vote(id, VoteOptions.VOTE_UP,userId, context);
     }
 
     @RequestMapping(value = "{id}/votes/down", method = RequestMethod.POST)
@@ -36,9 +36,9 @@ public class VotesControllerController<T> extends AbstractCommentsController {
              notes = "If a user already vote up the comment it will remove the up before counting the vote down.")
          public T voteDown(@PathVariable(value = "id") @ApiParam(value = "Ugc id to vote up") final String id) throws
         SocialException {
-        String tenant = tenant();
+        String context = context();
         String userId = userId();
-        return (T)socialServices.vote(id, VoteOptions.VOTE_DOWN, userId, tenant);
+        return (T)socialServices.vote(id, VoteOptions.VOTE_DOWN, userId, context);
     }
 
     @RequestMapping(value = "{id}/votes/netural", method = RequestMethod.POST)
@@ -47,9 +47,9 @@ public class VotesControllerController<T> extends AbstractCommentsController {
     public T voteNeutral(@PathVariable(value = "id") @ApiParam(value = "Ugc id to vote up") final String id)
         throws
         SocialException {
-        String tenant = tenant();
+        String context = context();
         String userId = userId();
-        return (T)socialServices.vote(id, VoteOptions.VOTE_NEUTRAL, userId, tenant);
+        return (T)socialServices.vote(id, VoteOptions.VOTE_NEUTRAL, userId, context);
     }
 
 

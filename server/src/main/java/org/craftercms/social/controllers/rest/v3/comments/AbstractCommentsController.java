@@ -54,11 +54,11 @@ public class AbstractCommentsController<T extends SocialUgc> {
     }
 
     /**
-     * Gets Current User's tenant.
+     * Gets current context.
      *
-     * @return Current Tenant, Never Null.
+     * @return current context, never null.
      */
-    protected String tenant() {
+    protected String context() {
         return SocialSecurityUtils.getContext();
     }
 

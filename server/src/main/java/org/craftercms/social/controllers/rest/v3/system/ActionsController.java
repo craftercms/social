@@ -2,6 +2,9 @@ package org.craftercms.social.controllers.rest.v3.system;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+
+import java.util.Arrays;
+
 import org.craftercms.social.domain.social.system.SocialSecurityAction;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.security.SocialSecurityUtils;
@@ -12,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Arrays;
 
 /**
  *
@@ -28,7 +29,7 @@ public class ActionsController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    @ApiOperation(value = "Gets all Security Actions for current User tenant.")
+    @ApiOperation(value = "Gets all Security Actions for current context.")
     public Iterable<SocialSecurityAction> getCurrentActions() {
         return actionsService.get(SocialSecurityUtils.getContext());
     }

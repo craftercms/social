@@ -42,7 +42,7 @@ public class SocialPermissionResolver<T> implements PermissionResolver<Profile, 
                 }
             }
         }
-        return new SocialPermission(SocialSecurityUtils.getRolesForSocialContext(), permissionRepository,
+        return new SocialPermission(SocialSecurityUtils.getSocialRoles(), permissionRepository,
             SocialSecurityUtils.getContext());
     }
 

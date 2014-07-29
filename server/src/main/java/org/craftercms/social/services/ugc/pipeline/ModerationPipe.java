@@ -21,7 +21,6 @@ import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.moderation.ModerationDecision;
-import org.craftercms.social.moderation.ModerationFilter;
 import org.craftercms.social.services.ugc.UgcPipe;
 
 /**
