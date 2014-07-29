@@ -47,6 +47,11 @@ import org.slf4j.LoggerFactory;
  */
 public class SocialContextServiceImpl implements SocialContextService {
 
+    public static final String FIRST_NAME_ATTRIBUTE = "firstName";
+    public static final String LAST_NAME_ATTRIBUTE = "lastName";
+    public static final String DISPLAY_NAME_ATTRIBUTE = "displayName";
+    public static final String AVATAR_LINK_ATTRIBUTE = "avatarLink";
+
     private SocialContextRepository socialContextRepository;
     private ProfileService profileService;
     private SecurityActionsService securityActionsService;
@@ -96,13 +101,13 @@ public class SocialContextServiceImpl implements SocialContextService {
         try {
             Profile p = profileService.getProfile(profileId, SocialSecurityUtils.SOCIAL_CONTEXTS_ATTRIBUTE);
             if (p == null) {
-                throw new ProfileConfigurationException("Given Profile \"" + profileId + "\" does not exist");
+                throw new ProfileConfigurationException("Given profile \"" + profileId + "\" does not exist");
             }
             final HashMap<String, Object> attributesToUpdate = new HashMap<>();
             List<Map<String, Object>> socialContexts = p.getAttribute(SocialSecurityUtils.SOCIAL_CONTEXTS_ATTRIBUTE);
             SocialContext ctx = socialContextRepository.findById(contextId);
             if (ctx == null) {
-                throw new ProfileConfigurationException("Given Context \"" + contextId + "\" does not exist");
+                throw new ProfileConfigurationException("Given context \"" + contextId + "\" does not exist");
             }
             if (CollectionUtils.isEmpty(socialContexts)) {
                 Map<String, Object> socialContext = new HashMap<>();
@@ -128,7 +133,8 @@ public class SocialContextServiceImpl implements SocialContextService {
                 }
             }
             attributesToUpdate.put(SocialSecurityUtils.SOCIAL_CONTEXTS_ATTRIBUTE, socialContexts);
-            return profileService.updateAttributes(profileId, attributesToUpdate, SocialSecurityUtils
+            return profileService.updateAttributes(profileId, attributesToUpdate, FIRST_NAME_ATTRIBUTE,
+                LAST_NAME_ATTRIBUTE, DISPLAY_NAME_ATTRIBUTE, AVATAR_LINK_ATTRIBUTE, SocialSecurityUtils
                 .SOCIAL_CONTEXTS_ATTRIBUTE);
         } catch (ProfileException e) {
             log.error("Unable to find profile with given id " + profileId, e);
@@ -145,13 +151,13 @@ public class SocialContextServiceImpl implements SocialContextService {
         try {
             Profile p = profileService.getProfile(profileId, SocialSecurityUtils.SOCIAL_CONTEXTS_ATTRIBUTE);
             if (p == null) {
-                throw new ProfileConfigurationException("Given Profile \"" + profileId + "\" does not exist");
+                throw new ProfileConfigurationException("Given profile \"" + profileId + "\" does not exist");
             }
             SocialContext ctx = socialContextRepository.findById(contextId);
             if (ctx == null) {
-                throw new ProfileConfigurationException("Given Context \"" + contextId + "\" does not exist");
+                throw new ProfileConfigurationException("Given context \"" + contextId + "\" does not exist");
             }
-            List<Map<String,Object>> updatedList=new ArrayList<>();
+            List<Map<String,Object>> updatedList = new ArrayList<>();
             final HashMap<String, Object> attributesToUpdate = new HashMap<>();
             List<Map<String, Object>> socialContexts = p.getAttribute(SocialSecurityUtils.SOCIAL_CONTEXTS_ATTRIBUTE);
             if (socialContexts == null) {
@@ -163,7 +169,8 @@ public class SocialContextServiceImpl implements SocialContextService {
                 }
             }
             attributesToUpdate.put(SocialSecurityUtils.SOCIAL_CONTEXTS_ATTRIBUTE, updatedList);
-            return profileService.updateAttributes(profileId, attributesToUpdate, SocialSecurityUtils
+            return profileService.updateAttributes(profileId, attributesToUpdate, FIRST_NAME_ATTRIBUTE,
+                LAST_NAME_ATTRIBUTE, DISPLAY_NAME_ATTRIBUTE, AVATAR_LINK_ATTRIBUTE, SocialSecurityUtils
                 .SOCIAL_CONTEXTS_ATTRIBUTE);
         }catch (ProfileException ex){
             log.error("Unable to find profile with given id " + profileId, ex);
