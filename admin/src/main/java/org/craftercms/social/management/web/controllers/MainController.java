@@ -16,6 +16,8 @@
  */
 package org.craftercms.social.management.web.controllers;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.utils.SecurityUtils;
@@ -24,8 +26,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Controller for the main view.

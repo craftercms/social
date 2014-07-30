@@ -1,10 +1,10 @@
 package org.craftercms.social.domain.social.system;
 
+import java.util.Set;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.Document;
 import org.jongo.marshall.jackson.oid.Id;
-
-import java.util.Set;
 
 /**
  */

@@ -1,7 +1,5 @@
-import java.util.HashMap;
 import java.util.regex.Pattern;
 
-import org.bson.types.ObjectId;
 import org.craftercms.social.repositories.ugc.UGCRepository;
 import org.craftercms.social.services.ugc.UGCService;
 import org.junit.Test;

@@ -16,7 +16,6 @@
  */
 package org.craftercms.social.moderation;
 
-import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.SocialUgc;
 
 /**

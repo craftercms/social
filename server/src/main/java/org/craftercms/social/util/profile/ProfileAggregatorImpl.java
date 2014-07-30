@@ -1,5 +1,7 @@
 package org.craftercms.social.util.profile;
 
+import java.util.List;
+
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.craftercms.profile.api.Profile;
@@ -7,8 +9,6 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  *

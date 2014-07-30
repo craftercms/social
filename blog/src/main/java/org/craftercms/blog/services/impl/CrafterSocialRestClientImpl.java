@@ -1,8 +1,6 @@
 package org.craftercms.blog.services.impl;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,7 +12,6 @@ import java.util.Map;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIUtils;
@@ -26,9 +23,6 @@ import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.craftercms.blog.services.CrafterSocialClient;
-import org.codehaus.jackson.map.DeserializationConfig;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

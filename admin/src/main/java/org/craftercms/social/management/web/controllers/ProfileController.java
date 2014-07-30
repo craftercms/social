@@ -16,6 +16,10 @@
  */
 package org.craftercms.social.management.web.controllers;
 
+import java.util.List;
+import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
@@ -26,11 +30,11 @@ import org.craftercms.social.management.exceptions.InvalidRequestParameterExcept
 import org.craftercms.social.management.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.regex.Pattern;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * MVC Controller for profile.

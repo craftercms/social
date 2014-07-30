@@ -16,6 +16,9 @@
  */
 package org.craftercms.social.management.web.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
@@ -24,9 +27,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * MVC Controller for displaying and modifying tenants.

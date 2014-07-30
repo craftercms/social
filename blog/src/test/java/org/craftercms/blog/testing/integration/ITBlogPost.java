@@ -1,7 +1,7 @@
 package org.craftercms.blog.testing.integration;
 
-import static com.jayway.restassured.RestAssured.expect;
-import static org.junit.Assert.assertTrue;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.path.json.JsonPath;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -15,8 +15,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.path.json.JsonPath;
+import static com.jayway.restassured.RestAssured.expect;
+import static org.junit.Assert.assertTrue;
 
 public class ITBlogPost extends IntegrationTestingBase{
 	

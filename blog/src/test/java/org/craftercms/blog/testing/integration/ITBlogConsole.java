@@ -1,9 +1,5 @@
 package org.craftercms.blog.testing.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.craftercms.blog.testing.IntegrationTestingBase;
@@ -15,6 +11,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import static org.junit.Assert.assertEquals;
 
 public class ITBlogConsole extends IntegrationTestingBase {
 	

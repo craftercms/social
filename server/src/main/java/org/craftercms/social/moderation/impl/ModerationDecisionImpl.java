@@ -18,7 +18,6 @@ package org.craftercms.social.moderation.impl;
 
 import java.util.List;
 
-import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.moderation.ModerationDecision;
 import org.craftercms.social.moderation.ModerationFilter;

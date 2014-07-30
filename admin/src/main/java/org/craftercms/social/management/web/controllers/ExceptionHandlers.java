@@ -1,5 +1,7 @@
 package org.craftercms.social.management.web.controllers;
 
+import java.util.Collections;
+
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.craftercms.social.management.exceptions.InvalidRequestParameterException;
@@ -14,8 +16,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.util.Collections;
 
 /**
  * {@link org.springframework.web.bind.annotation.ControllerAdvice} for controllers that includes exception

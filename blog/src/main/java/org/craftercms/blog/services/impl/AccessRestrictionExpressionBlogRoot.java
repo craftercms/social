@@ -1,13 +1,10 @@
 package org.craftercms.blog.services.impl;
 
-import java.util.Map;
-
+import org.craftercms.blog.services.BlogService;
+import org.craftercms.blog.services.impl.CrafterSocialRestClientImpl;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.craftercms.blog.services.BlogService;
-import org.craftercms.blog.services.impl.CrafterSocialRestClientImpl;
 
 public class AccessRestrictionExpressionBlogRoot extends AccessRestrictionExpressionRoot {
 	

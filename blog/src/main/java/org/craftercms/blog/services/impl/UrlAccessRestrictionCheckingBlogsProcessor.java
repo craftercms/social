@@ -6,8 +6,6 @@ import org.craftercms.blog.services.BlogService;
 import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.impl.processors.*;
 import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 public class UrlAccessRestrictionCheckingBlogsProcessor extends UrlAccessRestrictionCheckingProcessor {
 	
