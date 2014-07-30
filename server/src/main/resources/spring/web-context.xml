@@ -106,7 +106,7 @@
 
     <!-- freemarker config -->
     <beans:bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-        <beans:property name="templateLoaderPath" value="/WEB-INF/views/"/>
+        <beans:property name="templateLoaderPaths" value="/WEB-INF/views/,classpath:/views/"/>
     </beans:bean>
 
     <!--
@@ -121,5 +121,5 @@
         <beans:property name="suffix" value=".ftl"/>
     </beans:bean>
 
-    <beans:import resource="rest-api-documentation-context.xml"/>
+    <beans:import resource="classpath*:/crafter/api-documentation/api-documentation-context.xml"/>
 </beans:beans>

@@ -15,8 +15,12 @@ import org.craftercms.social.repositories.ugc.UGCRepository;
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.social.SocialServices;
 import org.craftercms.social.services.social.VoteOptions;
+import org.craftercms.social.util.ebus.SocialEvent;
+import org.craftercms.social.util.ebus.UGCEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Reactor;
+import reactor.event.Event;
 
 import static org.craftercms.social.security.SecurityActionNames.UGC_FLAG;
 import static org.craftercms.social.security.SecurityActionNames.UGC_MODERATE;
@@ -31,6 +35,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
 
     private UGCRepository<T> ugcRepository;
     private Logger log = LoggerFactory.getLogger(SocialServicesImpl.class);
+    private Reactor reactor;
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
@@ -57,6 +62,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
                     neutral(ugc, userId);
             }
             ugcRepository.save(ugc);
+            reactor.notify(UGCEvent.VOTE, Event.wrap(new SocialEvent(ugc)));
             return ugc;
         } catch (MongoDataException ex) {
             throw new UGCException("Unable to find UGC with given Id and contextId");
@@ -76,6 +82,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             Flag f = new Flag(reason, userId);
             ugcToFlag.getFlags().add(f);
             ugcRepository.save(ugcToFlag);
+            reactor.notify(UGCEvent.FLAG, Event.wrap(new SocialEvent(ugcToFlag)));
             return ugcToFlag;
         } catch (MongoDataException ex) {
             log.error("Unable to flag ugc " + ugcId, ex);
@@ -95,6 +102,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             }
             ugcToUpdate.getFlags().remove(new Flag(new ObjectId(flagId)));
             ugcRepository.save(ugcToUpdate);
+            reactor.notify(UGCEvent.UNFLAG, Event.wrap(new SocialEvent(ugcToUpdate)));
             return true;
         } catch (MongoDataException ex) {
             log.error("Unable to delete flag " + flagId + " from " + ugcId, ex);
@@ -115,6 +123,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
                 ugc.setModerationStatus(moderationStatus);
             }
             ugcRepository.save(ugc);
+            reactor.notify(UGCEvent.UNFLAG, Event.wrap(new SocialEvent(ugc)));
             return ugc;
         } catch (MongoDataException ex) {
             log.debug("Unable to change ugc moderation status", ex);
@@ -169,7 +178,12 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
         ugc.getVotesUp().remove(userId);
     }
 
+
     public void setUgcRepository(final UGCRepository<T> ugcRepository) {
         this.ugcRepository = ugcRepository;
+    }
+
+    public void setReactor(final Reactor reactor) {
+        this.reactor = reactor;
     }
 }
