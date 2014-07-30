@@ -1,7 +1,5 @@
 package org.craftercms.social.util.serialization;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
-
 import org.craftercms.commons.jackson.mvc.annotations.InjectValueFactory;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.util.profile.ProfileAggregator;

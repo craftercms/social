@@ -1,15 +1,11 @@
 package org.craftercms.virusscanner.test;
 
-import org.craftercms.virusscanner.impl.ClamavVirusScannerImpl;
-import org.craftercms.virusscanner.impl.VirusScannerException;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.FileInputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.craftercms.virusscanner.impl.ClamavVirusScannerImpl;
+import org.craftercms.virusscanner.impl.VirusScannerException;
+import org.junit.Test;
 
 public class ClamavjVirusScanTestCase {
 

@@ -1,9 +1,9 @@
 package org.craftercms.virusscanner.impl;
 
 
-import org.craftercms.virusscanner.api.VirusScanner;
-
 import java.io.InputStream;
+
+import org.craftercms.virusscanner.api.VirusScanner;
 
 /**
  *  Dummy virus scanner that does nothing

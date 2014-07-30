@@ -1,7 +1,7 @@
 package org.craftercms.blog.testing.integration;
 
-import static com.jayway.restassured.RestAssured.expect;
-import static org.junit.Assert.assertEquals;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.path.json.JsonPath;
 
 import java.util.concurrent.TimeUnit;
 
@@ -9,12 +9,11 @@ import org.craftercms.blog.testing.IntegrationTestingBase;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.path.json.JsonPath;
+import static com.jayway.restassured.RestAssured.expect;
+import static org.junit.Assert.assertEquals;
 
 public class ITBlogPostPermission extends IntegrationTestingBase {
 	

@@ -17,11 +17,11 @@
 
 package org.craftercms.social.documentation.configuration;
 
+import com.mangofactory.swagger.paths.SwaggerPathProvider;
+
 import javax.servlet.ServletContext;
 
-import com.mangofactory.swagger.paths.SwaggerPathProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * @author Dejan Brkic

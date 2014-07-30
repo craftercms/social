@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.jackson.mvc.annotations.Exclude;
-
 import org.craftercms.commons.jackson.mvc.annotations.InjectValue;
 import org.craftercms.commons.mongo.Document;
 import org.craftercms.commons.mongo.FileInfo;

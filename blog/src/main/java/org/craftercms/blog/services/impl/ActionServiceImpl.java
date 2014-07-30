@@ -16,13 +16,10 @@
  */
 package org.craftercms.blog.services.impl;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.craftercms.blog.model.Action;
 import org.craftercms.blog.services.ActionService;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

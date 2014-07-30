@@ -1,9 +1,9 @@
 package org.craftercms.social.domain.social;
 
-import org.craftercms.social.domain.UGC;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.craftercms.social.domain.UGC;
 
 /**
  *

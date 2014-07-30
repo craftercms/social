@@ -17,14 +17,13 @@
 package org.craftercms.blog.services;
 
 import org.craftercms.blog.model.BlogListForm;
+import org.craftercms.blog.util.BlogsUtil;
 import org.craftercms.profile.impl.ProfileRestClientImpl;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.craftercms.blog.util.BlogsUtil;
 
 @Service
 public class BlogService {

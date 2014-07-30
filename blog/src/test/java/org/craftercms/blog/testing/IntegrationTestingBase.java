@@ -1,7 +1,7 @@
 package org.craftercms.blog.testing;
 
-import static com.jayway.restassured.RestAssured.expect;
-import static org.junit.Assert.assertEquals;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.path.json.JsonPath;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,16 +16,14 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.path.json.JsonPath;
+import static com.jayway.restassured.RestAssured.expect;
+import static org.junit.Assert.assertEquals;
 
 public class IntegrationTestingBase {
 	

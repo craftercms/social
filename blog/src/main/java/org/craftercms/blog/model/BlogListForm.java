@@ -16,12 +16,11 @@
  */
 package org.craftercms.blog.model;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-
 import javax.xml.bind.annotation.XmlRootElement;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("blogListForm")
 @XmlRootElement

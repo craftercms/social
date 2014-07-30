@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileExistsException;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
