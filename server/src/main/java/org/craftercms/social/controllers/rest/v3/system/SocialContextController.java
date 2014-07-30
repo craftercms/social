@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @RequestMapping("/api/3/system/context")
 @Controller
-@Api("Creates and associates Social Context to profiles")
+@Api(value = "Creates and associates Social Context to profiles", description ="Creates and associates Social Context to profiles" )
 public class SocialContextController {
 
     @Autowired

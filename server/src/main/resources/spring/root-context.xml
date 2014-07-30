@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 
     <import resource="classpath:/crafter/security/rest-security-context.xml"/>
+    <context:annotation-config />
+
     <bean name="social.properties"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
@@ -24,18 +27,23 @@
     <import resource="security-context.xml"/>
 
 
+    <bean name="EBusConfig" class="org.craftercms.social.util.ebus.EBusConfig" />
+    <bean class="org.craftercms.social.util.EventLogger"/>
     <bean class="org.craftercms.social.services.ugc.impl.UGCServiceImpl" id="social.ugc.ugcService">
         <property name="UGCRepositoryImpl" ref="social.repository.ugcRepository"/>
         <property name="pipeline" ref="social.services.pipeline"/>
         <property name="invalidQueryKeys" value="${studio.social.ugc.invalidQueryKeys}"/>
         <property name="socialUgcFactory" ref="social.ugc.factory"/>
         <property name="virusScanner" ref="social.ugc.virusScanner"/>
+        <property name="reactor" ref="socialReactor"/>
+
     </bean>
 
     <bean id="social.ugc.virusScanner"
           class="${studio.social.ugc.virusScanner}"/>
     <bean class="org.craftercms.social.services.social.impl.SocialServicesImpl" id="social.ugc.socialServices">
         <property name="ugcRepository" ref="social.repository.ugcRepository"/>
+        <property name="reactor" ref="socialReactor"/>
     </bean>
 
     <bean id="social.services.pipeline" class="org.craftercms.social.services.ugc.pipeline.UgcPipeline">

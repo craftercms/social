@@ -21,20 +21,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/api/3/system/actions")
-@Api(value = "Services to Administrate Security Actions.")
+@Api(value = "Security Actions",basePath ="/api/3/system/actions",
+    description = "Services to Admin Security Actions")
 public class ActionsController {
 
     @Autowired
     private SecurityActionsService actionsService;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Gets all Security Actions for current context.")
     public Iterable<SocialSecurityAction> getCurrentActions() {
         return actionsService.get(SocialSecurityUtils.getContext());
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(value = "/",method = RequestMethod.PUT)
     @ResponseBody
     @ApiOperation(value = "Updates the given action name with the Roles", notes = "Notice that this is not a partial "
         + "" + "update of roles, this will replace the current action Roles with the new ones (send)")
