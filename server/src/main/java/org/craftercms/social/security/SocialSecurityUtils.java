@@ -59,7 +59,7 @@ public class SocialSecurityUtils {
 
     private static List<String> getRolesForCurrentContext(final Profile profile){
         String currentContext = getContext();
-        List<Map<String, Object>> socialContexts = profile.getAttribute(SOCIAL_CONTEXTS_ATTRIBUTE);
+        List<Map<String, Object>> socialContexts = (List<Map<String, Object>>)profile.getAttribute(SOCIAL_CONTEXTS_ATTRIBUTE);
 
         if (CollectionUtils.isNotEmpty(socialContexts)) {
             for (Map<String, Object> context : socialContexts) {

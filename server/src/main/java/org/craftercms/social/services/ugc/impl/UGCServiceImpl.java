@@ -28,13 +28,18 @@ import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.repositories.UgcFactory;
 import org.craftercms.social.repositories.ugc.UGCRepository;
+import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.ugc.UGCService;
 import org.craftercms.social.services.ugc.pipeline.UgcPipeline;
+import org.craftercms.social.util.ebus.SocialEvent;
+import org.craftercms.social.util.ebus.UGCEvent;
 import org.craftercms.virusscanner.api.VirusScanner;
 import org.craftercms.virusscanner.impl.VirusScannerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Reactor;
+import reactor.event.Event;
 
 import static org.craftercms.social.security.SecurityActionNames.UGC_CREATE;
 import static org.craftercms.social.security.SecurityActionNames.UGC_DELETE;
@@ -55,12 +60,14 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     private Pattern invalidQueryKeys;
     private UgcFactory ugcFactory;
     private VirusScanner virusScanner;
+    private Reactor reactor;
 
     @Override
     @HasPermission(action = UGC_CREATE, type = SocialPermission.class)
     public UGC create(final String contextId, final String ugcParentId, final String targetId,
                       final String textContent, final String subject, final Map attrs) throws SocialException {
-        log.debug("Creating Ugc for contextId {} target Id {} with parent {} subject {} with possible " + "attributes " +
+        log.debug("Creating Ugc for contextId {} target Id {} with parent {} subject {} with possible " + "attributes"
+            + " " +
             "{}", contextId, targetId, ugcParentId, subject, attrs);
         T newUgc = (T)ugcFactory.newInstance(new UGC(subject, textContent, targetId));
         newUgc.setAttributes(attrs);
@@ -75,6 +82,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             }
             pipeline.processUgc(newUgc);
             ugcRepository.save(newUgc);
+            reactor.notify(SecurityActionNames.UGC_CREATE, Event.wrap(new SocialEvent<>(newUgc)));
             log.info("UGC {} was created", newUgc);
             return newUgc;
         } catch (MongoDataException ex) {
@@ -90,6 +98,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         log.debug("Adding {} to ugc {} of contextId {}", attributes, ugcId, contextId);
         try {
             ugcRepository.setAttributes(ugcId, contextId, attributes);
+            reactor.notify(UGCEvent.UPDATE_ATTRIBUTES, Event.wrap(new SocialEvent<>(ugcId, attributes)));
         } catch (MongoDataException ex) {
             log.debug("Unable to add  attributes " + ugcId + " to ugc " + ugcId + " of contextId " + contextId, ex);
             throw new UGCException("Unable to add Attributes to UGC", ex);
@@ -102,7 +111,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                                 final String contextId) throws SocialException {
         log.debug("Deleting Attribute {} for ugc Id {} ", attributesName, ugcId);
         try {
+
             ugcRepository.deleteAttribute(ugcId, contextId, attributesName);
+            reactor.notify(UGCEvent.DELETE_ATTRIBUTES, Event.wrap(new SocialEvent<>(ugcId)));
         } catch (MongoDataException ex) {
             log.debug("Unable to delete attribute " + StringUtils.join(attributesName) + " for ugc " + ugcId, ex);
             throw new UGCException("Unable to delete attribute for ugc", ex);
@@ -115,6 +126,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         log.debug("About to delete ugc with id {}", ugcId);
         try {
             ugcRepository.deleteUgc(ugcId, contextId);
+            reactor.notify(UGCEvent.DELETE, Event.wrap(new SocialEvent<>(ugcId)));
         } catch (MongoDataException ex) {
             log.error("Unable to delete UGC with id " + ugcId + " Of context " + contextId, ex);
             throw new UGCException("Unable to delete UGC", ex);
@@ -147,10 +159,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
             pipeline.processUgc(toUpdate);
             ugcRepository.update(ugcId, toUpdate, false, false);
-
+            reactor.notify(UGCEvent.UPDATE, Event.wrap(toUpdate));
             if (attributes != null) {
                 //ToDo This should be one query, problem is with deep attributes !!
                 setAttributes(toUpdate.getId().toString(), contextId, attributes);
+                reactor.notify(UGCEvent.UPDATE_ATTRIBUTES, Event.wrap(attributes));
             }
             log.info("UGC {} was updated ", ugcId);
             return toUpdate;
@@ -194,7 +207,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
     public Iterable<T> search(final String contextId, final String query, final String sort, final int start,
                               final int limit) throws UGCException {
-        log.debug("Finding all ugc of context {} with user query {} sorted by {} skipping {} and with a limit of {}", contextId, query, sort, start, limit);
+        log.debug("Finding all ugc of context {} with user query {} sorted by {} skipping {} and with a limit of {}",
+            contextId, query, sort, start, limit);
         isQueryValid(query);
         try {
             return ugcRepository.findByUserQuery(contextId, query, sort, start, limit);
@@ -226,6 +240,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             FileInfo info = ugcRepository.saveFile(attachment, internalFileName, contentType);
             ugc.getAttachments().add(info);
             ugcRepository.update(ugcId, ugc);
+            reactor.notify(UGCEvent.ADD_ATTACHMENT, Event.wrap(new SocialEvent<>(ugcId,
+                new InputStream[] {new CloseShieldInputStream(attachment)})));
             return info;
         } catch (MongoDataException e) {
             log.error("Unable to save File " + internalFileName, e);
@@ -257,6 +273,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             ugc.getAttachments().remove(info);
             ugcRepository.deleteFile(attachmentOid);
             ugcRepository.update(ugcId, ugc);
+            reactor.notify(UGCEvent.DELETE_ATTACHMENT, Event.wrap(new SocialEvent<>(ugcId, attachmentId)));
+
         } catch (MongoDataException e) {
             log.error("Unable to remove File " + attachmentId, e);
             throw new UGCException("Unable to save File to UGC");
@@ -285,6 +303,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 oldInfo.getFileName(), oldInfo.getContentType(), true);
             ugc.getAttachments().add(newInfo);
             ugcRepository.update(ugcId, ugc);
+            reactor.notify(UGCEvent.DELETE_ATTACHMENT, Event.wrap(new SocialEvent<>(ugcId, attachmentId)));
+            reactor.notify(UGCEvent.ADD_ATTACHMENT, Event.wrap(new SocialEvent<>(ugcId,
+                new InputStream[] {new CloseShieldInputStream(newAttachment)})));
             return newInfo;
         } catch (MongoDataException e) {
             log.error("Unable to update Attachment");
@@ -293,8 +314,6 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             log.error("Unable to find attachment with Id {}", attachmentId);
             throw new UGCException("Unable to find attachment with given id", e);
         }
-
-
     }
 
     @Override
@@ -345,8 +364,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         log.debug("Finding all UGC {} children for context {} starting from {} up to {} results", ugcId, contextId,
             limit, start);
         try {
-            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, targetId, contextId, start,
-                limit, sortOrder, upToLevel)), childrenPerLevel);
+            return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, targetId, contextId,
+                start, limit, sortOrder, upToLevel)), childrenPerLevel);
         } catch (MongoDataException ex) {
             log.error("Unable to read ", ex);
             throw new UGCException("Unable to ", ex);
@@ -397,8 +416,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
      * <p>The main difference from {@link #buildUgcTree(java.util.List)} is that this method allows
      * for multiple Roots or not roots at all</p>
      *
-     * @param ugs              Lis of the UGS to build the tree.
-     * @param childrenPerLevel
+     * @param ugs              List of the UGS to build the tree.
+     * @param childrenPerLevel Levels of Children.
      * @return A List Ugcs (Roots) all roots have there children if any.
      */
     protected List<T> buildUgcTreeList(List<T> ugs, final int childrenPerLevel) {
@@ -452,8 +471,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
      * @throws MongoDataException
      * @throws UGCException
      */
-    private void setupAncestors(final UGC newUgc, final String ugcParentId,
-                                final String contextId) throws MongoDataException, UGCException {
+    private void setupAncestors(final UGC newUgc, final String ugcParentId, final String contextId) throws
+        MongoDataException, UGCException {
         UGC parent = ugcRepository.findUGC(contextId, ugcParentId);
         if (parent == null) {
             throw new UGCException("Parent UGC does not exist");
@@ -465,6 +484,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             ancestors.addLast(parentId);
             newUgc.setAncestors(ancestors);
         }
+    }
+
+    public void setReactor(Reactor reactor) {
+        this.reactor = reactor;
     }
 
     public void setUGCRepositoryImpl(UGCRepository UGCRepositoryImpl) {
@@ -481,6 +504,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     public void setSocialUgcFactory(UgcFactory ugcFactory) {
         this.ugcFactory = ugcFactory;
+    }
+
+    public void setVirusScanner(final VirusScanner virusScanner) {
+        this.virusScanner = virusScanner;
     }
 
     /**
@@ -534,7 +561,5 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         return buildUgcTree(list);
     }
 
-    public void setVirusScanner(final VirusScanner virusScanner) {
-        this.virusScanner = virusScanner;
-    }
+
 }
