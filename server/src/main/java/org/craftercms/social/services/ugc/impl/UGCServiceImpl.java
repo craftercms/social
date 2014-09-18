@@ -29,7 +29,6 @@ import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.repositories.UgcFactory;
 import org.craftercms.social.repositories.ugc.UGCRepository;
-import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.ugc.UGCService;
