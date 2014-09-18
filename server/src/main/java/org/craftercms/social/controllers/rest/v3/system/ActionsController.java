@@ -28,14 +28,14 @@ public class ActionsController {
     @Autowired
     private SecurityActionsService actionsService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Gets all Security Actions for current context.")
     public Iterable<SocialSecurityAction> getCurrentActions() {
         return actionsService.get(SocialSecurityUtils.getContext());
     }
 
-    @RequestMapping(value = "/",method = RequestMethod.PUT)
+    @RequestMapping(method = RequestMethod.PUT)
     @ResponseBody
     @ApiOperation(value = "Updates the given action name with the Roles", notes = "Notice that this is not a partial "
         + "" + "update of roles, this will replace the current action Roles with the new ones (send)")
