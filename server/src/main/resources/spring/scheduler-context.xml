@@ -3,4 +3,59 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <bean id="social.notification.dailyJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="social.notification.notificationService"/>
+        <property name="targetMethod" value="dailyNotification"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <bean id="social.notification.weeklyJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="social.notification.notificationService"/>
+        <property name="targetMethod" value="weeklyNotification"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <bean id="social.notification.instantJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="social.notification.notificationService"/>
+        <property name="targetMethod" value="instantNotification"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <bean id="social.notification.dailyTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="social.notification.dailyJobDetail"/>
+        <!-- run every morning at 6 AM -->
+        <property name="cronExpression" value="${studio.social.notification.dailyCron}"/>
+    </bean>
+    <bean id="social.notification.weeklyTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="social.notification.weeklyJobDetail"/>
+        <!-- run every morning at 6 AM -->
+        <property name="cronExpression" value="${studio.social.notification.weeklyCron}"/>
+    </bean>
+
+    <bean id="social.notification.instantTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="social.notification.instantJobDetail"/>
+        <!-- run every morning at 6 AM -->
+        <property name="cronExpression" value="${studio.social.notification.instantCron}"/>
+    </bean>
+
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="social.notification.dailyTrigger"/>
+                <ref bean="social.notification.weeklyTrigger"/>
+                <ref bean="social.notification.instantTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="social.notification.notificationService"
+          class="org.craftercms.social.services.notification.NotificationService">
+        <property name="auditService" ref="org.craftercms.commons.audit.AuditServiceImpl"/>
+    </bean>
+
+
 </beans>

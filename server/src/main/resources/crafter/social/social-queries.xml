@@ -120,4 +120,13 @@
     <entry key="social.ugc.byModerationStatusAndTargetId">
         {moderationStatus:#,contextId:#,targetId:#}
     </entry>
+    <entry key="social.system.audit.deleteByIds">
+        {_id:{$in:#}}
+    </entry>
+    <entry key="social.system.audit.deleteByIds">
+        {_id:{$in:#}}
+    </entry>
+    <entry key="social.system.audit.byDateRange">
+        {contextId:#,created_on: {$gte: #, $lt: #}}
+    </entry>
 </properties>

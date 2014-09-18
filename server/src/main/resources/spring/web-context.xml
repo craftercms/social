@@ -106,7 +106,8 @@
 
     <!-- freemarker config -->
     <beans:bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-        <beans:property name="templateLoaderPaths" value="/WEB-INF/views/,classpath:/views/"/>
+        <beans:property name="templateLoaderPaths"
+                        value="classpath:/crafter/social/extension/email/,/WEB-INF/views/,classpath:/views/"/>
     </beans:bean>
 
     <!--
