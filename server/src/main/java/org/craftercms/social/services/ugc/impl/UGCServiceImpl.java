@@ -17,6 +17,7 @@ import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
+import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -28,16 +29,15 @@ import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.repositories.UgcFactory;
 import org.craftercms.social.repositories.ugc.UGCRepository;
-import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.security.SocialPermission;
+import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.ugc.UGCService;
 import org.craftercms.social.services.ugc.pipeline.UgcPipeline;
+import org.craftercms.social.util.LoggerFactory;
 import org.craftercms.social.util.ebus.SocialEvent;
 import org.craftercms.social.util.ebus.UGCEvent;
 import org.craftercms.virusscanner.api.VirusScanner;
 import org.craftercms.virusscanner.impl.VirusScannerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.Reactor;
 import reactor.event.Event;
 
@@ -53,7 +53,7 @@ import static org.craftercms.social.security.SecurityActionNames.UGC_UPDATE;
 public class UGCServiceImpl<T extends UGC> implements UGCService {
 
 
-    private Logger log = LoggerFactory.getLogger(UGCServiceImpl.class);
+    private I10nLogger log = LoggerFactory.getLogger(UGCServiceImpl.class);
 
     private UGCRepository ugcRepository;
     private UgcPipeline pipeline;
@@ -66,27 +66,26 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @HasPermission(action = UGC_CREATE, type = SocialPermission.class)
     public UGC create(final String contextId, final String ugcParentId, final String targetId,
                       final String textContent, final String subject, final Map attrs) throws SocialException {
-        log.debug("Creating Ugc for contextId {} target Id {} with parent {} subject {} with possible " + "attributes"
-            + " " +
-            "{}", contextId, targetId, ugcParentId, subject, attrs);
+        log.debug("logging.ugc.creatingUgc", contextId, targetId, ugcParentId, subject, attrs);
         T newUgc = (T)ugcFactory.newInstance(new UGC(subject, textContent, targetId));
         newUgc.setAttributes(attrs);
         try {
             if (ObjectId.isValid(ugcParentId)) {
                 setupAncestors(newUgc, ugcParentId, contextId);
             } else {
-                log.debug("Given UGC parent Id is either null or is not a valid value");
+                log.debug("logging.ugc.invalidParentId");
             }
             if (StringUtils.isBlank(contextId)) {
                 throw new IllegalArgumentException("context cannot be null");
             }
             pipeline.processUgc(newUgc);
             ugcRepository.save(newUgc);
-            reactor.notify(SecurityActionNames.UGC_CREATE, Event.wrap(new SocialEvent<>(newUgc)));
-            log.info("UGC {} was created", newUgc);
+            reactor.notify(UGCEvent.CREATE.getName(), Event.wrap(new SocialEvent<T>(newUgc,
+                SocialSecurityUtils.getCurrentProfile().getId().toString())));
+            log.info("logging.ugc.created", newUgc);
             return newUgc;
         } catch (MongoDataException ex) {
-            log.error("Unable to save UGC ", ex);
+            log.error("logging.ugc.errorSaving", ex);
             throw new UGCException("Unable to Save UGC");
         }
     }
@@ -95,12 +94,13 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public void setAttributes(@SecuredObject final String ugcId, final String contextId,
                               final Map attributes) throws SocialException {
-        log.debug("Adding {} to ugc {} of contextId {}", attributes, ugcId, contextId);
+        log.debug("logging.ugc.addingAttributes", attributes, ugcId, contextId);
         try {
             ugcRepository.setAttributes(ugcId, contextId, attributes);
-            reactor.notify(UGCEvent.UPDATE_ATTRIBUTES, Event.wrap(new SocialEvent<>(ugcId, attributes)));
+            reactor.notify(UGCEvent.UPDATE_ATTRIBUTES.getName(), Event.wrap(new SocialEvent<T>(ugcId, attributes,
+                SocialSecurityUtils.getCurrentProfile().getId().toString())));
         } catch (MongoDataException ex) {
-            log.debug("Unable to add  attributes " + ugcId + " to ugc " + ugcId + " of contextId " + contextId, ex);
+            log.debug("logging.ugc.unableToAddAttrs", ex,attributes,ugcId,contextId);
             throw new UGCException("Unable to add Attributes to UGC", ex);
         }
     }
@@ -109,13 +109,13 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public void deleteAttribute(@SecuredObject final String ugcId, final String[] attributesName,
                                 final String contextId) throws SocialException {
-        log.debug("Deleting Attribute {} for ugc Id {} ", attributesName, ugcId);
+        log.debug("logging.ugc.deleteAttributes", attributesName, ugcId);
         try {
-
             ugcRepository.deleteAttribute(ugcId, contextId, attributesName);
-            reactor.notify(UGCEvent.DELETE_ATTRIBUTES, Event.wrap(new SocialEvent<>(ugcId)));
+            reactor.notify(UGCEvent.DELETE_ATTRIBUTES.getName(), Event.wrap(new SocialEvent<T>(ugcId,
+                SocialSecurityUtils.getCurrentProfile().getId().toString())));
         } catch (MongoDataException ex) {
-            log.debug("Unable to delete attribute " + StringUtils.join(attributesName) + " for ugc " + ugcId, ex);
+            log.debug("logging.ugc.unableToDelAttrs", ex,attributesName,ugcId);
             throw new UGCException("Unable to delete attribute for ugc", ex);
         }
     }
@@ -123,12 +123,13 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_DELETE, type = SocialPermission.class)
     public boolean deleteUgc(final String ugcId, final String contextId) throws SocialException {
-        log.debug("About to delete ugc with id {}", ugcId);
+        log.debug("logging.ugc.deleteUgc", ugcId);
         try {
             ugcRepository.deleteUgc(ugcId, contextId);
-            reactor.notify(UGCEvent.DELETE, Event.wrap(new SocialEvent<>(ugcId)));
+            reactor.notify(UGCEvent.DELETE.getName(), Event.wrap(new SocialEvent<T>(ugcId,SocialSecurityUtils.getCurrentProfile
+                ().getId().toString())));
         } catch (MongoDataException ex) {
-            log.error("Unable to delete UGC with id " + ugcId + " Of context " + contextId, ex);
+            log.error("logging.ugc.deleteUgcError",ex,ugcId,contextId);
             throw new UGCException("Unable to delete UGC", ex);
         }
         return false;
@@ -138,37 +139,33 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public UGC update(@SecuredObject final String ugcId, final String body, final String subject,
                       final String contextId, final Map attributes) throws SocialException {
-        log.debug("About to update UGC {}", ugcId);
+        log.debug("logging.ugc.updateUgc",ugcId);
         try {
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC Id is not valid");
             }
-
             T toUpdate = (T)ugcRepository.findUGC(contextId, ugcId);
-
             if (toUpdate == null) {
                 throw new IllegalArgumentException("UGC with Id " + ugcId + " does not exists");
             }
-
             if (StringUtils.isNotBlank(body)) {
                 toUpdate.setBody(body);
             }
             if (StringUtils.isNotBlank(subject)) {
                 toUpdate.setBody(subject);
             }
-
             pipeline.processUgc(toUpdate);
             ugcRepository.update(ugcId, toUpdate, false, false);
-            reactor.notify(UGCEvent.UPDATE, Event.wrap(toUpdate));
+            reactor.notify(UGCEvent.UPDATE.getName(), Event.wrap(toUpdate));
             if (attributes != null) {
                 //ToDo This should be one query, problem is with deep attributes !!
                 setAttributes(toUpdate.getId().toString(), contextId, attributes);
                 reactor.notify(UGCEvent.UPDATE_ATTRIBUTES, Event.wrap(attributes));
             }
-            log.info("UGC {} was updated ", ugcId);
+            log.info("logging.ugc.updatedUgc", ugcId);
             return toUpdate;
         } catch (MongoDataException ex) {
-            log.error("Unable to update UGC", ex);
+            log.error("logging.ugc.unableToUpdateUgc", ex);
             throw new UGCException("Unable to update UGC", ex);
         }
     }
@@ -177,7 +174,6 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
     public T read(final String ugcId, final boolean includeChildren, final int childCount,
                   final String contextId) throws UGCException {
-
         try {
             if (includeChildren) {
                 return getUgcTree(ugcId, childCount, contextId);
@@ -185,7 +181,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 return (T)ugcRepository.findUGC(contextId, ugcId);
             }
         } catch (MongoDataException e) {
-            log.error("Unable to find UGC by its Id");
+            log.error("logging.ugc.unableToRead");
             throw new UGCException("Unable to find ugc by name");
         }
     }
@@ -193,12 +189,12 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
     public Iterable<T> readByTargetId(final String targetId, final String contextId) throws UGCException {
-        log.debug("Finding all UGC by targetId {} for contextId {}", targetId, contextId);
+        log.debug("logging.ugc.findingByTarget", targetId, contextId);
         try {
             return buildUgcTreeList(IterableUtils.toList(ugcRepository.findByTargetId(targetId, contextId)),
                 Integer.MAX_VALUE);
         } catch (MongoDataException ex) {
-            log.error("Unable to read ", ex);
+            log.error("logging.ugc.unableRead", ex);
             throw new UGCException("Unable to ", ex);
         }
     }
@@ -228,7 +224,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             checkForVirus(attachment);
         } catch (IOException | VirusScannerException ex) {
-            log.error("Unable to scan virus not saving attachment", ex);
+            log.error("logging.ugc.errorScanVirus", ex);
             return null;
         }
 
@@ -240,11 +236,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             FileInfo info = ugcRepository.saveFile(attachment, internalFileName, contentType);
             ugc.getAttachments().add(info);
             ugcRepository.update(ugcId, ugc);
-            reactor.notify(UGCEvent.ADD_ATTACHMENT, Event.wrap(new SocialEvent<>(ugcId,
+            reactor.notify(UGCEvent.ADD_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId,
                 new InputStream[] {new CloseShieldInputStream(attachment)})));
             return info;
         } catch (MongoDataException e) {
-            log.error("Unable to save File " + internalFileName, e);
+            log.error("logging.ugc.unableToSaveAttachment", e,internalFileName);
             throw new UGCException("Unable to save File to UGC");
         }
     }
@@ -273,10 +269,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             ugc.getAttachments().remove(info);
             ugcRepository.deleteFile(attachmentOid);
             ugcRepository.update(ugcId, ugc);
-            reactor.notify(UGCEvent.DELETE_ATTACHMENT, Event.wrap(new SocialEvent<>(ugcId, attachmentId)));
-
+            reactor.notify(UGCEvent.DELETE_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, attachmentId)));
         } catch (MongoDataException e) {
-            log.error("Unable to remove File " + attachmentId, e);
+            log.error("logging.ugc.attachmentToRemove", e,attachmentId);
             throw new UGCException("Unable to save File to UGC");
         }
     }
@@ -303,15 +298,15 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 oldInfo.getFileName(), oldInfo.getContentType(), true);
             ugc.getAttachments().add(newInfo);
             ugcRepository.update(ugcId, ugc);
-            reactor.notify(UGCEvent.DELETE_ATTACHMENT, Event.wrap(new SocialEvent<>(ugcId, attachmentId)));
-            reactor.notify(UGCEvent.ADD_ATTACHMENT, Event.wrap(new SocialEvent<>(ugcId,
+            reactor.notify(UGCEvent.DELETE_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, attachmentId)));
+            reactor.notify(UGCEvent.ADD_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId,
                 new InputStream[] {new CloseShieldInputStream(newAttachment)})));
             return newInfo;
         } catch (MongoDataException e) {
-            log.error("Unable to update Attachment");
+            log.error("logging.ugc.attachmentError");
             throw new UGCException("Unable to update Attachment");
         } catch (FileExistsException e) {
-            log.error("Unable to find attachment with Id {}", attachmentId);
+            log.error("logging.ugc.attachmentNotFound", attachmentId);
             throw new UGCException("Unable to find attachment with given id", e);
         }
     }
@@ -338,7 +333,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             }
             return info;
         } catch (MongoDataException ex) {
-            log.error("Unable to read file with id " + attachmentId, ex);
+            log.error("logging.ugc.attachmentNotFound",ex,attachmentId);
             throw new UGCException("Unable to read file", ex);
         }
     }
@@ -351,7 +346,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             Iterable<T> list = ugcRepository.findByTargetId(targetId, contextId, start, limit, sortOrder, upToLevel);
             return buildUgcTreeList(IterableUtils.toList(list), childrenPerLevel);
         } catch (MongoDataException e) {
-            log.error("Unable to find UGC by its targetId");
+            log.error("logging.ugc.unableToRead");
             throw new UGCException("Unable to find ugc by target");
         }
     }
@@ -361,13 +356,13 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     public List<T> readChildren(final String ugcId, final String targetId, final String contextId, final int start,
                                 final int limit, final List sortOrder, final int upToLevel,
                                 final int childrenPerLevel) throws UGCException {
-        log.debug("Finding all UGC {} children for context {} starting from {} up to {} results", ugcId, contextId,
+        log.debug("logging.ugc.readChildren", ugcId, contextId,
             limit, start);
         try {
             return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, targetId, contextId,
                 start, limit, sortOrder, upToLevel)), childrenPerLevel);
         } catch (MongoDataException ex) {
-            log.error("Unable to read ", ex);
+            log.error("logging.ugc.unableToRead", ex);
             throw new UGCException("Unable to ", ex);
         }
     }
@@ -378,7 +373,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             return ugcRepository.findUGC(contextId, ugcId);
         } catch (MongoDataException e) {
-            log.error("Unable to find UGC with id " + ugcId + " for context " + contextId, e);
+            log.error("logging.ugc.unableToReadP", e,ugcId,contextId);
             throw new UGCException("Unable to find UGC with given ID and context");
         }
     }
@@ -389,7 +384,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             return ugcRepository.countByTargetId(contextId, threadId, 0);
         } catch (MongoDataException e) {
-            log.error("Unable to count comments by context and ugc");
+            log.error("logging.ugc.unableToCount");
             throw new UGCException("Unable to count UGC by target and context", e);
         }
     }
@@ -400,7 +395,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             return ugcRepository.countChildrenOf(contextId, ugcId);
         } catch (MongoDataException ex) {
-            log.error("Unable to count children of ugc " + ugcId, ex);
+            log.error("logging.ugc.unableToCount", ex);
             throw new UGCException("Unable to count children of Ugc");
         }
     }

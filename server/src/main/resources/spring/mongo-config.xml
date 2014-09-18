@@ -82,5 +82,7 @@
     <bean id="social.repository.socialContextRepository"
           class="org.craftercms.social.repositories.security.impl.SocialContextRepositoryImpl"
           parent="social.mongodb.baseRepository"/>
+    <bean id="social.repository.socialAuditRepository" class="org.craftercms.social.repositories.system.AuditRepositoryImpl"
+          parent="social.mongodb.baseRepository"/>
 
 </beans>

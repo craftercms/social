@@ -8,7 +8,7 @@ import org.craftercms.commons.jackson.mvc.SecurePropertyHandler;
 import org.craftercms.social.security.SocialSecurityUtils;
 
 /**
- * Created by cortiz on 6/19/14.
+ *
  */
 public class SocialSecurePropertyHandler implements SecurePropertyHandler {
 

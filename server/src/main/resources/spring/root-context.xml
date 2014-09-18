@@ -4,9 +4,8 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-
     <import resource="classpath:/crafter/security/rest-security-context.xml"/>
-    <context:annotation-config />
+    <context:annotation-config/>
 
     <bean name="social.properties"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -25,10 +24,13 @@
     <import resource="scheduler-context.xml"/>
     <import resource="virus-scanner-context.xml"/>
     <import resource="security-context.xml"/>
+    <import resource="classpath:/org/craftercms/commons/audit/crafter-commons-audit-reaper.xml"/>
 
+    <bean id="socialReactor" name="socialReactor" factory-bean="reactorFactory" factory-method="createReactor"/>
+    <bean id="socialAuditProxy" name="socialAuditProxy" class="org.craftercms.social.util.ebus.AuditListener">
+        <property name="auditReactor" ref="AuditReactor"/>
+    </bean>
 
-    <bean name="EBusConfig" class="org.craftercms.social.util.ebus.EBusConfig" />
-    <bean class="org.craftercms.social.util.EventLogger"/>
     <bean class="org.craftercms.social.services.ugc.impl.UGCServiceImpl" id="social.ugc.ugcService">
         <property name="UGCRepositoryImpl" ref="social.repository.ugcRepository"/>
         <property name="pipeline" ref="social.services.pipeline"/>
@@ -36,7 +38,6 @@
         <property name="socialUgcFactory" ref="social.ugc.factory"/>
         <property name="virusScanner" ref="social.ugc.virusScanner"/>
         <property name="reactor" ref="socialReactor"/>
-
     </bean>
 
     <bean id="social.ugc.virusScanner"
@@ -89,5 +90,9 @@
         <property name="securityActionsService" ref="social.system.securityActionsService"/>
     </bean>
 
-
+    <bean id="org.craftercms.commons.audit.AuditServiceImpl"
+          class="org.craftercms.social.services.notification.AuditServiceImpl">
+        <property name="auditRepository" ref="social.repository.socialAuditRepository"/>
+    </bean>
+    
 </beans>
