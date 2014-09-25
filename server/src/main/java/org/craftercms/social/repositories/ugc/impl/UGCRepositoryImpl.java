@@ -235,8 +235,15 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             }
         }));
         String finalQuery = getQueryFor("social.ugc.byTargetIdRootNLvl");
+
         finalQuery = finalQuery.replaceAll("%@", String.valueOf(upToLevel));
-        return find(finalQuery, targetId, contextId, listOfIds, listOfIds);
+        final Find finalMongoQuery = getCollection().find(finalQuery, targetId, contextId, listOfIds, listOfIds);
+        if (CollectionUtils.isEmpty(sortOrder)) {
+            finalMongoQuery.sort(getQueryFor("social.ugc.defaultSort"));
+        } else {
+            finalMongoQuery.sort(createSortQuery(sortOrder));
+        }
+        return finalMongoQuery.as(clazz);
     }
 
     @Override

@@ -93,7 +93,6 @@ public class SocialSecurityUtils {
             profile.setRoles(new LinkedHashSet<>(Arrays.asList(ANONYMOUS_ROLE)));
             profile.setAttributes(new HashMap<String, Object>());
             profile.setTenant("");
-
             return profile;
         } else {
             return  currentAuth.getProfile();

@@ -234,6 +234,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 throw new IllegalUgcException("UGC with given Id does not exist");
             }
             FileInfo info = ugcRepository.saveFile(attachment, internalFileName, contentType);
+
             ugc.getAttachments().add(info);
             ugcRepository.update(ugcId, ugc);
             reactor.notify(UGCEvent.ADD_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId,
