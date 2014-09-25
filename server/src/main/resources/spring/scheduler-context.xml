@@ -26,18 +26,16 @@
 
     <bean id="social.notification.dailyTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="social.notification.dailyJobDetail"/>
-        <!-- run every morning at 6 AM -->
         <property name="cronExpression" value="${studio.social.notification.dailyCron}"/>
     </bean>
     <bean id="social.notification.weeklyTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="social.notification.weeklyJobDetail"/>
-        <!-- run every morning at 6 AM -->
+
         <property name="cronExpression" value="${studio.social.notification.weeklyCron}"/>
     </bean>
 
     <bean id="social.notification.instantTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="social.notification.instantJobDetail"/>
-        <!-- run every morning at 6 AM -->
         <property name="cronExpression" value="${studio.social.notification.instantCron}"/>
     </bean>
 

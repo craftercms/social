@@ -29,8 +29,6 @@ public class ThreadsController {
     @Autowired
     private UGCService ugcService;
 
-
-
     @RequestMapping(value = "{id}/comments", method = RequestMethod.GET)
     @ApiOperation(value = "Gets all the comments for the given thread", notes = "The pageNumber and page size will " +
         "only work for top level comments. to restrict the amount of children for level for comment use childrenCount" +
