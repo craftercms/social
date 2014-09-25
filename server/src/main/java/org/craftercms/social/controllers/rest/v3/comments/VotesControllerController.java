@@ -41,7 +41,7 @@ public class VotesControllerController<T> extends AbstractCommentsController {
         return (T)socialServices.vote(id, VoteOptions.VOTE_DOWN, userId, context);
     }
 
-    @RequestMapping(value = "{id}/votes/netural", method = RequestMethod.POST)
+    @RequestMapping(value = "{id}/votes/neutral", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "Votes Neutral (removes user vote for either up or down)")
     public T voteNeutral(@PathVariable(value = "id") @ApiParam(value = "Ugc id to vote up") final String id)
