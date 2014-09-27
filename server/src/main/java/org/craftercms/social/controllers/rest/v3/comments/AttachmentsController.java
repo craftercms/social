@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 /**
- * Created by cortiz on 6/11/14.
+ *
  */
 @Controller
 
@@ -98,7 +98,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
         FileInfo fileInfo = ugcService.readAttachment(id, context(), attachmentId);
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(fileInfo.getContentType());
-        String realName = fileInfo.getFileName().substring(fileInfo.getFileName().lastIndexOf(File.separator));
+        String realName = fileInfo.getStoreName().substring(fileInfo.getStoreName().lastIndexOf(File.separator));
         response.setHeader("Content-Disposition", "filename=\"" + realName + "\"");
         response.setContentLength((int)fileInfo.getFileSizeBytes());
         IOUtils.copy(fileInfo.getInputStream(), response.getOutputStream());

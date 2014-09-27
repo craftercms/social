@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.activation.MimetypesFileTypeMap;
 
+import org.bson.types.ObjectId;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.security.exception.AuthenticationRequiredException;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.social.SocialServices;
@@ -68,7 +70,13 @@ public class AbstractCommentsController<T extends SocialUgc> {
      * @return Current User Id,Empty if a user is not logged.
      */
     protected String userId() {
-        return getCurrentProfile().getId().toString();
+        ObjectId id = getCurrentProfile().getId();
+        if (id == null) {
+            // This is if user is not there or anonymous.
+            throw new AuthenticationRequiredException("Missing or expire auth token");
+        } else {
+            return id.toString();
+        }
     }
 
     /**

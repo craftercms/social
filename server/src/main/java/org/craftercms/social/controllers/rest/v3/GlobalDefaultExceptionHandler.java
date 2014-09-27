@@ -16,6 +16,7 @@ import org.apache.commons.io.FileExistsException;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.file.FileUtils;
 import org.craftercms.commons.security.exception.ActionDeniedException;
+import org.craftercms.security.exception.AuthenticationRequiredException;
 import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.exceptions.IllegalSocialQueryException;
 import org.craftercms.social.exceptions.IllegalUgcException;
@@ -76,6 +77,17 @@ public class GlobalDefaultExceptionHandler {
                                         Exception e) throws Exception {
         serializeError(e, resp, HttpStatus.NOT_ACCEPTABLE, req);
     }
+
+
+
+    @ExceptionHandler(value = AuthenticationRequiredException.class)
+    public void authenticationRequiredExceptionHandler(HttpServletRequest req, HttpServletResponse resp,
+                                        Exception e) throws Exception {
+        log.error("Request: " + req.getRequestURL() + " raised and error {}", e);
+        serializeError(e, resp, HttpStatus.UNAUTHORIZED, req);
+    }
+
+
     @ExceptionHandler(value = MaxUploadSizeExceededException.class)
     public void sizeLimitExceededException(HttpServletRequest req, HttpServletResponse response,
                                            Exception ex) throws Exception {
@@ -98,14 +110,16 @@ public class GlobalDefaultExceptionHandler {
         log.error("Request: " + req.getRequestURL() + " raised and error {}", ex.toString());
         log.error("Error processing request",ex);
         Map<String, Object> error = new HashMap<>();
+
         if (StringUtils.isBlank(ex.getMessage())) {
-            error.put("error", ex.toString());
+            error.put("error","Unknown Error");
         } else {
             error.put("error", ex.getMessage());
         }
-        error.put("localizedMessage", ex.getLocalizedMessage());
+
         if (throwStacktrace) {
             error.put("stacktrace", getStackTrace(ex));
+            error.put("localizedMessage", ex.getLocalizedMessage());
 
         }
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
