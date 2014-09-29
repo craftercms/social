@@ -74,9 +74,8 @@ public class AbstractCommentsController<T extends SocialUgc> {
         if (id == null) {
             // This is if user is not there or anonymous.
             throw new AuthenticationRequiredException("Missing or expire auth token");
-        } else {
-            return id.toString();
         }
+        return id.toString();
     }
 
     /**

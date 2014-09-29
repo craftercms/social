@@ -119,8 +119,6 @@ public class GlobalDefaultExceptionHandler {
 
         if (throwStacktrace) {
             error.put("stacktrace", getStackTrace(ex));
-            error.put("localizedMessage", ex.getLocalizedMessage());
-
         }
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(status.value());
