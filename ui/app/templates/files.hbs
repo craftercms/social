@@ -2,7 +2,7 @@
 <form id="fileupload" action="" method="POST" enctype="multipart/form-data">
     <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
     <div class="row fileupload-buttonbar">
-        <div class="col-sm-3">
+        <div class="col-xs-3">
             <!-- The fileinput-button span is used to style the file input field as button -->
             <span class="btn btn-default fileinput-button" style="line-height: 30px; height: 45px">
                 <i class="crafter-social-icon cs-icon-plus"></i>
@@ -13,7 +13,7 @@
             <span class="fileupload-process"></span>
         </div>
         <!-- The global progress state -->
-        <div class="col-sm-9 fileupload-progress fade" style="padding-left: 10px">
+        <div class="col-xs-9 fileupload-progress fade" style="padding-left: 10px">
             <!-- The global progress bar -->
             <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="margin-bottom: 10px">
                 <div class="progress-bar progress-bar-success" style="width: 0%;"></div>
@@ -71,29 +71,19 @@
                 </div>
             {{else}}
                 <div class="cs-file">
-                    <div class="cs-file-thumb">
-                        {{#if thumbnailUrl}}
-                            <a href="{{url}}" title="{{name}}" download="{{name}}" data-gallery>
-                                <img src="{{thumbnailUrl}}" />
-                            </a>
-                        {{/if}}
-                    </div>
+                    <div class="cs-file-thumb"></div>
                     <div class="cs-file-info">
                         <div class="cs-file-title">
                             {{#if url}}
-                                <a href="{{url}}" title="{{name}}" download="{{name}}" {{#if thumbnailUrl}}data-gallery{{/if}}>
-                                    {{name}}
+                                <a href="{{url}}" target="_blank">
+                                    {{fileName}}
                                 </a>
                             {{else}}
-                                <span>{{name}}</span>
+                                <span>{{fileName}}</span>
                             {{/if}}
                         </div>
                         <div class="cs-file-data">
-                            {{#if type}}
-                                {{type}},
-                            {{else}}
-                                (type unknown),
-                            {{/if}} {{formatFileSize size}}
+                            {{content-type contentType}}, {{fileSize}}
                         </div>
                     </div>
                 </div>

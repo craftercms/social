@@ -27,7 +27,7 @@
 
         refresh: function () {
             this.collection.fetch({
-                data: { id: this.cfg.target }
+                data: { target: this.cfg.target, context: this.cfg.context }
             });
         },
 

@@ -1,22 +1,20 @@
-<article class="{{ternary flags 'comment-flagged' ''}} {{ternary isTrashed 'comment-trashed' ''}}">
+<article class="{{ternary flags.length 'comment-flagged' ''}} {{ternary isTrashed 'comment-trashed' ''}}">
     <div class="body-wrapper">
         <div class="avatar">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAMAAADVRocKAAABvFBMVEUAAADM2e+RrdxthKt7lL+OqtmKpdORrd3N2vB8lcBzia9xh63I1u19lsF9l8LL2O5zi7RyiK6Amsa2xuDH1ezK1+6Pq9qBm8earMt1jbaktdJ/lLidr81+mMOJpNKfsc99krbG1OuMp9a6yeKClrqNocKUp8eSpcWLptWLp9WjtNKqutaesM58kbZ0irC+zeVuhax+l8NvhqyAmcWDncl7lL7E0ummt9SEnsucrs2Pq9uNqNe7yuN2jLGJnb/F0+qCnMjC0Oiis9GQrNyKptR/mcSOqdjD0el5jrOLn8C/zuaFoM17kLWOosOvv9t3kLqQrNt0jLWPo8Sru9d5krx6j7R/mMSywdxthKx+k7eGoM2brcyZq8pvh6+XqsmEn8yzwt2Knr+uvtp4kLqHnL6NqdiIo9CEmLu8y+SlttN5kr2Goc51i7GTpsa3x+CWqciVqMiHoc+0w952jrdvhq53jbKnuNV6k764yOGEnsq9zORsg6p2j7jAz+d5kbtwiLCwwNuMqNa1xd+CnMl3j7msvNiDncqIo9FyibKgstB1jbeMoMFzirN2jriGm72Dl7p6k72BlbmoudZyirKUPUSmAAAAAXRSTlMAQObYZgAAA1hJREFUaN7t2GdTGkEYB3CBK3scRxMBQekqFopg77333mOP0diS2NJ77/nCmSSOMZTbZXfvRWb4f4DnN7ez++xzm8Mrm5ycLJAFskAW+L8AbibfWMUqA7h2jcbl+fpc/4T2wdzjbY7jWIoAa66Olfv9NeBP8l4FnE5n2EwN0GuXaldBYgbWPrbRAZgSC0iZHbGBAtAp7IN00eoHiQFrtNmQFoi4+xlSIG4/AHL5wpQSAayxCcinTCAC9PWQ+sDTRQKoNRZIfZVGTQK4QrAPACUkS9RlKocChnkOH2BuAXgcAj7w8ikCsL6BD0xNKvwFhQUIQFPLHjZwowgBACVV2EAwhAKsmLGBBhEFqKjEP2hzecouEb9cgwAEXNhAZ7QVAdCy2MD2TYT63nv454DVquDAnbsE3XR0BA4c2giAY/ga6UxWfKBuyNEOA3KHRR82kJ+LctA6JGxgYx0F+P5V2W5K0io4JwowXIe/i560IwBDpfgAyqWsgwwussBei8IneSwG79duPQHA78IHo/5BEsA1rZPvdwYDpFvDxndpulgW+OYhm6553ndbJXsZwIZr+D+abEMaGeWJAduRDGCPkwM9cmsUCpID/Pvnaev7jTwFQGaALG6jAag17bjXJRrAx9MdhXqJpwKoNZGU9VtFlg7A2z6n3EibhTwlgBfsqdoow1MDrExB0jdUMI30AL5HWEuof3q2xVMEku9/6BtFhsBgfwKw+okukDQieaGPFJkByU37QxtNYMGUdPvvaFy0APXr8cBs8jko75t6QwNguzVF56l70aTn4QIp4JO0S73pL5zZQH4dCRAUwh06yA/IpvEFLhAUmh0If+JNw29tnRgAV93sMACkRPaj3WMZAlx1Xy1i+V/pPYwVNmQAlAontSqQUVpXxEoWEWD12jIDyDjeRZN+CwFQz4iLFoAVS4VW8sEAs6a4BmBH1xGWGuWAi/GiAUAUndukt6YDSgXPASCOxS6aUwM2sUwFaORRC/MsBaAfigBaefd3IrgCuj0WQC9upicBMPf1ApopYP4FjsMDgG4mpOuAGuVtK8P9GrJdA6QjQD33o9YrgDvJow8Ae+UVcHaqQH3gjY1dAr5plRIAmLi4BOJ2ReqDyalLYPxcGeD+j9+A0vkJGEFUzvvg5jEAAAAASUVORK5CYII=" class="silhouette"/>
         </div>
         <div class="comment-data">
             <header>
-                <!-- TODO fixed type once backed fixes (flaged) -->
                 <a class="pull-right" data-action-flag title="{{multiplicity flags.length 'Flagged %@ times' 'Flagged one time' 'Never flagged'}}.">
                     <i class="crafter-social-icon cs-icon-flag"></i>
                 </a>
-
                 <a class="pull-right" data-action="trash">
                     <i class="crafter-social-icon cs-icon-trash"></i>
                 </a>
                 {{#mif userInfo.actions 'has' 'moderate'}}{{/mif}}
                 <strong>
-                    {{#if profile.displayName}}
-                        {{profile.displayName}}
+                    {{#if user.username}}
+                        {{user.username}}
                     {{else}}
                         Anonymous
                     {{/if}}
@@ -35,10 +33,10 @@
                     <span class="vote-up-count" title="{{#if votesUp}}{{votesUp.length}} {{multiplicity votesUp.length 'people like' 'person likes'}} this.{{else}}No one has liked this{{/if}}">
                         +{{votesUp.length}}
                     </span>
-                    <a data-action="like">
+                    <a data-action="voteUp">
                         <i class="crafter-social-icon cs-icon-chevron-up"></i>
                     </a> |
-                    <a data-action="dislike">
+                    <a data-action="voteDown">
                         <i class="crafter-social-icon cs-icon-chevron-down"></i>
                     </a>
                     <span class="vote-down-count" title="{{#if votesDown}}{{votesDown.length}} {{multiplicity votesDown.length 'people don\'t' 'person doesn\'t'}} like this.{{else}}No one has disliked this{{/if}}">
@@ -55,6 +53,16 @@
                 </li>
             </ul>
         </div>
+        {{#mif votesUp 'has' user.id}}
+            <div class="status-messages">
+                You voted up <a data-action="removeVote">(undo vote)</a>
+            </div>
+        {{/mif}}
+        {{#mif votesDown 'has' user.id}}
+            <div class="status-messages">
+                You voted down  <a data-action="removeVote">(undo vote)</a>
+            </div>
+        {{/mif}}
     </footer>
     <div class="comment-children"></div>
 </article>

@@ -84,7 +84,7 @@
             this.collection.fetch({
                 data : {
                     target: this.cfg.target,
-                    tenant: this.cfg.tenant
+                    context: this.cfg.context
                 }
             });
         },

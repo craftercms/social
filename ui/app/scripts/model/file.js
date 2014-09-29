@@ -5,11 +5,8 @@
         
         idAttribute: 'attachmentId',
 
-        defaults: {
-            'attachmentId'  : '5282ac830364dabc3c4634c5',
-            'contentType'   : 'image/jpeg',
-            'filename'      : 'acmeimages.jpg',
-            'url'           : '/crafter-social/api/2/get_attachment/5282ac830364dabc3c4634c5?tenant=craftercms'
+        downloadUrl: function () {
+            return '/';
         },
 
         url: function () {
@@ -20,9 +17,17 @@
             }
         },
 
-        parse: function (model) {
-            model.url = S.string.fmt(S.Cfg('url.files'), model);
-            return model;
+        parse: function (modelData) {
+            try {
+                modelData.url = S.url('comments.{_id}.attachments.{fileId}', {
+                    _id: modelData.attributes.owner,
+                    fileId: modelData.fileId,
+                    context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'
+                });
+            } catch (ex) {
+                console && console.log('crafter.social.model.File: ', ex);
+            }
+            return modelData;
         },
 
         detach: function () {

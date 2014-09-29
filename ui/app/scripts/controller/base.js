@@ -38,7 +38,7 @@
 
         url: function () {
             // TODO set order through class configuration
-            return S.url('threads.{id}.comments', { id: this.cfg.target });
+            return S.url('threads.{target}.comments', this.cfg);
         },
 
         parse: function ( response ) {
@@ -62,7 +62,7 @@
     });
 
     Base.DEFAULTS = {
-        tenant: null,
+        context: null,
         target: null
         // TODO url: '' or { ... } ?
     };

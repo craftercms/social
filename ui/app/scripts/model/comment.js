@@ -1,15 +1,15 @@
 (function (S) {
     'use strict';
 
-    var C       = S.Constants,
-        Model   = S.Backbone.Model,
-        $       = S.$;
+    var C = S.Constants,
+        Model = S.Backbone.Model,
+        $ = S.$;
 
-    function POST (url, attributes, data) {
+    function POST(url, attributes, data) {
         return SUBMIT(url, attributes, data, 'POST');
     }
 
-    function SUBMIT (url, data, method) {
+    function SUBMIT(url, data, method) {
 
         var options = {
             type: method || 'POST',
@@ -29,7 +29,7 @@
             'thread': '',
             'children': [],
             'attributes': {},
-            'createdDate' : Date.now()
+            'createdDate': Date.now()
         },
 
         url: function () {
@@ -40,46 +40,44 @@
             return this.get('moderationStatus') === C.get('MODERATION_STATUS_TRASH');
         },
 
-        like: function () {
-            SUBMIT.call(this, 'comments.{_id}.votes.up');
+        voteUp: function (params) {
+            SUBMIT.call(this, 'comments.{_id}.votes.up', params);
         },
-        unlike: function () {
-            SUBMIT.call(this, 'comments.{_id}.votes.neutral');
+        voteDown: function (params) {
+            SUBMIT.call(this, 'comments.{_id}.votes.down', params);
         },
-        dislike: function () {
-            SUBMIT.call(this, 'comments.{_id}.votes.down');
+        removeVote: function (params) {
+            SUBMIT.call(this, 'comments.{_id}.votes.neutral', params);
         },
 
-        flag: function ( reason ) {
-            SUBMIT.call(this, 'comments.{_id}.flags', { reason: reason });
+        flag: function (params) {
+            SUBMIT.call(this, 'comments.{_id}.flags', params);
         },
-        unflag: function ( reason ) {
+        unflag: function (params) {
             // TODO
             this.save(null, {
                 type: 'DELETE',
                 url: S.url('comments.{_id}.flags', this.toJSON())
             });
-            POST.call(this, 'comments.{_id}.flags', { likes: this.get('flags') - 1 }, { reason: reason });
+            POST.call(this, 'comments.{_id}.flags', { likes: this.get('flags') - 1 }, params);
         },
         flaggedBy: function (profileId) {
             var flags = this.attributes.flags,
                 l = flags.length, i;
-            if (flags && flags.length) {
-                for (i = 0; i < l; ++i) {
-                    if (flags[i] === profileId) {
-                        return true;
-                    }
+            for (i = 0; i < l; ++i) {
+                if (flags[i].userId === profileId) {
+                    return true;
                 }
             }
             return false;
         },
 
-        trash: function () {
-            this.moderate(C.get('MODERATION_STATUS_TRASH'));
+        trash: function (params) {
+            this.moderate(C.get('MODERATION_STATUS_TRASH'), params);
         },
 
-        moderate: function ( status ) {
-            SUBMIT.call(this, 'comments.{_id}.moderate', { status: status }, 'PUT');
+        moderate: function (status, params) {
+            SUBMIT.call(this, 'comments.{_id}.moderate', $.extend({}, params || {}, { status: status }), 'PUT');
         },
 
         reply: function () {
@@ -90,4 +88,4 @@
 
     S.define('model.Comment', Comment);
 
-}) (crafter.social);
+})(crafter.social);

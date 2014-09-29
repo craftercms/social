@@ -111,7 +111,8 @@
     var crafterSocial_cfg = {
 
         'url.service'                   : 'http://0.0.0.0:8090/crafter-social/api/3/',
-//        'url.security'                  : 'http://0.0.0.0:8090/social-auth/crafter-security-login'
+        'url.security.value'            : 'http://0.0.0.0:8090/crafter-social/crafter-security-login',
+        'url.security.active'           : 'http://0.0.0.0:8090/crafter-social/crafter-security-current-auth'
 
     };
 
@@ -128,15 +129,16 @@
 
         director.socialise({
             target: '#jumbotron',
-            tenant: 'craftercms'
+            context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'
         });
 
         director.socialise({
             target: '#jumbotron2',
-            tenant: 'craftercms'
+            context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'
         });
 
         // Initialise the "session user".
+        /*
         director.setProfile({
             displayName: 'You',
             roles: [
@@ -145,7 +147,8 @@
                 'SOCIAL_MODERATOR',
                 'SOCIAL_AUTHOR'
             ]
-        })
+        });
+        */
 
     }
 

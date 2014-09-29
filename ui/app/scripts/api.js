@@ -26,7 +26,7 @@
 
     social.define('util', $.extend({}, social.underscore, {
 
-        emptyFn: function () {},
+        emptyFn: social.noop,
 
         guid: (function () {
             function fn() {

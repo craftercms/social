@@ -479,9 +479,17 @@
         },
 
         _renderDownload: function (files) {
+
+            var File = S.get('model.File');
+            var parsedFiles = [];
+
+            for (var i = 0, l = files.length, file = new File(); i < l; i++) {
+                parsedFiles.push(file.parse(files[i]));
+            }
+
             return this._renderTemplate(
                 this.options.downloadTemplate,
-                files
+                parsedFiles
             ).find('a[download]').each(this._enableDragToDesktop).end();
         },
 

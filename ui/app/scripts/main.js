@@ -284,7 +284,7 @@
 
         Director.socialise({
             target: '#jumbotron',
-            tenant: 'xyz'
+            context: 'xyz'
         });
 
     });

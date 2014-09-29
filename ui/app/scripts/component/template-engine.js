@@ -15,6 +15,25 @@
         return new Handlebars.SafeString(html);
     });
 
+    Handlebars.registerHelper('content-type', function (contentType) {
+
+        var type = ({
+            'image/png': 'Image (PNG)',
+            'image/jpeg': 'Image (JPEG)',
+            'application/pdf': 'PDF Document',
+            'text/plain': 'Plain Text File',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Microsoft Excel Spreadsheet',
+            'application/msword': 'Microsoft Word Document',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Microsoft Word Document',
+            'image/vnd.adobe.photoshop': 'Photoshop File',
+            'application/zip': 'Zip File',
+            'application/xml': 'XML File'
+        })[contentType] || contentType;
+
+        return new Handlebars.SafeString(type);
+
+    });
+
     Handlebars.registerHelper('eq', function( value, compare, options ) {
         if ( value === compare ) {
             return options.fn(this);

@@ -15,27 +15,28 @@
          */
         url: {
             base: '/',
-            files: '/attachment/{attachmentId}?tenant=craftercms',
+            files: '/attachment/{attachmentId}?context={context}',
             service: '/api/3/',
             templates: 'templates/',
-            security: '/login',
+            security: {
+                value: '/crafter-social/crafter-security-login',
+                active: '/crafter-social/crafter-security-current-auth'
+            },
             subscriptions: {
                 'subscribe': '{target}.json',
                 'unsubscribe': '{target}.json'
             },
 
             threads: {
-                '{id}': {
+                '{target}': {
                     'comments': {
-                        'value': '',
-                        '{id}': {
-
-                        }
+                        'value': '?context={context}&sortOrder=ASC&sortBy=createdDate',
+                        '{id}': {}
                     }
                 }
             },
             comments: {
-                'value': '',
+                'value': '?context={context}',
                 '{_id}': {
                     'value': '',
                     'votes': {
@@ -48,7 +49,8 @@
                         value: '' // Flag comment flags
                     },
                     'attachments': {
-                        'value': ''
+                        'value': '',
+                        '{fileId}': '?context={context}'
                     },
                     'moderate': ''
                 }
@@ -64,7 +66,7 @@
                 flag: '/{id}.json',
                 unflag: '/{id}.json',
                 file: '{attachmentId}.json',
-                get_ugc: '{id}.json?tenant={tenant}',
+                get_ugc: '{id}.json?context={context}',
                 moderation: {
                     '{id}': '/status.json',
                     '{moderationStatus}': {
@@ -73,7 +75,7 @@
                     }
                 },
                 '{id}': {
-                    get_attachments: '.json?tenant={tenant}',
+                    get_attachments: '.json?context={context}',
                     add_attachment: '.json'
                 }
             }

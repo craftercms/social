@@ -10,6 +10,8 @@
 
         window: window,
 
+        noop: function () {},
+
         define: function ( packageName, component, root, AMD ) {
 
             if ( root === true || root === false || typeof root === 'string' ) {
@@ -110,6 +112,7 @@
         window: window,
         windowCopy: windowCopy,
         parentScope: crafter,
+        noop: crafter.noop,
 
         noConflict: function ( variable ) {
             var current = this.window[variable];
@@ -156,18 +159,21 @@
             return this.string.fmt('%@%@', this.Cfg('url.base'), url);
         },
 
-        url: function ( url, formats ) {
+        url: function ( url, formats, query ) {
 
             if ( typeof formats === 'object' ) {
+                var newFormats = {};
                 for (var key in formats) {
-                    formats[key] = window.encodeURIComponent(formats[key]);
+                    newFormats[key] = window.encodeURIComponent(formats[key]);
                 }
+                formats = newFormats;
             } else if ( formats ) {
                 formats = window.encodeURIComponent(formats);
             }
 
             var service;
             var protocol;
+            var result;
             var path        = this.Cfg('url.' + url);
             var absolute    = false;
 
@@ -187,13 +193,26 @@
                 protocol    = (service.match(URL_PROTOCOL_REGEXP) || [''])[0];
             }
 
-            return (absolute ? path : (
+            result = (absolute ? path : (
                 protocol + this.string.fmt('{base}/{path}/{action}', {
                     base: service.substr(protocol.length),
                     path: url.replace(/\./g, '/'),
                     action: path
                 }).replace('/.json', '.json').replace(/[\/\/]+/g, '/')
             )).fmt(formats || {  });
+
+            if (query) {
+                if (typeof query === 'object') {
+                    if (crafter.social.$) {
+                        query = crafter.social.$.param(query);
+                    } else {
+                        throw 'app.js method url: Query option not available before social framework initialization';
+                    }
+                }
+                result += (result.indexOf('?') === -1) ? ('?' + query) : ('&' + query);
+            }
+
+            return result;
         },
 
         getDirector: function (  ) {

@@ -109,7 +109,7 @@
             if (!view) {
                 view = new S.view.Inline({
                     target: this.cfg.target,
-                    tenant: this.cfg.tenant,
+                    context: this.cfg.context,
                     collection: this.collection
                 });
                 this.cache('view.Inline', view);
@@ -124,7 +124,7 @@
             if (!view) {
                 view = new S.view.Lightbox({
                     target: this.cfg.target,
-                    tenant: this.cfg.tenant,
+                    context: this.cfg.context,
                     collection: this.collection
                 });
                 this.cache('view.Lightbox', view);
@@ -139,7 +139,7 @@
             if (!view) {
                 view = new S.view.Popover({
                     target: this.cfg.target,
-                    tenant: this.cfg.tenant,
+                    context: this.cfg.context,
                     collection: this.collection
                 });
                 this.cache('view.Popover', view);
