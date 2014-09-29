@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -234,14 +237,19 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 throw new IllegalUgcException("UGC with given Id does not exist");
             }
             FileInfo info = ugcRepository.saveFile(attachment, internalFileName, contentType);
-
+            try {
+                info.setFileName(new URLCodec().decode(fileName));
+            } catch (DecoderException e) {
+                info.setFileName(fileName);
+            }
+            info.setAttribute("owner",ugcId);
             ugc.getAttachments().add(info);
             ugcRepository.update(ugcId, ugc);
             reactor.notify(UGCEvent.ADD_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId,
                 new InputStream[] {new CloseShieldInputStream(attachment)})));
             return info;
         } catch (MongoDataException e) {
-            log.error("logging.ugc.unableToSaveAttachment", e,internalFileName);
+            log.error("logging.ugc.unableToSaveAttachment", e, internalFileName);
             throw new UGCException("Unable to save File to UGC");
         }
     }
