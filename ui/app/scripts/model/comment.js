@@ -1,90 +1,83 @@
 (function (S) {
     'use strict';
 
-    var C       = S.Constants,
-        Model   = S.Backbone.Model,
-        $       = S.$;
+    var C = S.Constants,
+        Model = S.Backbone.Model,
+        $ = S.$;
 
-    function POST (url, attributes, data) {
-        this.save(attributes, {
-            url: S.url(url, this.toJSON()),
-            type: 'POST', // TODO REMOVE OR ADJUST
-            data: $.param($.extend({ tenant: this.get('tenant') }, data || {}))
-        });
+    function POST(url, attributes, data) {
+        return SUBMIT(url, attributes, data, 'POST');
+    }
+
+    function SUBMIT(url, data, method) {
+
+        var options = {
+            type: method || 'POST',
+            url: S.url(url, this.toJSON())
+        };
+
+        data && (options.data = $.param(data));
+        return this.save(null, options);
+
     }
 
     var Comment = Model.extend({
 
-        idAttribute: 'id',
+        idAttribute: '_id',
         defaults: {
-            // 'actions': ACTIONS,
-            'anonymousFlag' : false,
-            'childCount' : 0,
-            'children' : [],
-            'createdDate' : Date.now(),
-            'dateAdded' : Date.now(),
-            'extraChildCount' : 0,
-            'flagCount' : 0,
-            'id' : null,
-            'lastModifiedDate' : Date.now(),
-            'likeCount' : 0,
-            'moderationStatus' : 'UNMODERATED',
-            'offenceCount' : 0,
-            'profile' : {},
-            'profileId' : '',
-            'targetDescription' : '',
-            'targetId' : '',
-            'targetUrl' : '',
-            'tenant' : '',
-            'textContent' : '', // '{ "content": "" }',
-            'timesModerated' : 0
+            'body': '',
+            'thread': '',
+            'children': [],
+            'attributes': {},
+            'createdDate': Date.now()
         },
 
         url: function () {
-            if (this.isNew()) {
-                return S.url('ugc.create');
-            } else {
-                // TODO ... update?
-            }
-        },
-
-        fetch: function ( options ) {
-            return Model.prototype.fetch.call(this, $.extend({
-                url: S.url('ugc.get_ugc', this.toJSON())
-            }, options || {}));
+            return S.url(this.isNew() ? 'comments' : 'comments.{_id}', this.toJSON());
         },
 
         isTrashed: function () {
             return this.get('moderationStatus') === C.get('MODERATION_STATUS_TRASH');
         },
 
-        like: function () {
-            POST.call(this, 'ugc.like', { likes: this.get('likes') + 1 });
+        voteUp: function (params) {
+            SUBMIT.call(this, 'comments.{_id}.votes.up', params);
         },
-        unlike: function () {
-            POST.call(this, 'ugc.unlike', { likes: this.get('likes') - 1 });
+        voteDown: function (params) {
+            SUBMIT.call(this, 'comments.{_id}.votes.down', params);
         },
-
-        flag: function ( reason ) {
-            POST.call(this, 'ugc.flag', { likes: this.get('flags') + 1 }, { reason: reason });
-        },
-        unflag: function ( reason ) {
-            POST.call(this, 'ugc.unflag', { likes: this.get('flags') - 1 }, { reason: reason });
+        removeVote: function (params) {
+            SUBMIT.call(this, 'comments.{_id}.votes.neutral', params);
         },
 
-        dislike: function () {
-            POST.call(this, 'ugc.dislike', { likes: this.get('dislikes') + 1 });
+        flag: function (params) {
+            SUBMIT.call(this, 'comments.{_id}.flags', params);
         },
-        undoDislike: function () {
-            POST.call(this, 'ugc.undislike', { likes: this.get('dislikes') - 1 });
+        unflag: function (params) {
+            // TODO
+            this.save(null, {
+                type: 'DELETE',
+                url: S.url('comments.{_id}.flags', this.toJSON())
+            });
+            POST.call(this, 'comments.{_id}.flags', { likes: this.get('flags') - 1 }, params);
+        },
+        flaggedBy: function (profileId) {
+            var flags = this.attributes.flags,
+                l = flags.length, i;
+            for (i = 0; i < l; ++i) {
+                if (flags[i].userId === profileId) {
+                    return true;
+                }
+            }
+            return false;
         },
 
-        trash: function () {
-            this.moderate(C.get('MODERATION_STATUS_TRASH'));
+        trash: function (params) {
+            this.moderate(C.get('MODERATION_STATUS_TRASH'), params);
         },
 
-        moderate: function ( status ) {
-            POST.call(this, 'ugc.moderation.{id}', { moderationStatus: status }, { moderationStatus: status, ugcId: this.get('id') });
+        moderate: function (status, params) {
+            SUBMIT.call(this, 'comments.{_id}.moderate', $.extend({}, params || {}, { status: status }), 'PUT');
         },
 
         reply: function () {
@@ -95,4 +88,4 @@
 
     S.define('model.Comment', Comment);
 
-}) (crafter.social);
+})(crafter.social);

@@ -3,7 +3,6 @@
 
     var Commenting,
         Base = S.view.Base,
-        app = S.getDirector(),
         CKEDITOR = S.Editor,
         $ = S.$;
 
@@ -80,15 +79,12 @@
             if (!content) { return; }
 
             var data = {
-                profile: app.getProfile().toJSON(),
-                textContent: content,
+                body: content,
                 dateAdded: Date.now(),
-                tenant: this.cfg.tenant,
-                targetId: this.cfg.target
+                thread: this.cfg.target,
+                context: this.cfg.context,
+                attributes: {}
             };
-
-            // TODO evaluate if this should stay. Might not be great for security.
-            app.trigger('social.view.Commenting.beforecreate', data);
 
             var collection = this.collection;
             collection.create(data, {
@@ -96,7 +92,7 @@
 
                     // Put back the comment that didn't get posted.
                     // Attach any text that could have been written while request completed.
-                    editor.setData('<div>' + model.get('textContent') + '</div>' + editor.getData());
+                    editor.setData('<div>' + model.get('body') + '</div>' + editor.getData());
                     // Put the cursor position to the end of the editor, where it is likely that it will be
                     var range = editor.createRange();
                     range.moveToPosition(range.root, CKEDITOR.POSITION_BEFORE_END);

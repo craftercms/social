@@ -18,7 +18,6 @@
         createUI: U.emptyFn,
 
         events: {
-            'click [data-action-like]': 'like',
             'click [data-action-reply]': 'reply',
             'click [data-action-flag]': 'flag'
         },
@@ -67,19 +66,18 @@
             return this;
         },
 
-        like: function (e) {
+        voteUp: function (e) {
             e.preventDefault();
-            this.model.like();
+            var params = this.getRequestParams();
+            this.model.voteUp(params);
         },
-        unlike: function () {
-            this.model.unlike();
+        voteDown: function () {
+            var params = this.getRequestParams();
+            this.model.voteDown(params);
         },
-
-        dislike: function () {
-            this.model.dislike();
-        },
-        undoDislike: function () {
-            this.model.undoDislike();
+        removeVote: function () {
+            var params = this.getRequestParams();
+            this.model.removeVote(params);
         },
 
         reply: function (e) {
@@ -94,8 +92,7 @@
             e.preventDefault();
 
             var me = this;
-            // TODO fixed type once backed fixes (flaged)
-            var isFlagged = this.model.get('userInfo').flaged;
+            var isFlagged = this.model.flaggedBy(Director.getProfile().get('id'));
 
             var modal = S.util.instance('view.Modal', {
                 modal: { show: true },
@@ -104,7 +101,9 @@
                         this.$('.alert').remove();
                         var reason = this.$('textarea').val().trim();
                         if ( reason !== '' ) {
-                            me.model[isFlagged ? 'unflag' : 'flag'](reason);
+                            me.model[isFlagged ? 'unflag' : 'flag'](me.getRequestParams({
+                                reason: reason
+                            }));
                             // TODO destroy after successful flagging
                             this.destroy();
                         } else {
@@ -119,7 +118,7 @@
 
             modal.set({
                 'title': isFlagged ? 'Discard Comment Flag' : 'Flag Comment',
-                'body': '<div class="form-group"><label>Reason</label><textarea class="form-control"></textarea></div>',
+                'body': (isFlagged ? '<p>You previously flagged this comment. This form allows you to retreat your flag.</p>' : '') + '<div class="form-group"><label>Reason</label><textarea class="form-control"></textarea></div>',
                 'footer': '<button class="btn btn-primary">Submit</button>'
             });
 
@@ -133,12 +132,18 @@
 
         trash: function () {
             if (!this.model.isTrashed()) {
-                this.model.trash();
+                this.model.trash(this.getRequestParams());
             }
         },
 
         _dragOverFn: function (e) {
             e.preventDefault();
+        },
+
+        getRequestParams: function (extraParams) {
+            return $.extend({
+                context: this.cfg.context
+            }, extraParams || {});
         },
 
         files: function () {
@@ -147,7 +152,6 @@
             var model = this.model;
 
             var files   = S.util.instance('controller.Files', null, {
-                tenant: this.cfg.tenant,
                 comment: model
             });
 
@@ -162,15 +166,17 @@
                 modal: { show: true, keyboard: false, backdrop: 'static' }
             });
 
+            var fetchOptions = { data: { context: this.cfg.context } };
+
             modal.$el.on('hidden.bs.modal', function () {
-                me.model.fetch();
-                modal.uploader.fileupload('destroy');
+                me.model.fetch(fetchOptions);
+                modal.uploader && modal.uploader.fileupload('destroy');
                 modal.destroy();
             });
 
-            if (this.model.get('flags') === 0) {
+            if (true || this.model.get('flags').length === 0) {
 
-                var URL = S.url('ugc.{id}.add_attachment', model.toJSON());
+                var URL = S.url('comments.{_id}.attachments', model.toJSON(), fetchOptions.data);
 
                 modal.$el.on('shown.bs.modal', function () {
 
@@ -180,23 +186,23 @@
                         dataType: 'json',
                         // dropZone: view.$el,
                         singleFileUploads: true,
-                        url: S.url('ugc.{id}.add_attachment', model.toJSON()),
+                        url: URL,
                         xhrFields: { withCredentials: true },
                         paramName: 'attachment',
                         uploadPostKey: 'attachment',
-                        formData: { tenant: model.get('tenant') },
+                        formData: fetchOptions.data,
                         getFilesFromResponse: function (data) {
                             return data.files || [];
                         }
                     }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
-                        me.model.fetch();
+                        me.model.fetch(fetchOptions);
                     });
 
                 });
 
             } else {
 
-                modal.$('.modal-body').prepend([
+                view.$el.html([
                     '<div class="alert alert-warning">',
                     'This comment is flagged. File attachments are disabled.',
                     '</div>'
@@ -210,7 +216,7 @@
 
             modal.render();
 
-            files.fetch();
+            files.fetch(fetchOptions);
 
         },
 
@@ -251,7 +257,7 @@
 //
 //                    uploadPostKey: 'attachment',
 //                    target: S.url('ugc.{id}.add_attachment', model.toJSON()),
-//                    formData: { tenant: model.get('tenant') },
+//                    formData: { context: model.get('context') },
 //
 //                    template: view.getTemplate('file'),
 //                    templateUploadError: [

@@ -25,21 +25,19 @@
 
         this.cfg = $.extend({}, Director.DEFAULTS, cfg || {});
 
-        this.cache('profile', new S.model.Profile());
-
         $.each(this.cfg.handlers, function (event, conf) {
 
             var dispatch    = (conf.dispatch ? (conf.dispatch === 'self' ? me : conf.dispatch) : me);
             var context     = (conf.context ? (conf.context === 'self' ? me : conf.context) : me);
             var handler     = (conf.handler);
 
-            me.listenTo(dispatch, event, U.isFunction(handler) ? handler : context[handler]);
+            me.listenTo(dispatch, event, U.isFunction(handler) ? handler : context[handler] || S.noop);
 
         });
 
         $( document ).ajaxComplete(function( event, request ) {
             var modal;
-            if (request.status === 401) {
+            if (request.status === 403) {
                 me.trigger(C.get('EVENT_UNAUTHORISED_RESPONSE'));
             } else if (request.status === 404) {
 
@@ -89,6 +87,9 @@
             }
         });
 
+        this.cache('profile', new S.model.Profile());
+        this.checkSessionProfile();
+
     }
 
     Director.DEFAULTS = {
@@ -99,17 +100,17 @@
         view: {
             discussion: {
                 cls: 'view.Popover',
-                cfg: { /* target: null, tenant: null, collection: null */ }
+                cfg: { /* target: null, context: null, collection: null */ }
             },
             parasite: {
                 cls: 'view.Commentable',
-                cfg: { /* target: null, tenant: null, collection: null */ }
+                cfg: { /* target: null, context: null, collection: null */ }
             }
         },
         ctrl: {
             main: {
                 cls: 'controller.Base',
-                cfg: { /* target: null, tenant: null */ }
+                cfg: { /* target: null, context: null */ }
             }
         },
         handlers: (function () {
@@ -154,13 +155,19 @@
 
             var view = new (S.get('view.Auth'))({
                 model: this.getProfile(),
-                modal: {
-                    show: true
-                }
+                modal: { show: true }
+            });
+
+            view.$el.on('shown.bs.modal', function () {
+                view.$el.find('input:first').select();
             });
 
             view.render();
 
+        },
+        checkSessionProfile: function () {
+            var profile = this.getProfile();
+            profile.getFromSession();
         },
 
         getAreaVisibilityMode: function () {
@@ -207,7 +214,7 @@
          * @param {Object} oConfig an object of configuration of the comments target
          *      {
          *          viewClass: UI controller that embeds into the elements/page
-         *          tenant: ...
+         *          context: ...
          *          target: ...
          *          viewConfig: configuration object for the view class
          *      }
@@ -222,18 +229,19 @@
 
             var controller = new Ctrl(null, {
                 target: oCfg.target,
-                tenant: oCfg.tenant
+                context: oCfg.context,
+                model: S.model.Comment
             });
 
-            this.cache(S.string.fmt('controller.%@.%@', oCfg.tenant, oCfg.target), controller);
+            this.cache(S.string.fmt('controller.%@.%@', oCfg.context, oCfg.target), controller);
 
             var parasite = new View($.extend({
                 target: oCfg.target,
-                tenant: oCfg.tenant,
+                context: oCfg.context,
                 collection: controller
             }, oCfg.view.parasite.cfg));
 
-            this.cache(S.string.fmt('parasite.%@.%@', oCfg.tenant, oCfg.target), parasite);
+            this.cache(S.string.fmt('parasite.%@.%@', oCfg.context, oCfg.target), parasite);
 
             if (Bar && !socialbar) {
                 socialbar = new Bar(oCfg.socialbar.cfg);

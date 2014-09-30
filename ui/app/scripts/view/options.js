@@ -27,10 +27,7 @@
 
         refresh: function () {
             this.collection.fetch({
-                data : {
-                    target: this.cfg.target,
-                    tenant: this.cfg.tenant
-                }
+                data: { target: this.cfg.target, context: this.cfg.context }
             });
         },
 

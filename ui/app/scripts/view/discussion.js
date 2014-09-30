@@ -31,7 +31,7 @@
 
                 var options = new S.view.Options($.extend({
                     target: this.cfg.target,
-                    tenant: this.cfg.tenant,
+                    context: this.cfg.context,
                     collection: this.collection
                 }, this.cfg.viewOptions || {}));
 
@@ -48,7 +48,8 @@
         initCommentingView: function () {
 
             var $replies        = this.$('.reply-box');
-            var isSocialAuthor  = S.getDirector().getProfile().hasRole('SOCIAL_AUTHOR');
+            var profile         = S.getDirector().getProfile();
+            var isSocialAuthor  = profile.hasRole('SOCIAL_AUTHOR') || profile.hasRole('SOCIAL_SUPERADMIN');
 
             (!isSocialAuthor) && $replies.hide();
 
@@ -56,7 +57,7 @@
 
                 var view = new S.util.instance('view.Commenting', $.extend({
                     collection: this.collection,
-                    tenant: this.cfg.tenant,
+                    context: this.cfg.context,
                     target: this.cfg.target
                 }, this.cfg.commenting));
 
@@ -78,7 +79,10 @@
 
         addOne: function (comment) {
             this.$('.no-comments').remove();
-            var view = new S.view.Comment({ model: comment });
+            var view = new S.view.Comment({
+                model: comment,
+                context: this.cfg.context
+            });
             this.$('.comments:first').append(view.render().element());
         }
 

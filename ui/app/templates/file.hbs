@@ -2,20 +2,16 @@
     <div class="cs-file-thumb"></div>
     <div class="cs-file-info">
         <div class="cs-file-title">
-            <a href="{{#if url}}{{url}}{{else}}javscript:{{/if}}" target="_blank">
-                {{#if filename}}
-                    {{filename}}
-                {{else}}
-                    {{file.name}}
-                {{/if}}
-            </a>
+            {{#if url}}
+                <a href="{{url}}" target="_blank">
+                    {{fileName}}
+                </a>
+            {{else}}
+                <span>{{fileName}}</span>
+            {{/if}}
         </div>
         <div class="cs-file-data">
-            {{#if contentType}}
-                {{contentType}}
-            {{else}}
-                {{file.type}}, {{divide file.size 1024}} KB
-            {{/if}}
+            {{content-type contentType}}, {{fileSize}}
         </div>
     </div>
 </div>

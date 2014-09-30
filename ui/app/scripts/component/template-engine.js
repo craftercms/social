@@ -15,6 +15,25 @@
         return new Handlebars.SafeString(html);
     });
 
+    Handlebars.registerHelper('content-type', function (contentType) {
+
+        var type = ({
+            'image/png': 'Image (PNG)',
+            'image/jpeg': 'Image (JPEG)',
+            'application/pdf': 'PDF Document',
+            'text/plain': 'Plain Text File',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Microsoft Excel Spreadsheet',
+            'application/msword': 'Microsoft Word Document',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Microsoft Word Document',
+            'image/vnd.adobe.photoshop': 'Photoshop File',
+            'application/zip': 'Zip File',
+            'application/xml': 'XML File'
+        })[contentType] || contentType;
+
+        return new Handlebars.SafeString(type);
+
+    });
+
     Handlebars.registerHelper('eq', function( value, compare, options ) {
         if ( value === compare ) {
             return options.fn(this);
@@ -108,8 +127,9 @@
         return new Handlebars.SafeString( condition ? question : colon );
     });
 
-    Handlebars.registerHelper('multiplicity', function( number, plural, singular ) {
-        return new Handlebars.SafeString( (number > 1) ? plural : singular );
+    Handlebars.registerHelper('multiplicity', function( number, plural, singular, zero ) {
+        var string = (number === 0 ? zero : (number > 1) ? plural : singular).fmt(number);
+        return new Handlebars.SafeString( string );
     });
 
     Handlebars.registerHelper('minusOne', function( number ) {
