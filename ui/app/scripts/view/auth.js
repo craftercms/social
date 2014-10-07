@@ -13,7 +13,7 @@
 
         className: [
             Base.prototype.className,
-            'crafter-comments-auth-view'
+            'crafter-social-auth-view'
         ].join(' '),
 
         events: {
@@ -127,7 +127,7 @@
             /* jshint -W015 */
             message: [
                 '<div class="alert alert-{{type}}">',
-                    '<i class="crafter-comments-icon cs-icon-{{icon}}"></i> {{html message}}',
+                    '<i class="crafter-social-icon cs-icon-{{icon}}"></i> {{html message}}',
                 '</div>'
             ].join('')
         }

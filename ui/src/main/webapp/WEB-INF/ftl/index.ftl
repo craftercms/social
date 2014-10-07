@@ -18,8 +18,8 @@
 
         <script>
             var crafterSocial_cfg = {
-                'url.base': '/crafter-comments-ui-plugin/',
-                'url.service': '/crafter-comments/api/2/',
+                'url.base': '/crafter-social-ui-plugin/',
+                'url.service': '/crafter-social/api/2/',
                 'url.templates': 'static-assets/templates/'
                 // ...
             }

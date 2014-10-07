@@ -105,7 +105,7 @@
 
     /*
      * Social configuration attributes can be overwritten by
-     * declaring this object before the comments javascript is
+     * declaring this object before the social javascript is
      * imported into the page
      */
     var crafterSocial_cfg = {
@@ -117,12 +117,12 @@
     };
 
     /*
-     * this function needs to be declared before the comments javascript
+     * this function needs to be declared before the social javascript
      * is imported into the page. Other wise it is not necessary to use
      * a callback and the same can be achieved simply by calling the director
      * class directly:
      *
-     *      crafter.comments.getDirector().socialise({ ... });
+     *      crafter.social.getDirector().socialise({ ... });
      *
      */
     function crafterSocial_onAppReady ( director, CrafterSocial ) {
@@ -163,7 +163,7 @@
 <link rel="stylesheet" href="styles/editor-content.css">
 <!-- endbuild -->
 
-<!-- build:js scripts/comments.js -->
+<!-- build:js scripts/social.js -->
 
 <script src="scripts/app.js"></script>
 <script src="scripts/constants.js"></script>
