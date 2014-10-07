@@ -11,7 +11,6 @@
         events: {
             'click .control-element': 'toggle',
             'click [data-activate-widget]': 'activate',
-
             'click .social-utilities a': function (e) {
                 e.preventDefault();
             }
