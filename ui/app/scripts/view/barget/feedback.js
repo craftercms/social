@@ -28,7 +28,7 @@
     });
 
     Class.DEFAULTS = {
-        classes: ['crafter-comments-bar-form', 'crafter-comments-bar-feedback'],
+        classes: ['crafter-social-bar-form', 'crafter-social-bar-feedback'],
         templates: {
             main: ('%@feedback-barget.hbs').fmt(S.Cfg('url.templates'))
         }

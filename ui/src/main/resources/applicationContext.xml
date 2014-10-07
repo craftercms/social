@@ -18,7 +18,7 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
     <mvc:resources mapping="/static-assets/**" location="/static-assets/"/>
 
     <bean name="profileSettings"
-          class="org.springframework.beans.ugcFactory.config.PropertyPlaceholderConfigurer">
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>

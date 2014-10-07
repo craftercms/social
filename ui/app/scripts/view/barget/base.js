@@ -70,9 +70,9 @@
     });
 
     Widget.DEFAULTS = {
-        classes: ['crafter-comments-bar-widget'],
+        classes: ['crafter-social-bar-widget'],
         templates: {
-            message: '<div class="alert alert-success"><i class="crafter-comments-icon cs-icon-{{icon}}"></i> {{msg}}</div>'
+            message: '<div class="alert alert-success"><i class="crafter-social-icon cs-icon-{{icon}}"></i> {{msg}}</div>'
         }
     };
 

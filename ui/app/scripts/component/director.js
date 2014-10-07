@@ -199,7 +199,7 @@
             // Active view contains a string that that tells what the active discussion
             // displaying view is at the moment. It is also the view class package that
             // can be used to retrieve the view class in the run time, whether that is
-            // relative to the "comments" namespace or to the global (window) namespace
+            // relative to the "social" namespace or to the global (window) namespace
 
             if ( !this.cache('activeView') ) {
                 this.setActiveDiscussionViewer(this.cfg.view.discussion.cls, this.cfg.view.discussion.cfg);
@@ -211,7 +211,7 @@
 
         /**
          *
-         * @param {Object} oConfig an object of configuration of the comments target
+         * @param {Object} oConfig an object of configuration of the social target
          *      {
          *          viewClass: UI controller that embeds into the elements/page
          *          context: ...

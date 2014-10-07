@@ -36,7 +36,7 @@
     });
 
     Class.DEFAULTS = {
-        classes: ['crafter-comments-bar-form', 'crafter-comments-bar-share'],
+        classes: ['crafter-social-bar-form', 'crafter-social-bar-share'],
         templates: {
             main: ('%@share-barget.hbs').fmt(S.Cfg('url.templates'))
         }

@@ -496,7 +496,7 @@
         _startHandler: function (e) {
             e.preventDefault();
             var button = $(e.currentTarget),
-                template = button.closest('.crafter-comments-template-upload'),
+                template = button.closest('.crafter-social-template-upload'),
                 data = template.data('data');
             button.prop('disabled', true);
             if (data && data.submit) {
@@ -507,7 +507,7 @@
         _cancelHandler: function (e) {
             e.preventDefault();
             var template = $(e.currentTarget)
-                    .closest('.crafter-comments-template-upload,.template-download'),
+                    .closest('.crafter-social-template-upload,.template-download'),
                 data = template.data('data') || {};
             data.context = data.context || template;
             if (data.abort) {
@@ -674,7 +674,7 @@
                     .bind('dragover dragenter', this.__dragenter)
                     .bind('dragleave drop', this.__dragleave);
 
-                $el.parent().prepend('<div style="margin-bottom: 10px; text-align: center"><i class="crafter-comments-icon cs-icon-info-sign"></i> You may drag and drop files from your desktop to upload them.</div>');
+                $el.parent().prepend('<div style="margin-bottom: 10px; text-align: center"><i class="crafter-social-icon cs-icon-info-sign"></i> You may drag and drop files from your desktop to upload them.</div>');
 
             }
 

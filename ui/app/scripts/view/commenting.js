@@ -10,7 +10,7 @@
 
         className: [
             Base.prototype.className,
-            'crafter-comments-commenting-view'
+            'crafter-social-commenting-view'
         ].join(' '),
 
         events: {

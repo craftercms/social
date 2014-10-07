@@ -18,7 +18,7 @@
         hide: false,
         reveal: false,
         timeout: null,
-        className: 'crafter-comments-commentable',
+        className: 'crafter-social-commentable',
         revealed: false,
         events: {
             'mouseenter' : 'mouseenter',
@@ -55,7 +55,7 @@
         createUI: function () {
 
             var me = this, $elem = this.element();
-            $elem.addClass('crafter-comments-commentable');
+            $elem.addClass('crafter-social-commentable');
 
             var $options = $(U.template(this.getTemplate('main'), { count: '' }));
             $options.find('a.action').tooltip();
