@@ -32,10 +32,21 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
 
     @Override
     public List<AuditLog> getByDate(final String context, final Date from, final Date to) throws SocialException {
-        String query = getQueryFor("social.system.audit.byDateRange");
-        log.debug("logging.system.findingAuditsBy", context, from, to);
+        String query = getQueryFor("social.system.audit.byDateRangeCTX");
+        log.debug("logging.system.findingAuditsByCTX", context, from, to);
         try {
             return IterableUtils.toList(find(query, context, from, to));
+        } catch (MongoDataException e) {
+            throw new SocialException("Unable to find Log Audits", e);
+        }
+    }
+
+    @Override
+    public List<AuditLog> getByDate(final Date from, final Date to) throws SocialException {
+        String query = getQueryFor("social.system.audit.byDateRange");
+        log.debug("logging.system.findingAuditsBy" , from, to);
+        try {
+            return IterableUtils.toList(find(query, from, to));
         } catch (MongoDataException e) {
             throw new SocialException("Unable to find Log Audits", e);
         }

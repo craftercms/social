@@ -31,4 +31,6 @@ public interface AuditRepository extends CrudRepository<AuditLog>{
     void deleteByIds(List<String> ids) throws SocialException;
 
     List<AuditLog> getByDate(String context, Date from, Date to) throws SocialException;
+
+    List<AuditLog> getByDate(Date from, Date to) throws SocialException;
 }

@@ -61,7 +61,7 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
      *
      * @param ugcId      Id of the ugc to add the attributes.
      * @param contextId  Context ID of the UGCs.
-     * @param attributes Attributes to add/update to the UGC.
+     * @param attributes Attributes to add/removeWatcher to the UGC.
      */
     void setAttributes(final String ugcId, final String contextId, final Map<String,
         Object> attributes) throws MongoDataException;

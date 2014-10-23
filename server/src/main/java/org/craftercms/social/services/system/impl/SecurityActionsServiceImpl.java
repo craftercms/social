@@ -51,7 +51,7 @@ public class SecurityActionsServiceImpl implements SecurityActionsService {
     }
 
     @Override
-    @HasPermission(type = SocialPermission.class, action = "system.securityActions.update")
+    @HasPermission(type = SocialPermission.class, action = "system.securityActions.removeWatcher")
     public SocialSecurityAction update(final String context, final String actionName,
                                  final List<String> roles) throws SocialException {
         log.debug("Updating Roles for {} of context {} to {}", actionName, context, roles);
@@ -62,7 +62,7 @@ public class SecurityActionsServiceImpl implements SecurityActionsService {
             return permissionRepository.updateSecurityAction(context, actionName, roles);
         } catch (MongoDataException ex) {
             log.error("Unable to Update Security Action", ex);
-            throw new SocialException("Unable to update Security Action", ex);
+            throw new SocialException("Unable to removeWatcher Security Action", ex);
         }
     }
 

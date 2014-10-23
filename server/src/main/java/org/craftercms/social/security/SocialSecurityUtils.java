@@ -22,7 +22,7 @@ public class SocialSecurityUtils {
 
     public static final String CONTEXT_PARAM = "context";
     public static final String SOCIAL_CONTEXTS_ATTRIBUTE = "socialContexts";
-    public static final String ANONYMOUS_ROLE = "ANONYMOUS";
+    public static final String ANONYMOUS = "ANONYMOUS";
     public static final String SOCIAL_CONTEXT_NAME = "name";
     public static final String SOCIAL_CONTEXT_ID = "id";
     public static final String SOCIAL_CONTEXT_ROLES = "roles";
@@ -32,8 +32,8 @@ public class SocialSecurityUtils {
 
     public static List<String> getSocialRoles(){
         Profile profile = getCurrentProfile();
-        if(profile.getUsername().equals(ANONYMOUS_ROLE)){
-            return Arrays.asList(ANONYMOUS_ROLE);
+        if(profile.getUsername().equals(ANONYMOUS)){
+            return Arrays.asList(ANONYMOUS);
         }
 
         List<String> list = getRolesForCurrentContext(profile);
@@ -59,7 +59,7 @@ public class SocialSecurityUtils {
 
     private static List<String> getRolesForCurrentContext(final Profile profile){
         String currentContext = getContext();
-        List<Map<String, Object>> socialContexts = (List<Map<String, Object>>)profile.getAttribute(SOCIAL_CONTEXTS_ATTRIBUTE);
+        List<Map<String, Object>> socialContexts = profile.getAttribute(SOCIAL_CONTEXTS_ATTRIBUTE);
 
         if (CollectionUtils.isNotEmpty(socialContexts)) {
             for (Map<String, Object> context : socialContexts) {
@@ -89,8 +89,8 @@ public class SocialSecurityUtils {
 
         if (currentAuth == null) {
             profile = new Profile();
-            profile.setUsername(ANONYMOUS_ROLE);
-            profile.setRoles(new LinkedHashSet<>(Arrays.asList(ANONYMOUS_ROLE)));
+            profile.setUsername(ANONYMOUS);
+            profile.setRoles(new LinkedHashSet<>(Arrays.asList(ANONYMOUS)));
             profile.setAttributes(new HashMap<String, Object>());
             profile.setTenant("");
             return profile;

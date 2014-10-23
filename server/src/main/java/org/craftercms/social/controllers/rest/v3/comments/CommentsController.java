@@ -48,6 +48,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         defaultValue = "{}") final String attributes, MultipartFile attachment) throws SocialException,
         MissingServletRequestParameterException, IOException {
         Map<String, Object> attributesMap = null;
+
         if (!StringUtils.isBlank(attributes)) {
             attributesMap = parseAttributes(attributes);
         }
@@ -63,7 +64,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
     @ApiOperation(value = "Updates the given comment", notes = "As Create some HTML/scripts tags will be scripted")
     @ResponseBody
-    public T update(@ApiParam(value = "Ugc id to update") @PathVariable("id") final String id,
+    public T update(@ApiParam(value = "Ugc id to removeWatcher") @PathVariable("id") final String id,
                     @ApiParam(value = "New comment Body") @RequestParam() final String body,
                     @ApiParam(value = "Json String representing any extra attributes of the comment to create",
         name = "attributes") @RequestParam(required = false,
@@ -79,7 +80,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @ApiOperation(value = "Deletes the comment", notes = "As Create some HTML/scripts tags will be scripted, "
         + "Also All children will be deleted")
     @ResponseBody
-    public boolean delete(@ApiParam(value = "Comment id to update") @PathVariable("id") final String id) throws
+    public boolean delete(@ApiParam(value = "Comment id to removeWatcher") @PathVariable("id") final String id) throws
         SocialException {
         ugcService.deleteUgc(id, context());
         return true;
@@ -88,7 +89,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     @ApiOperation(value = "Gets a the comment")
     @ResponseBody
-    public T read(@ApiParam(value = "Comment id to update") @PathVariable("id") final String id) throws
+    public T read(@ApiParam(value = "Comment id to removeWatcher") @PathVariable("id") final String id) throws
         SocialException {
         return (T)ugcService.read(id, context());
     }

@@ -21,7 +21,7 @@
 
     <import resource="mongo-config.xml"/>
     <import resource="moderation-context.xml"/>
-    <import resource="scheduler-context.xml"/>
+
     <import resource="virus-scanner-context.xml"/>
     <import resource="security-context.xml"/>
     <import resource="classpath:/org/craftercms/commons/audit/crafter-commons-audit-reaper.xml"/>
@@ -76,6 +76,7 @@
 
     <bean class="org.craftercms.social.util.serialization.SocialInjectValueFactory" id="social.InjectValueHandler">
         <property name="profileAggregator" ref="social.profileAggregator"/>
+        <property name="notificationServiceImpl" ref="social.services.system.notificationService"/>
     </bean>
 
     <bean class="org.craftercms.social.services.system.impl.SecurityActionsServiceImpl"
@@ -94,5 +95,11 @@
           class="org.craftercms.social.services.notification.AuditServiceImpl">
         <property name="auditRepository" ref="social.repository.socialAuditRepository"/>
     </bean>
-    
+
+    <bean class="org.craftercms.social.services.notification.impl.NotificationServiceImpl"
+          id="social.services.system.notificationService">
+        <property name="auditRepository" ref="social.repository.socialAuditRepository"/>
+        <property name="watchedThreadsRepository" ref="social.repository.socialWatchedRepository"/>
+    </bean>
+    <import resource="scheduler-context.xml"/>
 </beans>

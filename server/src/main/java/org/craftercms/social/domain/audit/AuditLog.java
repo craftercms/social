@@ -1,9 +1,5 @@
 package org.craftercms.social.domain.audit;
 
-import java.util.Date;
-import java.util.UUID;
-
-import de.undercouch.bson4jackson.types.ObjectId;
 import org.craftercms.commons.audit.AuditModel;
 import org.craftercms.commons.mongo.Document;
 import org.craftercms.social.domain.UGC;
@@ -13,15 +9,14 @@ import org.jongo.marshall.jackson.oid.Id;
  *
  */
 @Document(collectionName = "audit")
-public class AuditLog extends AuditModel{
+public class AuditLog extends AuditModel {
 
     private String contextId;
     private String userId;
     private String actionName;
 
     public <T extends UGC> AuditLog(T payload) {
-        this.id= UUID.randomUUID().toString();
-        this.setAuditDate(new Date());
+        super();
         this.setPayload(payload);
     }
 

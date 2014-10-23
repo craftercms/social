@@ -5,22 +5,38 @@
 
     <bean id="social.notification.dailyJobDetail"
           class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="social.notification.notificationService"/>
-        <property name="targetMethod" value="dailyNotification"/>
+        <property name="targetObject" ref="social.services.system.notificationService"/>
+        <property name="targetMethod" value="notify"/>
+        <property name="arguments">
+            <list>
+                <value type="java.lang.String">DAILY</value>
+            </list>
+        </property>
         <property name="concurrent" value="false"/>
     </bean>
 
     <bean id="social.notification.weeklyJobDetail"
           class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="social.notification.notificationService"/>
-        <property name="targetMethod" value="weeklyNotification"/>
+        <property name="targetObject" ref="social.services.system.notificationService"/>
+        <property name="targetMethod" value="notify"/>
+        <property name="arguments">
+            <list>
+                <value type="java.lang.String">WEEKLY</value>
+            </list>
+        </property>
         <property name="concurrent" value="false"/>
     </bean>
 
     <bean id="social.notification.instantJobDetail"
           class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="social.notification.notificationService"/>
-        <property name="targetMethod" value="instantNotification"/>
+        <property name="targetObject" ref="social.services.system.notificationService"/>
+        <property name="targetMethod" value="notify"/>
+        <property name="arguments">
+            <list>
+                <value type="java.lang.String">INSTANT</value>
+            </list>
+        </property>
+
         <property name="concurrent" value="false"/>
     </bean>
 
@@ -41,6 +57,10 @@
 
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="schedulerName" value="Social Notification harvester"/>
+        <property name="autoStartup" value="true"/>
+        <property name="startupDelay" value="60"/>
+        <property name="waitForJobsToCompleteOnShutdown" value="true"/>
         <property name="triggers">
             <list>
                 <ref bean="social.notification.dailyTrigger"/>
@@ -49,11 +69,5 @@
             </list>
         </property>
     </bean>
-
-    <bean id="social.notification.notificationService"
-          class="org.craftercms.social.services.notification.NotificationService">
-        <property name="auditService" ref="org.craftercms.commons.audit.AuditServiceImpl"/>
-    </bean>
-
 
 </beans>

@@ -45,7 +45,7 @@ public interface UGCService<T extends UGC> {
 
     /**
      * <p>Sets an attribute to the given UGC <i>Creates if does not exist</i></p>
-     * <p>Implementers must check if the current user is allow to update UGC and that the user belongs to the same
+     * <p>Implementers must check if the current user is allow to removeWatcher UGC and that the user belongs to the same
      * ugc contextId</p>.
      *
      * @param ugcId      Id of the Ugc to add Attribute.
@@ -60,7 +60,7 @@ public interface UGCService<T extends UGC> {
 
     /**
      * Deletes a attribute of the given UGC.
-     * <p>Implementers must check if the current user is allow to update UGC and that the user belongs to the same
+     * <p>Implementers must check if the current user is allow to removeWatcher UGC and that the user belongs to the same
      * ugc contextId</p>.
      *
      * @param ugcId    id Id of the Ugc to add Attribute.
@@ -87,11 +87,11 @@ public interface UGCService<T extends UGC> {
     boolean deleteUgc(final String ugcId, final String contextId) throws SocialException;
 
     /**
-     * Updates the given UGC with the given information. Also it will update
-     * <p>Implementers must check if the current user is allow to update UGC and that the user belongs to the same
+     * Updates the given UGC with the given information. Also it will removeWatcher
+     * <p>Implementers must check if the current user is allow to removeWatcher UGC and that the user belongs to the same
      * ugc contextId.</p>.
      *
-     * @param ugcId    Id of the Ugc to update.
+     * @param ugcId    Id of the Ugc to removeWatcher.
      * @param body     new Text Content (empty of null to leave current value).
      * @param subject  new subject (empty of null to leave current value).
      * @param contextId
@@ -153,7 +153,7 @@ public interface UGCService<T extends UGC> {
      * @param attachmentId attachment Id to delete.
      * @throws java.io.FileNotFoundException                        If file is not found
      * @throws org.craftercms.social.exceptions.IllegalUgcException If the given UGC id does not exists.
-     * @throws org.craftercms.social.exceptions.UGCException        If unable to delete the attachment or update the
+     * @throws org.craftercms.social.exceptions.UGCException        If unable to delete the attachment or removeWatcher the
      *                                                              UGC.
      */
     void removeAttachment(String ugcId, String contextId, String attachmentId) throws UGCException, FileNotFoundException;

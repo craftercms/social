@@ -50,6 +50,7 @@
     <logger name="org.craftercms.commons.mongo" level="INFO" />
     <logger name="org.craftercms.social" level="DEBUG"/>
     <logger name="org.craftercms" level="INFO"/>
+    <logger name="org.springframework.scheduling" level="DEBUG"/>
     <root level="INFO">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>

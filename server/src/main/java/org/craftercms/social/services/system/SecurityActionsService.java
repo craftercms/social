@@ -37,7 +37,7 @@ public interface SecurityActionsService {
     /**
      * Updates the Roles for the given Action of the Context.
      * @param context context of the action.
-     * @param actionName Action name to update.
+     * @param actionName Action name to removeWatcher.
      * @param roles New roles to assigned the action.
      * @return the updated SecurityAction,null if unable to find action for the given context.
      */

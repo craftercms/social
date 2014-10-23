@@ -38,7 +38,7 @@ public class ActionsController {
     @RequestMapping(method = RequestMethod.PUT)
     @ResponseBody
     @ApiOperation(value = "Updates the given action name with the Roles", notes = "Notice that this is not a partial "
-        + "" + "update of roles, this will replace the current action Roles with the new ones (send)")
+        + "" + "removeWatcher of roles, this will replace the current action Roles with the new ones (send)")
     public SocialSecurityAction update(@RequestParam("actionName") final String actionName,
                                        @RequestParam() final String roles) throws SocialException {
         return actionsService.update(SocialSecurityUtils.getContext(), actionName, Arrays.asList(roles.split(",")));

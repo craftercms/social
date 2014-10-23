@@ -14,23 +14,19 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.social.services.notification;
 
-import org.craftercms.social.exceptions.NotificationException;
+package org.craftercms.social.exceptions;
 
 /**
  *
  */
-public interface NotificationService {
+public class NotificationException extends UGCException {
 
-    public static final String WEEKLY = "weekly";
-    public static final String DAILY = "daily";
+    public NotificationException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
-    void subscribeUser(final String userId, final String threadId, final String type) throws NotificationException;
-
-    void notify(final String type);
-
-    void unSubscribeUser(final String userId, String threadId) throws NotificationException;
-
-    boolean isBeenWatch(final String ugcId, final String profileId) throws NotificationException;
+    public NotificationException(final String message) {
+        super(message);
+    }
 }
