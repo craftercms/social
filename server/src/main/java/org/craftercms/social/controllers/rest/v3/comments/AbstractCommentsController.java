@@ -15,9 +15,11 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.security.exception.AuthenticationRequiredException;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.security.SocialSecurityUtils;
+import org.craftercms.social.services.notification.NotificationService;
 import org.craftercms.social.services.social.SocialServices;
 import org.craftercms.social.services.ugc.UGCService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,10 @@ public class AbstractCommentsController<T extends SocialUgc> {
 
     @Autowired
     protected SocialServices socialServices;
+
+    @Autowired
+    protected NotificationService notificationService;
+
     @Autowired
     protected UGCService ugcService;
 
@@ -41,7 +47,7 @@ public class AbstractCommentsController<T extends SocialUgc> {
      *
      * @param attributes Json String to be parse.
      * @return A map with the values of the JSON String
-     * @throws MissingServletRequestParameterException If String can't be parse.
+     * @throws org.springframework.web.bind.MissingServletRequestParameterException If String can't be parse.
      */
     protected Map<String, Object> parseAttributes(final String attributes) throws
         MissingServletRequestParameterException {

@@ -21,7 +21,7 @@ public interface SocialServices<T extends SocialUgc> {
 
     /**
      * Executes the given UserContentInteraction for the given User Content Action.
-     * <p>Implementers must check if the current user is allow to update UGC and that the user belongs to the same
+     * <p>Implementers must check if the current user is allow to removeWatcher UGC and that the user belongs to the same
      * ugc context</p>.
      *
      * @param ugcId       Id of the UGC.
@@ -37,7 +37,7 @@ public interface SocialServices<T extends SocialUgc> {
 
     /**
      * Flags the given UGC, with for given reason.
-     * <p>Implementers must check if the current user is allow to update UGC and that the user belongs to the same
+     * <p>Implementers must check if the current user is allow to removeWatcher UGC and that the user belongs to the same
      * ugc context</p>.
      *
      * @param ugcId  Id of the UGC to flag.
@@ -50,7 +50,7 @@ public interface SocialServices<T extends SocialUgc> {
 
     /**
      * Un flags the given UGC for the given reason.
-     * <p>Implementers must check if the current user is allow to update UGC and that the user belongs to the same
+     * <p>Implementers must check if the current user is allow to removeWatcher UGC and that the user belongs to the same
      * ugc context</p>.
      *
      * @param ugcId  Id of the UGC to un flag.

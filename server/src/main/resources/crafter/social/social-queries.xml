@@ -67,15 +67,15 @@
     </entry>
 
     <entry key="social.ugc.byTargetIdRootNLvl">
-    {
+        {
         targetId:#,
         contextId:#,
         $or:[
-            {ancestors:{$in:#}},
-            {_id:{$in:#}}
-            ],
+        {ancestors:{$in:#}},
+        {_id:{$in:#}}
+        ],
         $where:" %@ >= this.ancestors.length"
-    }
+        }
     </entry>
     <entry key="social.ugc.byContextAndId">
         {_id:#,contextId:#}
@@ -126,7 +126,22 @@
     <entry key="social.system.audit.deleteByIds">
         {_id:{$in:#}}
     </entry>
-    <entry key="social.system.audit.byDateRange">
+    <entry key="social.system.audit.byDateRangeCTX">
         {contextId:#,created_on: {$gte: #, $lt: #}}
+    </entry>
+    <entry key="social.system.audit.byDateRange">
+        {created_on: {$gte: #, $lt: #}}
+    </entry>
+    <entry key="social.notifications.findById">
+        {_id:#}
+    </entry>
+    <entry key="social.notifications.removeUserWatch">
+        { $pull: { watchers:{_id:#}}}
+    </entry>
+    <entry key="social.notifications.addUserWatch">
+        { $addToSet:{ watchers:{_id:#,frequency:#}}}
+    </entry>
+    <entry key="social.notifications.isBeenWatched">
+        {_id:#,"watchers._id":#}
     </entry>
 </properties>

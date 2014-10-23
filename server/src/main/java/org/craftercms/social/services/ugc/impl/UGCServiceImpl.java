@@ -75,6 +75,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             if (ObjectId.isValid(ugcParentId)) {
                 setupAncestors(newUgc, ugcParentId, contextId);
+
             } else {
                 log.debug("logging.ugc.invalidParentId");
             }
@@ -83,7 +84,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             }
             pipeline.processUgc(newUgc);
             ugcRepository.save(newUgc);
-            reactor.notify(UGCEvent.CREATE.getName(), Event.wrap(new SocialEvent<T>(newUgc,
+            reactor.notify(UGCEvent.CREATE.getName(), Event.wrap(new SocialEvent<>(newUgc,
                 SocialSecurityUtils.getCurrentProfile().getId().toString())));
             log.info("logging.ugc.created", newUgc);
             return newUgc;
@@ -169,7 +170,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             return toUpdate;
         } catch (MongoDataException ex) {
             log.error("logging.ugc.unableToUpdateUgc", ex);
-            throw new UGCException("Unable to update UGC", ex);
+            throw new UGCException("Unable to removeWatcher UGC", ex);
         }
     }
 
@@ -313,7 +314,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             return newInfo;
         } catch (MongoDataException e) {
             log.error("logging.ugc.attachmentError");
-            throw new UGCException("Unable to update Attachment");
+            throw new UGCException("Unable to removeWatcher Attachment");
         } catch (FileExistsException e) {
             log.error("logging.ugc.attachmentNotFound", attachmentId);
             throw new UGCException("Unable to find attachment with given id", e);

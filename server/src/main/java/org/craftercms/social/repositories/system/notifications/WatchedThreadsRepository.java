@@ -14,23 +14,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.social.services.notification;
 
+package org.craftercms.social.repositories.system.notifications;
+
+import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.social.domain.notifications.ProfileWatchOptions;
+import org.craftercms.social.domain.notifications.WatchedThread;
 import org.craftercms.social.exceptions.NotificationException;
 
 /**
  *
  */
-public interface NotificationService {
-
-    public static final String WEEKLY = "weekly";
-    public static final String DAILY = "daily";
-
-    void subscribeUser(final String userId, final String threadId, final String type) throws NotificationException;
-
-    void notify(final String type);
-
-    void unSubscribeUser(final String userId, String threadId) throws NotificationException;
-
-    boolean isBeenWatch(final String ugcId, final String profileId) throws NotificationException;
+public interface WatchedThreadsRepository extends CrudRepository<WatchedThread> {
+     void removeWatcher(final String thread, final String userId) throws NotificationException;
+     void addWatcher(final String thread, final String userId, final String frequency) throws NotificationException ;
+     WatchedThread isUserSubscribe(final String ugcId, final String profileId) throws MongoDataException;
 }

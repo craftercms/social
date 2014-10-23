@@ -8,8 +8,11 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
+import org.craftercms.profile.api.Profile;
 import org.craftercms.social.exceptions.SocialException;
+import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.security.SocialSecurityUtils;
+import org.craftercms.social.services.notification.NotificationService;
 import org.craftercms.social.services.ugc.UGCService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,13 +32,17 @@ public class ThreadsController {
     @Autowired
     private UGCService ugcService;
 
+    @Autowired
+    private NotificationService notificationService;
+
+
     @RequestMapping(value = "{id}/comments", method = RequestMethod.GET)
     @ApiOperation(value = "Gets all the comments for the given thread", notes = "The pageNumber and page size will " +
         "only work for top level comments. to restrict the amount of children for level for comment use childrenCount" +
         " Sort will apply for all levels")
     @ResponseBody
-    public Thread thread(@ApiParam(value = "Id of the thread") @PathVariable final String id,
-                         @ApiParam(value = "Levels of comments to return") @RequestParam(required = false,
+    public Thread thread(@ApiParam(value = "Id of the thread") @PathVariable final String id, @ApiParam(value =
+        "Levels of comments to return") @RequestParam(required = false,
         defaultValue = MAX_INT) final int recursive, @ApiParam("Page number to return") @RequestParam(required =
         false, defaultValue = "0") final int pageNumber, @ApiParam("Comments per Page") @RequestParam(required = false,
         defaultValue = MAX_INT) final int pageSize, @ApiParam(value = "Amount of Children to return") @RequestParam
@@ -53,8 +60,8 @@ public class ThreadsController {
         } else {
             upToLevel = recursive;
         }
-        thread.setComments(ugcService.read(id, SocialSecurityUtils.getContext(), start, pageSize,
-            getSortOrder(sortBy, sortOrder), upToLevel, childrenCount));
+        thread.setComments(ugcService.read(id, SocialSecurityUtils.getContext(), start, pageSize, getSortOrder
+            (sortBy, sortOrder), upToLevel, childrenCount));
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
         thread.setTotal(ugcService.count(id, SocialSecurityUtils.getContext()));
@@ -66,9 +73,9 @@ public class ThreadsController {
         "only work for top level comments. to restrict the amount of children for level for comment use childrenCount" +
         " Sort will apply for all levels")
     @ResponseBody
-    public Thread comments(@ApiParam(value = "Id of the thread") @PathVariable final String id,
-                           @ApiParam(value = "Id of the Comment") @PathVariable final String commentId,
-                           @ApiParam(value = "Levels of comments to return") @RequestParam(required = false,
+    public Thread comments(@ApiParam(value = "Id of the thread") @PathVariable final String id, @ApiParam(value =
+        "Id" + " of the Comment") @PathVariable final String commentId, @ApiParam(value = "Levels of comments to "
+        + "return") @RequestParam(required = false,
         defaultValue = MAX_INT) final int recursive, @ApiParam("Page number to return") @RequestParam(required =
         false, defaultValue = "0") final int pageNumber, @ApiParam("Comments per Page") @RequestParam(required = false,
         defaultValue = MAX_INT) final int pageSize, @ApiParam(value = "Amount of Children to return") @RequestParam
@@ -90,12 +97,36 @@ public class ThreadsController {
             getSortOrder(sortBy, sortOrder), upToLevel, childrenCount));
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
-        thread.setTotal(ugcService.countChildren(commentId,SocialSecurityUtils.getContext()));
+        thread.setTotal(ugcService.countChildren(commentId, SocialSecurityUtils.getContext()));
+        thread.setTotal(ugcService.count(id, SocialSecurityUtils.getContext()));
         return thread;
     }
 
-    public static List<DefaultKeyValue<String, Boolean>> getSortOrder(final List<String> sortFields,
-                                                                final List<SocialSortOrder> sortOrder) {
+    @RequestMapping(value = "{id}/subscribe", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean subscribe(@PathVariable final String id, @RequestParam(required = true) final String frequency)
+        throws UGCException {
+        Profile p = SocialSecurityUtils.getCurrentProfile();
+        if (!p.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {
+            notificationService.subscribeUser(p.getId().toString(), id, frequency);
+            return true;
+        }
+        return false;
+    }
+
+    @RequestMapping(value = "{id}/unsubscribe", method = RequestMethod.DELETE)
+    @ResponseBody
+    public boolean unSubscribe(@PathVariable final String id) throws UGCException {
+        Profile p = SocialSecurityUtils.getCurrentProfile();
+        if (!p.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {
+            notificationService.unSubscribeUser(p.getId().toString(), id);
+            return true;
+        }
+        return false;
+    }
+
+    public static List<DefaultKeyValue<String, Boolean>> getSortOrder(final List<String> sortFields, final
+    List<SocialSortOrder> sortOrder) {
         if (CollectionUtils.isEmpty(sortFields)) {
             return null;
         }

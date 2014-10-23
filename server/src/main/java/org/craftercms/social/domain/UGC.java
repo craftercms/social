@@ -57,6 +57,8 @@ public class UGC<T extends UGC> {
     private List<FileInfo> attachments;
     @InjectValue(useProperty = "createdBy")
     private Profile user;
+    @InjectValue(useProperty = "id")
+    private boolean subscribe;
 
     public UGC() {
         ancestors = new ArrayDeque<>();
@@ -212,6 +214,14 @@ public class UGC<T extends UGC> {
 
     public void setUser(final Profile user) {
         this.user = user;
+    }
+
+    public boolean isSubscribe() {
+        return subscribe;
+    }
+
+    public void setSubscribe(final boolean subscribe) {
+        this.subscribe = subscribe;
     }
 
     public boolean isMyParent(final T ugc) {

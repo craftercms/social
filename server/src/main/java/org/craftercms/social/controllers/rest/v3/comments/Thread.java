@@ -16,6 +16,7 @@ public class Thread {
     private int pageNumber;
     private List<? extends UGC> comments;
 
+
     public Thread() {
         comments = new ArrayList<>();
     }
@@ -47,6 +48,7 @@ public class Thread {
     public List<? extends UGC> getComments() {
         return comments;
     }
+
 
     public void setComments(final List<? extends UGC> comments) {
         if (comments == null) {
