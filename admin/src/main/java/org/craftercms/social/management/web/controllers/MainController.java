@@ -18,6 +18,8 @@ package org.craftercms.social.management.web.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.utils.SecurityUtils;
@@ -41,18 +43,31 @@ public class MainController {
     public static final String MODEL_LOGGED_IN_USER = "loggedInUser";
     public static final String MODEL_SOCIAL_APP_URL = "socialAppUrl";
 
-    private String socialAppUrl;
+    private String socialAppRootUrl;
+    private String socialAppName;
+
+    public void setSocialAppRootUrl(String socialAppRootUrl) {
+        this.socialAppRootUrl = socialAppRootUrl;
+    }
 
     @Required
-    public void setSocialAppUrl(String socialAppUrl) {
-        this.socialAppUrl = socialAppUrl;
+    public void setSocialAppName(String socialAppName) {
+        this.socialAppName = socialAppName;
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView viewMain(HttpServletRequest request) {
+        StringBuilder socialAppUrl;
+
+        if (StringUtils.isNotEmpty(socialAppRootUrl)) {
+            socialAppUrl = new StringBuilder(socialAppRootUrl).append("/").append(socialAppName);
+        } else {
+            socialAppUrl = HttpUtils.getBaseRequestUrl(request, false).append("/").append(socialAppName);
+        }
+
         ModelAndView mav = new ModelAndView(VIEW_MAIN);
         mav.addObject(MODEL_LOGGED_IN_USER, getLoggedInUser(request));
-        mav.addObject(MODEL_SOCIAL_APP_URL, socialAppUrl);
+        mav.addObject(MODEL_SOCIAL_APP_URL, socialAppUrl.toString());
 
         return mav;
     }
