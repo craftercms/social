@@ -104,7 +104,7 @@ public class SocialContextServiceImpl implements SocialContextService {
                 throw new ProfileConfigurationException("Given profile \"" + profileId + "\" does not exist");
             }
             final HashMap<String, Object> attributesToUpdate = new HashMap<>();
-            List<Map<String, Object>> socialContexts = (List<Map<String, Object>>)p.getAttribute(SocialSecurityUtils.SOCIAL_CONTEXTS_ATTRIBUTE);
+            List<Map<String, Object>> socialContexts = p.getAttribute(SocialSecurityUtils.SOCIAL_CONTEXTS_ATTRIBUTE);
             SocialContext ctx = socialContextRepository.findById(contextId);
             if (ctx == null) {
                 throw new ProfileConfigurationException("Given context \"" + contextId + "\" does not exist");
