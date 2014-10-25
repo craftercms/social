@@ -35,6 +35,7 @@ import org.craftercms.social.repositories.system.notifications.WatchedThreadsRep
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.notification.NotificationService;
 import org.craftercms.social.util.LoggerFactory;
+import org.quartz.CronTrigger;
 
 import static org.craftercms.social.security.SecurityActionNames.UGC_READ;
 
@@ -46,6 +47,7 @@ public class NotificationServiceImpl implements NotificationService {
     private AuditRepository auditRepository;
     private WatchedThreadsRepository watchedThreadsRepository;
     private I10nLogger log = LoggerFactory.getLogger(NotificationServiceImpl.class);
+    private CronTrigger instantCronTrigger;
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
@@ -98,26 +100,30 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             List<AuditLog> toNotify = auditRepository.getByDate(from, to);
 
-
-        }catch (SocialException ex){
-            log.error("Unable to send notifications",ex);
+        } catch (SocialException ex) {
+            log.error("Unable to send notifications", ex);
         }
 
     }
 
     protected Date getStartDateByType(final String type) {
-        Calendar cal= Calendar.getInstance();
+        Calendar cal = Calendar.getInstance();
         if (type.equalsIgnoreCase(NotificationService.WEEKLY)) {
-            cal.add(Calendar.WEEK_OF_YEAR,-1);
+            cal.add(Calendar.WEEK_OF_YEAR, -1);
             return cal.getTime();
         } else if (type.equalsIgnoreCase(NotificationService.DAILY)) {
-            cal.add(Calendar.DAY_OF_MONTH,-1);
+            cal.add(Calendar.DAY_OF_MONTH, -1);
             return cal.getTime();
+        } else if (type.equalsIgnoreCase(NotificationService.INSTANT)) {
+            return instantCronTrigger.getPreviousFireTime();
         } else {
             return null;
         }
     }
 
+    public void setInstantCronTrigger(final CronTrigger instantCronTrigger) {
+        this.instantCronTrigger = instantCronTrigger;
+    }
 
     public void setAuditRepository(AuditRepositoryImpl auditRepository) {
         this.auditRepository = auditRepository;
