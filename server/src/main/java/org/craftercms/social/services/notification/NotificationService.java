@@ -25,6 +25,7 @@ public interface NotificationService {
 
     public static final String WEEKLY = "weekly";
     public static final String DAILY = "daily";
+    public static final String INSTANT = "instant";
 
     void subscribeUser(final String userId, final String threadId, final String type) throws NotificationException;
 
