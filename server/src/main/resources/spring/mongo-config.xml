@@ -84,10 +84,18 @@
           parent="social.mongodb.baseRepository"/>
 
     <bean id="social.repository.socialWatchedRepository" parent="social.mongodb.baseRepository"
-          class="org.craftercms.social.repositories.system.notifications.WatchedThreadsRepositoryImpl"/>
+          class="org.craftercms.social.repositories.system.notifications.impl.WatchedThreadsRepositoryImpl"/>
 
     <bean id="social.repository.socialAuditRepository"
           class="org.craftercms.social.repositories.system.AuditRepositoryImpl"
+          parent="social.mongodb.baseRepository">
+        <property name="profileAggregatorImpl" ref="social.profileAggregator"/>
+    </bean>
+
+    <bean id="social.repository.emailTemplateRepository"
+          class="org.craftercms.social.repositories.system.notifications.impl.EmailTemplateRepositoryImpl"
           parent="social.mongodb.baseRepository"/>
+
+
 
 </beans>

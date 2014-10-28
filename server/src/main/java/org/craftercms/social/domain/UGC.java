@@ -57,7 +57,7 @@ public class UGC<T extends UGC> {
     private List<FileInfo> attachments;
     @InjectValue(useProperty = "createdBy")
     private Profile user;
-    @InjectValue(useProperty = "id")
+    @InjectValue(useProperty = "targetId")
     private boolean subscribe;
 
     public UGC() {

@@ -27,7 +27,7 @@ public class SocialInjectValueFactory implements InjectValueFactory {
             if (declaringClass.equals(Profile.class)) {
                 return (T)profileAggregator.getProfile((String)basePropertyValue);
             } else if ((declaringClass.equals(boolean.class) || declaringClass.equals(Boolean.class)) &&
-                originalProperty.equals("id")) {
+                originalProperty.equals("targetId")) {
                 try {
                     final Profile profile = SocialSecurityUtils.getCurrentProfile();
                     if (!profile.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {

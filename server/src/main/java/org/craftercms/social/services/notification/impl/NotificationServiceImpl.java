@@ -17,25 +17,29 @@
 
 package org.craftercms.social.services.notification.impl;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
-import org.craftercms.social.domain.audit.AuditLog;
+import org.craftercms.social.domain.notifications.ThreadsToNotify;
 import org.craftercms.social.domain.notifications.WatchedThread;
 import org.craftercms.social.exceptions.NotificationException;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.repositories.system.AuditRepository;
 import org.craftercms.social.repositories.system.AuditRepositoryImpl;
 import org.craftercms.social.repositories.system.notifications.WatchedThreadsRepository;
-import org.craftercms.social.repositories.system.notifications.WatchedThreadsRepositoryImpl;
+import org.craftercms.social.repositories.system.notifications.impl.WatchedThreadsRepositoryImpl;
 import org.craftercms.social.security.SocialPermission;
+import org.craftercms.social.services.notification.NotificationDigestService;
 import org.craftercms.social.services.notification.NotificationService;
 import org.craftercms.social.util.LoggerFactory;
-import org.quartz.CronTrigger;
+import org.craftercms.social.util.profile.ProfileAggregator;
+import org.quartz.SimpleTrigger;
 
 import static org.craftercms.social.security.SecurityActionNames.UGC_READ;
 
@@ -47,7 +51,14 @@ public class NotificationServiceImpl implements NotificationService {
     private AuditRepository auditRepository;
     private WatchedThreadsRepository watchedThreadsRepository;
     private I10nLogger log = LoggerFactory.getLogger(NotificationServiceImpl.class);
-    private CronTrigger instantCronTrigger;
+    private SimpleTrigger instantTrigger;
+    private ProfileAggregator profileAggregator;
+    private NotificationDigestService notificationDigestService;
+    private Date lastInstantFire;
+
+    public NotificationServiceImpl() {
+        lastInstantFire=new Date();
+    }
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
@@ -84,9 +95,9 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public boolean isBeenWatch(final String ugcId, final String profileId) throws NotificationException {
+    public boolean isBeenWatch(final String threadId, final String profileId) throws NotificationException {
         try {
-            WatchedThread thread = watchedThreadsRepository.isUserSubscribe(ugcId, profileId);
+            WatchedThread thread = watchedThreadsRepository.isUserSubscribe(threadId, profileId);
             return thread != null;
         } catch (MongoDataException e) {
             throw new NotificationException("Unable to Check if user is subscribe", e);
@@ -95,11 +106,18 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void notify(final String type) {
-        final Date from = getStartDateByType(type);
+        Date from = getStartDateByType(type);
         final Date to = new Date();
         try {
-            List<AuditLog> toNotify = auditRepository.getByDate(from, to);
-
+            final List<ThreadsToNotify> toBeSend = watchedThreadsRepository.findProfilesToSend(type);
+            for (ThreadsToNotify threadsToNotify : toBeSend) {
+                for (String profileId : threadsToNotify.getProfiles()) {
+                    final List<HashMap> auditDigest = auditRepository.getNotificationDigest(threadsToNotify
+                        .getThreadId(), from, to, Arrays.asList(profileId));
+                    notificationDigestService.digest(auditDigest, profileId, type);
+                }
+            }
+            lastInstantFire = new Date();
         } catch (SocialException ex) {
             log.error("Unable to send notifications", ex);
         }
@@ -108,6 +126,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     protected Date getStartDateByType(final String type) {
         Calendar cal = Calendar.getInstance();
+
         if (type.equalsIgnoreCase(NotificationService.WEEKLY)) {
             cal.add(Calendar.WEEK_OF_YEAR, -1);
             return cal.getTime();
@@ -115,14 +134,14 @@ public class NotificationServiceImpl implements NotificationService {
             cal.add(Calendar.DAY_OF_MONTH, -1);
             return cal.getTime();
         } else if (type.equalsIgnoreCase(NotificationService.INSTANT)) {
-            return instantCronTrigger.getPreviousFireTime();
+            return lastInstantFire;
         } else {
             return null;
         }
     }
 
-    public void setInstantCronTrigger(final CronTrigger instantCronTrigger) {
-        this.instantCronTrigger = instantCronTrigger;
+    public void setInstantTrigger(final SimpleTrigger instantTrigger) {
+        this.instantTrigger = instantTrigger;
     }
 
     public void setAuditRepository(AuditRepositoryImpl auditRepository) {
@@ -131,6 +150,15 @@ public class NotificationServiceImpl implements NotificationService {
 
     public void setWatchedThreadsRepository(WatchedThreadsRepositoryImpl watchedThreadsRepository) {
         this.watchedThreadsRepository = watchedThreadsRepository;
+    }
+
+
+    public void setProfileAggregatorImpl(ProfileAggregator profileAggregator) {
+        this.profileAggregator = profileAggregator;
+    }
+
+    public void setNotificationDigestServiceImpl(NotificationDigestService notificationDigestService) {
+        this.notificationDigestService = notificationDigestService;
     }
 
 

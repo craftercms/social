@@ -14,24 +14,35 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.social.services.notification;
 
-import org.craftercms.social.exceptions.NotificationException;
+package org.craftercms.social.domain.notifications;
+
+import java.util.List;
+
+import org.jongo.marshall.jackson.oid.Id;
 
 /**
  *
  */
-public interface NotificationService {
+public class ThreadsToNotify {
 
-    public static final String WEEKLY = "weekly";
-    public static final String DAILY = "daily";
-    public static final String INSTANT = "instant";
+    @Id
+    private String threadId;
+    private List<String> profiles;
 
-    void subscribeUser(final String userId, final String threadId, final String type) throws NotificationException;
+    public String getThreadId() {
+        return threadId;
+    }
 
-    void notify(final String type);
+    public void setThreadId(final String threadId) {
+        this.threadId = threadId;
+    }
 
-    void unSubscribeUser(final String userId, String threadId) throws NotificationException;
+    public List<String> getProfiles() {
+        return profiles;
+    }
 
-    boolean isBeenWatch(final String threadId, final String profileId) throws NotificationException;
+    public void setProfiles(final List<String> profiles) {
+        this.profiles = profiles;
+    }
 }

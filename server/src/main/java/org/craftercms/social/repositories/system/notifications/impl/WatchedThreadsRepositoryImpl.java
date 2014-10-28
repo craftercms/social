@@ -15,22 +15,26 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.craftercms.social.repositories.system.notifications;
+package org.craftercms.social.repositories.system.notifications.impl;
 
 
 import com.mongodb.MongoException;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.social.domain.notifications.ThreadsToNotify;
 import org.craftercms.social.domain.notifications.WatchedThread;
 import org.craftercms.social.exceptions.NotificationException;
+import org.craftercms.social.repositories.system.notifications.WatchedThreadsRepository;
+import org.jongo.Aggregate;
 
 /**
  *
  */
-public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<WatchedThread> implements
-    WatchedThreadsRepository {
+public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<WatchedThread> implements WatchedThreadsRepository {
 
     @Override
     public void removeWatcher(final String thread, final String userId) throws NotificationException {
@@ -56,11 +60,35 @@ public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<Watche
     }
 
     @Override
-    public WatchedThread isUserSubscribe(final String ugcId, final String profileId) throws MongoDataException {
+    public WatchedThread isUserSubscribe(final String threadId, final String profileId) throws MongoDataException {
         final String query = getQueryFor("social.notifications.isBeenWatched");
-        if (!ObjectId.isValid(ugcId)) {
-            throw new IllegalArgumentException("Given UGC id is not valid");
-        }
-        return findOne(query, new ObjectId(ugcId), profileId);
+        return findOne(query, threadId, profileId);
     }
+
+    @Override
+    public Iterable<WatchedThread> findAllWithWatchers() throws NotificationException {
+        try {
+            final String query = getQueryFor("social.notifications.byWatchersNotEmpty");
+            return find(query);
+        } catch (MongoDataException ex) {
+            throw new NotificationException("Unable to find threads with watchers", ex);
+        }
+    }
+
+    @Override
+    public List<ThreadsToNotify> findProfilesToSend(final String type) throws
+        NotificationException {
+        try{
+            String aggregationQuerypt1 = getQueryFor("social.notification.getProfilePt1");
+            String aggregationQuerypt2 = getQueryFor("social.notification.getProfilePt2");
+            String aggregationQuerypt3 = getQueryFor("social.notification.getProfilePt3");
+            String aggregationQuerypt4 = getQueryFor("social.notification.getProfilePt4");
+            final Aggregate aggregation = getCollection().aggregate(aggregationQuerypt1);
+            aggregation.and(aggregationQuerypt2).and(aggregationQuerypt3,type).and(aggregationQuerypt4);
+            return aggregation.as(ThreadsToNotify.class);
+        }catch (MongoException ex){
+            throw new NotificationException("Unable to find Profiles to notify", ex);
+        }
+    }
+
 }
