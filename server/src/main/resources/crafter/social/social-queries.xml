@@ -144,4 +144,41 @@
     <entry key="social.notifications.isBeenWatched">
         {_id:#,"watchers._id":#}
     </entry>
+    <entry key="social.notifications.byWatchersNotEmpty">
+        {watchers: {$exists: true, $not: {$size: 0}}}
+    </entry>
+    <entry key="social.notification.notificationToSend">
+        {"payload.targetId":{$in:#},created_on: {$gte: #, $lt: #}}
+    </entry>
+
+    <entry key="social.notification.getProfilePt1">
+        {$match:{watchers: {$exists: true, $not: {$size: 0}}}}
+    </entry>
+
+    <entry key="social.notification.getProfilePt2">
+        {$unwind:"$watchers"}
+    </entry>
+    <entry key="social.notification.getProfilePt3">
+        {$match:{"watchers.frequency":# }}
+    </entry>
+    <entry key="social.notification.getProfilePt4">
+        {$group:{_id:"$_id",profiles:{$push:"$watchers._id"}}}
+    </entry>
+
+    <entry key="social.notification.audit.getNotificationDigestPt1">
+        {
+        $match:{
+        "payload.targetId":#,
+        "payload.contextId":#,
+        userId:{$nin:#},
+        auditDate: {$gte: #, $lt: #}
+        }
+        }
+    </entry>
+    <entry key="social.notification.audit.getNotificationDigestPt2">
+        {$group:{_id:"$actionName",contextId:{$last:"$payload.contextId"},ugc:{$push:"$payload"}}}
+    </entry>
+    <entry key="social.system.notification.email.byCtxIdAndName">
+        {contextId:#,name:#}
+    </entry>
 </properties>

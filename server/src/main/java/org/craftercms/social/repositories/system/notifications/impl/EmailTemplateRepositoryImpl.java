@@ -14,24 +14,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.social.services.notification;
 
-import org.craftercms.social.exceptions.NotificationException;
+package org.craftercms.social.repositories.system.notifications.impl;
+
+import org.craftercms.commons.mongo.AbstractJongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.social.domain.notifications.EmailTemplate;
+import org.craftercms.social.repositories.system.notifications.EmailTemplateRepository;
 
 /**
  *
  */
-public interface NotificationService {
+public class EmailTemplateRepositoryImpl extends AbstractJongoRepository<EmailTemplate> implements
+    EmailTemplateRepository {
 
-    public static final String WEEKLY = "weekly";
-    public static final String DAILY = "daily";
-    public static final String INSTANT = "instant";
 
-    void subscribeUser(final String userId, final String threadId, final String type) throws NotificationException;
-
-    void notify(final String type);
-
-    void unSubscribeUser(final String userId, String threadId) throws NotificationException;
-
-    boolean isBeenWatch(final String threadId, final String profileId) throws NotificationException;
+    @Override
+    public EmailTemplate findByContextAndType(final String contextId, final String templateName) throws MongoDataException {
+        return findOne(getQueryFor("social.system.notification.email.byCtxIdAndName"),contextId,templateName);
+    }
 }

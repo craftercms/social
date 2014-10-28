@@ -36,7 +36,6 @@
                 <value type="java.lang.String">INSTANT</value>
             </list>
         </property>
-
         <property name="concurrent" value="false"/>
     </bean>
 
@@ -46,28 +45,27 @@
     </bean>
     <bean id="social.notification.weeklyTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="social.notification.weeklyJobDetail"/>
-
         <property name="cronExpression" value="${studio.social.notification.weeklyCron}"/>
     </bean>
 
-    <bean id="social.notification.instantTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <bean id="social.notification.instantTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
         <property name="jobDetail" ref="social.notification.instantJobDetail"/>
-        <property name="cronExpression" value="${studio.social.notification.instantCron}"/>
+        <property name="repeatInterval" value="${studio.social.notification.instantInterval}"/>
     </bean>
 
 
-    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="schedulerName" value="Social Notification harvester"/>
-        <property name="autoStartup" value="true"/>
-        <property name="startupDelay" value="60"/>
-        <property name="waitForJobsToCompleteOnShutdown" value="true"/>
-        <property name="triggers">
-            <list>
-                <ref bean="social.notification.dailyTrigger"/>
-                <ref bean="social.notification.weeklyTrigger"/>
-                <ref bean="social.notification.instantTrigger"/>
-            </list>
-        </property>
-    </bean>
+    <!--<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
+        <!--<property name="schedulerName" value="Social Notification harvester"/>-->
+        <!--<property name="autoStartup" value="true"/>-->
+        <!--<property name="startupDelay" value="${studio.social.notification.startDelay}"/>-->
+        <!--<property name="waitForJobsToCompleteOnShutdown" value="true"/>-->
+        <!--<property name="triggers">-->
+            <!--<list>-->
+                <!--<ref bean="social.notification.dailyTrigger"/>-->
+                <!--<ref bean="social.notification.weeklyTrigger"/>-->
+                <!--<ref bean="social.notification.instantTrigger"/>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
 
 </beans>

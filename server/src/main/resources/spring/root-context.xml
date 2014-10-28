@@ -100,8 +100,22 @@
           id="social.services.system.notificationService">
         <property name="auditRepository" ref="social.repository.socialAuditRepository"/>
         <property name="watchedThreadsRepository" ref="social.repository.socialWatchedRepository"/>
-        <property name="instantCronTrigger" ref="social.notification.instantTrigger"/>
+        <property name="instantTrigger" ref="social.notification.instantTrigger"/>
+        <property name="profileAggregatorImpl" ref="social.profileAggregator"/>
+        <property name="notificationDigestServiceImpl" ref="social.services.system.notificationDigestService"/>
     </bean>
+    <bean class="org.craftercms.social.services.notification.impl.NotificationDigestServiceImpl"
+
+          id="social.services.system.notificationDigestService">
+        <property name="profileAggregatorImpl" ref="social.profileAggregator"/>
+        <property name="socialFreemarkerLoader" ref="social.util.email.socialFreemarkerLoader" />
+    </bean>
+
+    <bean class="org.craftercms.social.util.SocialFreemarkerLoader" id="social.util.email.socialFreemarkerLoader">
+        <property name="emailTemplateRepositoryImpl" ref="social.repository.emailTemplateRepository"/>
+    </bean>
+
+
     <import resource="scheduler-context.xml"/>
     <import resource="classpath*:crafter/social/extension/services-context.xml"/>
 </beans>

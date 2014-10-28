@@ -14,24 +14,38 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.social.services.notification;
 
-import org.craftercms.social.exceptions.NotificationException;
+package org.craftercms.social.domain.notifications;
+
+import java.util.List;
+
+import org.craftercms.social.domain.UGC;
+import org.jongo.marshall.jackson.oid.Id;
 
 /**
  *
  */
-public interface NotificationService {
+public class NotificationDigest<T extends UGC> {
 
-    public static final String WEEKLY = "weekly";
-    public static final String DAILY = "daily";
-    public static final String INSTANT = "instant";
+    @Id
+    private String actionType;
 
-    void subscribeUser(final String userId, final String threadId, final String type) throws NotificationException;
+    private List<T> ugcForAction;
 
-    void notify(final String type);
 
-    void unSubscribeUser(final String userId, String threadId) throws NotificationException;
+    public String getActionType() {
+        return actionType;
+    }
 
-    boolean isBeenWatch(final String threadId, final String profileId) throws NotificationException;
+    public void setActionType(final String actionType) {
+        this.actionType = actionType;
+    }
+
+    public List<T> getUgcForAction() {
+        return ugcForAction;
+    }
+
+    public void setUgcForAction(final List<T> ugcForAction) {
+        this.ugcForAction = ugcForAction;
+    }
 }
