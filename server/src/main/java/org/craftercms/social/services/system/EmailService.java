@@ -17,8 +17,14 @@
 
 package org.craftercms.social.services.system;
 
+import java.io.StringWriter;
+
+import org.craftercms.profile.api.Profile;
+
 /**
  * Created by Carlos Ortiz on 10/28/14.
  */
 public class EmailService {
+    public void sendEmail(final Profile toSend, final StringWriter writer, final String type) {
+    }
 }
