@@ -43,16 +43,20 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         value = "Id of the thread to attach this comment") @RequestParam(required = true) final String thread,
                     @ApiParam(value = "Id of the parent for the new comment", name = "parentId") @RequestParam
                         (required = false, defaultValue = "") final String parent,
+                    @ApiParam(value = "Should This comment be post as anonymous ",name = "anonymous")
+                    @RequestParam(required = false,defaultValue = "false",value = "anonymous") final boolean anonymous,
+                    @ApiParam(value = "Subject of the comment to be created",name =
+                        "subject")
+                    @RequestParam(required = false,defaultValue = "",value = "subject") final String subject,
                     @ApiParam(value = "Json String representing any extra attributes of the comment to create",
         name = "attributes") @RequestParam(required = false,
         defaultValue = "{}") final String attributes, MultipartFile attachment) throws SocialException,
         MissingServletRequestParameterException, IOException {
         Map<String, Object> attributesMap = null;
-
         if (!StringUtils.isBlank(attributes)) {
             attributesMap = parseAttributes(attributes);
         }
-        T newUgc = (T)ugcService.create(context(), parent, thread, body, "", attributesMap);
+        T newUgc = (T)ugcService.create(context(), parent, thread, body, subject, attributesMap, anonymous);
 
         if (attachment != null) {
             ugcService.addAttachment(newUgc.getId().toString(), context(), attachment.getInputStream(),

@@ -27,6 +27,7 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
 
     @Override
     public void deleteByIds(final List<String> ids) throws SocialException {
+
         String query = getQueryFor("social.system.audit.deleteByIds");
         log.debug("logging.system.auditAboutToDelete", ids);
         try {

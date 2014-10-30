@@ -1,8 +1,13 @@
 package org.craftercms.social.util;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.utils.SecurityUtils;
+import org.craftercms.social.security.SocialSecurityUtils;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,4 +35,17 @@ public class ProfileUtils {
         }
     }
 
+    public static Profile getAnonymousProfile() {
+        Profile anonymous = new Profile();
+        anonymous.setEmail(SocialSecurityUtils.ANONYMOUS);
+        anonymous.setUsername(SocialSecurityUtils.ANONYMOUS.toLowerCase());
+        anonymous.setRoles(new LinkedHashSet<>(Arrays.asList(SocialSecurityUtils.ANONYMOUS)));
+        anonymous.setAttributes(new HashMap<String, Object>());
+        anonymous.setAttribute("displayName",SocialSecurityUtils.ANONYMOUS.toLowerCase());
+        anonymous.setAttribute("avatarLink","");
+        anonymous.setAttribute("anonymized",true);
+        anonymous.setTenant("");
+        return anonymous;
+
+    }
 }

@@ -115,7 +115,6 @@
         <property name="emailTemplateRepositoryImpl" ref="social.repository.emailTemplateRepository"/>
     </bean>
 
-
     <import resource="scheduler-context.xml"/>
     <import resource="classpath*:crafter/social/extension/services-context.xml"/>
 </beans>
