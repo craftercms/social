@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLDecoder;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,10 +66,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_CREATE, type = SocialPermission.class)
-    public UGC create(final String contextId, final String ugcParentId, final String targetId,
-                      final String textContent, final String subject, final Map attrs) throws SocialException {
+    public UGC create(final String contextId, final String ugcParentId, final String targetId, final String textContent, final String subject, final Map attrs, final boolean isAnonymous) throws SocialException {
         log.debug("logging.ugc.creatingUgc", contextId, targetId, ugcParentId, subject, attrs);
-        T newUgc = (T)ugcFactory.newInstance(new UGC(subject, textContent, targetId));
+        final UGC template = new UGC(subject, textContent, targetId);
+        template.setAnonymousFlag(isAnonymous);
+        T newUgc = (T)ugcFactory.newInstance(template);
         newUgc.setAttributes(attrs);
         try {
             if (ObjectId.isValid(ugcParentId)) {

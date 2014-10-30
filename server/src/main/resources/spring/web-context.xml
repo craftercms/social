@@ -121,6 +121,6 @@
         <beans:property name="prefix" value=""/>
         <beans:property name="suffix" value=".ftl"/>
     </beans:bean>
-
     <beans:import resource="classpath*:/crafter/api-documentation/api-documentation-context.xml"/>
+
 </beans:beans>

@@ -2,8 +2,6 @@ package org.craftercms.social.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +13,7 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.social.exceptions.ProfileConfigurationException;
+import org.craftercms.social.util.ProfileUtils;
 
 /**
  */
@@ -30,14 +29,14 @@ public class SocialSecurityUtils {
     private SocialSecurityUtils() {
     }
 
-    public static List<String> getSocialRoles(){
+    public static List<String> getSocialRoles() {
         Profile profile = getCurrentProfile();
-        if(profile.getUsername().equals(ANONYMOUS)){
+        if (profile.getUsername().equals(ANONYMOUS)) {
             return Arrays.asList(ANONYMOUS);
         }
 
         List<String> list = getRolesForCurrentContext(profile);
-        if(list == null){
+        if (list == null) {
             list = new ArrayList<>();
         }
 
@@ -46,36 +45,38 @@ public class SocialSecurityUtils {
         return list;
     }
 
-    public static String getContext(){
+    public static String getContext() {
         HttpServletRequest request = RequestContext.getCurrent().getRequest();
         String context = request.getParameter(CONTEXT_PARAM);
 
         if (StringUtils.isBlank(context)) {
             throw new IllegalArgumentException("Parameter '" + CONTEXT_PARAM + "' is missing from the request");
         }
-        
+
         return context;
     }
 
-    private static List<String> getRolesForCurrentContext(final Profile profile){
+    private static List<String> getRolesForCurrentContext(final Profile profile) {
         String currentContext = getContext();
         List<Map<String, Object>> socialContexts = profile.getAttribute(SOCIAL_CONTEXTS_ATTRIBUTE);
 
         if (CollectionUtils.isNotEmpty(socialContexts)) {
             for (Map<String, Object> context : socialContexts) {
-                String id = (String) context.get(SOCIAL_CONTEXT_ID);
+                String id = (String)context.get(SOCIAL_CONTEXT_ID);
                 if (StringUtils.isBlank(id)) {
                     throw new ProfileConfigurationException("Social context missing '" + SOCIAL_CONTEXT_ID + "'");
                 }
                 if (id.equals(currentContext)) {
-                    return (List<String>) context.get(SOCIAL_CONTEXT_ROLES);
+                    return (List<String>)context.get(SOCIAL_CONTEXT_ROLES);
                 }
             }
-            if (profile.hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)){
+            if (profile.hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
                 return null;
-            }else {
+            } else {
                 throw new ProfileConfigurationException("Current profile is not assign to the given currentContext");
             }
+        } else if (profile.hasRole(ANONYMOUS)) {
+            return null;
         } else if (profile.hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
             return null;
         } else {
@@ -88,14 +89,9 @@ public class SocialSecurityUtils {
         Profile profile;
 
         if (currentAuth == null) {
-            profile = new Profile();
-            profile.setUsername(ANONYMOUS);
-            profile.setRoles(new LinkedHashSet<>(Arrays.asList(ANONYMOUS)));
-            profile.setAttributes(new HashMap<String, Object>());
-            profile.setTenant("");
-            return profile;
+            return ProfileUtils.getAnonymousProfile();
         } else {
-            return  currentAuth.getProfile();
+            return currentAuth.getProfile();
         }
     }
 

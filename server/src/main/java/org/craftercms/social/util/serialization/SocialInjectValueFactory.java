@@ -8,6 +8,7 @@ import org.craftercms.social.exceptions.NotificationException;
 import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.notification.NotificationService;
 import org.craftercms.social.util.LoggerFactory;
+import org.craftercms.social.util.ProfileUtils;
 import org.craftercms.social.util.profile.ProfileAggregator;
 
 /**
@@ -25,12 +26,18 @@ public class SocialInjectValueFactory implements InjectValueFactory {
         originalProperty, final Object object) {
         if (UGC.class.isAssignableFrom(object.getClass())) {
             if (declaringClass.equals(Profile.class)) {
-                return (T)profileAggregator.getProfile((String)basePropertyValue);
+                final Profile profile = profileAggregator.getProfile((String)basePropertyValue);
+                if(((UGC)object).isAnonymousFlag()){
+                    anonymizeProfile((UGC)object);
+                    return (T)ProfileUtils.getAnonymousProfile();
+                }else{
+                    return (T)profile;
+                }
             } else if ((declaringClass.equals(boolean.class) || declaringClass.equals(Boolean.class)) &&
                 originalProperty.equals("targetId")) {
                 try {
                     final Profile profile = SocialSecurityUtils.getCurrentProfile();
-                    if (!profile.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {
+                    if (!profile.getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
                         return (T)(Boolean)notificationService.isBeenWatch(basePropertyValue.toString(), profile
                             .getId().toString());
                     } else {
@@ -43,6 +50,13 @@ public class SocialInjectValueFactory implements InjectValueFactory {
             }
         }
         return null;
+    }
+
+    protected void anonymizeProfile(final UGC object) {
+        if(object.getCreatedBy().equals(object.getLastModifiedBy())){
+            object.setLastModifiedBy("");
+        }
+        object.setCreatedBy("");
     }
 
     public void setProfileAggregator(final ProfileAggregator profileAggregator) {

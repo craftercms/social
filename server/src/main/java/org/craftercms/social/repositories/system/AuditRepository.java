@@ -39,4 +39,5 @@ public interface AuditRepository extends CrudRepository<AuditLog>{
         SocialException;
 
     List<HashMap> getNotificationDigest(String threadId, Date from, Date to, List<String> profilesToExclude) throws SocialException;
+
 }

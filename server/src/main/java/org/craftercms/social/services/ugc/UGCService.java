@@ -35,12 +35,12 @@ public interface UGCService<T extends UGC> {
      * @param textContent Actual content of the UGC Must be cleanup to prevent XSS.
      * @param subject     Subject of the UGC.
      * @param attrs
+     * @param isAnonymous
      * @return A new Public (secure) UGC.
      * @throws org.craftercms.social.exceptions.SocialException If UGC can't be created.
      * @throws java.lang.IllegalArgumentException               If given parent UGC does not exist.
      */
-    public T create(final String contextId, final String ugcParentId, final String targetId, final String textContent,
-                    final String subject, final Map<String, Object> attrs) throws SocialException;
+    public T create(final String contextId, final String ugcParentId, final String targetId, final String textContent, final String subject, final Map<String, Object> attrs, final boolean isAnonymous) throws SocialException;
 
 
     /**

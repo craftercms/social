@@ -5,7 +5,7 @@ package org.craftercms.social.security;
  */
 public final class SecurityActionNames {
 
-    public static final String UGC_UPDATE = "ugc.removeWatcher";
+    public static final String UGC_UPDATE = "ugc.update";
     public static final String UGC_MODERATE = "ugc.moderate";
     public static final String UGC_UNFLAG = "ugc.unflag";
     public static final String UGC_FLAG = "ugc.flag";
