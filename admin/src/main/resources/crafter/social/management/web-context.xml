@@ -68,7 +68,8 @@
     <bean id="crafter.exceptionHandlers" class="org.craftercms.social.management.web.controllers.ExceptionHandlers"/>
 
     <bean id="crafter.mainController" class="org.craftercms.social.management.web.controllers.MainController">
-        <property name="socialAppUrl" value="${crafter.social.app.url}"/>
+        <property name="socialAppRootUrl" value="${crafter.social.app.rootUrl}"/>
+        <property name="socialAppName" value="${crafter.social.app.name}"/>
     </bean>
 
     <bean id="crafter.profileController" class="org.craftercms.social.management.web.controllers.ProfileController">
