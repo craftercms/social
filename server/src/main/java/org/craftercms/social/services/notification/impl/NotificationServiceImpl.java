@@ -31,7 +31,7 @@ import org.craftercms.social.domain.notifications.WatchedThread;
 import org.craftercms.social.exceptions.NotificationException;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.repositories.system.AuditRepository;
-import org.craftercms.social.repositories.system.AuditRepositoryImpl;
+import org.craftercms.social.repositories.system.impl.AuditRepositoryImpl;
 import org.craftercms.social.repositories.system.notifications.WatchedThreadsRepository;
 import org.craftercms.social.repositories.system.notifications.impl.WatchedThreadsRepositoryImpl;
 import org.craftercms.social.security.SocialPermission;

@@ -1,4 +1,4 @@
-package org.craftercms.social.repositories.system;
+package org.craftercms.social.repositories.system.impl;
 
 import com.mongodb.MongoException;
 
@@ -12,8 +12,10 @@ import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.audit.AuditLog;
 import org.craftercms.social.exceptions.SocialException;
-import org.craftercms.social.services.notification.AuditServiceImpl;
+import org.craftercms.social.repositories.system.AuditRepository;
+import org.craftercms.social.services.notification.impl.AuditServiceImpl;
 import org.craftercms.social.util.LoggerFactory;
+import org.craftercms.social.util.ProfileUtils;
 import org.craftercms.social.util.profile.ProfileAggregator;
 import org.jongo.Aggregate;
 
@@ -83,11 +85,18 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
                 profilesToExclude, from, to);
             final List<HashMap> preResults = agregation.and(querypt2).as(HashMap.class);
             for (HashMap preResult : preResults) {
-                List<HashMap> ugcList = (List<HashMap>)preResult.get("ugc");
+                List<HashMap> ugcList = (List<HashMap>)preResult.get("ugcList");
                 for (HashMap ugc : ugcList) {
-                    if (ugc.containsKey("lastModifiedBy") && ugc.containsKey("createdBy")) {
-                        ugc.put("createdBy", profileAggregator.getProfile(ugc.get("createdBy").toString()));
-                        ugc.put("lastModifiedBy", profileAggregator.getProfile(ugc.get("lastModifiedBy").toString()));
+                    if (Boolean.parseBoolean(ugc.get("anonymousFlag").toString())) {
+                        // Make sure we don't tell!
+                        ugc.put("createdBy", ProfileUtils.getAnonymousProfile());
+                        ugc.put("lastModifiedBy", ProfileUtils.getAnonymousProfile());
+                    } else {
+                        if (ugc.containsKey("lastModifiedBy") && ugc.containsKey("createdBy")) {
+                            ugc.put("createdBy", profileAggregator.getProfile(ugc.get("createdBy").toString()));
+                            ugc.put("lastModifiedBy", profileAggregator.getProfile(ugc.get("lastModifiedBy").toString
+                                ()));
+                        }
                     }
                 }
             }

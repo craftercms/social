@@ -87,13 +87,13 @@
           class="org.craftercms.social.repositories.system.notifications.impl.WatchedThreadsRepositoryImpl"/>
 
     <bean id="social.repository.socialAuditRepository"
-          class="org.craftercms.social.repositories.system.AuditRepositoryImpl"
+          class="org.craftercms.social.repositories.system.impl.AuditRepositoryImpl"
           parent="social.mongodb.baseRepository">
         <property name="profileAggregatorImpl" ref="social.profileAggregator"/>
     </bean>
 
-    <bean id="social.repository.emailTemplateRepository"
-          class="org.craftercms.social.repositories.system.notifications.impl.EmailTemplateRepositoryImpl"
+    <bean id="social.repository.contextPreferencesRepository"
+          class="org.craftercms.social.repositories.system.impl.ContextPreferencesRepositoryImpl"
           parent="social.mongodb.baseRepository"/>
 
 

@@ -176,9 +176,31 @@
         }
     </entry>
     <entry key="social.notification.audit.getNotificationDigestPt2">
-        {$group:{_id:"$actionName",contextId:{$last:"$payload.contextId"},ugc:{$push:"$payload"}}}
+        {$group:{_id:"$actionName",contextId:{$last:"$payload.contextId"},ugcList:{$push:"$payload"}}}
     </entry>
     <entry key="social.system.notification.email.byCtxIdAndName">
         {contextId:#,name:#}
+    </entry>
+    <entry key="social.system.preferences.emailPreferencesByContextId">
+        {_id:#}
+    </entry>
+    <entry key="social.system.preferences.savePreferencesByContextId">
+        {$set:{
+                "email.host":#,
+                "email.encoding":#,
+                "email.port":#,
+                "email.auth":#,
+                "email.username":#,
+                "email.password":#,
+                "email.tls":#,
+                "email.replyTo":#,
+                "email.from":#,
+                "email.priority":#,
+                "email.subject":#
+                }
+        }
+    </entry>
+    <entry key="social.system.preferences.notificationEmailByType">
+        { "_id" : #,templates:{$elemMatch:{type:#}}}
     </entry>
 </properties>

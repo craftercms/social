@@ -74,6 +74,13 @@
         <property name="maxEntriesLocalHeap" value="${studio.social.system.profileAgg.cache.maxElementsInMemory}"/>
     </bean>
 
+    <bean id="social.support.emailConfig" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="name" value="social.profileAggregationCache"/>
+        <property name="timeToLiveSeconds" value="${studio.social.system.emailConfig.cache.ttl}"/>
+        <property name="timeToIdleSeconds" value="${studio.social.system.emailConfig.cache.tti}"/>
+        <property name="maxEntriesLocalHeap" value="${studio.social.system.emailConfig.cache.maxElementsInMemory}"/>
+    </bean>
+
     <bean class="org.craftercms.social.util.serialization.SocialInjectValueFactory" id="social.InjectValueHandler">
         <property name="profileAggregator" ref="social.profileAggregator"/>
         <property name="notificationServiceImpl" ref="social.services.system.notificationService"/>
@@ -92,7 +99,7 @@
     </bean>
 
     <bean id="org.craftercms.commons.audit.AuditServiceImpl"
-          class="org.craftercms.social.services.notification.AuditServiceImpl">
+          class="org.craftercms.social.services.notification.impl.AuditServiceImpl">
         <property name="auditRepository" ref="social.repository.socialAuditRepository"/>
     </bean>
 
@@ -109,10 +116,21 @@
           id="social.services.system.notificationDigestService">
         <property name="profileAggregatorImpl" ref="social.profileAggregator"/>
         <property name="socialFreemarkerLoader" ref="social.util.email.socialFreemarkerLoader" />
+        <property name="emailService" ref="social.util.emailService"/>
+        <property name="systemDefaultLocale" value="${studio.social.system.defaultLocale}"/>
     </bean>
 
+    <bean class="org.craftercms.social.services.system.impl.ContextPreferencesServiceImpl"
+          id="social.services.system.contextPreferences">
+    <property name="contextPreferencesRepository" ref="social.repository.contextPreferencesRepository"/>
+    </bean>
     <bean class="org.craftercms.social.util.SocialFreemarkerLoader" id="social.util.email.socialFreemarkerLoader">
-        <property name="emailTemplateRepositoryImpl" ref="social.repository.emailTemplateRepository"/>
+        <property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
+    </bean>
+
+    <bean class="org.craftercms.social.services.system.EmailService" id="social.util.emailService">
+        <property name="emailConfigCache" ref="social.support.emailConfig"/>
+        <property name="contextPreferences" ref="social.services.system.contextPreferences"/>
     </bean>
 
     <import resource="scheduler-context.xml"/>
