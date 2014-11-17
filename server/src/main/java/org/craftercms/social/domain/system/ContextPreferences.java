@@ -15,29 +15,26 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.craftercms.social.domain.notifications;
+package org.craftercms.social.domain.system;
+
+import java.util.Map;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.Document;
 import org.jongo.marshall.jackson.oid.Id;
 
 /**
  *
  */
-public class EmailTemplate {
+@Document(collectionName = "preferences")
+public class ContextPreferences {
 
     @Id
-    private ObjectId id;
     private String contextId;
-    private String name;
-    private String body;
+    private Map<String,Object> preferences;
 
 
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(final ObjectId id) {
-        this.id = id;
+    public ContextPreferences() {
     }
 
     public String getContextId() {
@@ -48,20 +45,19 @@ public class EmailTemplate {
         this.contextId = contextId;
     }
 
-    public String getName() {
-        return name;
+    public Map<String, Object> getPreferences() {
+        return preferences;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setPreferences(final Map<String, Object> preferences) {
+        this.preferences = preferences;
     }
 
-    public String getBody() {
-        return body;
+    @Override
+    public String toString() {
+        return "ContextPreferences{" +
+            "contextId='" + contextId + '\'' +
+            ", preferences=" + preferences +
+            '}';
     }
-
-    public void setBody(final String body) {
-        this.body = body;
-    }
-
 }

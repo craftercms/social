@@ -54,18 +54,18 @@
     </bean>
 
 
-    <!--<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
-        <!--<property name="schedulerName" value="Social Notification harvester"/>-->
-        <!--<property name="autoStartup" value="true"/>-->
-        <!--<property name="startupDelay" value="${studio.social.notification.startDelay}"/>-->
-        <!--<property name="waitForJobsToCompleteOnShutdown" value="true"/>-->
-        <!--<property name="triggers">-->
-            <!--<list>-->
-                <!--<ref bean="social.notification.dailyTrigger"/>-->
-                <!--<ref bean="social.notification.weeklyTrigger"/>-->
-                <!--<ref bean="social.notification.instantTrigger"/>-->
-            <!--</list>-->
-        <!--</property>-->
-    <!--</bean>-->
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="schedulerName" value="Social Notification harvester"/>
+        <property name="autoStartup" value="true"/>
+        <property name="startupDelay" value="${studio.social.notification.startDelay}"/>
+        <property name="waitForJobsToCompleteOnShutdown" value="true"/>
+        <property name="triggers">
+            <list>
+                <ref bean="social.notification.dailyTrigger"/>
+                <ref bean="social.notification.weeklyTrigger"/>
+                <ref bean="social.notification.instantTrigger"/>
+            </list>
+        </property>
+    </bean>
 
 </beans>

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
@@ -28,6 +29,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.services.notification.NotificationDigestService;
 import org.craftercms.social.services.system.EmailService;
 import org.craftercms.social.util.LoggerFactory;
@@ -46,6 +48,7 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
     private SocialFreemarkerLoader socialFreemarkerLoader;
     private Configuration cfg;
     private EmailService emailService;
+    private String systemDefaultLocale;
 
 
     public void setProfileAggregatorImpl(ProfileAggregator profileAggregator) {
@@ -58,25 +61,34 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
         if (toSend != null) {
             init();
             final HashMap<Object, Object> dataModel = new HashMap<>(2);
-            dataModel.put("self", toSend);
+            dataModel.put("profile", toSend);
 
             for (HashMap hashMap : auditDigest) {
                 try {
                     StringWriter writer = new StringWriter();
                     dataModel.put("digest", auditDigest);
-                    Template template = cfg.getTemplate(hashMap.get("contextId") + "/" + type);
+                    Template template = cfg.getTemplate(hashMap.get("contextId") + "/" + type,getProfileLocale(toSend
+                        .getAttribute("notificationLocale")));
                     final Environment env = template.createProcessingEnvironment(dataModel, writer);
                     env.process();
                     writer.flush();
-                    emailService.sendEmail(toSend,writer,type);
-                    writer.flush();
-                } catch (IOException | TemplateException ex) {
+                    emailService.sendEmail(toSend,writer,type,(String) hashMap.get("contextId"));
+                } catch (IOException | TemplateException | SocialException ex) {
                     logger.error("logging.system.notification.errorLoadingTemplate", ex);
                 }
             }
         } else {
             logger.error("Unable to send notification to profile {} it does not exist", profileId);
         }
+    }
+
+    private Locale getProfileLocale(final Object notificationLocale) {
+        if(notificationLocale==null){
+            return new Locale(systemDefaultLocale);
+        }else{
+            return new Locale(notificationLocale.toString());
+        }
+
     }
 
     public void init() {
@@ -89,5 +101,13 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
 
     public void setSocialFreemarkerLoader(SocialFreemarkerLoader socialFreemarkerLoader) {
         this.socialFreemarkerLoader = socialFreemarkerLoader;
+    }
+
+    public void setEmailService(final EmailService emailService) {
+        this.emailService = emailService;
+    }
+
+    public void setSystemDefaultLocale(final String systemDefaultLocale) {
+        this.systemDefaultLocale = systemDefaultLocale;
     }
 }

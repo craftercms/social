@@ -15,22 +15,20 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.craftercms.social.repositories.system.notifications.impl;
+package org.craftercms.social.repositories.system;
 
-import org.craftercms.commons.mongo.AbstractJongoRepository;
-import org.craftercms.commons.mongo.MongoDataException;
-import org.craftercms.social.domain.notifications.EmailTemplate;
-import org.craftercms.social.repositories.system.notifications.EmailTemplateRepository;
+import java.util.Map;
+
+import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.social.domain.system.ContextPreferences;
+import org.craftercms.social.exceptions.SocialException;
 
 /**
  *
  */
-public class EmailTemplateRepositoryImpl extends AbstractJongoRepository<EmailTemplate> implements
-    EmailTemplateRepository {
+public interface ContextPreferencesRepository extends CrudRepository<ContextPreferences> {
 
+    Object findEmailPreference(String contextId) throws SocialException;
 
-    @Override
-    public EmailTemplate findByContextAndType(final String contextId, final String templateName) throws MongoDataException {
-        return findOne(getQueryFor("social.system.notification.email.byCtxIdAndName"),contextId,templateName);
-    }
+    String findNotificationTemplate(String contextId, String notificationType) throws SocialException;
 }

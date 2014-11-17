@@ -19,32 +19,38 @@ package org.craftercms.social.util;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
+import java.util.Date;
 
-import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
-import org.craftercms.social.repositories.system.notifications.EmailTemplateRepository;
-import org.craftercms.social.repositories.system.notifications.impl.EmailTemplateRepositoryImpl;
+import org.craftercms.social.exceptions.SocialException;
+import org.craftercms.social.services.system.ContextPreferencesService;
 
 /**
  *
  */
 public class SocialFreemarkerLoader implements TemplateLoader {
 
-    private EmailTemplateRepository repository;
+    private ContextPreferencesService contextPreferencesService;
 
     @Override
     public Object findTemplateSource(final String name) throws IOException {
-        return null;
+        String[] tmp=name.split("/");
+        try {
+            return contextPreferencesService.getNotificationEmailTemplate(tmp[0],tmp[1]);
+        } catch (SocialException e) {
+            throw new IOException("Unable to find Template "+name,e);
+        }
     }
 
     @Override
     public long getLastModified(final Object templateSource) {
-        return 0;
+        return new Date().getTime();
     }
 
     @Override
     public Reader getReader(final Object templateSource, final String encoding) throws IOException {
-        return null;
+        return new StringReader(templateSource.toString());
     }
 
     @Override
@@ -52,8 +58,7 @@ public class SocialFreemarkerLoader implements TemplateLoader {
 
     }
 
-
-    public void setEmailTemplateRepositoryImpl(EmailTemplateRepository emailTemplateRepository) {
-        this.repository=emailTemplateRepository;
+    public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
+        this.contextPreferencesService = contextPreferencesService;
     }
 }
