@@ -39,11 +39,21 @@
 	<modules>
 		<module>virus-scanner</module>
 		<module>server</module>
-		<!--<module>blog</module>-->
 		<module>admin</module>
-        <!--<module>ui-plugin</module>-->
 	</modules>
 	<profiles>
+        <profile>
+            <id>migrationTool</id>
+            <activation>
+                <property>
+                    <name>with-migration-tool</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <modules>
+                <module>migration</module>
+            </modules>
+        </profile>
         <profile>
             <id>JDK8</id>
             <activation>
