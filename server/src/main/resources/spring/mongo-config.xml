@@ -17,30 +17,20 @@
     </bean>
 
 
-    <bean class="com.mongodb.MongoClient" id="social.mongodb.mongoClient">
-        <constructor-arg>
-            <list>
-                <ref bean="social.mongo.mainServer"/>
-            </list>
-        </constructor-arg>
-        <constructor-arg ref="social.mongodb.optionsFactory"/>
-    </bean>
-
-    <bean id="social.mongo.mainServer" class="com.mongodb.ServerAddress">
-        <constructor-arg value="${studio.social.mongodb.connection.host}"/>
-        <constructor-arg value="${studio.social.mongodb.connection.port}"/>
+    <bean class="org.craftercms.commons.mongo.MongoClientFactory" id="social.mongoClient">
+        <property name="options" ref="social.mongodb.optionsFactory"/>
+        <property name="connectionString" value="${studio.social.mongodb.connection.connectionStr}"/>
     </bean>
 
     <bean id="social.mongodb.jongoFactory" class="org.craftercms.commons.mongo.JongoFactoryBean">
-        <property name="mongo" ref="social.mongodb.mongoClient"/>
+        <property name="mongo" ref="social.mongoClient"/>
         <property name="username" value="${studio.social.mongodb.connection.dbUser}"/>
         <property name="password" value="${studio.social.mongodb.connection.dbPassword}"/>
         <property name="dbName" value="${studio.social.mongodb.connection.db}"/>
     </bean>
 
-
     <bean id="crafter.mongoInitScriptRunner" class="org.craftercms.commons.mongo.MongoScriptRunner">
-        <property name="mongo" ref="social.mongodb.mongoClient"/>
+        <property name="mongo" ref="social.mongoClient"/>
         <property name="dbName" value="${studio.social.mongodb.connection.db}"/>
         <property name="username" value="${studio.social.mongodb.connection.dbUser}"/>
         <property name="password" value="${studio.social.mongodb.connection.dbPassword}"/>
