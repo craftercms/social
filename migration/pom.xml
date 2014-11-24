@@ -26,9 +26,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>migration</artifactId>
+
     <properties>
         <java.version>1.7</java.version>
-        <javafx.version>2.2</javafx.version>
     </properties>
     <dependencies>
         <dependency>
@@ -52,16 +52,32 @@
             <version>3.3.2</version>
         </dependency>
         <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>javafx</artifactId>
-            <version>${javafx.version}</version>
-            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
-            <scope>system</scope>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-commons-utilities</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.10</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.8.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>1.7R4</version>
         </dependency>
     </dependencies>
     <build>
@@ -108,7 +124,8 @@
                             <JavaFX-Version>${javafx.version}+</JavaFX-Version>
                             <Main-Class>org.craftercms.social.migration.MigrationTool</Main-Class>
                             <implementation-version>1.0</implementation-version>
-                            <JavaFX-Application-Class>org.craftercms.social.migration.MigrationTool</JavaFX-Application-Class>
+                            <JavaFX-Application-Class>org.craftercms.social.migration.MigrationTool
+                            </JavaFX-Application-Class>
                             <JavaFX-Class-Path></JavaFX-Class-Path>
                             <!-- The artifactId (name) of the jfxrt.jar ... see dependency system scope-->
                             <Class-Path>javafx-${javafx.version}.jar</Class-Path>
@@ -118,64 +135,6 @@
                         </manifest>
                     </archive>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <!-- define the deploy ANT task-->
-                                <taskdef name="jfxdeploy" classname="com.sun.javafx.tools.ant.DeployFXTask"
-                                         classpathref="maven.plugin.classpath" />
-                                <!-- define the JarSing ANT task-->
-                                <taskdef name="jfxsignjar" classname="com.sun.javafx.tools.ant.FXSignJarTask"
-                                         classpathref="maven.plugin.classpath" />
-                                <jfxdeploy width="1024" height="768"
-                                           outdir="${project.build.directory}/deploy" outfile="${project.build.finalName}"
-                                           nativeBundles="all">
-                                    <info title="${project.name}" />
-                                    <!-- set the main class of your applcation; I had to create a Main.class (class Main extends MyMain) otherwise it will return an error on start-->
-                                    <application name="${project.build.finalName}" mainClass="com.javafx.main.Main" />
-                                    <resources>
-                                        <fileset dir="${project.build.directory}" includes="*.jar" />
-                                        <fileset dir="${project.build.directory}/dependency"
-                                                 includes="*.jar" />
-                                    </resources>
-                                    <!-- set your jvm args-->
-                                    <platform javafx="${javafx.version}+">
-                                        <jvmarg value="-Xms512m" />
-                                        <jvmarg value="-Xmx1024m" />
-                                    </platform>
-                                </jfxdeploy>
-
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.oracle</groupId>
-                        <artifactId>ant-javafx</artifactId>
-                        <version>${javafx.version}</version>
-                        <systemPath>${java.home}/../lib/ant-javafx.jar</systemPath>
-                        <scope>system</scope>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.oracle</groupId>
-                        <artifactId>javafx</artifactId>
-                        <version>${javafx.version}</version>
-                        <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
-                        <scope>system</scope>
-                    </dependency>
-                </dependencies>
             </plugin>
 
             <plugin>
@@ -208,12 +167,150 @@
     </build>
     <profiles>
         <profile>
-            <id>osx</id>
+            <id>jdk7</id>
             <activation>
-                <os>
-                    <family>mac</family>
-                </os>
+                <jdk>1.7</jdk>
             </activation>
+            <properties>
+                <javafx.version>2.2</javafx.version>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- define the deploy ANT task-->
+                                        <taskdef name="jfxdeploy" classname="com.sun.javafx.tools.ant.DeployFXTask"
+                                                 classpathref="maven.plugin.classpath"/>
+                                        <!-- define the JarSing ANT task-->
+                                        <taskdef name="jfxsignjar" classname="com.sun.javafx.tools.ant.FXSignJarTask"
+                                                 classpathref="maven.plugin.classpath"/>
+                                        <jfxdeploy width="1024" height="768"
+                                                   outdir="${project.build.directory}/deploy"
+                                                   outfile="${project.build.finalName}"
+                                                   nativeBundles="all">
+                                            <info title="${project.name}"/>
+                                            <!-- set the main class of your applcation; I had to create a Main.class (class Main extends MyMain) otherwise it will return an error on start-->
+                                            <application name="${project.build.finalName}"
+                                                         mainClass="org.craftercms.social.migration.MigrationTool"/>
+                                            <resources>
+                                                <fileset dir="${project.build.directory}" includes="*.jar"/>
+                                                <fileset dir="${project.build.directory}/dependency"
+                                                         includes="*.jar"/>
+                                            </resources>
+                                            <!-- set your jvm args-->
+                                            <platform javafx="${javafx.version}+">
+                                                <jvmarg value="-Xms512m"/>
+                                                <jvmarg value="-Xmx1024m"/>
+                                            </platform>
+                                        </jfxdeploy>
+
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.oracle</groupId>
+                                <artifactId>ant-javafx</artifactId>
+                                <version>${javafx.version}</version>
+                                <systemPath>${java.home}/../lib/ant-javafx.jar</systemPath>
+                                <scope>system</scope>
+                            </dependency>
+                            <dependency>
+                                <groupId>com.oracle</groupId>
+                                <artifactId>javafx</artifactId>
+                                <version>${javafx.version}</version>
+                                <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+                                <scope>system</scope>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle</groupId>
+                    <artifactId>javafx</artifactId>
+                    <version>${javafx.version}</version>
+                    <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+                    <scope>system</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>jdk8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <properties>
+                <javafx.version>8</javafx.version>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- define the deploy ANT task-->
+                                        <taskdef name="jfxdeploy" classname="com.sun.javafx.tools.ant.DeployFXTask"
+                                                 classpathref="maven.plugin.classpath"/>
+                                        <!-- define the JarSing ANT task-->
+                                        <taskdef name="jfxsignjar" classname="com.sun.javafx.tools.ant.FXSignJarTask"
+                                                 classpathref="maven.plugin.classpath"/>
+                                        <jfxdeploy width="1024" height="768"
+                                                   outdir="${project.build.directory}/deploy"
+                                                   outfile="${project.build.finalName}"
+                                                   nativeBundles="all">
+                                            <info title="${project.name}"/>
+                                            <!-- set the main class of your applcation; I had to create a Main.class (class Main extends MyMain) otherwise it will return an error on start-->
+                                            <application name="${project.build.finalName}"
+                                                         mainClass="org.craftercms.social.migration.MigrationTool"/>
+                                            <resources>
+                                                <fileset dir="${project.build.directory}" includes="*.jar"/>
+                                                <fileset dir="${project.build.directory}/dependency"
+                                                         includes="*.jar"/>
+                                            </resources>
+                                            <!-- set your jvm args-->
+                                            <platform javafx="${javafx.version}+">
+                                                <jvmarg value="-Xms512m"/>
+                                                <jvmarg value="-Xmx1024m"/>
+                                            </platform>
+                                        </jfxdeploy>
+
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.oracle</groupId>
+                                <artifactId>ant-javafx</artifactId>
+                                <version>${javafx.version}</version>
+                                <systemPath>${java.home}/../lib/ant-javafx.jar</systemPath>
+                                <scope>system</scope>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

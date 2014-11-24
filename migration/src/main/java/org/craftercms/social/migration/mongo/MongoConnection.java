@@ -26,31 +26,40 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.craftercms.social.migration.util.MigrationException;
 import org.craftercms.social.migration.util.MigrationMessenger;
 import org.jongo.Jongo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  *
  */
 public class MongoConnection {
 
+    private final MongoClient sourceClient;
+    private final MongoClient destinationClient;
     private  Jongo source;
     private  Jongo destination;
-
     private static MongoConnection instance;
+    private Logger log = LoggerFactory.getLogger(MongoConnection.class);
 
-    private MongoConnection(final Jongo source, final Jongo destination) {
-        this.source = source;
-        this.destination = destination;
+    private MongoConnection(final MongoClient source, final String srcDb, final MongoClient destination, final String
+        dtsDb) {
+        this.source = new Jongo(source.getDB(srcDb));
+        this.destination =  new Jongo(destination.getDB(dtsDb));
+        this.sourceClient=source;
+        this.destinationClient=destination;
     }
 
     public static MongoConnection getInstance(){
         if (instance==null){
-            throw new IllegalArgumentException("Mongo connection has not been initialize ");
+            throw new IllegalStateException("Mongo connection has not been initialize ");
         }
         return instance;
     }
 
     public static void init(final String srcHost, final String srcPort, final String srcDb, final String dstHost,
                             final String dtsPort, final String dtsDb) throws MigrationException {
+        LoggerFactory.getLogger(MongoConnection.class).info("Starting DB connection");
         if (instance == null) {
 
             int iSrcPort = NumberUtils.toInt(srcPort);
@@ -80,10 +89,8 @@ public class MongoConnection {
             }
 
             try {
-                instance = new MongoConnection(new Jongo(new MongoClient(srcHost, iSrcPort).getDB(srcDb)), new Jongo
-                    (new MongoClient(dstHost, iDstPort).getDB(dtsDb)));
-                MigrationMessenger.getInstance().log(MigrationMessenger.Level.TASK_END,"Connected to source and "
-                    + "destination","Configuration");
+                instance = new MongoConnection(new MongoClient(srcHost, iSrcPort),srcDb,new MongoClient(dstHost,
+                    iDstPort),dtsDb);
             } catch (UnknownHostException e) {
                 throw new MigrationException(e, true);
             }
@@ -96,5 +103,9 @@ public class MongoConnection {
 
     public Jongo getDestination() {
         return destination;
+    }
+
+    public void close() {
+
     }
 }

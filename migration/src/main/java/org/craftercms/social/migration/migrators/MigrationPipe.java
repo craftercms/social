@@ -36,10 +36,10 @@ public class MigrationPipe {
     private Logger log = LoggerFactory.getLogger(MigrationPipe.class);
 
 
-    public MigrationPipe(List<File> scriptToExec) {
+    public MigrationPipe(List<File> scriptToExec, final MigrationMessenger messenger) {
         this.scripts = scriptToExec;
-        messenger = MigrationMessenger.getInstance();
-        scriptEngine = ScriptingEngine.getInstance();
+        this.messenger = messenger;
+        scriptEngine = new ScriptingEngine(messenger);
     }
 
     public void start() throws MigrationException {
@@ -48,15 +48,16 @@ public class MigrationPipe {
         }
         for (File script : scripts) {
             try {
-                messenger.log(MigrationMessenger.Level.TASK_START, "Start  " + script.getName() + "@ " + new Date(), script.getName());
+                messenger.log(MigrationMessenger.Level.TASK_START, "Start  " + script.getName() + "@ " + new Date(),
+                    script.getName());
                 scriptEngine.eval(script);
-                messenger.log(MigrationMessenger.Level.TASK_START, "Finish " + script.getName() + "@ " + new Date(), script.getName());
-            }catch (MigrationException e) {
-                if(e.isBlocker()){
+                messenger.log(MigrationMessenger.Level.TASK_END, "Finish " + script.getName() + "@ " + new Date(),
+                    script.getName());
+            } catch (MigrationException e) {
+                if (e.isBlocker()) {
                     throw e;
-                }else{
-                    messenger.log(MigrationMessenger.Level.WARNING,"Error executing "+script.getName()+"<br/>"+e
-                        .toString(),script.getName());
+                } else {
+                    messenger.log(MigrationMessenger.Level.WARNING, e.toString(), script.getName());
                 }
             }
         }
