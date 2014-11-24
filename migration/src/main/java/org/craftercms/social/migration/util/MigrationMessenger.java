@@ -19,19 +19,26 @@ package org.craftercms.social.migration.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import javafx.application.Platform;
-import javafx.scene.web.WebView;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 public final class MigrationMessenger {
-    public enum Level{
-        INFO(""),WARNING("warning"),ERROR("danger"),TASK_START("info"),TASK_END("success");
+
+    private final ProgressBar progressBar;
+    private Logger log = LoggerFactory.getLogger(MigrationMessenger.class);
+    private TableView logTable;
+
+    public enum Level {
+        INFO(""), WARNING("warning"), ERROR("danger"), TASK_START("info"), TASK_END("success");
         private String cssClass;
 
         Level(final String cssClass) {
@@ -42,59 +49,33 @@ public final class MigrationMessenger {
             return cssClass;
         }
     }
-    private static MigrationMessenger instance;
-    private final WebView textArea;
 
-    public static MigrationMessenger getInstance(WebView textArea){
-        if(instance==null){
-            instance=new MigrationMessenger(textArea);
-        }
-        return instance;
-    }
-    public static MigrationMessenger getInstance(){
-        if(instance==null){
-           throw new IllegalStateException("Instance haven't been initialize correctly");
-        }
-        return instance;
+    public MigrationMessenger(final TableView logTable,final ProgressBar progressBar) {
+        this.logTable = logTable;
+        this.progressBar=progressBar;
     }
 
-
-    private MigrationMessenger(final WebView log) {
-        this.textArea = log;
+    public void log(final String level, final String message,final String msgSource) {
+        log(Level.valueOf(level), message,msgSource);
     }
 
-    public void log(final String level,final String message,final String source){
-        log(Level.valueOf(level),message,source);
+    public void clear() {
+        logTable.getItems().clear();
     }
-    public void clear(){
-        final Document doc = textArea.getEngine().getDocument();
-        final Element root = doc.getElementById("logs");
-        final NodeList list = root.getChildNodes();
-        for (int i = 0; i < list.getLength(); i++) {
-            root.removeChild(list.item(i));
-        }
-    }
-    public void log(final Level level, final String message,final String msgSource) {
+
+    public void log(final Level level, final String message, final String msgSource) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                final Document doc = textArea.getEngine().getDocument();
-                String dateFormat = new SimpleDateFormat("yyyy MM dd hh:mm:ss zzz").format(new Date());
-                final Element tr = doc.createElement("tr");
-                tr.setAttribute("class",level.getCssClass());
-                final Element tmigrator = doc.createElement("td");
-                final Element tdate = doc.createElement("td");
-                final Element tmessage = doc.createElement("td");
-                tmessage.setAttribute("class","text-center");
-                tmessage.setTextContent(message);
-                tdate.setTextContent(dateFormat);
-                tmigrator.setTextContent(msgSource);
-                tr.appendChild(tmigrator);
-                tr.appendChild(tdate);
-                tr.appendChild(tmessage);
-                doc.getElementById("logs").appendChild(tr);
-
+                logTable.getItems().add(0, new UserLogEntry(level, msgSource, message, new Date()));
             }
         });
+    }
+
+    public void resetProgress(){
+        progressBar.setProgress(0);
+    }
+    public void setProgress(double progress){
+        progressBar.setProgress(progress);
     }
 }

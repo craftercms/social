@@ -18,17 +18,20 @@
 package org.craftercms.social.migration.migrators;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
-import org.apache.commons.io.IOUtils;
 import org.craftercms.social.migration.MigrationTool;
 import org.craftercms.social.migration.mongo.MongoConnection;
 import org.craftercms.social.migration.util.MigrationException;
 import org.craftercms.social.migration.util.MigrationMessenger;
+import org.craftercms.social.migration.util.scripting.PrimitiveWrapFactory;
+import org.craftercms.social.migration.util.scripting.ScriptUtils;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.WrappedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,34 +41,36 @@ import org.slf4j.LoggerFactory;
 public class ScriptingEngine {
 
     private static ScriptingEngine instance;
-    private final ScriptEngine engine;
+    private final Context engine;
+    private final ScriptableObject scope;
+
     private Logger log = LoggerFactory.getLogger(ScriptingEngine.class);
-
-    public static ScriptingEngine getInstance() {
-        if (instance == null) {
-            instance = new ScriptingEngine();
-        }
-        return instance;
-    }
-
-    private ScriptingEngine() {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        engine = manager.getEngineByName("JavaScript");
+    public ScriptingEngine(final MigrationMessenger messenger) {
+        // Create and enter a Context. A Context stores information about the execution environment of a script.
+        engine = Context.enter();
+        engine.setWrapFactory(new PrimitiveWrapFactory());
+        scope = new ImporterTopLevel(engine);
         final MongoConnection connection = MongoConnection.getInstance();
-        engine.put("source", connection.getSource());
-        engine.put("destination", connection.getDestination());
-        engine.put("messenger", MigrationMessenger.getInstance());
-        engine.put("props", MigrationTool.systemProperties);
+        ScriptableObject.putProperty(scope, "source", Context.javaToJS(connection.getSource(), scope));
+        ScriptableObject.putProperty(scope, "destination", Context.javaToJS(connection.getDestination(), scope));
+        ScriptableObject.putProperty(scope, "props", Context.javaToJS(MigrationTool.systemProperties, scope));
+        ScriptableObject.putProperty(scope, "utils", Context.javaToJS(new ScriptUtils(), scope));
+        ScriptableObject.putProperty(scope, "log", Context.javaToJS(log, scope));
+        ScriptableObject.putProperty(scope, "messenger", Context.javaToJS(messenger, scope));
+
     }
 
     public void eval(File script) throws MigrationException {
         try {
-            engine.put("log",LoggerFactory.getLogger(script.getName()));
-            engine.eval(IOUtils.toString(new FileInputStream(script), "UTF-8"));
-        } catch (ScriptException | IOException e) {
-            log.error("Error while executing file "+script.getPath(),e);
+
+            final FileReader scriptInput = new FileReader(script);
+            engine.evaluateReader(scope, scriptInput, script.getName(), 0, null);
+            scriptInput.close();//
+        } catch (EvaluatorException | IOException e) {
+            log.error("Error while executing file " + script.getPath(), e);
             throw new MigrationException(e, true);
-        } catch (Exception ex){
+        } catch (Exception ex) {
+            log.error("Error while executing file " + script.getPath(), ex);
             throw new MigrationException(ex, false); // For all Other
         }
     }
