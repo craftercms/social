@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 /**
  * Created by Carlos Ortiz on 11/20/14.
  */
-public class scriptUtils {
+public class ScriptUtils {
 
     public static String toJson(Object o) throws JsonProcessingException {
         final ObjectMapper mapper = new ObjectMapper();
