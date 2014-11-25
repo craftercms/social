@@ -18,6 +18,7 @@
 package org.craftercms.social.repositories.system.notifications;
 
 import java.util.List;
+import java.util.Map;
 
 import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.commons.mongo.MongoDataException;
@@ -25,6 +26,7 @@ import org.craftercms.social.domain.notifications.ProfileWatchOptions;
 import org.craftercms.social.domain.notifications.ThreadsToNotify;
 import org.craftercms.social.domain.notifications.WatchedThread;
 import org.craftercms.social.exceptions.NotificationException;
+import org.craftercms.social.exceptions.SocialException;
 
 /**
  *
@@ -35,4 +37,5 @@ public interface WatchedThreadsRepository extends CrudRepository<WatchedThread> 
      WatchedThread isUserSubscribe(final String threadId, final String profileId) throws MongoDataException;
      Iterable<WatchedThread> findAllWithWatchers() throws NotificationException;
      List<ThreadsToNotify> findProfilesToSend(final String type) throws NotificationException;
+     List<Map> findUserWatchedThreads(final String profileId) throws SocialException;
 }

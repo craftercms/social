@@ -18,18 +18,23 @@
 package org.craftercms.social.repositories.system.notifications.impl;
 
 
+import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.notifications.ThreadsToNotify;
 import org.craftercms.social.domain.notifications.WatchedThread;
 import org.craftercms.social.exceptions.NotificationException;
+import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.repositories.system.notifications.WatchedThreadsRepository;
 import org.jongo.Aggregate;
+import org.jongo.ResultHandler;
 
 /**
  *
@@ -91,4 +96,24 @@ public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<Watche
         }
     }
 
+    @Override
+    public List<Map> findUserWatchedThreads(final String profileId) throws SocialException {
+        String query=getQueryFor("social.notification.byWatcherId1");
+        String query2=getQueryFor("social.notification.byWatcherId2");
+        String query3=getQueryFor("social.notification.byWatcherId3");
+        try{
+
+           return getCollection().aggregate(query).and(query2,profileId).and(query3).map(new ResultHandler<Map>() {
+               @Override
+               public Map map(final DBObject result) {
+                   HashMap<String,String> map= new HashMap<String, String>();
+                   map.put("thread",((String)result.get("_id")).split("/")[1]);
+                   map.put("frequency",result.get("frequency").toString());
+                   return map;
+               }
+           });
+        }catch (MongoException ex){
+            throw new SocialException("Unable to read watched threads for user",ex);
+        }
+    }
 }

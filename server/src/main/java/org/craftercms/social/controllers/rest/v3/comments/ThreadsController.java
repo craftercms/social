@@ -5,10 +5,12 @@ import com.wordnik.swagger.annotations.ApiParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.social.domain.notifications.WatchedThread;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.security.SocialSecurityUtils;
@@ -108,13 +110,21 @@ public class ThreadsController {
                              @RequestParam(required = true) final String frequency,
                              @RequestParam final String context)
         throws UGCException {
-        Profile p = SocialSecurityUtils.getCurrentProfile();
+        Profile p = SocialSecurityUtils.getCurrentProfile ();
         if (!p.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {
             notificationService.subscribeUser(p.getId().toString(),context+"/"+id, frequency);
             return true;
         }
         return false;
     }
+
+
+    @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Map> subscriptions(@RequestParam final String context) throws SocialException {
+        return notificationService.getUserSubscriptions();
+    }
+
 
     @RequestMapping(value = "{id}/unsubscribe", method = RequestMethod.DELETE)
     @ResponseBody
@@ -126,6 +136,9 @@ public class ThreadsController {
         }
         return false;
     }
+
+
+
 
     public static List<DefaultKeyValue<String, Boolean>> getSortOrder(final List<String> sortFields, final
     List<SocialSortOrder> sortOrder) {

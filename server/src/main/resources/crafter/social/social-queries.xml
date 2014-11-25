@@ -186,21 +186,30 @@
     </entry>
     <entry key="social.system.preferences.savePreferencesByContextId">
         {$set:{
-                "email.host":#,
-                "email.encoding":#,
-                "email.port":#,
-                "email.auth":#,
-                "email.username":#,
-                "email.password":#,
-                "email.tls":#,
-                "email.replyTo":#,
-                "email.from":#,
-                "email.priority":#,
-                "email.subject":#
-                }
+        "email.host":#,
+        "email.encoding":#,
+        "email.port":#,
+        "email.auth":#,
+        "email.username":#,
+        "email.password":#,
+        "email.tls":#,
+        "email.replyTo":#,
+        "email.from":#,
+        "email.priority":#,
+        "email.subject":#
+        }
         }
     </entry>
     <entry key="social.system.preferences.notificationEmailByType">
         { "_id" : #,templates:{$elemMatch:{type:#}}}
+    </entry>
+    <entry key="social.notification.byWatcherId1">
+        {$unwind:"$watchers"}
+    </entry>
+    <entry key="social.notification.byWatcherId2">
+        {$match:{"watchers._id":#}}
+    </entry>
+    <entry key="social.notification.byWatcherId3">
+        {$project:{_id:1,frequency:"$watchers.frequency"}}
     </entry>
 </properties>
