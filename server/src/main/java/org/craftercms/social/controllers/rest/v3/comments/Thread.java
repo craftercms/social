@@ -6,7 +6,7 @@ import java.util.List;
 import org.craftercms.social.domain.UGC;
 
 /**
- * Created by cortiz on 6/13/14.
+ *
  */
 
 public class Thread {
@@ -14,7 +14,7 @@ public class Thread {
     private long total;
     private int pageSize;
     private int pageNumber;
-    private boolean subscribe;
+    private boolean watched;
     private List<? extends UGC> comments;
 
 
@@ -59,11 +59,11 @@ public class Thread {
         }
     }
 
-    public boolean isSubscribe() {
-        return subscribe;
+    public boolean isWatched() {
+        return watched;
     }
 
-    public void setSubscribe(final boolean subscribe) {
-        this.subscribe = subscribe;
+    public void setWatched(final boolean watched) {
+        this.watched = watched;
     }
 }

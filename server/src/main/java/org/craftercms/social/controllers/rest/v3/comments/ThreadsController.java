@@ -63,7 +63,7 @@ public class ThreadsController {
         }
         thread.setComments(ugcService.read(id, SocialSecurityUtils.getContext(), start, pageSize, getSortOrder
             (sortBy, sortOrder), upToLevel, childrenCount));
-        thread.setSubscribe(notificationService.isBeenWatch(SocialSecurityUtils.getContext() + "/" + id,
+        thread.setWatched(notificationService.isBeenWatch(SocialSecurityUtils.getContext() + "/" + id,
             SocialSecurityUtils.getCurrentProfile().getId().toString()));
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
@@ -99,7 +99,7 @@ public class ThreadsController {
         }
         thread.setComments(ugcService.readChildren(commentId, id, SocialSecurityUtils.getContext(), start, pageSize,
             getSortOrder(sortBy, sortOrder), upToLevel, childrenCount));
-        thread.setSubscribe(notificationService.isBeenWatch(SocialSecurityUtils.getContext() + "/" + id,
+        thread.setWatched(notificationService.isBeenWatch(SocialSecurityUtils.getContext() + "/" + id,
             SocialSecurityUtils.getCurrentProfile().getId().toString()));
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
