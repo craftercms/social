@@ -33,20 +33,6 @@ public class SocialInjectValueFactory implements InjectValueFactory {
                 }else{
                     return (T)profile;
                 }
-            } else if ((declaringClass.equals(boolean.class) || declaringClass.equals(Boolean.class)) &&
-                originalProperty.equals("targetId")) {
-                try {
-                    final Profile profile = SocialSecurityUtils.getCurrentProfile();
-                    if (!profile.getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
-                        return (T)(Boolean)notificationService.isBeenWatch(basePropertyValue.toString(), profile
-                            .getId().toString());
-                    } else {
-                        return (T)Boolean.FALSE;
-                    }
-                } catch (NotificationException e) {
-                    log.error("logging.system.notification.aggregation", e, SocialSecurityUtils.getCurrentProfile()
-                        .getId());
-                }
             }
         }
         return null;

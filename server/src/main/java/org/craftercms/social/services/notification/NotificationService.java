@@ -16,7 +16,12 @@
  */
 package org.craftercms.social.services.notification;
 
+import java.util.List;
+import java.util.Map;
+
+import org.craftercms.social.domain.notifications.WatchedThread;
 import org.craftercms.social.exceptions.NotificationException;
+import org.craftercms.social.exceptions.SocialException;
 
 /**
  *
@@ -34,4 +39,6 @@ public interface NotificationService {
     void unSubscribeUser(final String userId, String threadId) throws NotificationException;
 
     boolean isBeenWatch(final String threadId, final String profileId) throws NotificationException;
+
+    List<Map> getUserSubscriptions() throws SocialException;
 }
