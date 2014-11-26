@@ -14,6 +14,7 @@ public class Thread {
     private long total;
     private int pageSize;
     private int pageNumber;
+    private boolean subscribe;
     private List<? extends UGC> comments;
 
 
@@ -56,5 +57,13 @@ public class Thread {
         } else {
             this.comments = comments;
         }
+    }
+
+    public boolean isSubscribe() {
+        return subscribe;
+    }
+
+    public void setSubscribe(final boolean subscribe) {
+        this.subscribe = subscribe;
     }
 }

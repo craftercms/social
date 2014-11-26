@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.craftercms.profile.api.Profile;
-import org.craftercms.social.domain.notifications.WatchedThread;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.security.SocialSecurityUtils;
@@ -64,9 +63,12 @@ public class ThreadsController {
         }
         thread.setComments(ugcService.read(id, SocialSecurityUtils.getContext(), start, pageSize, getSortOrder
             (sortBy, sortOrder), upToLevel, childrenCount));
+        thread.setSubscribe(notificationService.isBeenWatch(SocialSecurityUtils.getContext() + "/" + id,
+            SocialSecurityUtils.getCurrentProfile().getId().toString()));
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
         thread.setTotal(ugcService.count(id, SocialSecurityUtils.getContext()));
+
         return thread;
     }
 
@@ -76,8 +78,8 @@ public class ThreadsController {
         " Sort will apply for all levels")
     @ResponseBody
     public Thread comments(@ApiParam(value = "Id of the thread") @PathVariable final String id, @ApiParam(value =
-        "Id" + " of the Comment") @PathVariable final String commentId, @ApiParam(value = "Levels of comments to "
-        + "return") @RequestParam(required = false,
+        "Id" + " of the Comment") @PathVariable final String commentId, @ApiParam(value = "Levels of comments to " +
+        "return") @RequestParam(required = false,
         defaultValue = MAX_INT) final int recursive, @ApiParam("Page number to return") @RequestParam(required =
         false, defaultValue = "0") final int pageNumber, @ApiParam("Comments per Page") @RequestParam(required = false,
         defaultValue = MAX_INT) final int pageSize, @ApiParam(value = "Amount of Children to return") @RequestParam
@@ -97,6 +99,8 @@ public class ThreadsController {
         }
         thread.setComments(ugcService.readChildren(commentId, id, SocialSecurityUtils.getContext(), start, pageSize,
             getSortOrder(sortBy, sortOrder), upToLevel, childrenCount));
+        thread.setSubscribe(notificationService.isBeenWatch(SocialSecurityUtils.getContext() + "/" + id,
+            SocialSecurityUtils.getCurrentProfile().getId().toString()));
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
         thread.setTotal(ugcService.countChildren(commentId, SocialSecurityUtils.getContext()));
@@ -106,13 +110,11 @@ public class ThreadsController {
 
     @RequestMapping(value = "{id}/subscribe", method = RequestMethod.POST)
     @ResponseBody
-    public boolean subscribe(@PathVariable final String id,
-                             @RequestParam(required = true) final String frequency,
-                             @RequestParam final String context)
-        throws UGCException {
-        Profile p = SocialSecurityUtils.getCurrentProfile ();
+    public boolean subscribe(@PathVariable final String id, @RequestParam(required = true) final String frequency,
+                             @RequestParam final String context) throws UGCException {
+        Profile p = SocialSecurityUtils.getCurrentProfile();
         if (!p.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {
-            notificationService.subscribeUser(p.getId().toString(),context+"/"+id, frequency);
+            notificationService.subscribeUser(p.getId().toString(), context + "/" + id, frequency);
             return true;
         }
         return false;
@@ -128,16 +130,14 @@ public class ThreadsController {
 
     @RequestMapping(value = "{id}/unsubscribe", method = RequestMethod.DELETE)
     @ResponseBody
-    public boolean unSubscribe(@PathVariable final String id,@RequestParam final String context) throws UGCException {
+    public boolean unSubscribe(@PathVariable final String id, @RequestParam final String context) throws UGCException {
         Profile p = SocialSecurityUtils.getCurrentProfile();
         if (!p.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {
-            notificationService.unSubscribeUser(p.getId().toString(),context+"/"+id);
+            notificationService.unSubscribeUser(p.getId().toString(), context + "/" + id);
             return true;
         }
         return false;
     }
-
-
 
 
     public static List<DefaultKeyValue<String, Boolean>> getSortOrder(final List<String> sortFields, final
