@@ -38,6 +38,7 @@
         <property name="socialUgcFactory" ref="social.ugc.factory"/>
         <property name="virusScanner" ref="social.ugc.virusScanner"/>
         <property name="reactor" ref="socialReactor"/>
+        <property name="notificationServiceImpl" ref="social.services.system.notificationService"/>R∂
     </bean>
 
     <bean id="social.ugc.virusScanner"
