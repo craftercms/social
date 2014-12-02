@@ -116,4 +116,6 @@ public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<Watche
             throw new SocialException("Unable to read watched threads for user",ex);
         }
     }
+
+
 }

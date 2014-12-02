@@ -110,16 +110,30 @@ public class ThreadsController {
 
     @RequestMapping(value = "{id}/subscribe", method = RequestMethod.POST)
     @ResponseBody
-    public boolean subscribe(@PathVariable final String id, @RequestParam(required = true) final String frequency,
+    public boolean subscribe(@PathVariable final String id, @RequestParam(required = false,defaultValue = "") final
+    String frequency,
                              @RequestParam final String context) throws UGCException {
         Profile p = SocialSecurityUtils.getCurrentProfile();
         if (!p.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {
-            notificationService.subscribeUser(p.getId().toString(), context + "/" + id, frequency);
+            notificationService.subscribeUser(p, context + "/" + id, frequency);
             return true;
         }
         return false;
     }
 
+    @RequestMapping(value = "{id}/subscribe", method = RequestMethod.PUT)
+    @ResponseBody
+    public boolean changeSubscribe(@PathVariable final String id, @RequestParam(required = false,defaultValue = "")
+    final
+    String frequency,
+                             @RequestParam final String context) throws UGCException {
+        Profile p = SocialSecurityUtils.getCurrentProfile();
+        if (!p.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {
+            notificationService.changeSubscription(p, context + "/" + id, frequency);
+            return true;
+        }
+        return false;
+    }
 
     @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
     @ResponseBody

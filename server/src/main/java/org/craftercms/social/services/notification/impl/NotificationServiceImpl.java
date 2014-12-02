@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -66,8 +67,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public void subscribeUser(final String userId, final String threadId, final String frequency) throws
+    public void subscribeUser(final Profile profile, final String threadId, final String frequency) throws
         NotificationException {
+        String frequencyToUse=frequency;
         try {
             WatchedThread thread = watchedThreadsRepository.findByStringId(threadId);
             if (thread == null) {
@@ -76,8 +78,19 @@ public class NotificationServiceImpl implements NotificationService {
                 thread.setThreadId(threadId);
                 watchedThreadsRepository.save(thread);
             }
-            log.debug("logging.system.notification.adding", userId, threadId, frequency);
-            watchedThreadsRepository.addWatcher(thread.getThreadId(), userId, frequency);
+            log.debug("logging.system.notification.adding", profile, threadId, frequency);
+            if(StringUtils.isBlank(frequency)){
+                if(profile.getAttributes().containsKey("defaultFrequency")){
+                    frequencyToUse=profile.getAttribute("defaultFrequency");
+                    if(StringUtils.isBlank(frequencyToUse)){
+                        throw new IllegalArgumentException("Profile defaultFrequency can't be empty");
+                    }
+                }else{
+                    throw new IllegalArgumentException("Profile defaultFrequency must be set or send a valid "
+                        + "frequency");
+                }
+            }
+            watchedThreadsRepository.addWatcher(thread.getThreadId(), profile.getId().toString(), frequency);
         } catch (MongoDataException e) {
             throw new NotificationException("Unable to subscribe User", e);
         }
@@ -135,6 +148,26 @@ public class NotificationServiceImpl implements NotificationService {
             return watchedThreadsRepository.findUserWatchedThreads(p.getId().toString());
         }else{
             throw new AuthenticationRequiredException("User is not authenticated");
+        }
+    }
+
+    @Override
+    public void changeSubscription(final Profile p, final String threadId, final String frequency) throws NotificationException {
+        if(isBeenWatch(threadId,p.getId().toString())){
+            String frequencyToUse = frequency;
+            if(StringUtils.isBlank(frequencyToUse)){
+                if(p.getAttributes().containsKey("defaultFrequency")){
+                    frequencyToUse=p.getAttribute("defaultFrequency");
+                    if(StringUtils.isBlank(frequencyToUse)){
+                        throw new IllegalArgumentException("Profile defaultFrequency can't be empty");
+                    }
+                }else{
+                    throw new IllegalArgumentException("Profile defaultFrequency must be set or send a valid "
+                        + "frequency");
+                }
+            }
+           watchedThreadsRepository.removeWatcher(threadId,p.getId().toString());
+           watchedThreadsRepository.addWatcher(threadId,p.getId().toString(), frequencyToUse);
         }
     }
 

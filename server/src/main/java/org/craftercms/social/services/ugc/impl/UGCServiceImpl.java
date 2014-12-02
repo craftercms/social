@@ -109,7 +109,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         if (profileMap.containsKey("defaultFrequency") && profileMap.containsKey("autoWatch")) {
             boolean autoWatch = currentProfile.getAttribute("autoWatch");
             if (autoWatch) {
-                notificationService.subscribeUser(currentProfile.getId().toString(), targetId, (String)currentProfile
+                notificationService.subscribeUser(currentProfile, targetId, (String)currentProfile
                     .getAttribute("defaultFrequency"));
             }
         } else {

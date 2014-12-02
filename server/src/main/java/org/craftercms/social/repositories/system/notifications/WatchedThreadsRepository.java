@@ -38,4 +38,5 @@ public interface WatchedThreadsRepository extends CrudRepository<WatchedThread> 
      Iterable<WatchedThread> findAllWithWatchers() throws NotificationException;
      List<ThreadsToNotify> findProfilesToSend(final String type) throws NotificationException;
      List<Map> findUserWatchedThreads(final String profileId) throws SocialException;
+
 }
