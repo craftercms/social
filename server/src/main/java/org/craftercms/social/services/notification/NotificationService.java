@@ -19,6 +19,7 @@ package org.craftercms.social.services.notification;
 import java.util.List;
 import java.util.Map;
 
+import org.craftercms.profile.api.Profile;
 import org.craftercms.social.domain.notifications.WatchedThread;
 import org.craftercms.social.exceptions.NotificationException;
 import org.craftercms.social.exceptions.SocialException;
@@ -32,7 +33,7 @@ public interface NotificationService {
     public static final String DAILY = "daily";
     public static final String INSTANT = "instant";
 
-    void subscribeUser(final String userId, final String threadId, final String type) throws NotificationException;
+    void subscribeUser(final Profile profile, final String threadId, final String type) throws NotificationException;
 
     void notify(final String type);
 
@@ -41,4 +42,6 @@ public interface NotificationService {
     boolean isBeenWatch(final String threadId, final String profileId) throws NotificationException;
 
     List<Map> getUserSubscriptions() throws SocialException;
+
+    void changeSubscription(Profile p, String threadId, String frequency) throws NotificationException;
 }

@@ -27,6 +27,7 @@
     <import resource="classpath:/org/craftercms/commons/audit/crafter-commons-audit-reaper.xml"/>
 
     <bean id="socialReactor" name="socialReactor" factory-bean="reactorFactory" factory-method="createReactor"/>
+
     <bean id="socialAuditProxy" name="socialAuditProxy" class="org.craftercms.social.util.ebus.AuditListener">
         <property name="auditReactor" ref="AuditReactor"/>
     </bean>
@@ -38,6 +39,7 @@
         <property name="socialUgcFactory" ref="social.ugc.factory"/>
         <property name="virusScanner" ref="social.ugc.virusScanner"/>
         <property name="reactor" ref="socialReactor"/>
+        <property name="notificationServiceImpl" ref="social.services.system.notificationService"/>
     </bean>
 
     <bean id="social.ugc.virusScanner"
