@@ -25,6 +25,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.util.Map;
 
+import org.craftercms.commons.crypto.CipherUtils;
+import org.craftercms.commons.crypto.CryptoUtils;
 import org.jongo.FindAndModify;
 import org.mozilla.javascript.NativeObject;
 
@@ -49,6 +51,11 @@ public class ScriptUtils {
             toReturn.defineProperty(key.toString(),map.get(key),NativeObject.READONLY);
         }
         return toReturn;
+    }
+
+
+    public static String hash(final String clearString){
+     return CipherUtils.hashPassword(clearString);
     }
 
     public static FindAndModify update(final FindAndModify findAndModify,final String query,final Object... params){
