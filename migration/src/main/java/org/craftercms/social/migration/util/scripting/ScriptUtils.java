@@ -23,6 +23,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import java.util.Map;
+
+import org.jongo.FindAndModify;
+import org.mozilla.javascript.NativeObject;
+
 /**
  * Created by Carlos Ortiz on 11/20/14.
  */
@@ -35,5 +40,18 @@ public class ScriptUtils {
         mapper.getSerializationConfig().with(SerializationFeature.WRITE_NULL_MAP_VALUES,SerializationFeature
             .WRITE_EMPTY_JSON_ARRAYS);
         return mapper.writeValueAsString(o);
+    }
+
+
+    public static NativeObject toJSObject(Map map){
+        final NativeObject toReturn = new NativeObject();
+        for (Object key : map.keySet()) {
+            toReturn.defineProperty(key.toString(),map.get(key),NativeObject.READONLY);
+        }
+        return toReturn;
+    }
+
+    public static FindAndModify update(final FindAndModify findAndModify,final String query,final Object... params){
+        return findAndModify.with(query,params);
     }
 }
