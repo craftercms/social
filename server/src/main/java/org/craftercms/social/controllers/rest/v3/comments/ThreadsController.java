@@ -63,8 +63,12 @@ public class ThreadsController {
         }
         thread.setComments(ugcService.read(id, SocialSecurityUtils.getContext(), start, pageSize, getSortOrder
             (sortBy, sortOrder), upToLevel, childrenCount));
-        thread.setWatched(notificationService.isBeenWatch(SocialSecurityUtils.getContext() + "/" + id,
-            SocialSecurityUtils.getCurrentProfile().getId().toString()));
+        if (SocialSecurityUtils.getCurrentProfile().getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
+            thread.setWatched(false);
+        } else {
+            thread.setWatched(notificationService.isBeenWatch(SocialSecurityUtils.getContext() + "/" + id,
+                SocialSecurityUtils.getCurrentProfile().getId().toString()));
+        }
         thread.setPageNumber(pageNumber);
         thread.setPageSize(pageSize);
         thread.setTotal(ugcService.count(id, SocialSecurityUtils.getContext()));
@@ -110,9 +114,8 @@ public class ThreadsController {
 
     @RequestMapping(value = "{id}/subscribe", method = RequestMethod.POST)
     @ResponseBody
-    public boolean subscribe(@PathVariable final String id, @RequestParam(required = false,defaultValue = "") final
-    String frequency,
-                             @RequestParam final String context) throws UGCException {
+    public boolean subscribe(@PathVariable final String id, @RequestParam(required = false, defaultValue = "") final
+    String frequency, @RequestParam final String context) throws UGCException {
         Profile p = SocialSecurityUtils.getCurrentProfile();
         if (!p.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {
             notificationService.subscribeUser(p, context + "/" + id, frequency);
@@ -123,10 +126,8 @@ public class ThreadsController {
 
     @RequestMapping(value = "{id}/subscribe", method = RequestMethod.PUT)
     @ResponseBody
-    public boolean changeSubscribe(@PathVariable final String id, @RequestParam(required = false,defaultValue = "")
-    final
-    String frequency,
-                             @RequestParam final String context) throws UGCException {
+    public boolean changeSubscribe(@PathVariable final String id, @RequestParam(required = false, defaultValue = "")
+    final String frequency, @RequestParam final String context) throws UGCException {
         Profile p = SocialSecurityUtils.getCurrentProfile();
         if (!p.getUsername().equals(SocialSecurityUtils.ANONYMOUS)) {
             notificationService.changeSubscription(p, context + "/" + id, frequency);
