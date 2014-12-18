@@ -207,8 +207,6 @@
                     _id: this.cfg.target,
                     context: this.cfg.context,
                     frequency: 'none'
-                    //url: S.url((watched ? 'subscriptions.unsubscribe' : 'subscriptions.subscribe'), {
-                    // target: this.cfg.target
                 }),
                 success: function () {
                     collection.setIsWatched(!watched);

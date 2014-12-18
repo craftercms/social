@@ -41,7 +41,7 @@
                     'unsubscribe': '?context={context}'
                 }
             },
-            
+
             comments: {
                 'value': '?context={context}',
                 '{_id}': {
@@ -59,7 +59,7 @@
                         'value': '',
                         '{fileId}': '?context={context}'
                     },
-                    'moderate': '?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'
+                    'moderate': '?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'     // TODO remove hard coded context 
                 }
             },
 
