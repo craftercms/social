@@ -42,6 +42,13 @@
         <property name="notificationServiceImpl" ref="social.services.system.notificationService"/>
     </bean>
 
+    <bean class="org.craftercms.commons.web.CORSFilter" id="crafter.corsFilter">
+        <property name="allowHeaders" value="${studio.social.system.cors.accessControlAllowHeaders}"/>
+        <property name="allowMethods" value="${studio.social.system.cors.accessControlAllowMethods}" />
+        <property name="allowOrigins" value="${studio.social.system.cors.accessControlAllowOrigin}"/>
+        <property name="maxAge" value="${studio.social.system.cors.accessControlMaxAge}"/>
+    </bean>
+
     <bean id="social.ugc.virusScanner"
           class="${studio.social.ugc.virusScanner}"/>
     <bean class="org.craftercms.social.services.social.impl.SocialServicesImpl" id="social.ugc.socialServices">

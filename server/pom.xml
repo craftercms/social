@@ -243,11 +243,7 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>org.ebaysf.web</groupId>
-            <artifactId>cors-filter</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+
 
         <dependency>
             <groupId>org.springframework</groupId>
