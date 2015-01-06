@@ -19,6 +19,7 @@ public final class SecurityActionNames {
     public static final String TEMPLATE_CONTEXT_ACTIONS = "TEMPLATE_CONTEXT_ACTIONS";
     public static final String ROLE_SOCIAL_SUPERADMIN="SOCIAL_SUPERADMIN";
     public static final String ROLE_OWNER="OWNER";
+    public static final String ROLE_SOCIAL_ADMIN = "SOCIAL_ADMIN";
 
     private SecurityActionNames(){}
 

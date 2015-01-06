@@ -16,6 +16,8 @@
  */
 package org.craftercms.social.repositories.system.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoException;
 
 import java.util.HashMap;
@@ -36,14 +38,15 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
     ContextPreferencesRepository {
 
     private I10nLogger logger = LoggerFactory.getLogger(ContextPreferencesRepositoryImpl.class);
+
     @Override
     public Map findEmailPreference(final String contextId) throws SocialException {
         try {
             String query = getQueryFor("social.system.preferences.emailPreferencesByContextId");
             final HashMap tmp = getCollection().findOne(query, contextId).projection("{email:1,_id:0}").as(HashMap
                 .class);
-            if(tmp==null || !tmp.containsKey("email")) {
-                throw new SocialException("Current context "+contextId+ "is missing email configuration");
+            if (tmp == null || !tmp.containsKey("email")) {
+                throw new SocialException("Current context " + contextId + "is missing email configuration");
             }
             return (Map)tmp.get("email");
         } catch (MongoException ex) {
@@ -56,20 +59,19 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
         SocialException {
         try {
             String query = getQueryFor("social.system.preferences.notificationEmailByType");
-                Map qResult=getCollection().findOne(query, contextId, notificationType
-                .toUpperCase())
-                .projection("{\"templates.$\":1,_id:0}").as(Map.class);
-            if(qResult==null){
+            Map qResult = getCollection().findOne(query, contextId, notificationType.toUpperCase()).projection
+                ("{\"templates.$\":1,_id:0}").as(Map.class);
+            if (qResult == null) {
                 return null;
             }
-            final List templates  = (List)qResult.get("templates");
-            if(templates==null){
-               return null;
+            final List templates = (List)qResult.get("templates");
+            if (templates == null) {
+                return null;
             }
-            if(templates.isEmpty()){
-                throw new SocialException("No template for type"+notificationType+" has been define for context "
-                    + ""+contextId);
-            }else {
+            if (templates.isEmpty()) {
+                throw new SocialException("No template for type" + notificationType + " has been define for context "
+                    + "" + contextId);
+            } else {
                 if (templates.size() > 1) {
                     logger.warn("logging.system.notification.multipleTemplatesForType", notificationType, contextId);
                 }
@@ -79,6 +81,29 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
             throw new SocialException("Unable to get Notification Template for " + contextId + " of type" +
                 notificationType);
         }
+    }
+
+    @Override
+    public Map<String, Object> getContextPreferences(final String contextId) {
+        try {
+            final String byId = getQueryFor("social.system.preferences.emailPreferencesByContextId");
+            return getCollection().findOne(byId, contextId).projection("{preferences:1,_id:0}").as(HashMap.class);
+        }catch (MongoException ex){
+            return new HashMap<>();
+        }
+    }
+
+    @Override
+    public boolean setContextPreferences(final Map<String, Object> preferences, final String contextId) {
+        try {
+            final String preferencesString = new ObjectMapper().writeValueAsString(preferences);
+            final String byId=getQueryFor("social.system.preferences.emailPreferencesByContextId");
+            getCollection().findAndModify(byId,contextId).with("{$set: "+preferencesString+"}");
+            return true;
+        } catch (MongoException | JsonProcessingException e) {
+            return false;
+        }
+
     }
 
     public void saveEmailPreference(final String contextId, Map<String, Object> emailPreferences) throws

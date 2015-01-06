@@ -19,11 +19,16 @@ package org.craftercms.social.controllers.rest.v3.system;
 
 import com.wordnik.swagger.annotations.Api;
 
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.security.exception.AuthenticationRequiredException;
 import org.craftercms.social.domain.social.system.SocialContext;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.security.SecurityActionNames;
+import org.craftercms.social.security.SocialSecurityUtils;
+import org.craftercms.social.services.system.ContextPreferencesService;
 import org.craftercms.social.services.system.SocialContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,11 +43,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @RequestMapping("/api/3/system/context")
 @Controller
-@Api(value = "Creates and associates Social Context to profiles", description ="Creates and associates Social Context to profiles" )
+@Api(value = "Creates and associates Social Context to profiles", description = "Creates and associates Social " +
+    "Context to profiles")
 public class SocialContextController {
 
     @Autowired
     private SocialContextService socialContextService;
+    @Autowired
+    private ContextPreferencesService contextPreferencesService;
 
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     @ResponseBody
@@ -58,9 +66,8 @@ public class SocialContextController {
 
     @RequestMapping(value = "/{id}/{profileId}", method = RequestMethod.POST)
     @ResponseBody
-    public Profile addProfileToContext(@PathVariable("id") final String contextId,
-                                       @PathVariable("profileId") final String profileId,
-                                       @RequestParam final String roles) throws SocialException {
+    public Profile addProfileToContext(@PathVariable("id") final String contextId, @PathVariable("profileId") final
+    String profileId, @RequestParam final String roles) throws SocialException {
         if (roles.toUpperCase().contains(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
             throw new IllegalArgumentException(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN + " is not a valid role");
         }
@@ -70,10 +77,30 @@ public class SocialContextController {
 
     @RequestMapping(value = "/{id}/{profileId}", method = RequestMethod.DELETE)
     @ResponseBody
-    public Profile removeProfileFromContext(@PathVariable("id") final String contextId,
-                                            @PathVariable("profileId") final String profileId) throws SocialException {
+    public Profile removeProfileFromContext(@PathVariable("id") final String contextId, @PathVariable("profileId")
+    final String profileId) throws SocialException {
         return socialContextService.removeProfileFromContext(contextId, profileId);
     }
 
+    @RequestMapping(value = "/preferences", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> getContextPreference() {
+        if (!SocialSecurityUtils.getCurrentProfile().getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
+            return contextPreferencesService.getContextPreferences(SocialSecurityUtils.getContext());
+        }
+        throw  new AuthenticationRequiredException("User must be logged in");
+    }
+
+    @RequestMapping(value = "/updatePreference", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean savePreferences(@RequestParam final Map<String, Object> preferences) {
+        if (!SocialSecurityUtils.getCurrentProfile().getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
+            if (SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_ADMIN) ||
+                SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
+                return contextPreferencesService.saveContextPreference(SocialSecurityUtils.getContext(), preferences);
+            }
+        }
+        throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
+    }
 
 }

@@ -17,6 +17,8 @@
 
 package org.craftercms.social.services.system.impl;
 
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.craftercms.social.exceptions.SocialException;
@@ -28,6 +30,7 @@ import org.craftercms.social.services.system.ContextPreferencesService;
  */
 public class ContextPreferencesServiceImpl implements ContextPreferencesService{
     private ContextPreferencesRepository contextPreferencesRepository;
+    private String invalidKeys;
 
     @Override
     public Map findEmailPreference(final String contextId) throws SocialException {
@@ -40,7 +43,26 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
 
     }
 
+    @Override
+    public Map<String, Object> getContextPreferences(final String contextId){
+        return contextPreferencesRepository.getContextPreferences(contextId);
+    }
+    @Override
+    public boolean saveContextPreference(final String contextId, final Map<String, Object> preferences) {
+        final HashMap<String, Object> cleanPref = new HashMap<String, Object>();
+        for (String key : preferences.keySet()) {
+            if (!invalidKeys.contains(key)){
+                cleanPref.put("preferences."+key, preferences.get(key));
+            }
+        }
+        return contextPreferencesRepository.setContextPreferences(cleanPref,contextId);
+    }
+
     public void setContextPreferencesRepository(final ContextPreferencesRepository contextPreferencesRepository) {
         this.contextPreferencesRepository = contextPreferencesRepository;
+    }
+
+    public void setInvalidKeys(final String invalidKeys) {
+        this.invalidKeys = invalidKeys;
     }
 }

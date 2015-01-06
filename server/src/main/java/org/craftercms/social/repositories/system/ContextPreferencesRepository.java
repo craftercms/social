@@ -31,4 +31,8 @@ public interface ContextPreferencesRepository extends CrudRepository<ContextPref
     Object findEmailPreference(String contextId) throws SocialException;
 
     String findNotificationTemplate(String contextId, String notificationType) throws SocialException;
+
+    Map<String,Object> getContextPreferences(String contextId);
+
+    boolean setContextPreferences(Map<String,Object> preferences,String contextId);
 }
