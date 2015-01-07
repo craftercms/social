@@ -98,7 +98,7 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
         try {
             final String preferencesString = new ObjectMapper().writeValueAsString(preferences);
             final String byId=getQueryFor("social.system.preferences.emailPreferencesByContextId");
-            getCollection().findAndModify(byId,contextId).with("{$set: "+preferencesString+"}");
+            getCollection().update(byId,contextId).with("{$set: "+preferencesString+"}");
             return true;
         } catch (MongoException | JsonProcessingException e) {
             return false;
