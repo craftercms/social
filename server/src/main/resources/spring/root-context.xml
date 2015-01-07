@@ -132,6 +132,7 @@
     <bean class="org.craftercms.social.services.system.impl.ContextPreferencesServiceImpl"
           id="social.services.system.contextPreferences">
     <property name="contextPreferencesRepository" ref="social.repository.contextPreferencesRepository"/>
+        <property name="invalidKeys" value="${studio.social.ugc.invalidQueryKeys}"/>
     </bean>
     <bean class="org.craftercms.social.util.SocialFreemarkerLoader" id="social.util.email.socialFreemarkerLoader">
         <property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>

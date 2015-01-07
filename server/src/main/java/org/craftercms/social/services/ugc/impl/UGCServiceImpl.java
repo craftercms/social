@@ -74,6 +74,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         textContent, final String subject, final Map attrs, final boolean isAnonymous) throws SocialException {
         log.debug("logging.ugc.creatingUgc", contextId, targetId, ugcParentId, subject, attrs);
         final UGC template = new UGC(subject, textContent, targetId);
+
         template.setAnonymousFlag(isAnonymous);
         T newUgc = (T)ugcFactory.newInstance(template);
         newUgc.setAttributes(attrs);

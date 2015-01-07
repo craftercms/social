@@ -17,6 +17,8 @@
 
 package org.craftercms.social.services.system;
 
+import java.util.Map;
+
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.domain.social.system.SocialContext;
 import org.craftercms.social.exceptions.SocialException;
@@ -29,4 +31,5 @@ public interface SocialContextService {
     SocialContext createNewContext(final String contextName) throws SocialException;
     Profile addProfileToContext(String profileId, String contextId, String[] roles) throws SocialException;
     Profile removeProfileFromContext(String contextId, String profileId) throws SocialException;
+
 }

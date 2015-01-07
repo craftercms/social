@@ -183,6 +183,7 @@ if (db.preferences.count() == 0) {
                 },
                 templates: [
                     {
+                        type: "DAILY",
                         template:"Hi ${profile.username} this are changes that happen on your subscribe Threads<#list digest as change><h1> ${change[\"_id\"]} </h1><dl><#list change.ugcList as ugc><dt>Subject</dt><dd> ${ugc.subject!\"\"} </dd><dt>Body</dt>  <dd>${ugc.body!\"\"} </dd><dt>Changed by<dt><dd>${ugc.lastModifiedBy.username}<dd></#list></dl></#list>"
                     },
                     {

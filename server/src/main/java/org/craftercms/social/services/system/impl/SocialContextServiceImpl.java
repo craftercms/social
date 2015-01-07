@@ -53,6 +53,7 @@ public class SocialContextServiceImpl implements SocialContextService {
     public static final String AVATAR_LINK_ATTRIBUTE = "avatarLink";
 
     private SocialContextRepository socialContextRepository;
+
     private ProfileService profileService;
     private SecurityActionsService securityActionsService;
     private Logger log = LoggerFactory.getLogger(SocialContextServiceImpl.class);
@@ -180,6 +181,7 @@ public class SocialContextServiceImpl implements SocialContextService {
             throw new SocialException("Unable to find Context by id", e);
         }
     }
+
 
     public void setSocialContextRepositoryImpl(SocialContextRepository socialContextRepository) {
         this.socialContextRepository = socialContextRepository;
