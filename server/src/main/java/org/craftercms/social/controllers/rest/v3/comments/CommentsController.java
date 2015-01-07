@@ -9,11 +9,13 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.collections.IterableUtils;
+import org.craftercms.profile.api.Profile;
 import org.craftercms.social.domain.social.Flag;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalUgcException;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
+import org.craftercms.social.security.SocialSecurityUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,28 +41,28 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @ApiOperation(value = "Creates a new comment", consumes = MimeTypeUtils.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public T create(@ApiParam(value = "Body of the Comment,Some Html/scripts tags will be strip") @RequestParam()
-                    final String body, @ApiParam(name = "thread",
+                        final String body, @ApiParam(name = "thread",
         value = "Id of the thread to attach this comment") @RequestParam(required = true) final String thread,
                     @ApiParam(value = "Id of the parent for the new comment", name = "parentId") @RequestParam
-                        (required = false, defaultValue = "") final String parent,
-                    @ApiParam(value = "Should This comment be post as anonymous ",name = "anonymous")
-                    @RequestParam(required = false,defaultValue = "false",value = "anonymous") final boolean anonymous,
-                    @ApiParam(value = "Subject of the comment to be created",name =
-                        "subject")
-                    @RequestParam(required = false,defaultValue = "",value = "subject") final String subject,
+                        (required = false, defaultValue = "") final String parent, @ApiParam(value = "Should This " +
+        "comment be post as anonymous ", name = "anonymous") @RequestParam(required = false, defaultValue = "false",
+        value = "anonymous") final boolean anonymous, @ApiParam(value = "Subject of the comment to be " + "created",
+        name = "subject") @RequestParam(required = false, defaultValue = "", value = "subject") final String subject,
                     @ApiParam(value = "Json String representing any extra attributes of the comment to create",
         name = "attributes") @RequestParam(required = false,
         defaultValue = "{}") final String attributes, MultipartFile attachment) throws SocialException,
         MissingServletRequestParameterException, IOException {
         Map<String, Object> attributesMap = null;
+
         if (!StringUtils.isBlank(attributes)) {
             attributesMap = parseAttributes(attributes);
         }
-        T newUgc = (T)ugcService.create(context(), parent, thread, body, subject, attributesMap, anonymous);
+        T newUgc = (T)ugcService.create(context(), parent, thread, body, subject, attributesMap, checkAnonymous
+            (anonymous));
 
         if (attachment != null) {
-            ugcService.addAttachment(newUgc.getId().toString(), context(), attachment.getInputStream(),
-                attachment.getOriginalFilename(), getContentType(attachment.getOriginalFilename()));
+            ugcService.addAttachment(newUgc.getId().toString(), context(), attachment.getInputStream(), attachment
+                .getOriginalFilename(), getContentType(attachment.getOriginalFilename()));
         }
         return newUgc;
     }
@@ -68,9 +70,9 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
     @ApiOperation(value = "Updates the given comment", notes = "As Create some HTML/scripts tags will be scripted")
     @ResponseBody
-    public T update(@ApiParam(value = "Ugc id to removeWatcher") @PathVariable("id") final String id,
-                    @ApiParam(value = "New comment Body") @RequestParam() final String body,
-                    @ApiParam(value = "Json String representing any extra attributes of the comment to create",
+    public T update(@ApiParam(value = "Ugc id to removeWatcher") @PathVariable("id") final String id, @ApiParam(value
+        = "New comment Body") @RequestParam() final String body, @ApiParam(value = "Json String representing any " +
+        "extra attributes of the comment to create",
         name = "attributes") @RequestParam(required = false,
         defaultValue = "{}") final String attributes) throws SocialException, MissingServletRequestParameterException {
         Map<String, Object> attributesMap = null;
@@ -81,11 +83,11 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Deletes the comment", notes = "As Create some HTML/scripts tags will be scripted, "
-        + "Also All children will be deleted")
+    @ApiOperation(value = "Deletes the comment", notes = "As Create some HTML/scripts tags will be scripted, " +
+        "Also All children will be deleted")
     @ResponseBody
-    public boolean delete(@ApiParam(value = "Comment id to removeWatcher") @PathVariable("id") final String id) throws
-        SocialException {
+    public boolean delete(@ApiParam(value = "Comment id to removeWatcher") @PathVariable("id") final String id)
+        throws SocialException {
         ugcService.deleteUgc(id, context());
         return true;
     }
@@ -112,8 +114,8 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
             "doing the search")
     public boolean addAttributes(@ApiParam(value = "Id of the UGC") @NotBlank @PathVariable(value = "id") final
                                      String id, @ApiParam(value = "Json of the attributes to be updated or created" +
-        ". All values are " + "save as string (booleans,numbers,dates)") @RequestBody
-    final Map<String, Object> attributes) throws SocialException {
+        ". All values are " + "save as string (booleans,numbers,dates)") @RequestBody final Map<String, Object>
+        attributes) throws SocialException {
         log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
         ugcService.setAttributes(id, context(), attributes);
         return true;//Always true unless exception.
@@ -128,8 +130,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     public boolean removeAttributes(@ApiParam(value = "Id of the comment", name = "id") @NotBlank @PathVariable(value
         = "id") final String id, @ApiParam(name = "attributes", value = "List of , " +
         "separated attributes name to delete. use dot " + "notation do delete nested attributes.") @RequestParam
-        (required = true)
-    final String attributes) throws SocialException {
+        (required = true) final String attributes) throws SocialException {
         log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
         ugcService.deleteAttribute(id, attributes.split(","), context());
         return true;//Always true unless exception.
@@ -139,9 +140,8 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "{id}/flags", method = RequestMethod.POST)
     @ApiOperation(value = "Flags the UGC", notes = "Reason will be cleanup for any HTML/Script")
     @ResponseBody
-    public T flagUgc(@ApiParam(value = "Comment Id") @PathVariable(value = "id") final String id,
-                     @ApiParam(value = "Reason why the comment is been flag") @RequestParam final String reason)
-        throws SocialException {
+    public T flagUgc(@ApiParam(value = "Comment Id") @PathVariable(value = "id") final String id, @ApiParam(value =
+        "Reason why the comment is been flag") @RequestParam final String reason) throws SocialException {
         return (T)socialServices.flag(id, context(), reason, userId());
     }
 
@@ -161,18 +161,16 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "{id}/flags/{flagId}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Flags the UGC", notes = "Reason will be cleanup for any HTML/Script")
     @ResponseBody
-    public boolean unflagUgc(@ApiParam(value = "Comment Id") @PathVariable(value = "id") final String id,
-                             @ApiParam(value = "Flag id to delete") @PathVariable(value = "flagId") final String
-                                 flagId) throws SocialException {
+    public boolean unflagUgc(@ApiParam(value = "Comment Id") @PathVariable(value = "id") final String id, @ApiParam
+        (value = "Flag id to delete") @PathVariable(value = "flagId") final String flagId) throws SocialException {
         return socialServices.unFlag(id, flagId, userId(), context());
     }
 
     @RequestMapping(value = "{id}/moderate", method = RequestMethod.PUT)
     @ResponseBody
     @ApiOperation(value = "Changes the Status of the given UGC")
-    public T moderate(@ApiParam("Id of the comment to change status") @PathVariable final String id,
-                      @ApiParam("New Moderation Status of the Param") @RequestParam final SocialUgc.ModerationStatus
-                          status) throws UGCException {
+    public T moderate(@ApiParam("Id of the comment to change status") @PathVariable final String id, @ApiParam("New "
+        + "Moderation Status of the Param") @RequestParam final SocialUgc.ModerationStatus status) throws UGCException {
         return (T)socialServices.moderate(id, status, userId(), context());
     }
 
@@ -180,31 +178,39 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "moderation/{status}", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Gets all Moderation comments with the given moderation status")
-    public Iterable<T> byStatus(@PathVariable("status") final SocialUgc.ModerationStatus status,
-                                @RequestParam(defaultValue = "", required = false) final String thread,
-                                @RequestParam(required = false, defaultValue = "0") final int pageNumber,
-                                @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT)
-                                final int pageSize,
-                                @RequestParam(required = false) final List<String> sortBy,
-                                @RequestParam(required = false) final List<SocialSortOrder> sortOrder)
-            throws UGCException {
+    public Iterable<T> byStatus(@PathVariable("status") final SocialUgc.ModerationStatus status, @RequestParam
+        (defaultValue = "", required = false) final String thread, @RequestParam(required = false, defaultValue =
+        "0") final int pageNumber, @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final
+    int pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam(required = false) final
+    List<SocialSortOrder> sortOrder) throws UGCException {
         int start = 0;
         if (pageNumber > 0 && pageSize > 0) {
             start = ThreadsController.getStart(pageNumber, pageSize);
         }
 
         return IterableUtils.toList(socialServices.findByModerationStatus(status, thread, context(), start, pageSize,
-                ThreadsController.getSortOrder(sortBy, sortOrder)));
+            ThreadsController.getSortOrder(sortBy, sortOrder)));
     }
 
     @RequestMapping(value = "moderation/{status}/count", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Counts all Moderation comments with the given moderation status")
-    public long byStatusCount(@PathVariable("status") final SocialUgc.ModerationStatus status,
-                              @RequestParam(defaultValue = "", required = false) final String thread) throws
-        UGCException {
+    public long byStatusCount(@PathVariable("status") final SocialUgc.ModerationStatus status, @RequestParam
+        (defaultValue = "", required = false) final String thread) throws UGCException {
         return socialServices.countByModerationStatus(status, thread, context());
     }
 
+
+    protected boolean checkAnonymous(final boolean anonymous) {
+        final Profile profile = SocialSecurityUtils.getCurrentProfile();
+        Object isAlwaysAnonymous = profile.getAttribute("isAlwaysAnonymous");
+        if (isAlwaysAnonymous == null || (!(isAlwaysAnonymous instanceof Boolean) && !((Boolean)isAlwaysAnonymous)
+            .booleanValue())) {
+            return anonymous;
+        } else {
+            return true;
+        }
+
+    }
 
 }
