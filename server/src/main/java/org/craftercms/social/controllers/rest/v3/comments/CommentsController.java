@@ -181,7 +181,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     public Iterable<T> byStatus(@PathVariable("status") final SocialUgc.ModerationStatus status, @RequestParam
         (defaultValue = "", required = false) final String thread, @RequestParam(required = false, defaultValue =
         "0") final int pageNumber, @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final
-    int pageSize, @RequestParam(required = true) final List<String> sortBy, @RequestParam(required = false) final
+    int pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam(required = false) final
     List<SocialSortOrder> sortOrder) throws UGCException {
         int start = 0;
         if (pageNumber > 0 && pageSize > 0) {
@@ -191,6 +191,42 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         return IterableUtils.toList(socialServices.findByModerationStatus(status, thread, context(), start, pageSize,
             ThreadsController.getSortOrder(sortBy, sortOrder)));
     }
+
+
+    @RequestMapping(value = "flagged", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Gets all flagged Ugs")
+    public Iterable<T> flagged(@RequestParam(required = false, defaultValue =
+        "0") final int pageNumber, @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final
+                                int pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam
+        (required = false) final
+                                List<SocialSortOrder> sortOrder) throws UGCException {
+        int start = 0;
+        if (pageNumber > 0 && pageSize > 0) {
+            start = ThreadsController.getStart(pageNumber, pageSize);
+        }
+
+        return IterableUtils.toList(socialServices.findAllFlaggedUgs(context(), start, pageSize, ThreadsController
+            .getSortOrder(sortBy, sortOrder)));
+    }
+
+    @RequestMapping(value = "flagged/count", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Counts all flagged Ugs")
+    public long flaggedCount(@RequestParam(required = false, defaultValue =
+        "0") final int pageNumber, @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final
+                               int pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam
+                                   (required = false) final
+                               List<SocialSortOrder> sortOrder) throws UGCException {
+        int start = 0;
+        if (pageNumber > 0 && pageSize > 0) {
+            start = ThreadsController.getStart(pageNumber, pageSize);
+        }
+
+        return socialServices.countAllFlaggedUgs(context(), start, pageSize,
+            ThreadsController.getSortOrder(sortBy, sortOrder));
+    }
+
 
     @RequestMapping(value = "moderation/{status}/count", method = RequestMethod.GET)
     @ResponseBody

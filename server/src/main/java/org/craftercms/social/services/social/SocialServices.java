@@ -94,4 +94,19 @@ public interface SocialServices<T extends SocialUgc> {
      * @return Number of Results.
      */
     long countByModerationStatus(SocialUgc.ModerationStatus status, String thread, String contextId) throws UGCException;
+
+
+    /**
+     * Returns all Flagged UGc
+     * @param context Context of the Ugc
+     * @param start Where to to start the count.
+     * @param pageSize  Amount of Comments to return
+     * @param sortOrder Sort Fields.
+     * @return A Iterable with the results.
+     */
+    Iterable<T> findAllFlaggedUgs(String context, int start, int pageSize, List<DefaultKeyValue<String,Boolean>> sortOrder);
+
+
+    long countAllFlaggedUgs(String context, int start, int pageSize, List<DefaultKeyValue<String,Boolean>> sortOrder);
+
 }

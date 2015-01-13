@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import javax.activation.MimetypesFileTypeMap;
+import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.api.Profile;
@@ -50,9 +52,12 @@ public class AbstractCommentsController<T extends SocialUgc> {
      * @throws org.springframework.web.bind.MissingServletRequestParameterException If String can't be parse.
      */
     protected Map<String, Object> parseAttributes(final String attributes) throws
+
         MissingServletRequestParameterException {
         ObjectMapper mapper = new ObjectMapper();
         JsonFactory factory = mapper.getFactory(); // since 2.1 use mapper.getFactory() instead
+
+
         try {
             JsonParser jp = factory.createParser(attributes);
             return mapper.readValue(jp, HashMap.class);

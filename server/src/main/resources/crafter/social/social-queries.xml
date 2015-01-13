@@ -185,6 +185,7 @@
     <entry key="social.system.preferences.emailPreferencesByContextId">
         {_id:#}
     </entry>
+
     <entry key="social.system.preferences.savePreferencesByContextId">
         {$set:{
         "email.host":#,
@@ -212,5 +213,8 @@
     </entry>
     <entry key="social.notification.byWatcherId3">
         {$project:{_id:1,frequency:"$watchers.frequency"}}
+    </entry>
+    <entry key="social.ugc.byFlaggedStatus">
+        {contextId:#, moderationStatus:{ $ne: #  } , flags : {$exists:true}, $where:'this.flags.length>0'}
     </entry>
 </properties>

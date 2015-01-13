@@ -159,6 +159,18 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
         }
     }
 
+    @Override
+    public Iterable<T> findAllFlaggedUgs(final String context, final int start, final int pageSize, final List
+    sortOrder) {
+        return ugcRepository.findAllFlagged(context,start,pageSize,sortOrder);
+    }
+
+    @Override
+    public long countAllFlaggedUgs(final String context, final int start, final int pageSize, final List
+        sortOrder) {
+        return ugcRepository.countAllFlagged(context,start,pageSize,sortOrder);
+    }
+
     protected void voteUp(final T ugc, final String userId) {
         unvoteDown(ugc, userId);
         ugc.getVotesUp().add(userId);
