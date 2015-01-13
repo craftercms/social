@@ -120,4 +120,8 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
 
     long countFindByModerationStatus(SocialUgc.ModerationStatus status, String targetId, String contextId)
             throws MongoDataException;
+
+    Iterable<T> findAllFlagged(String context, int start, int pageSize, List sortOrder);
+
+    long countAllFlagged(String context, int start, int pageSize, List sortOrder);
 }

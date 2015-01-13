@@ -308,6 +308,28 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
         }
     }
 
+    @Override
+    public Iterable<T> findAllFlagged(final String context, final int start, final int pageSize, final List
+        sortOrder) {
+        String query = getQueryFor("social.ugc.byFlaggedStatus");
+        Find f = getCollection().find(query,context, SocialUgc.ModerationStatus.TRASH);
+        if (CollectionUtils.isEmpty(sortOrder)) {
+            f.sort(getQueryFor("social.ugc.defaultSort"));
+        } else {
+            f.sort(createSortQuery(sortOrder));
+        }
+        f.skip(start).limit(pageSize);
+        return f.as(clazz);
+    }
+
+    @Override
+    public long countAllFlagged(final String context, final int start, final int pageSize, final List
+        sortOrder) {
+        String query = getQueryFor("social.ugc.byFlaggedStatus");
+        return  getCollection().count(query, context,SocialUgc.ModerationStatus.TRASH);
+
+    }
+
     protected List<T> toUgcList(final List<BaseTreeUgc> as) {
         ArrayList<T> ugcList = new ArrayList<>(as.size());
         for (TreeUGC a : as) {
