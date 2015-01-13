@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.security.SocialSecurityUtils;
@@ -101,8 +102,12 @@ public class ThreadsController {
         } else {
             upToLevel = recursive;
         }
-        thread.setComments(ugcService.readChildren(commentId, id, SocialSecurityUtils.getContext(), start, pageSize,
-            getSortOrder(sortBy, sortOrder), upToLevel, childrenCount));
+        try {
+            thread.setComments(ugcService.readChildren(commentId, id, SocialSecurityUtils.getContext(), start, pageSize,
+                getSortOrder(sortBy, sortOrder), upToLevel, childrenCount));
+        } catch (UGCNotFound ugcNotFound) {
+            ugcNotFound.printStackTrace();
+        }
         thread.setWatched(notificationService.isBeenWatch(SocialSecurityUtils.getContext() + "/" + id,
             SocialSecurityUtils.getCurrentProfile().getId().toString()));
         thread.setPageNumber(pageNumber);

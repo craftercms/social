@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.SocialUgc;
 
@@ -102,7 +103,7 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
      * @throws MongoDataException
      */
     Iterable<T> findChildren(final String ugcId, final String targetId, final String contextId, final int start,
-                             final int limit, final List sortOrder, final int upToLevel) throws MongoDataException;
+                             final int limit, final List sortOrder, final int upToLevel) throws MongoDataException, UGCNotFound;
 
 
     Iterable<T> findByTargetId(String targetId, String contextId, int start, int limit,

@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalUgcException;
@@ -120,11 +121,13 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     @Override
     public T findUGC(final String contextId, final String ugcId) throws MongoDataException {
         String query = getQueryFor("social.ugc.byContextAndId");
+        T toReturn=null;
         if (ObjectId.isValid(ugcId)) {
-            return (T)findOne(query, new ObjectId(ugcId), contextId);
+            toReturn=(T)findOne(query, new ObjectId(ugcId), contextId);
         } else {
             throw new IllegalArgumentException("Given UGC " + ugcId + " is invalid");
         }
+        return toReturn;
     }
 
     @Override
@@ -184,7 +187,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     @Override
     public Iterable<T> findChildren(final String ugcId, final String targetId, final String contextId,
                                     final int start, final int limit, final List sortOrder,
-                                    final int upToLevel) throws MongoDataException {
+                                    final int upToLevel) throws MongoDataException, UGCNotFound {
         try {
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC id is not valid");
@@ -192,12 +195,15 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             T parent = findUGC(contextId,ugcId);
             if(parent==null){
                 throw new IllegalUgcException("Ugc does not exist for given id and context");
+            }else if (parent instanceof SocialUgc && (((SocialUgc)parent).getModerationStatus()== SocialUgc
+                .ModerationStatus.TRASH || ((SocialUgc)parent).getModerationStatus()==SocialUgc.ModerationStatus.SPAM)){
+                throw new UGCNotFound("Parent UGC is on Spam or thrash");
             }
             ArrayDeque<ObjectId> ancestors = parent.getAncestors().clone();
             ancestors.addLast(parent.getId());
-
             String query = getQueryFor("social.ugc.byContextTargetAncestorsExact");
-            Find find = getCollection().find(query, contextId, targetId, ancestors);
+            Find find = getCollection().find(query, contextId, targetId, ancestors,Arrays.asList(SocialUgc.ModerationStatus
+                .SPAM, SocialUgc.ModerationStatus.TRASH));
             return getUgcsToFind(find, targetId, contextId, start, limit, sortOrder, (ancestors.size()+upToLevel));
         } catch (MongoException ex) {
             log.error("Unable to find children of " + ugcId, ex);
@@ -210,7 +216,8 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
                                       final List sortOrder, final int upToLevel) throws MongoDataException {
         try {
             String query = getQueryFor("social.ugc.byTargetIdRootLvl");
-            Find find = getCollection().find(query, contextId, targetId);
+            Find find = getCollection().find(query, contextId, targetId,Arrays.asList(SocialUgc.ModerationStatus
+                .SPAM, SocialUgc.ModerationStatus.TRASH));
             return getUgcsToFind(find, targetId, contextId, start, limit, sortOrder, upToLevel);
         } catch (MongoException ex) {
             log.error("Unable to Find UGC's " + targetId + "children", ex);
@@ -237,7 +244,8 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
         String finalQuery = getQueryFor("social.ugc.byTargetIdRootNLvl");
 
         finalQuery = finalQuery.replaceAll("%@", String.valueOf(upToLevel));
-        final Find finalMongoQuery = getCollection().find(finalQuery, targetId, contextId, listOfIds, listOfIds);
+        final Find finalMongoQuery = getCollection().find(finalQuery, targetId, contextId, Arrays.asList(SocialUgc.ModerationStatus
+            .SPAM, SocialUgc.ModerationStatus.TRASH),listOfIds, listOfIds);
         if (CollectionUtils.isEmpty(sortOrder)) {
             finalMongoQuery.sort(getQueryFor("social.ugc.defaultSort"));
         } else {
@@ -250,7 +258,8 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     public long countByTargetId(final String contextId, final String threadId,
                                 final int levels) throws MongoDataException {
         try {
-            return count(getQueryFor("social.ugc.byTargetIdWithFixLvl"), contextId, threadId, levels);
+            return count(getQueryFor("social.ugc.byTargetIdWithFixLvl"), contextId, threadId, levels, Arrays.asList(SocialUgc.ModerationStatus
+                .SPAM, SocialUgc.ModerationStatus.TRASH));
         } catch (MongoException ex) {
             log.error("Unable to count ugc for context " + contextId + "and target " + threadId, ex);
             throw new MongoDataException("Unable to count ugc for context and target", ex);

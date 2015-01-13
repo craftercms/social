@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.apache.commons.io.FileExistsException;
 import org.craftercms.commons.mongo.FileInfo;
+import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
@@ -158,11 +159,9 @@ public interface UGCService<T extends UGC> {
      */
     void removeAttachment(String ugcId, String contextId, String attachmentId) throws UGCException, FileNotFoundException;
 
-    FileInfo updateAttachment(String ugcId, String contextId, String attachmentId, InputStream newAttachment) throws
-        UGCException, FileNotFoundException;
+    FileInfo updateAttachment(String ugcId, String contextId, String attachmentId, InputStream newAttachment) throws UGCException, FileNotFoundException;
 
-    FileInfo readAttachment(String ugcId, String contextId, String attachmentId) throws FileNotFoundException,
-        UGCException;
+    FileInfo readAttachment(String ugcId, String contextId, String attachmentId) throws FileNotFoundException, UGCException;
 
     List<T> read(String targetId, String contextId, int start, int limit,
                  List<DefaultKeyValue<String, Boolean>> sortOrder, final int upToLevel, final int childrenPerLevel)
@@ -170,7 +169,7 @@ public interface UGCService<T extends UGC> {
 
     public List<T> readChildren(final String ugcId, final String targetId, final String contextId,
                                     final int start, final int limit, final List sortOrder, final int upToLevel,
-                                    final int childrenPerLevel) throws UGCException;
+                                    final int childrenPerLevel) throws UGCException, UGCNotFound;
     /**
      * Finds a single UGC.
      *

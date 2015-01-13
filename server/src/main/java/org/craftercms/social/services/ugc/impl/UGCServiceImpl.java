@@ -25,6 +25,7 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.commons.security.permissions.annotations.SecuredObject;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.IllegalSocialQueryException;
 import org.craftercms.social.exceptions.IllegalUgcException;
@@ -92,7 +93,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             ugcRepository.save(newUgc);
             reactor.notify(UGCEvent.CREATE.getName(), Event.wrap(new SocialEvent<>(newUgc, SocialSecurityUtils
                 .getCurrentProfile().getId().toString())));
-            setupAutoWatch(targetId, SocialSecurityUtils.getCurrentProfile());
+            setupAutoWatch(targetId, SocialSecurityUtils.getCurrentProfile(), contextId);
             log.info("logging.ugc.created", newUgc);
             return newUgc;
         } catch (MongoDataException ex) {
@@ -105,12 +106,12 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         this.notificationService = notificationService;
     }
 
-    private void setupAutoWatch(final String targetId, final Profile currentProfile) throws NotificationException {
+    private void setupAutoWatch(final String targetId, final Profile currentProfile, final String context) throws NotificationException {
         final Map<String, Object> profileMap = currentProfile.getAttributes();
         if (profileMap.containsKey("defaultFrequency") && profileMap.containsKey("autoWatch")) {
             boolean autoWatch = currentProfile.getAttribute("autoWatch");
             if (autoWatch) {
-                notificationService.subscribeUser(currentProfile, targetId, (String)currentProfile
+                notificationService.subscribeUser(currentProfile, context + "/" + targetId, (String)currentProfile
                     .getAttribute("defaultFrequency"));
             }
         } else {
@@ -200,8 +201,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public T read(final String ugcId, final boolean includeChildren, final int childCount, final String contextId)
-        throws UGCException {
+    public T read(final String ugcId, final boolean includeChildren, final int childCount, final String contextId) throws UGCException {
         try {
             if (includeChildren) {
                 return getUgcTree(ugcId, childCount, contextId);
@@ -345,8 +345,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public FileInfo readAttachment(final String ugcId, final String contextId, final String attachmentId) throws
-        FileNotFoundException, UGCException {
+    public FileInfo readAttachment(final String ugcId, final String contextId, final String attachmentId) throws FileNotFoundException, UGCException {
         if (!ObjectId.isValid(ugcId)) {
             throw new IllegalArgumentException("Given Ugc Id is not valid");
         }
@@ -387,7 +386,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
     public List<T> readChildren(final String ugcId, final String targetId, final String contextId, final int start,
                                 final int limit, final List sortOrder, final int upToLevel, final int
-        childrenPerLevel) throws UGCException {
+        childrenPerLevel) throws UGCException, UGCNotFound {
         log.debug("logging.ugc.readChildren", ugcId, contextId, limit, start);
         try {
             return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, targetId, contextId,
@@ -497,8 +496,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
      * @throws MongoDataException
      * @throws UGCException
      */
-    private void setupAncestors(final UGC newUgc, final String ugcParentId, final String contextId) throws
-        MongoDataException, UGCException {
+    private void setupAncestors(final UGC newUgc, final String ugcParentId, final String contextId) throws MongoDataException, UGCException {
         UGC parent = ugcRepository.findUGC(contextId, ugcParentId);
         if (parent == null) {
             throw new UGCException("Parent UGC does not exist");

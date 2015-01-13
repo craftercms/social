@@ -51,15 +51,15 @@
     </entry>
 
     <entry key="social.ugc.byTargetIdRootLvl">
-        {contextId:#,targetId:#,ancestors:{$size:0}}
+        {contextId:#,targetId:#,ancestors:{$size:0},moderationStatus:{$nin:#}}
     </entry>
 
     <entry key="social.ugc.byTargetIdWithFixLvl">
-        {contextId:#,targetId:#,ancestors:{$size:#}}
+        {contextId:#,targetId:#,ancestors:{$size:#},moderationStatus:{$nin:#}}
     </entry>
 
     <entry key="social.ugc.byContextTargetAncestorsExact">
-        {contextId:#,targetId:#,ancestors:{$all:#}}
+        {contextId:#,targetId:#,ancestors:{$all:#},moderationStatus:{$nin:#}}
     </entry>
 
     <entry key="social.ugc.byContextAncestorsExact">
@@ -70,6 +70,7 @@
         {
         targetId:#,
         contextId:#,
+        moderationStatus:{$nin:#},
         $or:[
         {ancestors:{$in:#}},
         {_id:{$in:#}}
