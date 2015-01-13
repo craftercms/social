@@ -181,7 +181,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     public Iterable<T> byStatus(@PathVariable("status") final SocialUgc.ModerationStatus status, @RequestParam
         (defaultValue = "", required = false) final String thread, @RequestParam(required = false, defaultValue =
         "0") final int pageNumber, @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final
-    int pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam(required = false) final
+    int pageSize, @RequestParam(required = true) final List<String> sortBy, @RequestParam(required = false) final
     List<SocialSortOrder> sortOrder) throws UGCException {
         int start = 0;
         if (pageNumber > 0 && pageSize > 0) {
