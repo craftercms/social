@@ -240,8 +240,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     protected boolean checkAnonymous(final boolean anonymous) {
         final Profile profile = SocialSecurityUtils.getCurrentProfile();
         Object isAlwaysAnonymous = profile.getAttribute("isAlwaysAnonymous");
-        if (isAlwaysAnonymous == null)
-            .booleanValue())) {
+        if (isAlwaysAnonymous == null) {
             return anonymous;
         } else {
             return ((Boolean)isAlwaysAnonymous).booleanValue();
