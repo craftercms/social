@@ -64,7 +64,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             }
             ugcRepository.save(ugc);
             reactor.notify(UGCEvent.VOTE.getName(), Event.wrap(new SocialEvent(ugc, SocialSecurityUtils.getCurrentProfile()
-                .getId().toString())));
+                .getId().toString(),UGCEvent.VOTE)));
             return ugc;
         } catch (MongoDataException ex) {
             throw new UGCException("Unable to find UGC with given Id and contextId");
@@ -85,7 +85,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             ugcToFlag.getFlags().add(f);
             ugcRepository.save(ugcToFlag);
             reactor.notify(UGCEvent.FLAG.getName(), Event.wrap(new SocialEvent(ugcToFlag,SocialSecurityUtils.getCurrentProfile
-                ().getId().toString())));
+                ().getId().toString(),UGCEvent.FLAG)));
             return ugcToFlag;
         } catch (MongoDataException ex) {
             log.error("Unable to flag ugc " + ugcId, ex);
@@ -106,7 +106,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             ugcToUpdate.getFlags().remove(new Flag(new ObjectId(flagId)));
             ugcRepository.save(ugcToUpdate);
             reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugcToUpdate,
-                SocialSecurityUtils.getCurrentProfile().getId().toString())));
+                SocialSecurityUtils.getCurrentProfile().getId().toString(),UGCEvent.UNFLAG)));
             return true;
         } catch (MongoDataException ex) {
             log.error("Unable to delete flag " + flagId + " from " + ugcId, ex);
@@ -128,7 +128,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             }
             ugcRepository.save(ugc);
             reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugc,SocialSecurityUtils.getCurrentProfile()
-                .getId().toString())));
+                .getId().toString(),UGCEvent.UNFLAG)));
             return ugc;
         } catch (MongoDataException ex) {
             log.debug("Unable to change ugc moderation status", ex);

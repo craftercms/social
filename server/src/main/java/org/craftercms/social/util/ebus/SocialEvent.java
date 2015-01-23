@@ -20,29 +20,33 @@ public class SocialEvent<T extends UGC> {
 
     private UGCEvent type;
 
-    public SocialEvent(final T source,final String userId) {
+    public SocialEvent(final T source,final String userId,UGCEvent type) {
         this.source = source;
         this.attributes=source.getAttributes();
         this.ugcId=source.getId().toString();
         this.userId=userId;
+        this.type=type;
     }
 
 
-    public SocialEvent(final String ugcId,final String userId) {
+    public SocialEvent(final String ugcId,final String userId,UGCEvent type) {
         this.ugcId = ugcId;
         this.userId= userId;
+        this.type=type;
     }
 
-    public SocialEvent(final String ugcId, final Map<String, Object> attributes,final String userId) {
+    public SocialEvent(final String ugcId, final Map<String, Object> attributes,final String userId,UGCEvent type) {
         this.ugcId = ugcId;
         this.attributes = attributes;
         this.userId=userId;
+        this.type=type;
     }
 
-    public SocialEvent(final String ugcId, final String attachmentId,final String userId) {
+    public SocialEvent(final String ugcId, final String attachmentId,final String userId,UGCEvent type) {
         this.ugcId = ugcId;
         this.attachmentId = attachmentId;
         this.userId=userId;
+        this.type=type;
     }
 
     public T getSource() {

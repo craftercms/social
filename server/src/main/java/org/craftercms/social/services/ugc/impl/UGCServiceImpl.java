@@ -92,7 +92,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             pipeline.processUgc(newUgc);
             ugcRepository.save(newUgc);
             reactor.notify(UGCEvent.CREATE.getName(), Event.wrap(new SocialEvent<>(newUgc, SocialSecurityUtils
-                .getCurrentProfile().getId().toString())));
+                .getCurrentProfile().getId().toString(),UGCEvent.CREATE)));
             setupAutoWatch(targetId, SocialSecurityUtils.getCurrentProfile(), contextId);
             log.info("logging.ugc.created", newUgc);
             return newUgc;
@@ -127,7 +127,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             ugcRepository.setAttributes(ugcId, contextId, attributes);
             reactor.notify(UGCEvent.UPDATE_ATTRIBUTES.getName(), Event.wrap(new SocialEvent<T>(ugcId, attributes,
-                SocialSecurityUtils.getCurrentProfile().getId().toString())));
+                SocialSecurityUtils.getCurrentProfile().getId().toString(),UGCEvent.UPDATE_ATTRIBUTES)));
         } catch (MongoDataException ex) {
             log.debug("logging.ugc.unableToAddAttrs", ex, attributes, ugcId, contextId);
             throw new UGCException("Unable to add Attributes to UGC", ex);
@@ -142,7 +142,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             ugcRepository.deleteAttribute(ugcId, contextId, attributesName);
             reactor.notify(UGCEvent.DELETE_ATTRIBUTES.getName(), Event.wrap(new SocialEvent<T>(ugcId,
-                SocialSecurityUtils.getCurrentProfile().getId().toString())));
+                SocialSecurityUtils.getCurrentProfile().getId().toString(),UGCEvent.DELETE_ATTRIBUTES)));
         } catch (MongoDataException ex) {
             log.debug("logging.ugc.unableToDelAttrs", ex, attributesName, ugcId);
             throw new UGCException("Unable to delete attribute for ugc", ex);
@@ -156,7 +156,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             ugcRepository.deleteUgc(ugcId, contextId);
             reactor.notify(UGCEvent.DELETE.getName(), Event.wrap(new SocialEvent<T>(ugcId, SocialSecurityUtils
-                .getCurrentProfile().getId().toString())));
+                .getCurrentProfile().getId().toString(),UGCEvent.DELETE)));
         } catch (MongoDataException ex) {
             log.error("logging.ugc.deleteUgcError", ex, ugcId, contextId);
             throw new UGCException("Unable to delete UGC", ex);
@@ -302,7 +302,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             ugc.getAttachments().remove(info);
             ugcRepository.deleteFile(attachmentOid);
             ugcRepository.update(ugcId, ugc);
-            reactor.notify(UGCEvent.DELETE_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, attachmentId)));
+            reactor.notify(UGCEvent.DELETE_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, attachmentId,UGCEvent.DELETE_ATTACHMENT)));
         } catch (MongoDataException e) {
             log.error("logging.ugc.attachmentToRemove", e, attachmentId);
             throw new UGCException("Unable to save File to UGC");
@@ -330,9 +330,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 .getFileName(), oldInfo.getContentType(), true);
             ugc.getAttachments().add(newInfo);
             ugcRepository.update(ugcId, ugc);
-            reactor.notify(UGCEvent.DELETE_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, attachmentId)));
+            reactor.notify(UGCEvent.DELETE_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, attachmentId,UGCEvent.DELETE_ATTACHMENT)));
             reactor.notify(UGCEvent.ADD_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, new InputStream[]
-                {new CloseShieldInputStream(newAttachment)})));
+                {new CloseShieldInputStream(newAttachment)}),UGCEvent.ADD_ATTACHMENT));
             return newInfo;
         } catch (MongoDataException e) {
             log.error("logging.ugc.attachmentError");
