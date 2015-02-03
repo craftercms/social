@@ -22,7 +22,9 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import freemarker.cache.TemplateLoader;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -45,11 +47,11 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
 
     private I10nLogger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
     private ProfileAggregator profileAggregator;
-    private SocialFreemarkerLoader socialFreemarkerLoader;
+    private TemplateLoader socialFreemarkerLoader;
     private Configuration cfg;
     private EmailService emailService;
     private String systemDefaultLocale;
-
+    private Map<String,Object> modelExt;
 
     public void setProfileAggregatorImpl(ProfileAggregator profileAggregator) {
         this.profileAggregator = profileAggregator;
@@ -60,9 +62,8 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
         Profile toSend = profileAggregator.getProfile(profileId);
         if (toSend != null) {
             init();
-            final HashMap<Object, Object> dataModel = new HashMap<>(2);
+            final HashMap<String, Object> dataModel = new HashMap<>(modelExt);
             dataModel.put("profile", toSend);
-
             for (HashMap hashMap : auditDigest) {
                 try {
                     StringWriter writer = new StringWriter();
@@ -82,6 +83,7 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
         }
     }
 
+
     private Locale getProfileLocale(final Object notificationLocale) {
         if(notificationLocale==null){
             return new Locale(systemDefaultLocale);
@@ -99,7 +101,7 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
     }
 
 
-    public void setSocialFreemarkerLoader(SocialFreemarkerLoader socialFreemarkerLoader) {
+    public void setSocialFreemarkerLoader(TemplateLoader socialFreemarkerLoader) {
         this.socialFreemarkerLoader = socialFreemarkerLoader;
     }
 
@@ -110,4 +112,11 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
     public void setSystemDefaultLocale(final String systemDefaultLocale) {
         this.systemDefaultLocale = systemDefaultLocale;
     }
+
+    public void setModelExt(Map modelExt) {
+        this.modelExt=modelExt;
+    }
+
+
+
 }
