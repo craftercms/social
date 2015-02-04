@@ -1,10 +1,15 @@
 package org.craftercms.social.util.serialization;
 
+import java.util.Arrays;
+import java.util.Set;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.jackson.mvc.annotations.InjectValueFactory;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.NotificationException;
+import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.notification.NotificationService;
 import org.craftercms.social.util.LoggerFactory;
@@ -16,9 +21,10 @@ import org.craftercms.social.util.profile.ProfileAggregator;
  */
 public class SocialInjectValueFactory implements InjectValueFactory {
 
-    private ProfileAggregator profileAggregator;
-    private NotificationService notificationService;
-    private I10nLogger log = LoggerFactory.getLogger(SocialInjectValueFactory.class);
+    protected ProfileAggregator profileAggregator;
+    protected NotificationService notificationService;
+    protected I10nLogger log = LoggerFactory.getLogger(SocialInjectValueFactory.class);
+    protected String ignoreAnonymousFlagRoles;
 
 
     @Override
@@ -27,7 +33,7 @@ public class SocialInjectValueFactory implements InjectValueFactory {
         if (UGC.class.isAssignableFrom(object.getClass())) {
             if (declaringClass.equals(Profile.class)) {
                 final Profile profile = profileAggregator.getProfile((String)basePropertyValue);
-                if(((UGC)object).isAnonymousFlag()){
+                if(((UGC)object).isAnonymousFlag() && !ignoreAnonymousFlag()){
                     anonymizeProfile((UGC)object);
                     return (T)ProfileUtils.getAnonymousProfile();
                 }else{
@@ -36,6 +42,16 @@ public class SocialInjectValueFactory implements InjectValueFactory {
             }
         }
         return null;
+    }
+
+    private boolean ignoreAnonymousFlag() {
+        final Profile currentUser = SocialSecurityUtils.getCurrentProfile();
+        if( currentUser==null || currentUser.getRoles().isEmpty() ||
+            currentUser.getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
+            return false;
+        }
+        return CollectionUtils.containsAny(currentUser.getRoles(), Arrays.asList(ignoreAnonymousFlagRoles.split(",")));
+
     }
 
     protected void anonymizeProfile(final UGC object) {
@@ -51,5 +67,9 @@ public class SocialInjectValueFactory implements InjectValueFactory {
 
     public void setNotificationServiceImpl(NotificationService notificationService) {
         this.notificationService = notificationService;
+    }
+
+    public void setIgnoreAnonymousFlagRoles(final String ignoreAnonymousFlagRoles) {
+        this.ignoreAnonymousFlagRoles = ignoreAnonymousFlagRoles;
     }
 }
