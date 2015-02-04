@@ -56,8 +56,7 @@ public interface UGCService<T extends UGC> {
      * @throws org.craftercms.social.exceptions.SocialException if attribute can be set.
      * @throws java.lang.IllegalArgumentException               If given UGC does not exist.*
      */
-    void setAttributes(final String ugcId, final String contextId, Map<String, Object> attributes)
-        throws SocialException;
+    void setAttributes(final String ugcId, final String contextId, Map<String, Object> attributes) throws SocialException, UGCNotFound;
 
     /**
      * Deletes a attribute of the given UGC.
@@ -101,7 +100,7 @@ public interface UGCService<T extends UGC> {
      * @throws java.lang.IllegalArgumentException If given UGC does not exist.*
      */
     public T update(final String ugcId, final String body, final String subject, final String contextId,
-                    final Map<String, Object> attributes) throws SocialException;
+                    final Map<String, Object> attributes) throws SocialException, UGCNotFound;
 
 
     /**

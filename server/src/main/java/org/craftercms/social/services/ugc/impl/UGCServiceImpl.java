@@ -121,11 +121,16 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public void setAttributes(@SecuredObject final String ugcId, final String contextId, final Map attributes) throws
-        SocialException {
+    public void setAttributes(@SecuredObject final String ugcId, final String contextId, final Map attributes) throws SocialException, UGCNotFound {
         log.debug("logging.ugc.addingAttributes", attributes, ugcId, contextId);
         try {
-            ugcRepository.setAttributes(ugcId, contextId, attributes);
+            T toUpdate=(T)ugcRepository.findUGC(contextId, ugcId);
+            if(toUpdate==null){
+                throw new UGCNotFound("Unable to found ugc with id "+ugcId);
+            }
+            final Map attrs = toUpdate.getAttributes();
+            attrs.putAll(attrs);
+            ugcRepository.setAttributes(ugcId, contextId, attrs);
             reactor.notify(UGCEvent.UPDATE_ATTRIBUTES.getName(), Event.wrap(new SocialEvent<T>(ugcId, attributes,
                 SocialSecurityUtils.getCurrentProfile().getId().toString(),UGCEvent.UPDATE_ATTRIBUTES)));
         } catch (MongoDataException ex) {
@@ -167,7 +172,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public UGC update(@SecuredObject final String ugcId, final String body, final String subject, final String
-        contextId, final Map attributes) throws SocialException {
+        contextId, final Map attributes) throws SocialException, UGCNotFound {
         log.debug("logging.ugc.updateUgc", ugcId);
         try {
             if (!ObjectId.isValid(ugcId)) {
@@ -186,9 +191,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             pipeline.processUgc(toUpdate);
             ugcRepository.update(ugcId, toUpdate, false, false);
             reactor.notify(UGCEvent.UPDATE.getName(), Event.wrap(toUpdate));
-            if (attributes != null) {
+            if (attributes != null && !attributes.isEmpty()) {
+                toUpdate.getAttributes().putAll(attributes);
                 //ToDo This should be one query, problem is with deep attributes !!
-                setAttributes(toUpdate.getId().toString(), contextId, attributes);
+                setAttributes(toUpdate.getId().toString(), contextId, toUpdate.getAttributes());
                 reactor.notify(UGCEvent.UPDATE_ATTRIBUTES, Event.wrap(attributes));
             }
             log.info("logging.ugc.updatedUgc", ugcId);

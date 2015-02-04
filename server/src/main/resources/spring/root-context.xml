@@ -52,6 +52,7 @@
 
     <bean id="social.ugc.virusScanner"
           class="${studio.social.ugc.virusScanner}"/>
+
     <bean class="org.craftercms.social.services.social.impl.SocialServicesImpl" id="social.ugc.socialServices">
         <property name="ugcRepository" ref="social.repository.ugcRepository"/>
         <property name="reactor" ref="socialReactor"/>
@@ -94,6 +95,7 @@
     <bean class="org.craftercms.social.util.serialization.SocialInjectValueFactory" id="social.InjectValueHandler">
         <property name="profileAggregator" ref="social.profileAggregator"/>
         <property name="notificationServiceImpl" ref="social.services.system.notificationService"/>
+        <property name="ignoreAnonymousFlagRoles" value="${studio.social.system.ignoreAnonymousFlagRoles}"/>
     </bean>
 
     <bean class="org.craftercms.social.services.system.impl.SecurityActionsServiceImpl"
