@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.social.Flag;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalUgcException;
@@ -74,7 +75,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         = "New comment Body") @RequestParam() final String body, @ApiParam(value = "Json String representing any " +
         "extra attributes of the comment to create",
         name = "attributes") @RequestParam(required = false,
-        defaultValue = "{}") final String attributes) throws SocialException, MissingServletRequestParameterException {
+        defaultValue = "{}") final String attributes) throws SocialException, MissingServletRequestParameterException, UGCNotFound {
         Map<String, Object> attributesMap = null;
         if (!StringUtils.isBlank(attributes)) {
             attributesMap = parseAttributes(attributes);
@@ -101,8 +102,10 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     }
 
 
-    @RequestMapping(value = "{id}/attributes", method = {RequestMethod.POST, RequestMethod.PUT})
-    @ResponseBody()
+    @RequestMapping(value = "{id}/attributes", method = {RequestMethod.POST,RequestMethod.PUT}, consumes = {
+        MimeTypeUtils
+        .APPLICATION_FORM_URLENCODED_VALUE})
+    @ResponseBody
     @ApiOperation(value = "Adds or updates the given attributes with there new value " + "if attribute does not " +
         "exists it will be created Json is expected to by the POST body",
         notes = "This operation expects any " +
@@ -114,23 +117,24 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
             "doing the search")
     public boolean addAttributes(@ApiParam(value = "Id of the UGC") @NotBlank @PathVariable(value = "id") final
                                      String id, @ApiParam(value = "Json of the attributes to be updated or created" +
-        ". All values are " + "save as string (booleans,numbers,dates)") @RequestBody final Map<String, Object>
-        attributes) throws SocialException {
+        ". All values are " + "save as string (booleans,numbers,dates)") @RequestParam final Map<String, Object>
+        attributes) throws SocialException, UGCNotFound {
         log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
+        attributes.remove("context");
         ugcService.setAttributes(id, context(), attributes);
         return true;//Always true unless exception.
     }
 
 
     @RequestMapping(value = "{id}/attributes", method = RequestMethod.DELETE)
-    @ResponseBody()
+    @ResponseBody
     @ApiOperation(value = "Deletes all the attributes from the given UGC", notes = "All attributes must be in dot " +
         "notation where nested values should be in its full path, to remove multiple attributes send them separated " +
         "by a ',' ")
-    public boolean removeAttributes(@ApiParam(value = "Id of the comment", name = "id") @NotBlank @PathVariable(value
-        = "id") final String id, @ApiParam(name = "attributes", value = "List of , " +
+    public boolean removeAttributes(@ApiParam(value = "Id of the comment", name = "id") @PathVariable(value = "id")
+                                        final String id, @ApiParam(name = "attributes", value = "List of , " +
         "separated attributes name to delete. use dot " + "notation do delete nested attributes.") @RequestParam
-        (required = true) final String attributes) throws SocialException {
+    final String attributes) throws SocialException {
         log.debug("Request for deleting form  UGC {} attributes {}", id, attributes);
         ugcService.deleteAttribute(id, attributes.split(","), context());
         return true;//Always true unless exception.
@@ -196,11 +200,10 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "flagged", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Gets all flagged Ugs")
-    public Iterable<T> flagged(@RequestParam(required = false, defaultValue =
-        "0") final int pageNumber, @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final
-                                int pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam
-        (required = false) final
-                                List<SocialSortOrder> sortOrder) throws UGCException {
+    public Iterable<T> flagged(@RequestParam(required = false, defaultValue = "0") final int pageNumber,
+                               @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final int
+                                   pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam
+        (required = false) final List<SocialSortOrder> sortOrder) throws UGCException {
         int start = 0;
         if (pageNumber > 0 && pageSize > 0) {
             start = ThreadsController.getStart(pageNumber, pageSize);
@@ -213,18 +216,17 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "flagged/count", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Counts all flagged Ugs")
-    public long flaggedCount(@RequestParam(required = false, defaultValue =
-        "0") final int pageNumber, @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final
-                               int pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam
-                                   (required = false) final
-                               List<SocialSortOrder> sortOrder) throws UGCException {
+    public long flaggedCount(@RequestParam(required = false, defaultValue = "0") final int pageNumber, @RequestParam
+        (required = false, defaultValue = ThreadsController.MAX_INT) final int pageSize, @RequestParam(required =
+        false) final List<String> sortBy, @RequestParam(required = false) final List<SocialSortOrder> sortOrder)
+        throws UGCException {
         int start = 0;
         if (pageNumber > 0 && pageSize > 0) {
             start = ThreadsController.getStart(pageNumber, pageSize);
         }
 
-        return socialServices.countAllFlaggedUgs(context(), start, pageSize,
-            ThreadsController.getSortOrder(sortBy, sortOrder));
+        return socialServices.countAllFlaggedUgs(context(), start, pageSize, ThreadsController.getSortOrder(sortBy,
+            sortOrder));
     }
 
 
@@ -240,11 +242,10 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     protected boolean checkAnonymous(final boolean anonymous) {
         final Profile profile = SocialSecurityUtils.getCurrentProfile();
         Object isAlwaysAnonymous = profile.getAttribute("isAlwaysAnonymous");
-        if (isAlwaysAnonymous == null || (!(isAlwaysAnonymous instanceof Boolean) && !((Boolean)isAlwaysAnonymous)
-            .booleanValue())) {
+        if (isAlwaysAnonymous == null) {
             return anonymous;
         } else {
-            return true;
+            return ((Boolean)isAlwaysAnonymous).booleanValue();
         }
 
     }
