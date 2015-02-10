@@ -90,7 +90,7 @@ public class NotificationServiceImpl implements NotificationService {
                         + "frequency");
                 }
             }
-            watchedThreadsRepository.addWatcher(thread.getThreadId(), profile.getId().toString(), frequency);
+            watchedThreadsRepository.addWatcher(thread.getThreadId(), profile.getId().toString(), frequencyToUse);
         } catch (MongoDataException e) {
             throw new NotificationException("Unable to subscribe User", e);
         }
