@@ -99,7 +99,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public void unsubscribeUser(final String userId, final String threadId) throws NotificationException {
+    public void unSubscribeUser(final String userId, final String threadId) throws NotificationException {
         try {
             WatchedThread thread = watchedThreadsRepository.findByStringId(threadId);
             if (thread != null) {
