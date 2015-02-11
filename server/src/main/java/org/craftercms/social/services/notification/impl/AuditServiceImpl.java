@@ -68,7 +68,7 @@ public class AuditServiceImpl extends AuditService<AuditLog> {
     @Override
     public List<AuditLog> getAuditLogs(final Date from, final Date to) {
         try {
-            return auditRepository.getByDate(SocialSecurityUtils.getContext(),from,to);
+            return auditRepository.getByDate(from,to);
         } catch (SocialException ex) {
             log.error("logging.system.unableToFindAudits", ex, from, to);
         }
