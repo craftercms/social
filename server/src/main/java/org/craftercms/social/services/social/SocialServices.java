@@ -68,7 +68,7 @@ public interface SocialServices<T extends SocialUgc> {
      * @param userId Id of the user that is changing the status.
      * @param contextId Context of the UGC.
      */
-    T moderate(String ugcId, SocialUgc.ModerationStatus moderationStatus, String userId, String contextId) throws UGCException;
+    T moderate(String ugcId, SocialUgc.ModerationStatus moderationStatus, String userId, String contextId) throws SocialException;
 
 
     /**

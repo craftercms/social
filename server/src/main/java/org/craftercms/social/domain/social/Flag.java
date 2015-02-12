@@ -79,9 +79,6 @@ public class Flag {
 
     @Override
     public int hashCode() {
-        int result = id != null? id.hashCode(): 0;
-        result = 31 * result + (reason != null? reason.hashCode(): 0);
-        result = 31 * result + (userId != null? userId.hashCode(): 0);
-        return result;
+       return id.hashCode();
     }
 }
