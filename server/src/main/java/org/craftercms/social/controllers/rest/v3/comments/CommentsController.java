@@ -174,7 +174,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @ResponseBody
     @ApiOperation(value = "Changes the Status of the given UGC")
     public T moderate(@ApiParam("Id of the comment to change status") @PathVariable final String id, @ApiParam("New "
-        + "Moderation Status of the Param") @RequestParam final SocialUgc.ModerationStatus status) throws UGCException {
+        + "Moderation Status of the Param") @RequestParam final SocialUgc.ModerationStatus status) throws SocialException {
         return (T)socialServices.moderate(id, status, userId(), context());
     }
 

@@ -16,6 +16,7 @@ import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.social.SocialServices;
 import org.craftercms.social.services.social.VoteOptions;
+import org.craftercms.social.services.ugc.pipeline.UgcPipeline;
 import org.craftercms.social.util.ebus.SocialEvent;
 import org.craftercms.social.util.ebus.UGCEvent;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     private UGCRepository<T> ugcRepository;
     private Logger log = LoggerFactory.getLogger(SocialServicesImpl.class);
     private Reactor reactor;
+    private UgcPipeline pipeline;
+
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
@@ -62,6 +65,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
                 default:
                     neutral(ugc, userId);
             }
+            pipeline.processUgc(ugc);
             ugcRepository.save(ugc);
             reactor.notify(UGCEvent.VOTE.getName(), Event.wrap(new SocialEvent(ugc, SocialSecurityUtils.getCurrentProfile()
                 .getId().toString(),UGCEvent.VOTE)));
@@ -83,6 +87,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             }
             Flag f = new Flag(reason, userId);
             ugcToFlag.getFlags().add(f);
+            pipeline.processUgc(ugcToFlag);
             ugcRepository.save(ugcToFlag);
             reactor.notify(UGCEvent.FLAG.getName(), Event.wrap(new SocialEvent(ugcToFlag,SocialSecurityUtils.getCurrentProfile
                 ().getId().toString(),UGCEvent.FLAG)));
@@ -103,7 +108,9 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             if (ugcToUpdate == null) {
                 throw new IllegalUgcException("Given ugc does not belong to given context");
             }
+
             ugcToUpdate.getFlags().remove(new Flag(new ObjectId(flagId)));
+            pipeline.processUgc(ugcToUpdate);
             ugcRepository.save(ugcToUpdate);
             reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugcToUpdate,
                 SocialSecurityUtils.getCurrentProfile().getId().toString(),UGCEvent.UNFLAG)));
@@ -117,7 +124,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     @Override
     @HasPermission(action = UGC_MODERATE, type = SocialPermission.class)
     public SocialUgc moderate(final String ugcId, final SocialUgc.ModerationStatus moderationStatus,
-                              final String userId, final String contextId) throws UGCException {
+                              final String userId, final String contextId) throws SocialException {
         try {
             T ugc = ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
@@ -126,6 +133,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             if (ugc.getModerationStatus() != SocialUgc.ModerationStatus.TRASH) { // Once is trash stays thrash (TBC)
                 ugc.setModerationStatus(moderationStatus);
             }
+            pipeline.processUgc(ugc);
             ugcRepository.save(ugc);
             reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugc,SocialSecurityUtils.getCurrentProfile()
                 .getId().toString(),UGCEvent.UNFLAG)));
@@ -202,5 +210,10 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
 
     public void setReactor(final Reactor reactor) {
         this.reactor = reactor;
+    }
+
+
+    public void setUgcPipeline(UgcPipeline ugcPipeline) {
+        this.pipeline = ugcPipeline;
     }
 }

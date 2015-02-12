@@ -56,6 +56,7 @@
     <bean class="org.craftercms.social.services.social.impl.SocialServicesImpl" id="social.ugc.socialServices">
         <property name="ugcRepository" ref="social.repository.ugcRepository"/>
         <property name="reactor" ref="socialReactor"/>
+        <property name="ugcPipeline" ref="social.services.pipeline"/>
     </bean>
 
     <bean id="social.services.pipeline" class="org.craftercms.social.services.ugc.pipeline.UgcPipeline">
