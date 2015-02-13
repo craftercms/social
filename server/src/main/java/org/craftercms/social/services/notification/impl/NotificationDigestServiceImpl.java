@@ -19,6 +19,7 @@ package org.craftercms.social.services.notification.impl;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -63,21 +64,32 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
         if (toSend != null) {
             init();
             final HashMap<String, Object> dataModel = new HashMap<>(modelExt);
+            //TODO Fix this for multi context users!
+            List<String> contexts= new ArrayList<>();
             dataModel.put("profile", toSend);
+
+
             for (HashMap hashMap : auditDigest) {
+                if(!contexts.contains(hashMap.get("contextId"))) {
+                    contexts.add(hashMap.get("contextId").toString());
+                }
+            }
+
+            for (String contextId : contexts) {
                 try {
                     StringWriter writer = new StringWriter();
                     dataModel.put("digest", auditDigest);
-                    Template template = cfg.getTemplate(hashMap.get("contextId") + "/" + type,getProfileLocale(toSend
+                    Template template = cfg.getTemplate(contextId + "/" + type,getProfileLocale(toSend
                         .getAttribute("notificationLocale")));
                     final Environment env = template.createProcessingEnvironment(dataModel, writer);
                     env.process();
                     writer.flush();
-                    emailService.sendEmail(toSend,writer,type,(String) hashMap.get("contextId"));
+                    emailService.sendEmail(toSend,writer,type, contextId);
                 } catch (IOException | TemplateException | SocialException ex) {
                     logger.error("logging.system.notification.errorLoadingTemplate", ex);
                 }
             }
+
         } else {
             logger.error("Unable to send notification to profile {} it does not exist", profileId);
         }
