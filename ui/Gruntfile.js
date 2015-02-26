@@ -347,7 +347,7 @@ module.exports = function (grunt) {
         'uglify',
 //        'modernizr',
         'copy:dist',
-//        'rev',
+        'rev',
         'usemin'
     ]);
 
