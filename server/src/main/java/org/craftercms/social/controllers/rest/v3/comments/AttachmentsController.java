@@ -58,6 +58,16 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
         return true;
     }
 
+    @RequestMapping(value = "/{id}/attachments/{attachmentId}/delete", method = RequestMethod.POST)
+    @ResponseBody()
+    @ApiOperation("Deletes the given attachment for the UGC")
+    public boolean removeAttachmentPost(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "id") final String
+                                        id, @ApiParam("Id of the attachment to delete") @NotBlank
+                                    @PathVariable(value = "attachmentId") final String attachmentId) throws SocialException, IOException {
+        return this.removeAttachment(id,attachmentId);
+    }
+
+
     @RequestMapping(value = "/{id}/attachments/{attachmentId}", method = RequestMethod.PUT)
     @ResponseBody()
     @ApiOperation("Updates the given attachment for the UGC")
@@ -70,6 +80,18 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
         ugcService.updateAttachment(id, context(), attachmentId, file.getInputStream());
         return true;
     }
+
+
+    @RequestMapping(value = "/{id}/attachments/{attachmentId}/update", method = RequestMethod.POST)
+    @ResponseBody()
+    @ApiOperation("Updates the given attachment for the UGC")
+    public boolean updateAttachmentPost(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "id") final String
+                                        id, @ApiParam("Id of the attachment to delete") @NotBlank
+                                    @PathVariable(value = "attachmentId") final String attachmentId, CommonsMultipartFile file) throws
+        SocialException, IOException {
+        return this.updateAttachment(id, attachmentId, file);
+    }
+
 
     @RequestMapping(value = "/{id}/attachments", method = RequestMethod.GET)
     @ResponseBody()

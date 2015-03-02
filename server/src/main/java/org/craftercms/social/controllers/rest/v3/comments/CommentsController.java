@@ -1,8 +1,5 @@
 package org.craftercms.social.controllers.rest.v3.comments;
 
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +21,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 /**
  */
@@ -75,12 +73,25 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         = "New comment Body") @RequestParam() final String body, @ApiParam(value = "Json String representing any " +
         "extra attributes of the comment to create",
         name = "attributes") @RequestParam(required = false,
-        defaultValue = "{}") final String attributes) throws SocialException, MissingServletRequestParameterException, UGCNotFound {
+        defaultValue = "{}") final String attributes) throws SocialException,
+        MissingServletRequestParameterException, UGCNotFound {
         Map<String, Object> attributesMap = null;
         if (!StringUtils.isBlank(attributes)) {
             attributesMap = parseAttributes(attributes);
         }
         return (T)ugcService.update(id, body, "", context(), attributesMap);
+    }
+
+    @RequestMapping(value = "{id}/update", method = RequestMethod.POST)
+    @ApiOperation(value = "Updates the given comment", notes = "As Create some HTML/scripts tags will be scripted")
+    @ResponseBody
+    public T updatePost(@ApiParam(value = "Ugc id to removeWatcher") @PathVariable("id") final String id, @ApiParam
+        (value = "New comment Body") @RequestParam() final String body, @ApiParam(value = "Json String representing "
+        + "any " + "extra attributes of the comment to create",
+        name = "attributes") @RequestParam(required = false,
+        defaultValue = "{}") final String attributes) throws SocialException,
+        MissingServletRequestParameterException, UGCNotFound {
+        return this.update(id, body, attributes);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
@@ -93,6 +104,15 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         return true;
     }
 
+    @RequestMapping(value = "{id}/delete", method = RequestMethod.POST)
+    @ApiOperation(value = "Deletes the comment", notes = "As Create some HTML/scripts tags will be scripted, " +
+        "Also All children will be deleted")
+    @ResponseBody
+    public boolean deletePost(@ApiParam(value = "Comment id to removeWatcher") @PathVariable("id") final String id)
+        throws SocialException {
+        return this.delete(id);
+    }
+
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     @ApiOperation(value = "Gets a the comment")
     @ResponseBody
@@ -102,9 +122,8 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     }
 
 
-    @RequestMapping(value = "{id}/attributes", method = {RequestMethod.POST,RequestMethod.PUT}, consumes = {
-        MimeTypeUtils
-        .APPLICATION_FORM_URLENCODED_VALUE})
+    @RequestMapping(value = "{id}/attributes", method = {RequestMethod.POST, RequestMethod.PUT}, consumes =
+        {MimeTypeUtils.APPLICATION_FORM_URLENCODED_VALUE})
     @ResponseBody
     @ApiOperation(value = "Adds or updates the given attributes with there new value " + "if attribute does not " +
         "exists it will be created Json is expected to by the POST body",
@@ -140,6 +159,17 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         return true;//Always true unless exception.
     }
 
+    @RequestMapping(value = "{id}/attributes/delete", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "Deletes all the attributes from the given UGC", notes = "All attributes must be in dot " +
+        "notation where nested values should be in its full path, to remove multiple attributes send them separated " +
+        "by a ',' ")
+    public boolean removeAttributesPost(@ApiParam(value = "Id of the comment", name = "id") @PathVariable(value = "id")
+                                    final String id, @ApiParam(name = "attributes", value = "List of , " +
+        "separated attributes name to delete. use dot " + "notation do delete nested attributes.") @RequestParam
+                                    final String attributes) throws SocialException {
+       return this.removeAttributes(id, attributes);
+    }
 
     @RequestMapping(value = "{id}/flags", method = RequestMethod.POST)
     @ApiOperation(value = "Flags the UGC", notes = "Reason will be cleanup for any HTML/Script")
@@ -162,7 +192,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         return ugc.getFlags();
     }
 
-    @RequestMapping(value = "{id}/flags/{flagId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "{id}/flags/{flagId}", method = {RequestMethod.POST, RequestMethod.DELETE})
     @ApiOperation(value = "Flags the UGC", notes = "Reason will be cleanup for any HTML/Script")
     @ResponseBody
     public boolean unflagUgc(@ApiParam(value = "Comment Id") @PathVariable(value = "id") final String id, @ApiParam
@@ -170,13 +200,15 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         return socialServices.unFlag(id, flagId, userId(), context());
     }
 
-    @RequestMapping(value = "{id}/moderate", method = RequestMethod.PUT)
+    @RequestMapping(value = "{id}/moderate", method = {RequestMethod.POST, RequestMethod.DELETE})
     @ResponseBody
     @ApiOperation(value = "Changes the Status of the given UGC")
     public T moderate(@ApiParam("Id of the comment to change status") @PathVariable final String id, @ApiParam("New "
-        + "Moderation Status of the Param") @RequestParam final SocialUgc.ModerationStatus status) throws SocialException {
+        + "Moderation Status of the Param") @RequestParam final SocialUgc.ModerationStatus status) throws
+        SocialException {
         return (T)socialServices.moderate(id, status, userId(), context());
     }
+
 
 
     @RequestMapping(value = "moderation/{status}", method = RequestMethod.GET)
@@ -203,7 +235,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     public Iterable<T> flagged(@RequestParam(required = false, defaultValue = "0") final int pageNumber,
                                @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final int
                                    pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam
-        (required = false) final List<SocialSortOrder> sortOrder) throws UGCException {
+                                       (required = false) final List<SocialSortOrder> sortOrder) throws UGCException {
         int start = 0;
         if (pageNumber > 0 && pageSize > 0) {
             start = ThreadsController.getStart(pageNumber, pageSize);
