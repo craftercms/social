@@ -141,6 +141,13 @@ public class ThreadsController {
         return false;
     }
 
+    @RequestMapping(value = "{id}/subscribe/update", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean changeSubscribePost(@PathVariable final String id, @RequestParam(required = false, defaultValue = "")
+    final String frequency, @RequestParam final String context) throws UGCException {
+       return this.changeSubscribe(id, frequency, context);
+    }
+
     @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
     @ResponseBody
     public List<Map> subscriptions(@RequestParam final String context) throws SocialException {
@@ -148,7 +155,7 @@ public class ThreadsController {
     }
 
 
-    @RequestMapping(value = "{id}/unsubscribe", method = RequestMethod.DELETE)
+    @RequestMapping(value = "{id}/unsubscribe", method = {RequestMethod.POST,RequestMethod.DELETE})
     @ResponseBody
     public boolean unSubscribe(@PathVariable final String id, @RequestParam final String context) throws UGCException {
         Profile p = SocialSecurityUtils.getCurrentProfile();
