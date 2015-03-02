@@ -362,17 +362,16 @@ app.factory('commentService', function($http) {
         updateStatus: function(ctxId, comment, newStatus) {
             var url = socialRestBaseUrl + '/comments/' + comment._id + '/moderate?context=' + ctxId;
 
-            return putParams(url, { status: newStatus }, $http);
+            return postParams(url, { status: newStatus }, $http);
         },
         updateBody: function(ctxId, comment) {
-            var url = socialRestBaseUrl + '/comments/' + comment._id + '?context=' + ctxId;
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '/update/?context=' + ctxId;
 
-            return putParams(url, { body: comment.body }, $http);
+            return postParams(url, { body: comment.body }, $http);
         },
         deleteComment: function(ctxId, comment) {
-            var url = socialRestBaseUrl + '/comments/' + comment._id + '?context=' + ctxId;
-
-            return deleteObject(url, $http);
+            var url = socialRestBaseUrl + '/comments/' + comment._id + '/delete/?context=' + ctxId;
+            return postParams(url,{}, $http);
         }
     }
 });
@@ -387,9 +386,9 @@ app.factory('attachmentService', function($http) {
         },
         deleteAttachment: function(ctxId, comment, attachmentInfo) {
             var url = socialRestBaseUrl + '/comments/' + comment._id + '/attachments/' + attachmentInfo.fileId;
-                url += '?context=' + ctxId;
+                url += '/delete/?context=' + ctxId;
 
-            return deleteObject(url, $http);
+            return postParams(url,{}, $http);
         }
     }
 });
