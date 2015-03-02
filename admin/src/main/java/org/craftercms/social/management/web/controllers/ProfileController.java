@@ -76,7 +76,7 @@ public class ProfileController {
                                 @RequestParam(value = PARAM_QUERY, required = false) String query,
                                 HttpServletRequest request) throws ProfileException {
         if (StringUtils.isEmpty(tenantName)) {
-            tenantName = SecurityUtils.getTenant(request);
+            tenantName = SecurityUtils.getProfile(request).getTenant();
         }
 
         if (StringUtils.isNotEmpty(query)) {
@@ -103,7 +103,7 @@ public class ProfileController {
                                         @RequestParam(value = PARAM_COUNT, required = false) Integer limit,
                                         HttpServletRequest request) throws ProfileException {
         if (StringUtils.isEmpty(tenantName)) {
-            tenantName = SecurityUtils.getTenant(request);
+            tenantName = SecurityUtils.getProfile(request).getTenant();
         }
 
         if (StringUtils.isNotEmpty(query)) {
