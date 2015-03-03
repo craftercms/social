@@ -200,7 +200,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         return socialServices.unFlag(id, flagId, userId(), context());
     }
 
-    @RequestMapping(value = "{id}/moderate", method = {RequestMethod.POST, RequestMethod.DELETE})
+    @RequestMapping(value = "{id}/moderate", method = {RequestMethod.POST, RequestMethod.PUT})
     @ResponseBody
     @ApiOperation(value = "Changes the Status of the given UGC")
     public T moderate(@ApiParam("Id of the comment to change status") @PathVariable final String id, @ApiParam("New "

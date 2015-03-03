@@ -2,6 +2,7 @@ package org.craftercms.social.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -35,14 +36,14 @@ public class SocialSecurityUtils {
             return Arrays.asList(ANONYMOUS);
         }
 
-        List<String> list = getRolesForCurrentContext(profile);
+        List<String> list = new ArrayList<>(getRolesForCurrentContext(profile));
         if (list == null) {
-            list = new ArrayList<>();
+            list = Collections.synchronizedList(new ArrayList<String>());
         }
 
         list.addAll(profile.getRoles());
 
-        return list;
+        return Collections.unmodifiableList(list);
     }
 
     public static String getContext() {
