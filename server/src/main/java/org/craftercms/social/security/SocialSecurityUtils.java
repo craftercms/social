@@ -72,14 +72,14 @@ public class SocialSecurityUtils {
                 }
             }
             if (profile.hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
-                return null;
+                return Collections.emptyList();
             } else {
                 throw new ProfileConfigurationException("Current profile is not assign to the given currentContext");
             }
         } else if (profile.hasRole(ANONYMOUS)) {
-            return null;
+            return Collections.emptyList();
         } else if (profile.hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
-            return null;
+            return Collections.emptyList();
         } else {
             throw new ProfileConfigurationException("Profile missing attribute '" + SOCIAL_CONTEXTS_ATTRIBUTE + "'");
         }
