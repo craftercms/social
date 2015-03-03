@@ -1,7 +1,9 @@
 package org.craftercms.social.security;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.Permission;
@@ -27,7 +29,7 @@ public class SocialPermission implements Permission {
     @Override
     public boolean isAllowed(final String action) {
         try {
-            return repository.isAllowed(action, new LinkedHashSet<>(profileRoles), contextId);
+            return repository.isAllowed(action,new ConcurrentSkipListSet(profileRoles), contextId);
         } catch (MongoDataException e) {
             throw new AccessDeniedException("Unable to find Action", e);
         }
