@@ -41,7 +41,11 @@ public class SocialSecurityUtils {
             list = Collections.synchronizedList(new ArrayList<String>());
         }
 
-        list.addAll(profile.getRoles());
+        for (String role : profile.getRoles()) {
+            if(!list.contains(role)) {
+                list.add(role);
+            }
+        }
 
         return Collections.unmodifiableList(list);
     }
