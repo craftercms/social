@@ -54,6 +54,7 @@
         <li><a href="#/moderation-dashboard">Moderation Dashboard</a></li>
         <li><a href="#/contexts">Contexts</a></li>
         <li><a href="#/security-actions">Security Actions</a></li>
+        <li><a href="#/context-preferences">Context Preferences</a></li>
         <li><a href="#/search-profiles">Search Profiles</a></li>
     </ul>
 </div>
@@ -63,10 +64,13 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-route.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="//cdn.ckeditor.com/4.4.7/full/ckeditor.js"></script>
 <script src="<@spring.url '/resources/js/bootstrap.min.js'/>"></script>
 <script src="<@spring.url '/resources/js/ui-bootstrap-tpls-0.11.0.min.js'/>"></script>
 <script src="<@spring.url '/resources/js/bootstrap-growl.min.js'/>"></script>
 <script src="<@spring.url '/resources/js/jquery.cookie.js'/>"></script>
+<script src="<@spring.url '/resources/js/ng-ckeditor.min.js'/>"></script>
+
 <script src="<@spring.url '/resources/js/app.js'/>"></script>
 <script type="text/javascript">
     var contextPath = "${requestContext.contextPath}";

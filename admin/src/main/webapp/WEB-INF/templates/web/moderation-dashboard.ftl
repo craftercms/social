@@ -35,7 +35,7 @@
         </div>
         <div class="form-group col-sm-8">
             <h4 class="comment-header"><span class="text-muted">Thread:</span> {{comment.targetId}}</h4>
-            <textarea class="form-control comment-body" ng-model="comment.body"></textarea>
+            <textarea ckeditor="editorOptions" class="form-control comment-body" ng-model="comment.body"></textarea>
             <div class="comment-footer">
                 {{comment.lastModifiedDate | date:'MM/dd/yyyy @ h:mm a'}}
                 <span ng-if="comment.attachments.length != 0">

@@ -17,12 +17,14 @@
 
 package org.craftercms.social.services.system.impl;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.repositories.system.ContextPreferencesRepository;
+import org.craftercms.social.security.SecurityActionNames;
+import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.system.ContextPreferencesService;
 
 /**
@@ -56,6 +58,19 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
             }
         }
         return contextPreferencesRepository.setContextPreferences(cleanPref,contextId);
+    }
+
+
+    @Override
+    @HasPermission(type = SocialPermission.class, action = SecurityActionNames.CHANGE_NOTIFICATION_TEMPLATE)
+    public boolean saveEmailTemplate(final String context, final String type, final String template) throws SocialException {
+        return contextPreferencesRepository.saveEmailTemplate(context,type,template);
+    }
+
+    @Override
+    @HasPermission(type = SocialPermission.class, action = SecurityActionNames.CHANGE_NOTIFICATION_TEMPLATE)
+    public String getEmailTemplate(final String context, final String emailTemplateType) throws SocialException {
+        return getNotificationEmailTemplate(context,emailTemplateType.toLowerCase());
     }
 
     public void setContextPreferencesRepository(final ContextPreferencesRepository contextPreferencesRepository) {

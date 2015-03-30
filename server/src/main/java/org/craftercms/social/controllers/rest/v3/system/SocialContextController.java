@@ -19,6 +19,7 @@ package org.craftercms.social.controllers.rest.v3.system;
 
 import com.wordnik.swagger.annotations.Api;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @RequestMapping("/api/3/system/context")
 @Controller
-@Api(value = "Creates and associates Social Context to profiles", description = "Creates and associates Social " +
+@Api(value = "Handles Context Configuration", description = "Creates and associates Social " +
     "Context to profiles")
 public class SocialContextController {
 
@@ -51,6 +52,7 @@ public class SocialContextController {
     private SocialContextService socialContextService;
     @Autowired
     private ContextPreferencesService contextPreferencesService;
+
 
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     @ResponseBody
@@ -82,6 +84,41 @@ public class SocialContextController {
         return socialContextService.removeProfileFromContext(contextId, profileId);
     }
 
+    @RequestMapping(value = "/preferences/email" ,method = {RequestMethod.PUT,RequestMethod.POST})
+    @ResponseBody
+    public boolean saveEmailTemplate(@RequestParam(required = true) final String template,@RequestParam(required =
+        true) final String type) throws SocialException {
+        if(!checkIfUserIsAdmin()){
+            throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
+        }
+
+        if(StringUtils.isBlank(template)){
+            throw new IllegalArgumentException("\"template\" param is cannot be blank");
+        }
+        if(StringUtils.isBlank(type) || !Arrays.asList("DAILY","WEEKLY","INSTANT").contains(type.toUpperCase())){
+            throw new IllegalArgumentException("\"type\" param can not be blank and must be on of the following "
+                + "values DAILY,WEEKLY,INSTANT");
+        }
+        return contextPreferencesService.saveEmailTemplate(SocialSecurityUtils.getContext(), type.toUpperCase(),
+            template);
+    }
+
+
+    @RequestMapping(value = "/preferences/email" ,method = RequestMethod.GET)
+    @ResponseBody
+    public String getSaveEmailTemplate(@RequestParam(required =
+        true) final String type) throws SocialException {
+        if(!checkIfUserIsAdmin()){
+            throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
+        }
+        if(StringUtils.isBlank(type) || !Arrays.asList("DAILY","WEEKLY","INSTANT").contains(type.toUpperCase())){
+            throw new IllegalArgumentException("\"type\" param can not be blank and must be on of the following "
+                + "values DAILY,WEEKLY,INSTANT");
+        }
+        return contextPreferencesService.getEmailTemplate(SocialSecurityUtils.getContext(),type.toUpperCase());
+    }
+
+
     @RequestMapping(value = "/preferences", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getContextPreference() {
@@ -103,4 +140,11 @@ public class SocialContextController {
         throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
     }
 
+
+
+    private boolean checkIfUserIsAdmin(){
+        return !SocialSecurityUtils.getCurrentProfile().getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)
+            && SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_ADMIN) ||
+            SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN);
+    }
 }
