@@ -217,4 +217,10 @@
     <entry key="social.ugc.byFlaggedStatus">
         {contextId:#, moderationStatus:{ $ne: #  } , flags : {$exists:true}, $where:'this.flags.length>0'}
     </entry>
+    <entry key="social.system.preferences.byContextAndTemplateType">
+        {"_id":#,"templates.type":#}
+    </entry>
+    <entry key="social.system.preferences.updateContextTemplateType">
+        {$set:{"templates.$.template":#}}
+    </entry>
 </properties>

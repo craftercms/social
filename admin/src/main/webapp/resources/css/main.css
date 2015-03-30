@@ -185,3 +185,9 @@ a {
     margin-bottom: 15px;
 }
 
+
+#btnSaveNotificationTemplate{
+    margin-top: 25px;
+    margin-left: 25px;
+}
+.ng-ckeditor{border:2px double greenyellow;}

@@ -20,6 +20,7 @@ public final class SecurityActionNames {
     public static final String ROLE_SOCIAL_SUPERADMIN="SOCIAL_SUPERADMIN";
     public static final String ROLE_OWNER="OWNER";
     public static final String ROLE_SOCIAL_ADMIN = "SOCIAL_ADMIN";
+    public static final String CHANGE_NOTIFICATION_TEMPLATE = "system.notification.changeTemplate";
 
     private SecurityActionNames(){}
 

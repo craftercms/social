@@ -14,4 +14,8 @@ public interface ContextPreferencesService {
     Map<String, Object> getContextPreferences(String contextId);
 
     boolean saveContextPreference(String contextId,Map<String,Object> preferences);
+
+    boolean saveEmailTemplate(String context, String type, final String template) throws SocialException;
+
+    String getEmailTemplate(String context, String emailTemplateType) throws  SocialException;
 }

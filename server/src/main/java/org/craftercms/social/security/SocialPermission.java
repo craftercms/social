@@ -29,7 +29,13 @@ public class SocialPermission implements Permission {
     @Override
     public boolean isAllowed(final String action) {
         try {
-            return repository.isAllowed(action,new ConcurrentSkipListSet(profileRoles), contextId);
+            ConcurrentSkipListSet coll = new ConcurrentSkipListSet();
+            for (String profileRole : profileRoles) {
+                if(!coll.contains(profileRole)) {
+                    coll.add(profileRole);
+                }
+            }
+            return repository.isAllowed(action,coll, contextId);
         } catch (MongoDataException e) {
             throw new AccessDeniedException("Unable to find Action", e);
         }
