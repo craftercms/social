@@ -427,7 +427,7 @@ app.factory('actionsService', function ($http) {
 });
 
 
-app.factory('preferencesService', function ($http) {
+app.factory('emailPreferencesService', function ($http) {
     return {
         getNotificationTemplate: function (type, ctxId) {
             var url = socialRestBaseUrl + '/system/context/preferences/email?type=' + type + '&context=' + ctxId;
@@ -436,6 +436,14 @@ app.factory('preferencesService', function ($http) {
         saveNotificationTemplate: function (type, ctxId, template) {
             var url = socialRestBaseUrl + '/system/context/preferences/email?context=' + ctxId;
             return postParams(url,{type: type, template: template}, $http)
+        },
+        getEmailConfig: function (ctxId) {
+            var url = socialRestBaseUrl + '/system/context/preferences/email/config?context=' + ctxId;
+            return getObject(url, $http);
+        },
+        saveEmailConfig: function (ctxId,emailConfig) {
+            var url = socialRestBaseUrl + '/system/context/preferences/email/config?context=' + ctxId;
+            return postParams(url,emailConfig,$http);
         }
     }
 });
@@ -518,9 +526,9 @@ app.config(function ($routeProvider) {
         }
     });
 
-    $routeProvider.when('/context-preferences', {
-        controller: 'ContextPreferencesController',
-        templateUrl: contextPath + '/context-preferences',
+    $routeProvider.when('/notification-preferences', {
+        controller: 'EmailPreferencesController',
+        templateUrl: contextPath + '/notification-preferences',
         resolve: {
             contexts: function (contextService) {
                 return contextService.getContexts();
@@ -698,14 +706,14 @@ app.controller('SecurityActionsController', function ($scope, actionsService, co
     $scope.getActions();
 });
 
-app.controller('ContextPreferencesController', function ($scope, preferencesService, contexts, emailTypes) {
+app.controller('EmailPreferencesController', function ($scope, emailPreferencesService, contexts, emailTypes) {
     $scope.contexts = contexts;
     $scope.emailTypes = emailTypes;
     $scope.selectedType = emailTypes[0];
     $scope.selectedContext = contexts[0];
     $scope.editorOptions=configRTEEditor();
     $scope.saveTemplate = function () {
-        preferencesService.saveNotificationTemplate($scope.selectedType.type, $scope.selectedContext._id,
+        emailPreferencesService.saveNotificationTemplate($scope.selectedType.type, $scope.selectedContext._id,
             $scope.emailTemplate).then(function (result) {
                 if(result){
                     showGrowlMessage('success', 'Template saved');
@@ -716,20 +724,30 @@ app.controller('ContextPreferencesController', function ($scope, preferencesServ
     };
     $scope.reloadEmailTemplate = function (oldType) {
 
-        preferencesService.getNotificationTemplate($scope.selectedType.type, $scope.selectedContext._id)
+        emailPreferencesService.getNotificationTemplate($scope.selectedType.type, $scope.selectedContext._id)
             .then(function (template) {
                 $scope.emailTemplate = template;
             });
     };
     $scope.emailTemplate = $scope.reloadEmailTemplate($scope.selectedContext);
-
-
-
+    emailPreferencesService.getEmailConfig($scope.selectedContext._id).then(function(config){
+            $scope.emailConfig=config;
+    });
     $scope.$watch('selectedType', function (newValue, oldValue) {
         if(newValue!==oldValue) {
             $scope.reloadEmailTemplate(oldValue);
         }
     });
+
+    $scope.saveEmailConfig = function(){
+        emailPreferencesService.saveEmailConfig($scope.selectedContext._id,$scope.emailConfig).then(function (result) {
+            if(result){
+                showGrowlMessage('success', 'Configuration Saved');
+            }else{
+                showGrowlMessage('danger', 'Unable to save email config');
+            }
+        });
+    }
 });
 
 app.controller('SearchProfilesController', function ($scope, tenantNames, profileService) {

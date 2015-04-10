@@ -28,7 +28,10 @@ import org.craftercms.social.exceptions.SocialException;
  */
 public interface ContextPreferencesRepository extends CrudRepository<ContextPreferences> {
 
-    Map<String,String> findEmailPreference(String contextId) throws SocialException;
+    Map<String,String> getEmailPreference(String contextId) throws SocialException;
+
+    Map<String,Object> saveEmailConfig(String contextId, Map<String, Object> emailPref) throws
+        SocialException;
 
     String findNotificationTemplate(String contextId, String notificationType) throws SocialException;
 

@@ -17,9 +17,8 @@
 
 package org.craftercms.social.controllers.rest.v3.system;
 
-import com.wordnik.swagger.annotations.Api;
-
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import com.wordnik.swagger.annotations.Api;
 
 /**
  *
@@ -115,8 +115,49 @@ public class SocialContextController {
             throw new IllegalArgumentException("\"type\" param can not be blank and must be on of the following "
                 + "values DAILY,WEEKLY,INSTANT");
         }
-        return contextPreferencesService.getEmailTemplate(SocialSecurityUtils.getContext(),type.toUpperCase());
+        return contextPreferencesService.getEmailTemplate(SocialSecurityUtils.getContext(), type.toUpperCase());
     }
+
+
+
+    @RequestMapping(value = "/preferences/email/config" ,method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getEmailConfiguration() throws SocialException {
+        if(!checkIfUserIsAdmin()){
+            throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
+        }
+        return contextPreferencesService.findEmailPreference(SocialSecurityUtils.getContext());
+    }
+
+
+    @RequestMapping(value = "/preferences/email/config", method = {RequestMethod.POST, RequestMethod.PUT})
+    @ResponseBody
+    public Map<String, Object> setEmailConfiguration(@RequestParam(required = true) final String host, @RequestParam
+        (required = true) final String encoding, @RequestParam(required = true) final int port, @RequestParam
+        (required = true) final boolean auth, @RequestParam(required = true) final String username, @RequestParam
+        (required = true) final String password, @RequestParam(required = true) final boolean tls, @RequestParam
+        (required = true) final String replyTo, @RequestParam(required = true) final String from, @RequestParam
+        (required = true) final int priority, @RequestParam(required = true) final String subject) throws
+        SocialException {
+        if (!checkIfUserIsAdmin()) {
+            throw new AuthenticationRequiredException("User must be logged in and must be social admin or context " +
+                "admin");
+        }
+        HashMap<String,Object> emailPref=new HashMap<>(11);
+        emailPref.put("host",host);
+        emailPref.put("encoding",encoding);
+        emailPref.put("port",port);
+        emailPref.put("auth",auth);
+        emailPref.put("username",username);
+        emailPref.put("password",password);
+        emailPref.put("tls",tls);
+        emailPref.put("replyTo",replyTo);
+        emailPref.put("from",from);
+        emailPref.put("priority",priority);
+        emailPref.put("subject",subject);
+        return contextPreferencesService.saveEmailConfig(SocialSecurityUtils.getContext(),emailPref);
+    }
+
 
 
     @RequestMapping(value = "/preferences", method = RequestMethod.GET)

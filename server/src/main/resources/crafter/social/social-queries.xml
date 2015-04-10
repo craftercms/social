@@ -194,7 +194,7 @@
         "email.auth":#,
         "email.username":#,
         "email.password":#,
-        "email.tls":#,
+        "email.tls":#,7
         "email.replyTo":#,
         "email.from":#,
         "email.priority":#,
@@ -222,5 +222,9 @@
     </entry>
     <entry key="social.system.preferences.updateContextTemplateType">
         {$set:{"templates.$.template":#}}
+    </entry>
+    <entry key="social.system.preferences.updateContextEmailPref">
+        {$set:{"email.host" : #,"email.encoding" : #,"email.port" : #,"email.auth" : #,"email.username" :#,"email.password" :#,"email.tls" : #,"email.replyTo" : #,"email.from" : #,"email.priority" : #,"email.subject" : #
+        }}
     </entry>
 </properties>
