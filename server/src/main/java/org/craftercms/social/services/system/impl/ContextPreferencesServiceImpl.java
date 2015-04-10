@@ -36,7 +36,7 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
 
     @Override
     public Map findEmailPreference(final String contextId) throws SocialException {
-        return (Map)contextPreferencesRepository.findEmailPreference(contextId);
+        return (Map)contextPreferencesRepository.getEmailPreference(contextId);
     }
 
     @Override
@@ -79,5 +79,11 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
 
     public void setInvalidKeys(final String invalidKeys) {
         this.invalidKeys = invalidKeys;
+    }
+
+    @Override
+    public Map<String, Object> saveEmailConfig(final String contextId, final Map<String, Object> newConfiguration)
+        throws SocialException {
+        return contextPreferencesRepository.saveEmailConfig(contextId,newConfiguration);
     }
 }

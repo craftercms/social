@@ -11,6 +11,7 @@
 
 <!-- Bootstrap -->
 <link href="<@spring.url '/resources/css/bootstrap.min.css'/>" rel="stylesheet">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -54,7 +55,7 @@
         <li><a href="#/moderation-dashboard">Moderation Dashboard</a></li>
         <li><a href="#/contexts">Contexts</a></li>
         <li><a href="#/security-actions">Security Actions</a></li>
-        <li><a href="#/context-preferences">Context Preferences</a></li>
+        <li><a href="#/notification-preferences">Notification Preferences</a></li>
         <li><a href="#/search-profiles">Search Profiles</a></li>
     </ul>
 </div>

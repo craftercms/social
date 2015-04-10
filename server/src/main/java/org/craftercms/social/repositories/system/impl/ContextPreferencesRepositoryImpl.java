@@ -32,7 +32,6 @@ import org.craftercms.social.domain.system.ContextPreferences;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.repositories.system.ContextPreferencesRepository;
 import org.craftercms.social.util.LoggerFactory;
-import org.jongo.Update;
 
 /**
  *
@@ -43,7 +42,7 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
     private I10nLogger logger = LoggerFactory.getLogger(ContextPreferencesRepositoryImpl.class);
 
     @Override
-    public Map<String,String> findEmailPreference(final String contextId) throws SocialException {
+    public Map<String,String> getEmailPreference(final String contextId) throws SocialException {
         try {
             String query = getQueryFor("social.system.preferences.emailPreferencesByContextId");
             final HashMap tmp = getCollection().findOne(query, contextId).projection("{email:1,_id:0}").as(HashMap
@@ -53,6 +52,32 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
             }
             return (Map)tmp.get("email");
         } catch (MongoException ex) {
+            throw new SocialException("Unable to read email preferences for " + contextId);
+        }
+    }
+
+
+
+    @Override
+    public Map<String,Object> saveEmailConfig(final String contextId, Map<String, Object> emailPref) throws
+        SocialException {
+        try {
+                String fQuery=getQueryFor("social.system.preferences.emailPreferencesByContextId");
+                String uQuery=getQueryFor("social.system.preferences.updateContextEmailPref");
+            checkCommandResult(getCollection().update(fQuery, contextId).with(uQuery,emailPref.get("host"),
+                emailPref.get("encoding"),
+                emailPref.get("port"),
+                emailPref.get("auth"),
+                emailPref.get("username"),
+                emailPref.get("password"),
+                emailPref.get("tls"),
+                emailPref.get("replyTo"),
+                emailPref.get("from"),
+                emailPref.get("priority"),
+                emailPref.get("subject")
+            ));
+            return emailPref;
+        } catch (MongoDataException ex) {
             throw new SocialException("Unable to read email preferences for " + contextId);
         }
     }
