@@ -246,12 +246,23 @@
                 }
             },
             loc: function ( key ) {
-                var value = crafter.social.util.get(this.LOCALE, key);
+                var value = this.LOCALE[key];
                 return value;
             },
             LOCALE: {
-                months: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
-                days: ['Sunday','Monday','Tuesday','Wednesday', 'Thursday','Friday','Saturday']
+               /* months: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
+                days: ['Sunday','Monday','Tuesday','Wednesday', 'Thursday','Friday','Saturday'],
+                'commentable.view-comment': 'View & Comment',
+                'commentable.notify-comment':'Notify on Reply',
+                'popover.no-comment':'(no comments)',
+                'discussion.comment':'Be the first to comment!',
+                'discussion.login-comment':'Login to comment!',
+                'options.options':'Options',
+                'options.inline':'Inline View',
+                'options.lightbox':'Lightbox View',
+                'options.bubble' :'Bubble View',
+                'options.refresh':'Refresh',
+                'options.close':'Close'*/
             }
         }
 

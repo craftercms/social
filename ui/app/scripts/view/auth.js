@@ -18,11 +18,17 @@
 
         events: {
             'click #submitBtn_%@': 'submit'
+            //'log-event':'login'
         },
 
         initialize: function () {
             Base.prototype.initialize.apply(this, arguments);
             (!this.model) && (this.model = new Profile());
+        },
+        login: function(){
+            Base.prototype.login.apply(this, arguments);
+            Profile.authenticate();
+
         },
 
         listen: function () {

@@ -3,6 +3,8 @@
 
     var Discussion,
         Base = S.view.Base,
+        Director = S.getDirector(),
+        C = S.Constants,
         $ = S.$;
 
     Discussion = Base.extend({
@@ -63,9 +65,7 @@
 
                 $replies.append(view.render().el);
                 this.cache('commentingView', view);
-
             }
-
         },
 
         changeView: function ( view ) {
@@ -73,7 +73,23 @@
         },
 
         addAll: function () {
+            var profile         = S.getDirector().getProfile();
+            var labelComment = '';
             this.$('.comments:first').html('');
+
+            if(this.collection.length===0){
+                labelComment = 'discussion.comment'.loc();
+                $(this.el).find('.comments:empty').append('<span class="sui-log-event">'+ labelComment+ '</span>');
+                var emptyDiscussion=$(this.el).find('.sui-log-event');
+            }else if(true && !profile.hasRole('SOCIAL_USER',this.cfg.context)){
+                labelComment = 'discussion.login-comment'.loc();
+                $(this.el).find('.comments:last').after('<span class="sui-comment-nonempty">'+labelComment+'</span>');
+                var emptyDiscussion=$(this.el).find('.sui-comment-nonempty');
+            }
+
+            $(emptyDiscussion).on('click',function(){
+                Director.trigger(C.get('EVENT_SOCIAL_NOCOMMENT'));
+            });
             this.collection.each(this.addOne, this);
         },
 

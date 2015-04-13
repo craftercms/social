@@ -22,7 +22,7 @@
         },
 
         authenticate: function () {
-            this.fetch({
+            return this.fetch({
                 type: 'POST',
                 url: S.url('security'),
                 data: $.param(this.toJSON()),
@@ -41,6 +41,7 @@
 
             xhr = options.xhr = $.ajax({
                 type: 'GET',
+                cache:false,
                 url: S.url('security.active'),
                 success: function (response) {
 
@@ -48,6 +49,7 @@
                     if (xhr.status === 204) {
                         // TODO: what do we do if user is not logged in?
                         // user not signed in...
+                        S.getDirector().trigger(C.get('EVENT_USER_NOT_AUTHENTICATED'));
                     } else {
                         // TODO:
                         // There's some redundancy here. Director is resetting the same object on
@@ -62,6 +64,8 @@
             });
 
             this.trigger('request', model, xhr, options);
+
+            return xhr;
 
         },
 
