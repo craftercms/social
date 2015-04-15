@@ -169,7 +169,7 @@ public class SocialContextController {
         throw  new AuthenticationRequiredException("User must be logged in");
     }
 
-    @RequestMapping(value = "/updatePreference", method = RequestMethod.POST)
+    @RequestMapping(value = "/updatePreference",  method = {RequestMethod.POST,RequestMethod.PUT})
     @ResponseBody
     public boolean savePreferences(@RequestParam final Map<String, Object> preferences) {
         if (!SocialSecurityUtils.getCurrentProfile().getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
@@ -180,6 +180,20 @@ public class SocialContextController {
         }
         throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
     }
+
+    @RequestMapping(value = "/deletePreferences", method = {RequestMethod.POST,RequestMethod.DELETE})
+    @ResponseBody
+    public boolean deletePreferences(@RequestParam final String  preferences) {
+        if (!SocialSecurityUtils.getCurrentProfile().getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
+            if (SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_ADMIN) ||
+                SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
+                return contextPreferencesService.deleteContextPreference(SocialSecurityUtils.getContext(), Arrays
+                    .asList(preferences.split(",")));
+            }
+        }
+        throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
+    }
+
 
 
 

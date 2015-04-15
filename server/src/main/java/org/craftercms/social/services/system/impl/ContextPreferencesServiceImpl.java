@@ -18,6 +18,7 @@
 package org.craftercms.social.services.system.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -60,6 +61,10 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
         return contextPreferencesRepository.setContextPreferences(cleanPref,contextId);
     }
 
+    @Override
+    public boolean deleteContextPreference(final String context, final List<String> preferences) {
+        return contextPreferencesRepository.deleteContextPreferences(context,preferences);
+    }
 
     @Override
     @HasPermission(type = SocialPermission.class, action = SecurityActionNames.CHANGE_NOTIFICATION_TEMPLATE)

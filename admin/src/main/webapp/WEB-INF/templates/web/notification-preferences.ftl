@@ -40,21 +40,15 @@
 <h1 class="page-header">Notification Email Preferences</h1>
 <form class="form-horizontal" role="form">
     <div class="form-group">
-        <label for="host" class="col-sm-2 control-label">Host</label>
+        <label for="host" class="col-sm-2 control-label">Email Server Host</label>
 
         <div class="col-sm-10">
             <input type="text" class="form-control" id="host" ng-model="emailConfig.host" name="host">
         </div>
     </div>
-    <div class="form-group">
-        <label for="encoding" class="col-sm-2 control-label">Encoding</label>
 
-        <div class="col-sm-10">
-            <input type="text" class="form-control" id="encoding" ng-model="emailConfig.encoding" name="encoding">
-        </div>
-    </div>
     <div class="form-group">
-        <label for="port" class="col-sm-2 control-label">Port</label>
+        <label for="port" class="col-sm-2 control-label">Email <Server></Server> Port</label>
 
         <div class="col-sm-10">
             <input type="text" class="form-control" id="port" ng-model="emailConfig.port" name="port">
@@ -92,7 +86,6 @@
         </div>
     </div>
 
-
     <div class="form-group">
         <label for="replyTo" class="col-sm-2 control-label">Reply To</label>
 
@@ -117,7 +110,6 @@
         </div>
     </div>
 
-
     <div class="form-group">
         <label for="subject" class="col-sm-2 control-label">Subject</label>
 
@@ -126,6 +118,13 @@
         </div>
     </div>
 
+    <div class="form-group">
+        <label for="encoding" class="col-sm-2 control-label">Encoding</label>
+
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="encoding" ng-model="emailConfig.encoding" name="encoding">
+        </div>
+    </div>
 
     <div class="form-group pull-right">
         <button type="button" id="btnSavePreferences" class="btn btn-primary" ng-click="saveEmailConfig()">Save

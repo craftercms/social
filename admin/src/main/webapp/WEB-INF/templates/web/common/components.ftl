@@ -56,6 +56,7 @@
         <li><a href="#/contexts">Contexts</a></li>
         <li><a href="#/security-actions">Security Actions</a></li>
         <li><a href="#/notification-preferences">Notification Preferences</a></li>
+        <li><a href="#/tenant-preferences">Tenant Preferences</a></li>
         <li><a href="#/search-profiles">Search Profiles</a></li>
     </ul>
 </div>
