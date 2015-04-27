@@ -46,7 +46,11 @@ var configRTEEditor = function(){
     freemarkerTag.push( /\${[\s\S]*?}/g );
     return {
         protectedSource:freemarkerTag,
-        height:250
+        height:250,
+        fillEmptyBlocks : false,
+        forcePasteAsPlainText:true,
+        tabSpaces:4,
+        basicEntities:false
     };
 };
 
@@ -761,7 +765,7 @@ app.controller('EmailPreferencesController', function ($scope, emailPreferencesS
 
         emailPreferencesService.getNotificationTemplate($scope.selectedType.type, $scope.selectedContext._id)
             .then(function (template) {
-                $scope.emailTemplate = template;
+                $scope.emailTemplate = template.template;
             });
     };
     $scope.emailTemplate = $scope.reloadEmailTemplate($scope.selectedContext);
@@ -783,6 +787,15 @@ app.controller('EmailPreferencesController', function ($scope, emailPreferencesS
             }
         });
     }
+
+
+    $scope.$on("ckeditor.ready", function( event ) {
+        var editor = CKEDITOR.instances.editor1;
+        var writer = editor.dataProcessor.writer;
+            writer.indentationChars = '';
+            writer.lineBreakChars = '';
+    });
+
 });
 
 app.controller('TenantPreferencesController',function($scope,tenantPreferenceService,contexts){

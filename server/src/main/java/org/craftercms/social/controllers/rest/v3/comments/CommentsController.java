@@ -9,6 +9,7 @@ import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.social.Flag;
+import org.craftercms.social.domain.social.ModerationStatus;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalUgcException;
 import org.craftercms.social.exceptions.SocialException;
@@ -204,7 +205,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @ResponseBody
     @ApiOperation(value = "Changes the Status of the given UGC")
     public T moderate(@ApiParam("Id of the comment to change status") @PathVariable final String id, @ApiParam("New "
-        + "Moderation Status of the Param") @RequestParam final SocialUgc.ModerationStatus status) throws
+        + "Moderation Status of the Param") @RequestParam final ModerationStatus status) throws
         SocialException {
         return (T)socialServices.moderate(id, status, userId(), context());
     }
@@ -214,7 +215,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "moderation/{status}", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Gets all Moderation comments with the given moderation status")
-    public Iterable<T> byStatus(@PathVariable("status") final SocialUgc.ModerationStatus status, @RequestParam
+    public Iterable<T> byStatus(@PathVariable("status") final ModerationStatus status, @RequestParam
         (defaultValue = "", required = false) final String thread, @RequestParam(required = false, defaultValue =
         "0") final int pageNumber, @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final
     int pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam(required = false) final
@@ -265,7 +266,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @RequestMapping(value = "moderation/{status}/count", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Counts all Moderation comments with the given moderation status")
-    public long byStatusCount(@PathVariable("status") final SocialUgc.ModerationStatus status, @RequestParam
+    public long byStatusCount(@PathVariable("status") final ModerationStatus status, @RequestParam
         (defaultValue = "", required = false) final String thread) throws UGCException {
         return socialServices.countByModerationStatus(status, thread, context());
     }

@@ -7,6 +7,7 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.commons.security.permissions.annotations.SecuredObject;
 import org.craftercms.social.domain.social.Flag;
+import org.craftercms.social.domain.social.ModerationStatus;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalUgcException;
 import org.craftercms.social.exceptions.SocialException;
@@ -123,14 +124,14 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
 
     @Override
     @HasPermission(action = UGC_MODERATE, type = SocialPermission.class)
-    public SocialUgc moderate(final String ugcId, final SocialUgc.ModerationStatus moderationStatus,
+    public SocialUgc moderate(final String ugcId, final ModerationStatus moderationStatus,
                               final String userId, final String contextId) throws SocialException {
         try {
             T ugc = ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
                 throw new IllegalUgcException("Given UGC does not exist for current user's context");
             }
-            if (ugc.getModerationStatus() != SocialUgc.ModerationStatus.TRASH) { // Once is trash stays thrash (TBC)
+            if (ugc.getModerationStatus() != ModerationStatus.TRASH) { // Once is trash stays thrash (TBC)
                 ugc.setModerationStatus(moderationStatus);
             }
             pipeline.processUgc(ugc);
@@ -145,7 +146,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     }
 
     @Override
-    public Iterable<T> findByModerationStatus(final SocialUgc.ModerationStatus status, final String thread,
+    public Iterable<T> findByModerationStatus(final ModerationStatus status, final String thread,
                                               final String contextId, final int start, final int limit, final List sort)
             throws UGCException {
         try {
@@ -157,7 +158,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     }
 
     @Override
-    public long countByModerationStatus(final SocialUgc.ModerationStatus status, final String thread, final String contextId) throws UGCException {
+    public long countByModerationStatus(final ModerationStatus status, final String thread, final String contextId) throws UGCException {
 
         try {
             return ugcRepository.countFindByModerationStatus(status,thread, contextId);

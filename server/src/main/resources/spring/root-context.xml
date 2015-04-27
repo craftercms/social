@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <import resource="classpath:/crafter/security/rest-security-context.xml"/>
     <context:annotation-config/>
-
+    <util:list id="social.util.configurationFileList">
+        <value>classpath:crafter/social/social.properties</value>
+        <value>classpath*:crafter/social/extension/social.properties</value>
+    </util:list>
     <bean name="social.properties"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="order" value="0"/>
-        <property name="locations">
-            <list>
-                <value>classpath:crafter/social/social.properties</value>
-                <value>classpath*:crafter/social/extension/social.properties</value>
-            </list>
-        </property>
+        <property name="locations" ref="social.util.configurationFileList" />
     </bean>
 
     <import resource="mongo-config.xml"/>
@@ -136,8 +135,9 @@
 
     <bean class="org.craftercms.social.services.system.impl.ContextPreferencesServiceImpl"
           id="social.services.system.contextPreferences">
-    <property name="contextPreferencesRepository" ref="social.repository.contextPreferencesRepository"/>
+        <property name="contextPreferencesRepository" ref="social.repository.contextPreferencesRepository"/>
         <property name="invalidKeys" value="${studio.social.ugc.invalidQueryKeys}"/>
+        <property name="tenantConfigurationServiceImpl" ref="social.services.system.tenantConfiguration"/>
     </bean>
     <bean class="org.craftercms.social.util.SocialFreemarkerLoader" id="social.util.email.notificationFreemarkerLoader">
         <property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
@@ -147,6 +147,26 @@
         <property name="emailConfigCache" ref="social.support.emailConfig"/>
         <property name="contextPreferences" ref="social.services.system.contextPreferences"/>
     </bean>
+
+
+    <bean id="social.support.tenantConfigCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="name" value="social.tenatConfigCache"/>
+        <property name="timeToLiveSeconds" value="${studio.social.system.emailConfig.cache.ttl}"/>
+        <property name="timeToIdleSeconds" value="${studio.social.system.emailConfig.cache.tti}"/>
+        <property name="maxEntriesLocalHeap" value="${studio.social.system.emailConfig.cache.maxElementsInMemory}"/>
+    </bean>
+
+
+    <bean class="org.craftercms.social.services.system.impl.TenantConfigurationServiceImpl"
+          id="social.services.system.tenantConfiguration" init-method="loadDefaults">
+        <property name="tenantConfigCache" ref="social.support.tenantConfigCache"/>
+        <property name="defaultLocations" ref="social.util.configurationFileList"/>
+        <property name="contextPreferencesServiceImpl" ref="social.services.system.contextPreferences"/>
+        <property name="contextPreferencesRepository" ref="social.repository.contextPreferencesRepository"/>
+
+    </bean>
+
+
 
     <import resource="scheduler-context.xml"/>
     <import resource="classpath*:crafter/social/extension/services-context.xml"/>

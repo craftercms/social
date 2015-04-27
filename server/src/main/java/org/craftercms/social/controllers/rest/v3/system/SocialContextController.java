@@ -106,7 +106,7 @@ public class SocialContextController {
 
     @RequestMapping(value = "/preferences/email" ,method = RequestMethod.GET)
     @ResponseBody
-    public String getSaveEmailTemplate(@RequestParam(required =
+    public  Map<String,String> getSaveEmailTemplate(@RequestParam(required =
         true) final String type) throws SocialException {
         if(!checkIfUserIsAdmin()){
             throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
@@ -115,7 +115,10 @@ public class SocialContextController {
             throw new IllegalArgumentException("\"type\" param can not be blank and must be on of the following "
                 + "values DAILY,WEEKLY,INSTANT");
         }
-        return contextPreferencesService.getEmailTemplate(SocialSecurityUtils.getContext(), type.toUpperCase());
+        final Map<String, String> toReturn = new HashMap<String, String>();
+        toReturn.put("template",contextPreferencesService.getEmailTemplate(SocialSecurityUtils.getContext(), type
+            .toUpperCase()));
+        return toReturn;
     }
 
 
@@ -187,7 +190,8 @@ public class SocialContextController {
         if (!SocialSecurityUtils.getCurrentProfile().getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
             if (SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_ADMIN) ||
                 SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
-                return contextPreferencesService.deleteContextPreference(SocialSecurityUtils.getContext(), Arrays
+
+                 contextPreferencesService.deleteContextPreference(SocialSecurityUtils.getContext(), Arrays
                     .asList(preferences.split(",")));
             }
         }

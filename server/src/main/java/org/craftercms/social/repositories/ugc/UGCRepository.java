@@ -8,7 +8,7 @@ import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.UGC;
-import org.craftercms.social.domain.social.SocialUgc;
+import org.craftercms.social.domain.social.ModerationStatus;
 
 /**
  * UGC Repository Definitions.
@@ -114,11 +114,11 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
 
     long countChildrenOf(String contextId, String ugcId) throws MongoDataException;
 
-    Iterable<T>  findByModerationStatus(SocialUgc.ModerationStatus status, String targetId, String contextId, int start,
+    Iterable<T>  findByModerationStatus(ModerationStatus status, String targetId, String contextId, int start,
                                         int limit, List<DefaultKeyValue<String, Boolean>> sortOrder)
             throws MongoDataException;
 
-    long countFindByModerationStatus(SocialUgc.ModerationStatus status, String targetId, String contextId)
+    long countFindByModerationStatus(ModerationStatus status, String targetId, String contextId)
             throws MongoDataException;
 
     Iterable<T> findAllFlagged(String context, int start, int pageSize, List sortOrder);
