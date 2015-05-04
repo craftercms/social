@@ -160,6 +160,13 @@
 
     });
 
+    Handlebars.registerHelper('loc', function( str ) {
+
+
+        return new Handlebars.SafeString(str.loc());
+
+    });
+
     Handlebars.registerHelper('formatFileSize', function ( bytes ) {
         if (typeof bytes !== 'number') {
             return '';

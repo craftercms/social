@@ -41,6 +41,8 @@
             this.trigger('view.close.request');
         },
 
+
+
         closeDropdown: function () {
             this.$(backdrop).remove();
             this.$(toggle).removeClass('open').parents('li.open').removeClass('open');
