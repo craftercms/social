@@ -15,6 +15,7 @@
         EVENT_UNAUTHORISED_RESPONSE         : 'crafter.social.event.unauthorised.response',
         EVENT_USER_AUTHENTICATION_SUCCESS   : 'crafter.social.event.user.authentication.success',
         EVENT_USER_AUTHENTICATION_FAILED    : 'crafter.social.event.user.authentication.failed',
+        EVENT_SOCIAL_NOCOMMENT               : 'crater.social.event.no.comments.action',
 
         AREA_VISIBILITY_MODE_REVEAL         : 'area.visibility.mode.reveal',
         AREA_VISIBILITY_MODE_HOVER          : 'area.visibility.mode.hover',
