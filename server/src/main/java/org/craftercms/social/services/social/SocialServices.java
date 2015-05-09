@@ -1,8 +1,12 @@
 package org.craftercms.social.services.social;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
+import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.ModerationStatus;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
@@ -110,4 +114,5 @@ public interface SocialServices<T extends SocialUgc> {
 
     long countAllFlaggedUgs(String context, int start, int pageSize, List<DefaultKeyValue<String,Boolean>> sortOrder);
 
+    Map<? extends String,?> approveComment(UGC ugc, Profile profile) throws ProfileException, SocialException;
 }

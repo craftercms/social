@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -66,6 +67,8 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         }
         return newUgc;
     }
+
+
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
     @ApiOperation(value = "Updates the given comment", notes = "As Create some HTML/scripts tags will be scripted")

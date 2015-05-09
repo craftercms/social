@@ -4,6 +4,8 @@ package org.craftercms.social.util.ebus;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.craftercms.social.domain.UGC;
 
 /**
@@ -17,6 +19,7 @@ public class SocialEvent<T extends UGC> {
     private InputStream[] attachments;
     private String attachmentId;
     private String userId;
+
 
     private UGCEvent type;
 
@@ -57,9 +60,7 @@ public class SocialEvent<T extends UGC> {
         return ugcId;
     }
 
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
+
 
     public SocialEvent(final String ugcId, final InputStream[] attachments) {
         this.ugcId = ugcId;
@@ -80,5 +81,13 @@ public class SocialEvent<T extends UGC> {
 
     public String getAttachmentId() {
         return attachmentId;
+    }
+
+    public void setAttribute(final String key, final Object value) {
+        attributes.put(key,value);
+    }
+
+    public <T> T getAttribute(final String key){
+        return (T)attributes.get(key);
     }
 }

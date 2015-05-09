@@ -50,7 +50,9 @@ var configRTEEditor = function(){
         fillEmptyBlocks : false,
         forcePasteAsPlainText:true,
         tabSpaces:4,
-        basicEntities:false
+        basicEntities:false,
+        fullPage : true,
+        allowedContent:true
     };
 };
 
@@ -560,7 +562,8 @@ app.config(function ($routeProvider) {
                 return [{type: "INSTANT", name: "Instant"}, {type: "DAILY", name: "Daily"}, {
                     type: "WEEKLY",
                     name: "Weekly"
-                }]
+                },{type:"APPROVEREMAIL",name:"Approver email"},
+                    {type:"APPROVER_RESULT_TEMPLATE",name:"Approve Ugc Page"}]
             }
         }
     });

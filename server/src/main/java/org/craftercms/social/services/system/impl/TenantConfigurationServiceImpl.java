@@ -53,12 +53,19 @@ public class TenantConfigurationServiceImpl implements TenantConfigurationServic
     @Override
     public void reloadTenant(String contextId) {
         final Map<String, Object> pref = contextPreferencesService.getContextPreferences(contextId);
-        if (pref != null) {
-            tenantConfigCache.remove(contextId);
-            tenantConfigCache.put(new Element(contextId, pref));
-        } else {
-            log.error("Unable to get preferences for context {} will not update", contextId);
+        if(pref.containsKey("preferences")){
+            final HashMap<String,Object> prefMap = new HashMap<>((HashMap<String,Object>)pref.get("preferences"));
+            prefMap.put("contextId",contextId);
+            if (pref != null) {
+                tenantConfigCache.remove(contextId);
+                tenantConfigCache.put(new Element(contextId, prefMap));
+            } else {
+                log.error("Unable to get preferences for context {} will not update", contextId);
+            }
+        }else{
+            log.error("Context has empty  preferences ? ignoring",contextId);
         }
+
     }
 
     public void loadDefaults() throws MongoDataException, SocialException {

@@ -84,7 +84,7 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
                     final Environment env = template.createProcessingEnvironment(dataModel, writer);
                     env.process();
                     writer.flush();
-                    emailService.sendEmail(toSend,writer,type, contextId);
+                    emailService.sendEmail(toSend,writer,null, contextId);
                 } catch (IOException | TemplateException | SocialException ex) {
                     logger.error("logging.system.notification.errorLoadingTemplate", ex);
                 }

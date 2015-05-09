@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Ehcache;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.social.domain.system.ContextPreferences;
@@ -31,6 +33,7 @@ import org.craftercms.social.repositories.system.ContextPreferencesRepository;
 import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.system.ContextPreferencesService;
+import org.craftercms.social.services.system.EmailService;
 import org.craftercms.social.services.system.TenantConfigurationService;
 
 /**
@@ -40,6 +43,7 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
     private ContextPreferencesRepository contextPreferencesRepository;
     private String invalidKeys;
     private TenantConfigurationService tenantConfigurationService;
+    private Ehcache emailConfigCache;
 
     @Override
     public Map findEmailPreference(final String contextId) throws SocialException {
@@ -105,11 +109,26 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
     @Override
     public Map<String, Object> saveEmailConfig(final String contextId, final Map<String, Object> newConfiguration)
         throws SocialException {
-        return contextPreferencesRepository.saveEmailConfig(contextId,newConfiguration);
+        final Map<String, Object> result = contextPreferencesRepository.saveEmailConfig(contextId, newConfiguration);
+        invalidatedEmailSettings(contextId);
+        return result;
+    }
+
+    private void invalidatedEmailSettings(final String contextId) {
+        final String preferenceCacheKey = contextId + "-preferences";
+        final String javaMailCacheKey = contextId + "-javaMail";
+        emailConfigCache.remove(preferenceCacheKey);
+        emailConfigCache.remove(javaMailCacheKey);
     }
 
 
     public void setTenantConfigurationServiceImpl(TenantConfigurationService tenantConfigurationService) {
         this.tenantConfigurationService=tenantConfigurationService;
     }
+
+
+    public void setEmailConfigCache(Ehcache emailConfigCache) {
+        this.emailConfigCache = emailConfigCache;
+    }
+
 }

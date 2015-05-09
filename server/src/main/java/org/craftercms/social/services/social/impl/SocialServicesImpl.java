@@ -1,11 +1,19 @@
 package org.craftercms.social.services.social.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.commons.security.permissions.annotations.SecuredObject;
+import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.api.services.ProfileService;
+import org.craftercms.profile.services.impl.ProfileServiceRestClient;
+import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.Flag;
 import org.craftercms.social.domain.social.ModerationStatus;
 import org.craftercms.social.domain.social.SocialUgc;
@@ -17,6 +25,8 @@ import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.social.SocialServices;
 import org.craftercms.social.services.social.VoteOptions;
+import org.craftercms.social.services.system.TenantConfigurationService;
+import org.craftercms.social.services.system.impl.TenantConfigurationServiceImpl;
 import org.craftercms.social.services.ugc.pipeline.UgcPipeline;
 import org.craftercms.social.util.ebus.SocialEvent;
 import org.craftercms.social.util.ebus.UGCEvent;
@@ -40,6 +50,8 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     private Logger log = LoggerFactory.getLogger(SocialServicesImpl.class);
     private Reactor reactor;
     private UgcPipeline pipeline;
+    private TenantConfigurationService tenantConfigurationService;
+    private ProfileService profileService;
 
 
     @Override
@@ -180,6 +192,36 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
         return ugcRepository.countAllFlagged(context,start,pageSize,sortOrder);
     }
 
+    @Override
+    public Map<? extends String, Object> approveComment(final UGC ugc, final Profile profile) throws ProfileException, SocialException {
+       Map<String,Object> map= new HashMap<>();
+        if(ugc instanceof SocialUgc){
+            T socialUgc= (T)ugc;
+            if(socialUgc.getModerationStatus()==ModerationStatus.APPROVED){
+                map.put("alreadyApprove",true);
+                map.put("approver",profileService.getProfile(ugc.getLastModifiedBy()));
+            }else{
+                final List<String> roles = SocialSecurityUtils.getSocialRoles(profile);
+                String moderationName=tenantConfigurationService.getProperty(ugc.getContextId(),"moderateByMailRole");
+                if(roles.contains(moderationName)){
+                    if (socialUgc.getModerationStatus() != ModerationStatus.TRASH) { // Once is trash stays thrash (TBC)
+                        socialUgc.setModerationStatus(ModerationStatus.APPROVED);
+                    }
+                    pipeline.processUgc(socialUgc);
+                    try {
+                        ugcRepository.save(socialUgc);
+                    } catch (MongoDataException e) {
+                        throw new SocialException("Unable to update UGC");
+                    }
+                    reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugc,SocialSecurityUtils.getCurrentProfile()
+                        .getId().toString(),UGCEvent.UNFLAG)));
+                }
+                map.put("alreadyApprove",false);
+            }
+        }
+        return map;
+    }
+
     protected void voteUp(final T ugc, final String userId) {
         unvoteDown(ugc, userId);
         ugc.getVotesUp().add(userId);
@@ -216,5 +258,15 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
 
     public void setUgcPipeline(UgcPipeline ugcPipeline) {
         this.pipeline = ugcPipeline;
+    }
+
+
+    public void setTenantConfigurationServiceImpl(TenantConfigurationService tenantConfigurationService) {
+        this.tenantConfigurationService=tenantConfigurationService;
+    }
+
+
+    public void setProfileServiceRestClient(ProfileService profileService) {
+        this.profileService=profileService;
     }
 }

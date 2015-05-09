@@ -56,6 +56,8 @@
         <property name="ugcRepository" ref="social.repository.ugcRepository"/>
         <property name="reactor" ref="socialReactor"/>
         <property name="ugcPipeline" ref="social.services.pipeline"/>
+        <property name="tenantConfigurationServiceImpl" ref="social.services.system.tenantConfiguration"/>
+        <property name="profileServiceRestClient" ref="crafter.profileServiceRestClient"/>
     </bean>
 
     <bean id="social.services.pipeline" class="org.craftercms.social.services.ugc.pipeline.UgcPipeline">
@@ -138,6 +140,8 @@
         <property name="contextPreferencesRepository" ref="social.repository.contextPreferencesRepository"/>
         <property name="invalidKeys" value="${studio.social.ugc.invalidQueryKeys}"/>
         <property name="tenantConfigurationServiceImpl" ref="social.services.system.tenantConfiguration"/>
+        <property name="emailConfigCache" ref="social.support.emailConfig"/>
+
     </bean>
     <bean class="org.craftercms.social.util.SocialFreemarkerLoader" id="social.util.email.notificationFreemarkerLoader">
         <property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
@@ -169,5 +173,6 @@
 
 
     <import resource="scheduler-context.xml"/>
+    <import resource="extensions-context.xml"/>
     <import resource="classpath*:crafter/social/extension/services-context.xml"/>
 </beans>
