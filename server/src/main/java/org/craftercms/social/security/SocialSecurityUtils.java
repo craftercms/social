@@ -32,6 +32,11 @@ public class SocialSecurityUtils {
 
     public static List<String> getSocialRoles() {
         Profile profile = getCurrentProfile();
+        return getSocialRoles(profile);
+    }
+
+
+    public static List<String> getSocialRoles(final Profile profile) {
         if (profile.getUsername().equals(ANONYMOUS)) {
             return Arrays.asList(ANONYMOUS);
         }
@@ -46,7 +51,6 @@ public class SocialSecurityUtils {
                 list.add(role);
             }
         }
-
         return Collections.unmodifiableList(list);
     }
 

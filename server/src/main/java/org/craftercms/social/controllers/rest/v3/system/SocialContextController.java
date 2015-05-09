@@ -95,9 +95,9 @@ public class SocialContextController {
         if(StringUtils.isBlank(template)){
             throw new IllegalArgumentException("\"template\" param is cannot be blank");
         }
-        if(StringUtils.isBlank(type) || !Arrays.asList("DAILY","WEEKLY","INSTANT").contains(type.toUpperCase())){
+        if(StringUtils.isBlank(type) || !Arrays.asList("DAILY","WEEKLY","INSTANT","APPROVEREMAIL","APPROVER_RESULT_TEMPLATE").contains(type.toUpperCase())){
             throw new IllegalArgumentException("\"type\" param can not be blank and must be on of the following "
-                + "values DAILY,WEEKLY,INSTANT");
+                + "values DAILY,WEEKLY,INSTANT,APPROVEREMAIL APPROVER_RESULT_TEMPLATE");
         }
         return contextPreferencesService.saveEmailTemplate(SocialSecurityUtils.getContext(), type.toUpperCase(),
             template);
@@ -106,16 +106,19 @@ public class SocialContextController {
 
     @RequestMapping(value = "/preferences/email" ,method = RequestMethod.GET)
     @ResponseBody
-    public String getSaveEmailTemplate(@RequestParam(required =
+    public  Map<String,String> getSaveEmailTemplate(@RequestParam(required =
         true) final String type) throws SocialException {
         if(!checkIfUserIsAdmin()){
             throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
         }
-        if(StringUtils.isBlank(type) || !Arrays.asList("DAILY","WEEKLY","INSTANT").contains(type.toUpperCase())){
+        if(StringUtils.isBlank(type) || !Arrays.asList("DAILY","WEEKLY","INSTANT","APPROVEREMAIL","APPROVER_RESULT_TEMPLATE").contains(type.toUpperCase())){
             throw new IllegalArgumentException("\"type\" param can not be blank and must be on of the following "
-                + "values DAILY,WEEKLY,INSTANT");
+                + "values DAILY,WEEKLY,INSTANT,APPROVEREMAIL APPROVER_RESULT_TEMPLATE");
         }
-        return contextPreferencesService.getEmailTemplate(SocialSecurityUtils.getContext(), type.toUpperCase());
+        final Map<String, String> toReturn = new HashMap<String, String>();
+        toReturn.put("template",contextPreferencesService.getEmailTemplate(SocialSecurityUtils.getContext(), type
+            .toUpperCase()));
+        return toReturn;
     }
 
 
@@ -169,7 +172,7 @@ public class SocialContextController {
         throw  new AuthenticationRequiredException("User must be logged in");
     }
 
-    @RequestMapping(value = "/updatePreference", method = RequestMethod.POST)
+    @RequestMapping(value = "/updatePreference",  method = {RequestMethod.POST,RequestMethod.PUT})
     @ResponseBody
     public boolean savePreferences(@RequestParam final Map<String, Object> preferences) {
         if (!SocialSecurityUtils.getCurrentProfile().getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
@@ -180,6 +183,21 @@ public class SocialContextController {
         }
         throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
     }
+
+    @RequestMapping(value = "/deletePreferences", method = {RequestMethod.POST,RequestMethod.DELETE})
+    @ResponseBody
+    public boolean deletePreferences(@RequestParam final String  preferences) {
+        if (!SocialSecurityUtils.getCurrentProfile().getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
+            if (SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_ADMIN) ||
+                SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
+
+                 contextPreferencesService.deleteContextPreference(SocialSecurityUtils.getContext(), Arrays
+                    .asList(preferences.split(",")));
+            }
+        }
+        throw  new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
+    }
+
 
 
 

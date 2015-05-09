@@ -1,8 +1,13 @@
 package org.craftercms.social.services.social;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
+import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.ModerationStatus;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
@@ -68,7 +73,7 @@ public interface SocialServices<T extends SocialUgc> {
      * @param userId Id of the user that is changing the status.
      * @param contextId Context of the UGC.
      */
-    T moderate(String ugcId, SocialUgc.ModerationStatus moderationStatus, String userId, String contextId) throws SocialException;
+    T moderate(String ugcId, ModerationStatus moderationStatus, String userId, String contextId) throws SocialException;
 
 
     /**
@@ -81,7 +86,7 @@ public interface SocialServices<T extends SocialUgc> {
      * @param sort Sort Fields.
      * @return A Iterable with the results.
      */
-    Iterable<T> findByModerationStatus(SocialUgc.ModerationStatus status, String thread, String contextId,
+    Iterable<T> findByModerationStatus(ModerationStatus status, String thread, String contextId,
                                        int start, int limit, final List<DefaultKeyValue<String, Boolean>> sort)
             throws UGCException;
 
@@ -93,7 +98,7 @@ public interface SocialServices<T extends SocialUgc> {
      * @param contextId Context of the UGC.
      * @return Number of Results.
      */
-    long countByModerationStatus(SocialUgc.ModerationStatus status, String thread, String contextId) throws UGCException;
+    long countByModerationStatus(ModerationStatus status, String thread, String contextId) throws UGCException;
 
 
     /**
@@ -109,4 +114,5 @@ public interface SocialServices<T extends SocialUgc> {
 
     long countAllFlaggedUgs(String context, int start, int pageSize, List<DefaultKeyValue<String,Boolean>> sortOrder);
 
+    Map<? extends String,?> approveComment(UGC ugc, Profile profile) throws ProfileException, SocialException;
 }

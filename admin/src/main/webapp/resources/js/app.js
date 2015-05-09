@@ -46,7 +46,13 @@ var configRTEEditor = function(){
     freemarkerTag.push( /\${[\s\S]*?}/g );
     return {
         protectedSource:freemarkerTag,
-        height:250
+        height:250,
+        fillEmptyBlocks : false,
+        forcePasteAsPlainText:true,
+        tabSpaces:4,
+        basicEntities:false,
+        fullPage : true,
+        allowedContent:true
     };
 };
 
@@ -482,6 +488,25 @@ app.factory('profileService', function ($http) {
     }
 });
 
+app.factory('tenantPreferenceService',function($http){
+    return {
+
+        getPreferences : function(context){
+            var url = socialRestBaseUrl + '/system/context/preferences/?context=' + context;
+            return getObject(url, $http);
+        },
+        updatePreferences : function(context,preferences){
+            var url = socialRestBaseUrl + '/system/context/updatePreference/?context=' + context;
+            return postParams(url,preferences,$http);
+        },
+        deletePreference : function(context,preferencesToDelete){
+            var url = socialRestBaseUrl + '/system/context/deletePreferences/?context=' + context;
+            return postParams(url,{preferences:preferencesToDelete},$http);
+        }
+
+    };
+});
+
 /**
  * Routing
  */
@@ -537,7 +562,8 @@ app.config(function ($routeProvider) {
                 return [{type: "INSTANT", name: "Instant"}, {type: "DAILY", name: "Daily"}, {
                     type: "WEEKLY",
                     name: "Weekly"
-                }]
+                },{type:"APPROVEREMAIL",name:"Approver email"},
+                    {type:"APPROVER_RESULT_TEMPLATE",name:"Approve Ugc Page"}]
             }
         }
     });
@@ -559,6 +585,16 @@ app.config(function ($routeProvider) {
             profile: function ($route, profileService) {
                 return profileService.getProfile($route.current.params.id);
             },
+            contexts: function (contextService) {
+                return contextService.getContexts();
+            }
+        }
+    });
+
+    $routeProvider.when('/tenant-preferences', {
+        controller: 'TenantPreferencesController',
+        templateUrl: contextPath + '/tenant-preferences',
+        resolve: {
             contexts: function (contextService) {
                 return contextService.getContexts();
             }
@@ -647,6 +683,12 @@ app.controller('ModerationDashboardController', function ($scope, commentService
         $('#attachmentsModal').modal('show');
     };
 
+    $scope.showFlagsModal = function (comment) {
+        $scope.selectedComment = comment;
+        $('#flagModal').modal('show');
+    };
+
+
     $scope.getAttachmentUrl = function (attachmentInfo) {
         return attachmentService.getAttachmentUrl($scope.selectedContext._id, $scope.selectedComment, attachmentInfo);
     };
@@ -726,12 +768,12 @@ app.controller('EmailPreferencesController', function ($scope, emailPreferencesS
 
         emailPreferencesService.getNotificationTemplate($scope.selectedType.type, $scope.selectedContext._id)
             .then(function (template) {
-                $scope.emailTemplate = template;
+                $scope.emailTemplate = template.template;
             });
     };
     $scope.emailTemplate = $scope.reloadEmailTemplate($scope.selectedContext);
     emailPreferencesService.getEmailConfig($scope.selectedContext._id).then(function(config){
-            $scope.emailConfig=config;
+        $scope.emailConfig=config;
     });
     $scope.$watch('selectedType', function (newValue, oldValue) {
         if(newValue!==oldValue) {
@@ -748,6 +790,60 @@ app.controller('EmailPreferencesController', function ($scope, emailPreferencesS
             }
         });
     }
+
+
+    $scope.$on("ckeditor.ready", function( event ) {
+        var editor = CKEDITOR.instances.editor1;
+        var writer = editor.dataProcessor.writer;
+            writer.indentationChars = '';
+            writer.lineBreakChars = '';
+    });
+
+});
+
+app.controller('TenantPreferencesController',function($scope,tenantPreferenceService,contexts){
+    $scope.contexts = contexts;
+    $scope.selectedContext = contexts[0];
+    tenantPreferenceService.getPreferences($scope.selectedContext._id).then(function(result){
+       $scope.preferences=result.preferences;
+    });
+    $scope.predefineKeys=[{key:'accessControlAllowHeaders',label:'Cors Allow Headers'},
+        {key:'accessControlAllowMethods',label:'Cors Allow Methods'},
+        {key:'accessControlAllowOrigin',label:'Cors Allow Origin'}];
+
+    $scope.addPreferenceField = function() {
+        $scope.preferences[$scope.newPkey]=$scope.newPval;
+        $scope.newPval="";
+        $scope.newPkey="";
+        $('#addNewModal').modal('hide');
+    };
+    $scope.savePreferences = function() {
+        if($.isEmptyObject($scope.preferences)){
+            showGrowlMessage('info', 'Cannot save empty properites');
+        }else {
+            tenantPreferenceService.updatePreferences($scope.selectedContext._id, $scope.preferences).then(function (result) {
+                if (result) {
+                    showGrowlMessage('success', 'Configuration Saved');
+                } else {
+                    showGrowlMessage('danger', 'Unable to save email config');
+                }
+            });
+        }
+    };
+
+    $scope.removeKey = function(keyToDelete){
+        tenantPreferenceService.deletePreference($scope.selectedContext._id,keyToDelete).then(function(result){
+            if(result){
+                showGrowlMessage('success', 'Property Deletion successfully');
+                delete $scope.preferences[keyToDelete];
+            } else{
+                showGrowlMessage('danger', 'Unable to delete Property');
+            }
+        });
+    };
+    $scope.showNewPreferenceModal = function () {
+        $('#addNewModal').modal('show');
+    };
 });
 
 app.controller('SearchProfilesController', function ($scope, tenantNames, profileService) {
@@ -818,5 +914,3 @@ app.controller('ProfileController', function ($scope, profile, contexts, context
         });
     };
 });
-
-

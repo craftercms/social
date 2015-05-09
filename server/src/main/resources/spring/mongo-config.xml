@@ -63,7 +63,9 @@
     </bean>
 
     <bean id="social.repository.ugcRepository" class="org.craftercms.social.repositories.ugc.impl.UGCRepositoryImpl"
-          parent="social.mongodb.socialRepository"/>
+          parent="social.mongodb.socialRepository">
+        <property name="tenantConfigurationServiceImpl" ref="social.services.system.tenantConfiguration"/>
+    </bean>
 
     <bean id="social.repository.permissionRepository"
           class="org.craftercms.social.repositories.security.impl.PermissionRepositoryImpl"

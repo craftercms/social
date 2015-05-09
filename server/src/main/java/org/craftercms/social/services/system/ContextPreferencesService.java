@@ -1,7 +1,9 @@
 package org.craftercms.social.services.system;
 
+import java.util.List;
 import java.util.Map;
 
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.exceptions.SocialException;
 
 /**
@@ -21,4 +23,7 @@ public interface ContextPreferencesService {
     boolean saveEmailTemplate(String context, String type, final String template) throws SocialException;
 
     String getEmailTemplate(String context, String emailTemplateType) throws  SocialException;
+
+    boolean deleteContextPreference(String context, List<String> strings);
+
 }

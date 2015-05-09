@@ -25,6 +25,7 @@ import javax.mail.internet.MimeMessage;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.exceptions.SocialException;
@@ -41,7 +42,7 @@ public class EmailService {
     private Ehcache emailConfigCache;
     private ContextPreferencesService contextPreferences;
 
-    public void sendEmail(final Profile toSend, final StringWriter writer, final String type, final String contextId)
+    public void sendEmail(final Profile toSend, final StringWriter writer, final String subject, final String contextId)
         throws SocialException {
         Map<String, Object> emailSettings = getEmailSettings(contextId);
         JavaMailSender sender = getSender(contextId);
@@ -51,7 +52,11 @@ public class EmailService {
             helper.setTo(toSend.getEmail());
             helper.setReplyTo(emailSettings.get("replyTo").toString());
             helper.setFrom(emailSettings.get("from").toString());
-            helper.setSubject(generateSubjectString(emailSettings.get("subject").toString()));
+            if(StringUtils.isBlank(subject)) {
+                helper.setSubject(generateSubjectString(emailSettings.get("subject").toString()));
+            }else{
+                helper.setSubject(subject);
+            }
             helper.setPriority(NumberUtils.toInt(emailSettings.get("priority").toString(),4));
             helper.setText(writer.toString(), true);
             sender.send(message);

@@ -21,7 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -129,9 +131,30 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
             getCollection().update(byId,contextId).with("{$set: "+preferencesString+"}");
             return true;
         } catch (MongoException | JsonProcessingException e) {
+            logger.error("Unable to delete context Preferences",e);
             return false;
         }
+    }
 
+    @Override
+    public boolean deleteContextPreferences(final String context, final List<String> preferences) {
+        try {
+            final String byId=getQueryFor("social.system.preferences.emailPreferencesByContextId");
+            String toUnset="";
+            final Iterator<String> iter = preferences.iterator();
+            while (iter.hasNext()){
+                final String key = iter.next();
+                toUnset+="preferences."+key+":1";
+                if(iter.hasNext()){
+                    toUnset+=",";
+                }
+            }
+            getCollection().update(byId,context).with("{$unset:{"+toUnset+"}}");
+            return true;
+        } catch (MongoException e) {
+            logger.error("Unable to delete context Preferences",e);
+            return false;
+        }
     }
 
     public void saveEmailPreference(final String contextId, Map<String, Object> emailPreferences) throws
@@ -148,6 +171,7 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
             throw new SocialException("Unable to read email preferences for " + contextId);
         }
     }
+
 
     @Override
     public boolean saveEmailTemplate(final String context, final String type, final String template) throws SocialException {

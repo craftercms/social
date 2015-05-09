@@ -190,4 +190,6 @@ a {
     margin-top: 25px;
     margin-left: 25px;
 }
-.ng-ckeditor{border:2px double greenyellow;}
+.mouse-pointer{
+    cursor: pointer;
+}

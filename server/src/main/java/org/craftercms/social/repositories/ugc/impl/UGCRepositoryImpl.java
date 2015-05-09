@@ -20,12 +20,15 @@ import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.ModerationStatus;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalUgcException;
 import org.craftercms.social.repositories.SocialJongoRepository;
 import org.craftercms.social.repositories.TreeUGC;
 import org.craftercms.social.repositories.ugc.UGCRepository;
 import org.craftercms.social.repositories.ugc.support.BaseTreeUgc;
+import org.craftercms.social.services.system.TenantConfigurationService;
+import org.craftercms.social.services.system.impl.TenantConfigurationServiceImpl;
 import org.jongo.Aggregate;
 import org.jongo.Find;
 import org.jongo.ResultHandler;
@@ -38,6 +41,7 @@ import org.slf4j.LoggerFactory;
 public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository implements UGCRepository {
 
     private Logger log = LoggerFactory.getLogger(UGCRepositoryImpl.class);
+    private TenantConfigurationService tenantConfigurationService;
 
     /**
      * Creates a instance of a Jongo Repository.
@@ -195,15 +199,15 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             T parent = findUGC(contextId,ugcId);
             if(parent==null){
                 throw new IllegalUgcException("Ugc does not exist for given id and context");
-            }else if (parent instanceof SocialUgc && (((SocialUgc)parent).getModerationStatus()== SocialUgc
-                .ModerationStatus.TRASH || ((SocialUgc)parent).getModerationStatus()==SocialUgc.ModerationStatus.SPAM)){
+            }else if (parent instanceof SocialUgc && (((SocialUgc)parent).getModerationStatus()== ModerationStatus.TRASH || ((SocialUgc)parent).getModerationStatus()== ModerationStatus.SPAM)){
                 throw new UGCNotFound("Parent UGC is on Spam or thrash");
             }
             ArrayDeque<ObjectId> ancestors = parent.getAncestors().clone();
             ancestors.addLast(parent.getId());
             String query = getQueryFor("social.ugc.byContextTargetAncestorsExact");
-            Find find = getCollection().find(query, contextId, targetId, ancestors,Arrays.asList(SocialUgc.ModerationStatus
-                .SPAM, SocialUgc.ModerationStatus.TRASH));
+            String hiddenStatus=tenantConfigurationService.getProperty(contextId, TenantConfigurationService
+                .HIDDEN_UGC_STATUS);
+            Find find = getCollection().find(query, contextId, targetId, ancestors,ModerationStatus.listOfModerationStatus(hiddenStatus));
             return getUgcsToFind(find, targetId, contextId, start, limit, sortOrder, (ancestors.size()+upToLevel));
         } catch (MongoException ex) {
             log.error("Unable to find children of " + ugcId, ex);
@@ -216,8 +220,12 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
                                       final List sortOrder, final int upToLevel) throws MongoDataException {
         try {
             String query = getQueryFor("social.ugc.byTargetIdRootLvl");
-            Find find = getCollection().find(query, contextId, targetId,Arrays.asList(SocialUgc.ModerationStatus
-                .SPAM, SocialUgc.ModerationStatus.TRASH));
+            String hiddenStatus=tenantConfigurationService.getProperty(contextId, TenantConfigurationService
+                .HIDDEN_UGC_STATUS);
+
+            Find find = getCollection().find(query, contextId, targetId
+                ,ModerationStatus.listOfModerationStatus(hiddenStatus));
+
             return getUgcsToFind(find, targetId, contextId, start, limit, sortOrder, upToLevel);
         } catch (MongoException ex) {
             log.error("Unable to Find UGC's " + targetId + "children", ex);
@@ -244,8 +252,10 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
         String finalQuery = getQueryFor("social.ugc.byTargetIdRootNLvl");
 
         finalQuery = finalQuery.replaceAll("%@", String.valueOf(upToLevel));
-        final Find finalMongoQuery = getCollection().find(finalQuery, targetId, contextId, Arrays.asList(SocialUgc.ModerationStatus
-            .SPAM, SocialUgc.ModerationStatus.TRASH),listOfIds, listOfIds);
+        String hiddenStatus=tenantConfigurationService.getProperty(contextId, TenantConfigurationService
+            .HIDDEN_UGC_STATUS);
+
+        final Find finalMongoQuery = getCollection().find(finalQuery, targetId, contextId, ModerationStatus.listOfModerationStatus(hiddenStatus),listOfIds, listOfIds);
         if (CollectionUtils.isEmpty(sortOrder)) {
             finalMongoQuery.sort(getQueryFor("social.ugc.defaultSort"));
         } else {
@@ -258,8 +268,9 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     public long countByTargetId(final String contextId, final String threadId,
                                 final int levels) throws MongoDataException {
         try {
-            return count(getQueryFor("social.ugc.byTargetIdWithFixLvl"), contextId, threadId, levels, Arrays.asList(SocialUgc.ModerationStatus
-                .SPAM, SocialUgc.ModerationStatus.TRASH));
+            String hiddenStatus=tenantConfigurationService.getProperty(contextId, TenantConfigurationService
+                .HIDDEN_UGC_STATUS);
+            return count(getQueryFor("social.ugc.byTargetIdWithFixLvl"), contextId, threadId, levels, ModerationStatus.listOfModerationStatus(hiddenStatus));
         } catch (MongoException ex) {
             log.error("Unable to count ugc for context " + contextId + "and target " + threadId, ex);
             throw new MongoDataException("Unable to count ugc for context and target", ex);
@@ -284,7 +295,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     }
 
     @Override
-    public Iterable<T> findByModerationStatus(final SocialUgc.ModerationStatus status, final String targetId,
+    public Iterable<T> findByModerationStatus(final ModerationStatus status, final String targetId,
                                               final String contextId, final int start, final int limit,
                                               final List sortOrder)
             throws MongoDataException {
@@ -299,7 +310,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     }
 
     @Override
-    public long countFindByModerationStatus(final SocialUgc.ModerationStatus status, final String targetId,
+    public long countFindByModerationStatus(final ModerationStatus status, final String targetId,
                                             final String contextId) throws MongoDataException {
         if (StringUtils.isBlank(targetId)) {
             return count(getQueryFor("social.ugc.byModerationStatus"), status, contextId);
@@ -312,7 +323,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     public Iterable<T> findAllFlagged(final String context, final int start, final int pageSize, final List
         sortOrder) {
         String query = getQueryFor("social.ugc.byFlaggedStatus");
-        Find f = getCollection().find(query,context, SocialUgc.ModerationStatus.TRASH);
+        Find f = getCollection().find(query,context, ModerationStatus.TRASH);
         if (CollectionUtils.isEmpty(sortOrder)) {
             f.sort(getQueryFor("social.ugc.defaultSort"));
         } else {
@@ -326,7 +337,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
     public long countAllFlagged(final String context, final int start, final int pageSize, final List
         sortOrder) {
         String query = getQueryFor("social.ugc.byFlaggedStatus");
-        return  getCollection().count(query, context,SocialUgc.ModerationStatus.TRASH);
+        return  getCollection().count(query, context, ModerationStatus.TRASH);
 
     }
 
@@ -338,4 +349,8 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
         return ugcList;
     }
 
+
+    public void setTenantConfigurationServiceImpl(TenantConfigurationService tenantConfigurationService) {
+        this.tenantConfigurationService=tenantConfigurationService;
+    }
 }

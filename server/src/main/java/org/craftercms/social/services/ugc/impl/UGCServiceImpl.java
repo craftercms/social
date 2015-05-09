@@ -7,10 +7,13 @@ import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.net.URLCodec;
@@ -19,6 +22,7 @@ import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
+import org.craftercms.commons.http.RequestContext;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.commons.mongo.MongoDataException;
@@ -91,8 +95,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             }
             pipeline.processUgc(newUgc);
             ugcRepository.save(newUgc);
-            reactor.notify(UGCEvent.CREATE.getName(), Event.wrap(new SocialEvent<>(newUgc, SocialSecurityUtils
-                .getCurrentProfile().getId().toString(), UGCEvent.CREATE)));
+
+            final SocialEvent<T> event = new SocialEvent<>(newUgc, SocialSecurityUtils.getCurrentProfile().getId()
+                .toString(), UGCEvent.CREATE);
+            event.setAttribute("baseUrl",calculateBaseUrl());
+            reactor.notify(UGCEvent.CREATE.getName(), Event.wrap(event));
             setupAutoWatch(targetId, SocialSecurityUtils.getCurrentProfile(), contextId);
             log.info("logging.ugc.created", newUgc);
             return newUgc;
@@ -100,6 +107,14 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             log.error("logging.ugc.errorSaving", ex);
             throw new UGCException("Unable to Save UGC");
         }
+    }
+
+    private String calculateBaseUrl() {
+        HttpServletRequest request = RequestContext.getCurrent().getRequest();
+        return request.getScheme() +"://"+request.getServerName() + ("http".equals(request
+            .getScheme()) &&
+            request.getServerPort() == 80 || "https".equals(request.getScheme()) &&
+            request.getServerPort() == 443 ? "" : ":" + request.getServerPort() )+request.getContextPath();
     }
 
     public void setNotificationServiceImpl(NotificationService notificationService) {

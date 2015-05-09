@@ -10,10 +10,6 @@ import org.craftercms.social.domain.UGC;
  */
 public class SocialUgc extends UGC{
 
-    public enum ModerationStatus {
-        UNMODERATED, PENDING, APPROVED, SPAM, TRASH
-    }
-
     private ModerationStatus moderationStatus;
     /**
      * List of profiles that like this.

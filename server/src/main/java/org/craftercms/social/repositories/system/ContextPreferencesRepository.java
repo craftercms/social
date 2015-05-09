@@ -17,6 +17,7 @@
 
 package org.craftercms.social.repositories.system;
 
+import java.util.List;
 import java.util.Map;
 
 import org.craftercms.commons.mongo.CrudRepository;
@@ -40,4 +41,7 @@ public interface ContextPreferencesRepository extends CrudRepository<ContextPref
     boolean setContextPreferences(Map<String,Object> preferences,String contextId);
 
     boolean saveEmailTemplate(String context, String type, String template) throws SocialException;
+
+    boolean deleteContextPreferences(String context, List<String> preferences);
+
 }

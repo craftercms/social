@@ -120,6 +120,7 @@
         <beans:property name="cache" value="true"/>
         <beans:property name="prefix" value=""/>
         <beans:property name="suffix" value=".ftl"/>
+        <beans:property name="contentType" value="text/html"/>
     </beans:bean>
     <beans:import resource="classpath*:/crafter/api-documentation/api-documentation-context.xml"/>
 
