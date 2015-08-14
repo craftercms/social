@@ -17,11 +17,9 @@
 
 package org.craftercms.social.controllers.rest.v3.system;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.wordnik.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.exception.AuthenticationRequiredException;
 import org.craftercms.social.domain.social.system.SocialContext;
@@ -32,12 +30,11 @@ import org.craftercms.social.services.system.ContextPreferencesService;
 import org.craftercms.social.services.system.SocialContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import com.wordnik.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -57,7 +54,7 @@ public class SocialContextController {
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     @ResponseBody
     public Iterable<SocialContext> getAllContexts() throws SocialException {
-        return socialContextService.getAllContexts();
+        return IterableUtils.toList(socialContextService.getAllContexts());
     }
 
     @RequestMapping(method = RequestMethod.POST)
