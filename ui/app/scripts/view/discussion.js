@@ -51,7 +51,7 @@
 
             var $replies        = this.$('.reply-box');
             var profile         = S.getDirector().getProfile();
-            var isSocialAuthor  = profile.hasRole('SOCIAL_AUTHOR') || profile.hasRole('SOCIAL_SUPERADMIN');
+            var isSocialAuthor  = profile.hasRole('SOCIAL_AUTHOR',this.cfg.context) || profile.hasRole('SOCIAL_SUPERADMIN',this.cfg.context);
 
             (!isSocialAuthor) && $replies.hide();
 

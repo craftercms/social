@@ -32,7 +32,7 @@
         </ul>
         <h3 class="text-muted">ui</h3>
     </div>
-    <div class="jumbotron" id="jumbotron">
+    <div class="jumbotron" id="test">
         <h1><i class="glyphicon glyphicon-info-sign"></i> 'Allo, 'Allo!</h1>
         <p class="lead">Always a pleasure scaffolding your apps.</p>
         <p><a class="btn btn-lg btn-success" href="javascript:crafter.social.getDirector().authenticate()">Splendid!</a></p>
@@ -111,10 +111,10 @@
      */
     var crafterSocial_cfg = {
 
-        'url.service'                   : 'http://0.0.0.0:8080/crafter-social/api/3/',
-        'url.security.value'            : 'http://0.0.0.0:8080/crafter-social/crafter-security-login',
-        'url.security.active'           : 'http://0.0.0.0:8080/crafter-social/crafter-security-current-auth'
-
+        'url.service'                   : 'http://localhost:9080/social/api/3/',
+        'url.security.value'            : 'http://localhost:9080/social/crafter-security-login',
+        'url.security.active'           : 'http://localhost:9080/social/crafter-security-current-auth',
+        'url.base'                      : '/'
     };
 
     /*
@@ -149,7 +149,7 @@
 
 
         director.socialise({
-            target: '#jumbotron',
+            target: '#test',
             context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9',
             view:{
                 'parasite':{
