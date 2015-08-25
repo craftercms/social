@@ -69,13 +69,23 @@
 
         },
 
-        hasRole: function (role) {
+        hasRole: function (role,ctxId) {
             var found = false;
-            var roles = this.get('roles');
-            roles && roles.every(function (pRole) {
-                ( pRole === role ) && (found = true);
-                return !found;
-            });
+            var attrs = this.get('attributes');
+            if(attrs){
+                var socialCtx=attrs.socialContexts;
+                if(socialCtx){
+                    socialCtx.every(function (ctx) {
+                        if(ctx.id===ctxId){
+                            var roles=ctx.roles;
+                            roles && roles.every(function (pRole) {
+                                ( pRole === role ) && (found = true);
+                                return !found;
+                            });
+                        }
+                    });
+                }
+            }
             return found;
         }
 
