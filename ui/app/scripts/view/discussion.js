@@ -51,7 +51,7 @@
 
             var $replies        = this.$('.reply-box');
             var profile         = S.getDirector().getProfile();
-            var isSocialAuthor  = profile.hasRole('SOCIAL_AUTHOR',this.cfg.context) || profile.hasRole('SOCIAL_SUPERADMIN',this.cfg.context);
+            var isSocialAuthor  = profile.hasRole('SOCIAL_AUTHOR',this.cfg.context) || profile.hasRole('SOCIAL_SUPERADMIN',this.cfg.context)  || profile.hasRole('SOCIAL_MODERATOR',this.cfg.context) || profile.hasRole('SOCIAL_ADMIN',this.cfg.context);;
 
             (!isSocialAuthor) && $replies.hide();
 
@@ -81,7 +81,7 @@
                 labelComment = 'discussion.comment'.loc();
                 $(this.el).find('.comments:empty').append('<span class="sui-log-event">'+ labelComment+ '</span>');
                 var emptyDiscussion=$(this.el).find('.sui-log-event');
-            }else if(true && !profile.hasRole('SOCIAL_USER',this.cfg.context)){
+            }else if(true && !(profile.hasRole('SOCIAL_USER',this.cfg.context) || profile.hasRole('SOCIAL_ADMIN',this.cfg.context) || profile.hasRole('SOCIAL_MODERATOR',this.cfg.context))){
                 labelComment = 'discussion.login-comment'.loc();
                 $(this.el).find('.comments:last').after('<span class="sui-comment-nonempty">'+labelComment+'</span>');
                 var emptyDiscussion=$(this.el).find('.sui-comment-nonempty');
