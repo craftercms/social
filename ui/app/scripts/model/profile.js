@@ -75,15 +75,21 @@
             if(attrs){
                 var socialCtx=attrs.socialContexts;
                 if(socialCtx){
-                    socialCtx.every(function (ctx) {
+                    for (var i = 0; i < socialCtx.length; i++) {
+                        var ctx=socialCtx[i];
                         if(ctx.id===ctxId){
-                            var roles=ctx.roles;
-                            roles && roles.every(function (pRole) {
-                                ( pRole === role ) && (found = true);
-                                return !found;
-                            });
+                             var roles=ctx.roles;
+                               for (var j = 0; j < roles.length; j++) {
+                                   if(roles[j]===role){
+                                       found=true;
+                                       break;
+                                   }
+                               }
+                               if(found){
+                                   break;
+                               }
                         }
-                    });
+                    }
                 }
             }
             return found;
