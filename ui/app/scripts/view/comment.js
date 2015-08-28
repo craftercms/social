@@ -45,6 +45,9 @@
                 },
                 isModerator: function () {
                     return profile.hasRole('SOCIAL_MODERATOR');
+                },
+                isOwner: function(){
+                    return model.createdBy === profile.id
                 }
             });
 
@@ -75,6 +78,55 @@
             var params = this.getRequestParams();
             this.model.voteDown(params);
         },
+        uploadAvatar: function(){
+            var me = this;
+            var files=[];
+            var modal = S.util.instance('view.Modal', {
+                modal: { show: true },
+                events: {
+                    'change input[type=file]': function(event){
+                        files = event.target.files;
+                    },
+                    'click .btn-primary': function () {
+                       // Create a formdata object and add the files
+                        var data = new FormData();
+                        $.each(files, function(key, value)
+                        {
+                            data.append(key, value);
+                        });
+                        
+                        S.request({
+                            type: 'POST',
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            data:data,
+                            url: S.url('profile.avatar', {
+                                _id: Director.getProfile().id,
+                                 context: me.cfg.context
+                            }),
+                            success: function () {
+                                modal.hide();
+                            },
+                            error: function () {
+                                modal.$('.modal-body')
+                                .prepend('<div class="alert alert-danger">Unable to Upload your new avatar</div>');
+                            }
+                        });
+                    }
+                }
+            });
+
+            modal.set({
+                'title': 'Upload new Avatar',
+                'body': '<div class="form-group"><input id="avatarFileupload" type="file" name="avatar"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
+                'footer': '<button class="btn btn-primary">Submit</button>'
+            });
+
+            modal.render();
+           
+           
+        },
         removeVote: function () {
             var params = this.getRequestParams();
             this.model.removeVote(params);
@@ -82,12 +134,9 @@
 
         reply: function (e) {
             e.preventDefault();
-
 //            var Commenting  = S.get('view.Commenting');
 //            var commenting  = new Commenting(this.cfg.commenting);
-
         },
-
         flag: function (e) {
             e.preventDefault();
 
@@ -248,65 +297,3 @@
     S.define('view.Comment', CommentView);
 
 }) (crafter.social);
-
-//                var Dropbox = S.get('component.Dropbox');
-//                var db = new Dropbox({
-//
-//                    element: view.el,
-//                    display: view.$('.cs-uploads-list'),
-//
-//                    uploadPostKey: 'attachment',
-//                    target: S.url('ugc.{id}.add_attachment', model.toJSON()),
-//                    formData: { context: model.get('context') },
-//
-//                    template: view.getTemplate('file'),
-//                    templateUploadError: [
-//                        /* jshint -W015 */
-//                        '<div class="alert alert-danger {{theme.fileError}}">',
-//                            '<span>An error has occurred trying to upload <i>"{{file.name}}"</i>.</span> ',
-//                            '<a onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)">Dismiss Message</a>',
-//                        '</div>'
-//                    ].j(),
-//
-//                    theme: {
-//                        fileDisplay: 'crafter-social-view crafter-social-file-view'
-//                    }
-//
-//                });
-//
-//                db.on(Dropbox.UPLOAD_SUCCESS_EVENT, function (data) {
-//                    view.uploadComplete(data);
-//                    me.model.fetch();
-//                });
-//
-//                db.on(Dropbox.UPLOAD_ERROR_EVENT, function (data) {
-//
-//                    var XHR = data.XHR;
-//                    var parsed;
-//
-//                    try {
-//                        parsed = JSON.parse(XHR.responseText);
-//                    } catch ( ex ) { }
-//
-//                    if (parsed.localizedMessage || parsed.message) {
-//
-//                        $(data.ui).find('.dropbox-file-error span')
-//                            .text(parsed.localizedMessage || parsed.message);
-//
-//                    } else if (XHR.status === 502 || XHR.status === 413) {
-//
-//                        $(data.ui).find('.dropbox-file-error span')
-//                            .text('The file you tried to upload exceeds the maximum file size.');
-//
-//                    } else if (XHR.status === 422) {
-//
-//                        $(data.ui).find('.dropbox-file-error span')
-//                            .text('A virus has been detected on the file. File was not uploaded.');
-//
-//                    } else if (XHR.status === 401) {
-//
-//                        Director.trigger(S.Constants.get('EVENT_UNAUTHORISED_RESPONSE'));
-//
-//                    }
-//
-//                });

@@ -57,6 +57,14 @@
             return options.inverse(this);
         }
     });
+    
+    Handlebars.registerHelper('ifm', function( value, options ) {
+        if(value.call()){
+             return options.fn(this);
+        }else {
+            return options.inverse(this);
+        }
+    });
 
     Handlebars.registerHelper('mif', function( value, type, compare, options ) {
         if (U.isFunction(value)) {
