@@ -26,7 +26,9 @@
                 'subscribe': '{target}.json',
                 'unsubscribe': '{target}.json'
             },
-
+            profile :{
+                'avatar':'?context={context}'
+            },
             threads: {
                 '{target}': {
                     'comments': {

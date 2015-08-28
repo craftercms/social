@@ -3,7 +3,6 @@
 
     var Files,
         Base = S.view.Base,
-        File = S.model.File,
         U = S.util,
         $ = S.$;
 
