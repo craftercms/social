@@ -55,6 +55,22 @@
                 this.getTemplate('main'), model));
 
             var $children   = this.$('.comment-children:first');
+            
+            this.$("#changeAvatar").hover( null,function(){
+                if(model.createdBy === profile.id){
+                    me.$("#changeAvatar").addClass("hidden");
+                    me.$("#currentAvatar").removeClass("hidden");
+                }
+            });
+            
+            this.$("#currentAvatar").hover( function(){
+                if(model.createdBy === profile.id){
+                    me.$("#currentAvatar").addClass("hidden");
+                    me.$("#changeAvatar").removeClass("hidden");
+                    }
+            },null);
+            
+            
             model.children.every(function ( child ) {
 
                 var m = new Comment(child),
@@ -110,7 +126,7 @@
                             },
                             error: function () {
                                 modal.$('.modal-body')
-                                .prepend('<div class="alert alert-danger">Unable to Upload your new avatar</div>');
+                                .prepend('<div class="alert alert-danger">Unable to Upload profile image</div>');
                             }
                         });
                     }
@@ -118,9 +134,9 @@
             });
 
             modal.set({
-                'title': 'Upload new Avatar',
-                'body': '<div class="form-group"><input id="avatarFileupload" type="file" name="avatar"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
-                'footer': '<button class="btn btn-primary">Submit</button>'
+                'title': 'Upload Profile Image',
+                'body': '<div class="form-group"><input id="avatarFileupload" type="file" name="avatar" value="Choose new profile picture"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
+                'footer': '<button class="btn btn-primary">Upload</button>'
             });
 
             modal.render();
