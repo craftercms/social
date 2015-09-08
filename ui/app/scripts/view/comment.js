@@ -48,6 +48,10 @@
                 },
                 isOwner: function(){
                     return model.createdBy === profile.id
+                },
+                avatarUrl: function(){
+                    return S.url('profile.avatar',{id: model.user.id,
+                                                    context: me.cfg.context})
                 }
             });
 
