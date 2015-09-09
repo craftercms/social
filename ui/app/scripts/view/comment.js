@@ -51,7 +51,7 @@
                     return model.createdBy === profile.id
                 },
                 avatarUrl: function(){
-                    return S.url('profile.avatar',{id: model.user.id,
+                    return S.url('profile.avatar',{id: model.user?model.user.id:profile.id,
                                                     context: me.cfg.context})
                 }
             });
