@@ -54,7 +54,6 @@
 		<module>virus-scanner</module>
 		<module>server</module>
 		<module>admin</module>
-        <module>social-client</module>
     </modules>
 	<profiles>
         <profile>
