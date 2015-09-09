@@ -35,6 +35,7 @@
             var me          = this;
             var profile     = Director.getProfile();
             var model       = $.extend(this.model.toJSON(), {
+                sessionUserId: profile.id,
                 isTrashed: function () {
                     return me.model.isTrashed();
                 },
@@ -59,22 +60,22 @@
                 this.getTemplate('main'), model));
 
             var $children   = this.$('.comment-children:first');
-            
+
             this.$("#changeAvatar").hover( null,function(){
                 if(model.createdBy === profile.id){
                     me.$("#changeAvatar").addClass("hidden");
                     me.$("#currentAvatar").removeClass("hidden");
                 }
             });
-            
+
             this.$("#currentAvatar").hover( function(){
                 if(model.createdBy === profile.id){
                     me.$("#currentAvatar").addClass("hidden");
                     me.$("#changeAvatar").removeClass("hidden");
                     }
             },null);
-            
-            
+
+
             model.children.every(function ( child ) {
 
                 var m = new Comment(child),
@@ -114,7 +115,7 @@
                         {
                             data.append(key, value);
                         });
-                        
+
                         S.request({
                             type: 'POST',
                             cache: false,
@@ -144,8 +145,8 @@
             });
 
             modal.render();
-           
-           
+
+
         },
         removeVote: function () {
             var params = this.getRequestParams();
