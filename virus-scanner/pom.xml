@@ -33,9 +33,9 @@
 	        </developer>
 	    </developers>
 	    <scm>
-	        <connection>scm:git:git://github.com/craftercms/profile/tree/master/virus-scanner</connection>
-	        <developerConnection>scm:git:git://github.com/craftercms/profile/tree/master/virus-scanner</developerConnection>
-	        <url>scm:git:git://github.com/craftercms/profile/tree/master/virus-scanner</url>
+	        <connection>scm:git:git://github.com/craftercms/social</connection>
+	        <developerConnection>scm:git:git://github.com/craftercms/social</developerConnection>
+	        <url>scm:git:git://github.com/craftercms/social</url>
 	    </scm>
 
     <dependencies>
@@ -50,6 +50,7 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>

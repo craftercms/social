@@ -8,6 +8,7 @@ public final class SecurityActionNames {
     public static final String UGC_UPDATE = "ugc.update";
     public static final String UGC_MODERATE = "ugc.moderate";
     public static final String UGC_UNFLAG = "ugc.unflag";
+    public static final String UGC_VOTING = "ugc.voting";
     public static final String UGC_FLAG = "ugc.flag";
     public static final String UGC_CREATE = "ugc.create";
     public static final String UGC_DELETE = "ugc.delete";
@@ -21,7 +22,8 @@ public final class SecurityActionNames {
     public static final String ROLE_OWNER="OWNER";
     public static final String ROLE_SOCIAL_ADMIN = "SOCIAL_ADMIN";
     public static final String CHANGE_NOTIFICATION_TEMPLATE = "system.notification.changeTemplate";
-
+    public static final String SYSTEM_READ_ACTIONS="system.securityActions.read";
+    public static final String SYSTEM_UPDATE_ACTIONS="system.securityActions.update";
     private SecurityActionNames(){}
 
 

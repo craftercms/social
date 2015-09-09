@@ -39,6 +39,7 @@ import static org.craftercms.social.security.SecurityActionNames.UGC_FLAG;
 import static org.craftercms.social.security.SecurityActionNames.UGC_MODERATE;
 import static org.craftercms.social.security.SecurityActionNames.UGC_UNFLAG;
 import static org.craftercms.social.security.SecurityActionNames.UGC_UPDATE;
+import static org.craftercms.social.security.SecurityActionNames.UGC_VOTING;
 
 /**
  *
@@ -55,7 +56,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
 
 
     @Override
-    @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
+    @HasPermission(action = UGC_VOTING, type = SocialPermission.class)
     public SocialUgc vote(@SecuredObject final String ugcId, final VoteOptions voteOptions, final String userId,
                           final String contextId) throws SocialException {
         try {
