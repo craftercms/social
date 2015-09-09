@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="CrafterAdminConsole">
     <head>
-        <@components.head "Crafter Profile Admin Console"/>
+        <@components.head "Crafter Social Admin Console"/>
         <link href="<@spring.url '/resources/css/main.css'/>" rel="stylesheet">
     </head>
 
