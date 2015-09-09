@@ -25,6 +25,7 @@ import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.social.domain.social.system.SocialSecurityAction;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.repositories.security.PermissionRepository;
+import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.system.SecurityActionsService;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class SecurityActionsServiceImpl implements SecurityActionsService {
     private PermissionRepository permissionRepository;
 
     @Override
-    @HasPermission(type = SocialPermission.class, action = "system.securityActions.read")
+    @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_READ_ACTIONS)
     public Iterable<SocialSecurityAction> get(final String context) {
         log.debug("Finding all SecurityActions for {}", context);
         try {
@@ -51,7 +52,7 @@ public class SecurityActionsServiceImpl implements SecurityActionsService {
     }
 
     @Override
-    @HasPermission(type = SocialPermission.class, action = "system.securityActions.removeWatcher")
+    @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_UPDATE_ACTIONS)
     public SocialSecurityAction update(final String context, final String actionName,
                                  final List<String> roles) throws SocialException {
         log.debug("Updating Roles for {} of context {} to {}", actionName, context, roles);
