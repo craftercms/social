@@ -123,7 +123,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
                 throw new IllegalUgcException("Given ugc does not belong to given context");
             }
 
-            ugcToUpdate.getFlags().remove(new Flag(new ObjectId(flagId)));
+            ugcToUpdate.getFlags().remove(new Flag(new ObjectId(flagId),userId));
             pipeline.processUgc(ugcToUpdate);
             ugcRepository.save(ugcToUpdate);
             reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugcToUpdate,
