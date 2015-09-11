@@ -12,7 +12,7 @@ public class Flag {
     @Id
     private ObjectId id;
     private String reason;
-    @SecureProperty(role = {"SOCIAL_ADMIN","SOCIAL_MODERATOR"})
+    @SecureProperty(role = {"SOCIAL_ADMIN","SOCIAL_MODERATOR","OWNER"})
     private String userId;
 
     public Flag() {
@@ -26,6 +26,11 @@ public class Flag {
 
     public Flag(final ObjectId id) {
         this.id = id;
+    }
+
+    public Flag(final ObjectId id, final String userId) {
+        this.id = id;
+        this.userId = userId;
     }
 
     public ObjectId getId() {
@@ -69,16 +74,20 @@ public class Flag {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         final Flag flag = (Flag)o;
 
-        if (id != null? !id.equals(flag.id): flag.id != null) {
+        if (!id.equals(flag.id)) {
             return false;
         }
-        return true;
+        return userId.equals(flag.userId);
+
     }
 
     @Override
     public int hashCode() {
-       return id.hashCode();
+        int result = id.hashCode();
+        result = 31 * result + userId.hashCode();
+        return result;
     }
 }

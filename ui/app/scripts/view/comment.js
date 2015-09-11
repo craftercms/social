@@ -172,7 +172,8 @@
                         var reason = this.$('textarea').val().trim();
                         if ( reason !== '' ) {
                             me.model[isFlagged ? 'unflag' : 'flag'](me.getRequestParams({
-                                reason: reason
+                                reason: reason,
+                                profileId:Director.getProfile().get('id')
                             }));
                             // TODO destroy after successful flagging
                             this.destroy();
@@ -193,8 +194,6 @@
             });
 
             modal.render();
-
-
         },
         unflag: function ( reason ) {
             this.model.unflag(reason);

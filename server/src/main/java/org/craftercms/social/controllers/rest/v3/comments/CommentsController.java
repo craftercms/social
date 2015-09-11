@@ -210,6 +210,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     public T moderate(@ApiParam("Id of the comment to change status") @PathVariable final String id, @ApiParam("New "
         + "Moderation Status of the Param") @RequestParam final ModerationStatus status) throws
         SocialException {
+
         return (T)socialServices.moderate(id, status, userId(), context());
     }
 
@@ -219,7 +220,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @ResponseBody
     @ApiOperation(value = "Gets all Moderation comments with the given moderation status")
     public Iterable<T> byStatus(@PathVariable("status") final ModerationStatus status, @RequestParam
-        (defaultValue = "", required = false) final String thread, @RequestParam(required = false, defaultValue =
+    (defaultValue = "", required = false) final String thread, @RequestParam(required = false, defaultValue =
         "0") final int pageNumber, @RequestParam(required = false, defaultValue = ThreadsController.MAX_INT) final
     int pageSize, @RequestParam(required = false) final List<String> sortBy, @RequestParam(required = false) final
     List<SocialSortOrder> sortOrder) throws UGCException {

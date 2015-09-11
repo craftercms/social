@@ -55,7 +55,8 @@
                         'up': ''
                     },
                     'flags': {
-                        value: '' // Flag comment flags
+                        value: '', // Flag comment flags
+                       '{flagId}':''
                     },
                     'attachments': {
                         'value': '',

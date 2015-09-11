@@ -9,11 +9,11 @@
         return SUBMIT(url, attributes, data, 'POST');
     }
 
-    function SUBMIT(url, data, method) {
+    function SUBMIT(url, data, method,urlParam) {
 
         var options = {
             type: method || 'POST',
-            url: S.url(url, this.toJSON())
+            url: S.url(url,$.extend({}, this.toJSON() || {}, urlParam) )
         };
 
         data && (options.data = $.param(data));
@@ -54,12 +54,21 @@
             SUBMIT.call(this, 'comments.{_id}.flags', params);
         },
         unflag: function (params) {
-            // TODO
-            this.save(null, {
-                type: 'DELETE',
-                url: S.url('comments.{_id}.flags', this.toJSON())
-            });
-            POST.call(this, 'comments.{_id}.flags', { likes: this.get('flags') - 1 }, params);
+            var flagId=this.flagId(params.profileId)
+            if(flagId) {
+                this.get('flags').splice(flagId.index, 1);
+                SUBMIT.call(this, 'comments.{_id}.flags.{flagId}', params ,'POST',{flagId:flagId.id});
+            }
+        },
+        flagId: function (profileId) {
+            var flags = this.attributes.flags,
+                l = flags.length, i;
+            for (i = 0; i < l; ++i) {
+                if (flags[i].userId === profileId) {
+                    return {id:flags[i]._id,index:i}
+                }
+            }
+            return null;
         },
         flaggedBy: function (profileId) {
             var flags = this.attributes.flags,
