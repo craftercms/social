@@ -114,6 +114,16 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
         return result;
     }
 
+    @Override
+    public Map<String, Object> getAllPreferences(final String context) {
+        return contextPreferencesRepository.getContextAllPreferences(context);
+    }
+
+    @Override
+    public void saveAllContextPreferences(final String contextId, final Map<String, Object> newPreferences) throws SocialException {
+        contextPreferencesRepository.saveAllContextPreferences(contextId,newPreferences);
+    }
+
     private void invalidatedEmailSettings(final String contextId) {
         final String preferenceCacheKey = contextId + "-preferences";
         final String javaMailCacheKey = contextId + "-javaMail";

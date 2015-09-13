@@ -110,6 +110,7 @@
         <property name="socialContextRepositoryImpl" ref="social.repository.socialContextRepository"/>
         <property name="profileServiceRestClient" ref="crafter.profileServiceRestClient"/>
         <property name="securityActionsService" ref="social.system.securityActionsService"/>
+        <property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
     </bean>
 
     <bean id="org.craftercms.commons.audit.AuditServiceImpl"

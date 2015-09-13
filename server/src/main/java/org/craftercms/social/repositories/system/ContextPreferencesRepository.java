@@ -38,10 +38,13 @@ public interface ContextPreferencesRepository extends CrudRepository<ContextPref
 
     Map<String,Object> getContextPreferences(String contextId);
 
-    boolean setContextPreferences(Map<String,Object> preferences,String contextId);
+    Map<String, Object> getContextAllPreferences(String contextId);
+
+    boolean setContextPreferences(Map<String,Object> preferences, String contextId);
 
     boolean saveEmailTemplate(String context, String type, String template) throws SocialException;
 
     boolean deleteContextPreferences(String context, List<String> preferences);
 
+    void saveAllContextPreferences(String contextId, Map<String, Object> newPreferences)throws SocialException;
 }
