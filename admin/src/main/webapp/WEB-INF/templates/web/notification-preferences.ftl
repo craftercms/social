@@ -2,7 +2,8 @@
     <div class="form-group">
         <label for="context">Context: </label>
         <select name="context" class="form-control" ng-model="selectedContext"
-                ng-options="context.contextName for context in contexts">
+                ng-options="context.contextName for context in contexts"
+                ng-change="resetContextPreferences()">
         </select>
     </div>
 </form>

@@ -2,7 +2,9 @@
     <div class="form-group">
         <label for="context">Context: </label>
         <select name="context" class="form-control" ng-model="selectedContext"
-                ng-options="context.contextName for context in contexts">
+                ng-options="context.contextName for context in contexts"
+                ng-change="resetContextPreferences()"
+        >
         </select>
     </div>
 </form>
@@ -15,7 +17,7 @@
             Add</span></button>
     </div>
     <hr/>
-    <div class="col-lg-10" ng-repeat="(key, value) in preferences track by $index">
+    <div class="col-lg-10" ng-repeat="(key, value) in preferences track by $index" id="tenatnPrefSection">
         <hr/>
         <form class="form-horizontal" accept-charset="utf-8" role="form" >
             <div class="form-group" >
