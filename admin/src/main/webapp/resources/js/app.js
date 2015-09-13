@@ -623,7 +623,7 @@ app.controller('ModerationDashboardController', function ($scope, commentService
         'NumberedList',
         'BulletedList', '-',
         'Link', '-',
-        'Image']];
+        'Image', '-','Source']];
     $scope.editorOptions["height"]=100;
     $scope.getCurrentPage = function () {
         commentService.getComments($scope.selectedContext._id, $scope.selectedStatus, $scope.currentPage,
