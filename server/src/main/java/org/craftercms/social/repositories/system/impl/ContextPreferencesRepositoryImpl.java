@@ -124,6 +124,16 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
     }
 
     @Override
+    public Map<String, Object> getContextAllPreferences(final String contextId) {
+        try {
+            final String byId = getQueryFor("social.system.preferences.emailPreferencesByContextId");
+            return getCollection().findOne(byId, contextId).as(HashMap.class);
+        }catch (MongoException ex){
+            return new HashMap<>();
+        }
+    }
+
+    @Override
     public boolean setContextPreferences(final Map<String, Object> preferences, final String contextId) {
         try {
             final String preferencesString = new ObjectMapper().writeValueAsString(preferences);
@@ -172,6 +182,14 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
         }
     }
 
+    @Override
+    public void saveAllContextPreferences(final String contextId, final Map<String, Object> newPreferences) throws SocialException {
+        try{
+            checkCommandResult(getCollection().save(newPreferences));
+        }catch (MongoDataException ex){
+            throw new SocialException("Unable to save email Preferences");
+        }
+    }
 
     @Override
     public boolean saveEmailTemplate(final String context, final String type, final String template) throws SocialException {

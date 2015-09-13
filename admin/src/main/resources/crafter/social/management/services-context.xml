@@ -5,7 +5,7 @@
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
-    
+
     <import resource="classpath:crafter/security/security-context.xml"/>
 
     <bean name="crafter.adminConsoleProperties"
@@ -19,10 +19,9 @@
             </list>
         </property>
     </bean>
-
     <util:map id="crafter.urlRestrictions">
         <entry key="/login" value="permitAll()"/>
-        <entry key="/**" value="hasRole('SOCIAL_SUPERADMIN')"/>
+        <entry key="/**" value="hasAnyRole({'SOCIAL_SUPERADMIN','SOCIAL_ADMIN'})"/>
     </util:map>
 
     <import resource="classpath*:crafter/social/management/extension/services-context.xml"/>

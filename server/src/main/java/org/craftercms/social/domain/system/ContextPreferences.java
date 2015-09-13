@@ -37,6 +37,11 @@ public class ContextPreferences {
     public ContextPreferences() {
     }
 
+    public ContextPreferences(final String contextId, final Map<String, Object> preferences) {
+        this.contextId = contextId;
+        this.preferences = preferences;
+    }
+
     public String getContextId() {
         return contextId;
     }

@@ -26,4 +26,7 @@ public interface ContextPreferencesService {
 
     boolean deleteContextPreference(String context, List<String> strings);
 
+    Map<String,Object> getAllPreferences(String context);
+
+    void saveAllContextPreferences(String contextId, Map<String, Object> newPreferences) throws SocialException;
 }
