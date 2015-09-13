@@ -617,7 +617,13 @@ app.controller('ModerationDashboardController', function ($scope, commentService
     $scope.selectedContext = $scope.contexts[0];
     $scope.itemsPerPage = 5;
     $scope.editorOptions=configRTEEditor();
-    $scope.editorOptions["toolbar"]=[['Bold','-','Source']];
+    $scope.editorOptions["toolbar"]=[['Bold',
+        'Italic',
+        'Underline', '-',
+        'NumberedList',
+        'BulletedList', '-',
+        'Link', '-',
+        'Image']];
     $scope.editorOptions["height"]=100;
     $scope.getCurrentPage = function () {
         commentService.getComments($scope.selectedContext._id, $scope.selectedStatus, $scope.currentPage,
