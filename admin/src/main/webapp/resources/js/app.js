@@ -770,6 +770,12 @@ app.controller('EmailPreferencesController', function ($scope, emailPreferencesS
                 }
             });
     };
+    $scope.resetContextPreferences = function(){
+        emailPreferencesService.getEmailConfig($scope.selectedContext._id).then(function(config){
+            $scope.emailConfig=config;
+        });
+        $scope.reloadEmailTemplate();
+    };
     $scope.reloadEmailTemplate = function (oldType) {
 
         emailPreferencesService.getNotificationTemplate($scope.selectedType.type, $scope.selectedContext._id)
@@ -786,6 +792,8 @@ app.controller('EmailPreferencesController', function ($scope, emailPreferencesS
             $scope.reloadEmailTemplate(oldValue);
         }
     });
+
+
 
     $scope.saveEmailConfig = function(){
         emailPreferencesService.saveEmailConfig($scope.selectedContext._id,$scope.emailConfig).then(function (result) {
@@ -813,6 +821,12 @@ app.controller('TenantPreferencesController',function($scope,tenantPreferenceSer
     tenantPreferenceService.getPreferences($scope.selectedContext._id).then(function(result){
        $scope.preferences=result.preferences;
     });
+
+    $scope.resetContextPreferences = function(){
+        tenantPreferenceService.getPreferences($scope.selectedContext._id).then(function(result){
+            $scope.preferences=result.preferences;
+        });
+    };
     $scope.predefineKeys=[{key:'accessControlAllowHeaders',label:'Cors Allow Headers'},
         {key:'accessControlAllowMethods',label:'Cors Allow Methods'},
         {key:'accessControlAllowOrigin',label:'Cors Allow Origin'}];
