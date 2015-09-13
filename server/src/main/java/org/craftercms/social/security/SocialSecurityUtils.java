@@ -41,7 +41,7 @@ public class SocialSecurityUtils {
             return Arrays.asList(ANONYMOUS);
         }
 
-        List<String> list = new ArrayList<>(getRolesForCurrentContext(profile));
+        List<String> list = new ArrayList<>(getRolesForCurrentContext(getContext(),profile));
         if (list == null) {
             list = Collections.synchronizedList(new ArrayList<String>());
         }
@@ -65,29 +65,29 @@ public class SocialSecurityUtils {
         return context;
     }
 
-    private static List<String> getRolesForCurrentContext(final Profile profile) {
-        String currentContext = getContext();
-        List<Map<String, Object>> socialContexts = profile.getAttribute(SOCIAL_CONTEXTS_ATTRIBUTE);
+    public static List<String> getRolesForCurrentContext(final String contextId,final Profile profile) {
 
+        List<Map<String, Object>> socialContexts = profile.getAttribute(SOCIAL_CONTEXTS_ATTRIBUTE);
+        List<String> toReturn= new ArrayList<>();
         if (CollectionUtils.isNotEmpty(socialContexts)) {
             for (Map<String, Object> context : socialContexts) {
                 String id = (String)context.get(SOCIAL_CONTEXT_ID);
                 if (StringUtils.isBlank(id)) {
                     throw new ProfileConfigurationException("Social context missing '" + SOCIAL_CONTEXT_ID + "'");
                 }
-                if (id.equals(currentContext)) {
-                    return (List<String>)context.get(SOCIAL_CONTEXT_ROLES);
+                if (id.equals(contextId)) {
+                    toReturn.addAll((List<String>)context.get(SOCIAL_CONTEXT_ROLES));
                 }
             }
-            if (profile.hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
-                return Collections.emptyList();
+            if (profile.hasAnyRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
+                return toReturn;
             } else {
-                throw new ProfileConfigurationException("Current profile is not assign to the given currentContext");
+                return toReturn;
             }
         } else if (profile.hasRole(ANONYMOUS)) {
-            return Collections.emptyList();
+            return toReturn;
         } else if (profile.hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)) {
-            return Collections.emptyList();
+            return toReturn;
         } else {
             throw new ProfileConfigurationException("Profile missing attribute '" + SOCIAL_CONTEXTS_ATTRIBUTE + "'");
         }

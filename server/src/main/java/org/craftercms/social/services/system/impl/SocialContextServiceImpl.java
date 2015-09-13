@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.profile.api.Profile;
@@ -37,6 +38,7 @@ import org.craftercms.social.repositories.SocialContextRepository;
 import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.security.SocialSecurityUtils;
+import org.craftercms.social.services.system.ContextPreferencesService;
 import org.craftercms.social.services.system.SecurityActionsService;
 import org.craftercms.social.services.system.SocialContextService;
 import org.slf4j.Logger;
@@ -56,13 +58,27 @@ public class SocialContextServiceImpl implements SocialContextService {
 
     private ProfileService profileService;
     private SecurityActionsService securityActionsService;
+    private ContextPreferencesService contextPreferencesService;
+
     private Logger log = LoggerFactory.getLogger(SocialContextServiceImpl.class);
 
     @Override
-    @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_GET_ALL_CONTEXTS)
     public Iterable<SocialContext> getAllContexts() throws SocialException {
         try {
-            return socialContextRepository.findAll();
+            final List<SocialContext> socialContexts = IterableUtils.toList(socialContextRepository.findAll());
+            final ArrayList<SocialContext> actualList = new ArrayList<>();
+            for (SocialContext socialContext : socialContexts) {
+                if(SocialSecurityUtils.getCurrentProfile().hasRole(SecurityActionNames.ROLE_SOCIAL_SUPERADMIN)){
+                    actualList.add(socialContext);//Super admin has all the power !!!
+                }else{ // Normal Check
+                    final List<String> contextRoles = SocialSecurityUtils.getRolesForCurrentContext(socialContext.getId(),
+                        SocialSecurityUtils.getCurrentProfile());
+                    if (contextRoles.contains(SecurityActionNames.ROLE_SOCIAL_ADMIN)) {
+                        actualList.add(socialContext);
+                    }
+                }
+            }
+            return actualList;
         } catch (MongoDataException e) {
             log.error("Unable to find all Social Context", e);
             throw new SocialException("Unable to find social context", e);
@@ -76,11 +92,18 @@ public class SocialContextServiceImpl implements SocialContextService {
         try {
             socialContextRepository.save(context);
             createDefaultActionsForContext(context, SecurityActionNames.TEMPLATE_CONTEXT_ACTIONS);
+            createDefaultPreferencesForContext(context,SecurityActionNames.TEMPLATE_CONTEXT_ACTIONS);
             return context;
         } catch (MongoDataException ex) {
             log.error("Unable to save new social Context", ex);
             throw new SocialException("Unable to save Social Context", ex);
         }
+    }
+
+    private void createDefaultPreferencesForContext(final SocialContext context, final String templateContextActions) throws SocialException {
+            final Map<String, Object> prefs = contextPreferencesService.getAllPreferences(templateContextActions);
+        prefs.put("_id",context.getId());
+        contextPreferencesService.saveAllContextPreferences(context.getId(),prefs);
     }
 
 
@@ -193,5 +216,9 @@ public class SocialContextServiceImpl implements SocialContextService {
 
     public void setProfileServiceRestClient(ProfileService profileService) {
         this.profileService = profileService;
+    }
+
+    public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
+        this.contextPreferencesService = contextPreferencesService;
     }
 }
