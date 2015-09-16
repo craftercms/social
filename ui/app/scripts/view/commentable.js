@@ -32,7 +32,7 @@
             this.delegateActions(this, this.$options);
 
             this.collection.fetch({
-                data : { id: this.cfg.target }
+                data : { id: this.cfg.target,sortBy:config.sortBy,sortOrder:config.sortOrder }
             });
 
         },

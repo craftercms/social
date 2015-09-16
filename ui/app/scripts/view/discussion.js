@@ -82,9 +82,12 @@
                 $(this.el).find('.comments:empty').append('<span class="sui-log-event">'+ labelComment+ '</span>');
                 var emptyDiscussion=$(this.el).find('.sui-log-event');
             }else if(true && !(profile.hasRole('SOCIAL_USER',this.cfg.context) || profile.hasRole('SOCIAL_ADMIN',this.cfg.context) || profile.hasRole('SOCIAL_MODERATOR',this.cfg.context))){
-                labelComment = 'discussion.login-comment'.loc();
-                $(this.el).find('.comments:last').after('<span class="sui-comment-nonempty">'+labelComment+'</span>');
-                var emptyDiscussion=$(this.el).find('.sui-comment-nonempty');
+                if( $(this.el).find('.sui-comment-nonempty').length <=0) {
+                    labelComment = 'discussion.login-comment'.loc();
+                    $(this.el).find('.comments:last').after('<span class="sui-comment-nonempty">' + labelComment + '</span>');
+                    var emptyDiscussion = $(this.el).find('.sui-comment-nonempty');
+                }
+
             }
 
             $(emptyDiscussion).on('click',function(){

@@ -24,10 +24,15 @@
             this.$('[data-toggle]').dropdown();
 
         },
-
+        sortBy:function(e,value,order){
+            this.cfg.sortBy=value;
+            this.cfg.sortOrder=order;
+            this.refresh();
+        },
         refresh: function () {
             this.collection.fetch({
-                data: { target: this.cfg.target, context: this.cfg.context }
+                data: { target: this.cfg.target, context: this.cfg.context,sortBy:this.cfg.sortBy,sortOrder:this.cfg.sortOrder
+                }
             });
         },
 
