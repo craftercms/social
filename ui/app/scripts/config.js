@@ -32,7 +32,7 @@
             threads: {
                 '{target}': {
                     'comments': {
-                        'value': '?context={context}&sortOrder=ASC&sortBy=createdDate',
+                        'value': '?context={context}',
                         '{id}': {}
                     },
                     'subscribe': '?context={context}',
