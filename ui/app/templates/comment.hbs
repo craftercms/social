@@ -14,9 +14,11 @@
                 <a class="pull-right" data-action-flag title="{{multiplicity flags.length 'Flagged %@ times' 'Flagged one time' 'Never flagged'}}.">
                     <i class="crafter-social-icon cs-icon-flag"></i>
                 </a>
-                <a class="pull-right" data-action="trash">
-                    <i class="crafter-social-icon cs-icon-trash"></i>
-                </a>
+                {{#ifm isOwner}}
+                    <a class="pull-right" data-action="trash">
+                        <i class="crafter-social-icon cs-icon-trash"></i>
+                    </a>
+                {{/ifm}}
                 {{#mif userInfo.actions 'has' 'moderate'}}{{/mif}}
                 <strong>
                     {{#if user.username}}

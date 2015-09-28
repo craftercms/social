@@ -290,8 +290,8 @@
         },
 
         remove: function () {
-            this.$el.remove();
             this.trigger('remove', this.model);
+            this.$el.remove();
         }
 
     });
