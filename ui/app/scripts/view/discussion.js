@@ -97,12 +97,14 @@
         },
 
         addOne: function (comment) {
-            this.$('.no-comments').remove();
-            var view = new S.view.Comment({
-                model: comment,
-                context: this.cfg.context
-            });
-            this.$('.comments:first').append(view.render().element());
+            if(!comment.isTrashed()) {
+                this.$('.no-comments').remove();
+                var view = new S.view.Comment({
+                    model: comment,
+                    context: this.cfg.context
+                });
+                this.$('.comments:first').append(view.render().element());
+            }
         }
 
     });
