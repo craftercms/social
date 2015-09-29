@@ -1,6 +1,7 @@
 package org.craftercms.social.controllers.rest.v3.comments;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +125,27 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
         SocialException {
         return (T)ugcService.read(id, context());
     }
+
+
+    @RequestMapping(value = "/search", method = RequestMethod.POST)
+    @ApiOperation(value = "Search the Comments")
+    @ResponseBody
+    public Iterable<T> read(
+                            @ApiParam(value = "Search String can be a valid mongodb query except defining contextId "
+                                + "or using the $where operator ")
+                            @RequestParam(required = true) final String search,
+                            @ApiParam(value = "MongoDb sort string")
+                            @RequestParam(required = true) final String sortBy,
+                            @ApiParam(value = "Where to start the search")
+                            @RequestParam(required = true)
+                            int start,
+                            @ApiParam(value = "Amount of Items to return")
+                            @RequestParam(required = true)
+                            int limit)
+        throws  SocialException {
+        return ugcService.search(context(),search,sortBy,start,limit);
+    }
+
 
 
     @RequestMapping(value = "{id}/attributes", method = {RequestMethod.POST, RequestMethod.PUT}, consumes =
