@@ -40,6 +40,14 @@ public class TenantConfigurationServiceImpl implements TenantConfigurationServic
         if (tenantConfigCache.isKeyInCache(contextId)) {
             tenantConfig = (Map<String, Object>)((Element)tenantConfigCache.get(contextId)).getObjectValue();
         }
+        if(tenantConfig==null){
+            reloadTenant(contextId);
+            //Key should be in the cache since we just reload.
+            Element tenantCacheConfig=tenantConfigCache.get(contextId);
+            if(tenantCacheConfig!=null) {
+                tenantConfig = (Map<String, Object>)tenantCacheConfig.getObjectValue();
+            }
+        }
         if (tenantConfig != null && tenantConfig.containsKey(propertyName)) {
             pValue = (T)tenantConfig.get(propertyName);
         } else if (systemDefaults.containsKey(propertyName)) {
