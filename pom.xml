@@ -55,6 +55,7 @@
 		<module>server</module>
 		<module>admin</module>
     </modules>
+
 	<profiles>
         <profile>
             <id>migrationTool</id>
@@ -208,6 +209,25 @@
     			<version>2.6</version>
     			<configuration><encoding>${project.build.sourceEncoding}</encoding></configuration>
     		</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                            <goal>create-timestamp</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                    <revisionOnScmFailure>unknown</revisionOnScmFailure>
+                </configuration>
+            </plugin>
     	</plugins>
     </build>
 </project>
