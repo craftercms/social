@@ -94,7 +94,7 @@
 
     Director.DEFAULTS = {
         socialbar: {
-            cls: 'view.SocialBar',
+            cls: '',//'view.SocialBar',
             cfg: {  }
         },
         view: {
