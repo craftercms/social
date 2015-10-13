@@ -24,6 +24,11 @@
         <entry key="/**" value="hasAnyRole({'SOCIAL_SUPERADMIN','SOCIAL_ADMIN'})"/>
     </util:map>
 
+    <bean id="crafter.tenantsResolver" class="org.craftercms.security.utils.tenant.AllTenantsResolver">
+        <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
+    </bean>
+
+
     <import resource="classpath*:crafter/social/management/extension/services-context.xml"/>
 
 </beans>
