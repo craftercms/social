@@ -79,7 +79,7 @@ public class SocialContextController {
         return socialContextService.addProfileToContext(profileId, contextId, StringUtils.split(roles, ','));
     }
 
-    @RequestMapping(value = "/{id}/{profileId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}/{profileId}/delete", method = {RequestMethod.DELETE,RequestMethod.POST})
     @ResponseBody
     public Profile removeProfileFromContext(@PathVariable("id") final String contextId, @PathVariable("profileId")
     final String profileId) throws SocialException {
