@@ -353,9 +353,8 @@ app.factory('contextService', function ($http) {
             return postParams(url, {roles: roles.join()}, $http);
         },
         removeProfileFromContext: function (ctxId, profileId) {
-            var url = socialRestBaseUrl + '/system/context/' + ctxId + '/' + profileId + '?context=' + defaultContext;
-
-            return deleteObject(url, $http);
+            var url = socialRestBaseUrl + '/system/context/' + ctxId + '/' + profileId + '/delete?context=' + defaultContext;
+            return postParams(url,{}, $http);
         }
     }
 });
@@ -425,7 +424,7 @@ app.factory('actionsService', function ($http) {
         updateAction: function (ctxId, actionName, roles) {
             var url = socialRestBaseUrl + '/system/actions?context=' + ctxId;
 
-            putParams(url, {actionName: actionName, roles: roles.join()}, $http).then(function () {
+            postParams(url, {actionName: actionName, roles: roles.join()}, $http).then(function () {
                 showGrowlMessage('success', 'Action \'' + actionName + '\' updated');
             });
         }
