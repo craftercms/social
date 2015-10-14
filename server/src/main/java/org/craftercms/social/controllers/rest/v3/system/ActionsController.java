@@ -35,7 +35,7 @@ public class ActionsController {
         return actionsService.get(SocialSecurityUtils.getContext());
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(method = {RequestMethod.PUT,RequestMethod.POST})
     @ResponseBody
     @ApiOperation(value = "Updates the given action name with the Roles", notes = "Notice that this is not a partial "
         + "" + "removeWatcher of roles, this will replace the current action Roles with the new ones (send)")
