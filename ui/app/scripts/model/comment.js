@@ -71,6 +71,9 @@
             return null;
         },
         flaggedBy: function (profileId) {
+            if(profileId===undefined){
+                return false
+            }
             var flags = this.attributes.flags,
                 l = flags.length, i;
             for (i = 0; i < l; ++i) {

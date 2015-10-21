@@ -20,7 +20,7 @@
         </beans:property>
     </beans:bean>
     <resources mapping="/swagger-ui/**" location="/swagger-ui/"/>
-
+    <beans:bean class="org.craftercms.social.util.SocialSecurePropertyHandler" id="social.utils.securePropertyHandler"/>
     <context:component-scan
             base-package="org.craftercms.social.controllers.rest.v3,org.craftercms.social.controllers.web"/>
 
@@ -32,6 +32,7 @@
                 <beans:property name="supportedMediaTypes" value="application/json"/>
                 <beans:property name="prettyPrint" value="false"/>
                 <beans:property name="injectValueFactory" ref="social.InjectValueHandler"/>
+                <beans:property name="securePropertyHandler" ref="social.utils.securePropertyHandler"/>
                 <beans:property name="filter">
                     <beans:bean class="org.craftercms.commons.jackson.mvc.SelectorFilterFactory">
                         <beans:property name="filters">
@@ -49,7 +50,6 @@
                         <beans:property name="annotationIntrospector">
                             <beans:bean class="org.craftercms.commons.jackson.mvc.CrafterJacksonAnnotationIntrospector">
                                 <beans:property name="defaultFilter" value="gdata"/>
-                                <beans:property name="securityPropertyFilter" ref="social.utils.securePropertyHandler"/>
                             </beans:bean>
                         </beans:property>
                         <beans:constructor-arg name="serializerList">

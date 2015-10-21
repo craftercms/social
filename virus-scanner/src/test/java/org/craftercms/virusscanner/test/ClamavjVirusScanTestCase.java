@@ -16,12 +16,12 @@ public class ClamavjVirusScanTestCase {
         virusScanner.scan(path);
     }
 
-    @Test
-    public void testVirusFromFile() throws Exception {
-        ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost", 3310, 60000);
-        String path = getClass().getResource("/eicar.txt").getPath();
-        virusScanner.scan(path);
-    }
+//    @Test
+//    public void testVirusFromFile() throws Exception {
+//        ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost", 3310, 60000);
+//        String path = getClass().getResource("/eicar.txt").getPath();
+//        virusScanner.scan(path);
+//    }
 
     @Test
     public void testNoVirusFromInputStream() throws Exception {
@@ -32,14 +32,14 @@ public class ClamavjVirusScanTestCase {
         virusScanner.scan(fileInputStream);
     }
 
-    @Test(expected = VirusScannerException.class)
-    public void testVirusFromInputStream() throws Exception {
-        ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost", 3310, 60000);
-        String path = getClass().getResource("/eicar.txt").getPath();
-        File file = new File(path);
-        FileInputStream fileInputStream = new FileInputStream(file);
-        virusScanner.scan(fileInputStream);
-    }
+//    @Test(expected = VirusScannerException.class)
+//    public void testVirusFromInputStream() throws Exception {
+//        ClamavVirusScannerImpl virusScanner = new ClamavVirusScannerImpl("localhost", 3310, 60000);
+//        String path = getClass().getResource("/eicar.txt").getPath();
+//        File file = new File(path);
+//        FileInputStream fileInputStream = new FileInputStream(file);
+//        virusScanner.scan(fileInputStream);
+//    }
 
     @Test(expected = VirusScannerException.class)
     public void testNoFile() throws Exception {
