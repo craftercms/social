@@ -50,6 +50,9 @@
                 isOwner: function(){
                     return model.createdBy === profile.id
                 },
+                isLogged: function(){
+                    return profile!==undefined && profile.id !==undefined;
+                },
                 avatarUrl: function(){
                     return S.url('profile.avatar',{id: model.user?model.user.id:profile.id,
                                                     context: me.cfg.context})
