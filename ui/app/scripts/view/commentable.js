@@ -180,6 +180,9 @@
             switch (requested) {
                 case 'view.Popover': {
                     this.popover();
+                    $('body, html').animate({
+                        scrollTop: this.$el.offset().top + this.$el.height()
+                    }, 1000);
                     break;
                 }
                 case 'view.Lightbox': {
