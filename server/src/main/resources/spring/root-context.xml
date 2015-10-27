@@ -134,6 +134,7 @@
         <property name="emailService" ref="social.util.emailService"/>
         <property name="systemDefaultLocale" value="${studio.social.system.defaultLocale}"/>
         <property name="modelExt" ref="social.notification.emailModelExt"/>
+        <property name="preferencesService" ref="social.services.system.contextPreferences"/>
     </bean>
 
     <bean class="org.craftercms.social.services.system.impl.ContextPreferencesServiceImpl"

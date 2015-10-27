@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.core.Environment;
@@ -34,6 +35,7 @@ import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.services.notification.NotificationDigestService;
+import org.craftercms.social.services.system.ContextPreferencesService;
 import org.craftercms.social.services.system.EmailService;
 import org.craftercms.social.util.LoggerFactory;
 import org.craftercms.social.util.SocialFreemarkerLoader;
@@ -53,6 +55,7 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
     private EmailService emailService;
     private String systemDefaultLocale;
     private Map<String,Object> modelExt;
+    private ContextPreferencesService preferencesService;
 
     public void setProfileAggregatorImpl(ProfileAggregator profileAggregator) {
         this.profileAggregator = profileAggregator;
@@ -79,6 +82,9 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
                 try {
                     StringWriter writer = new StringWriter();
                     dataModel.put("digest", auditDigest);
+                    final Map<String, Object> preferences = preferencesService.getContextPreferences(contextId);
+                    final String timezoneId=preferences.getOrDefault("timezone",TimeZone.getDefault().getID()).toString();
+                    cfg.setTimeZone(TimeZone.getTimeZone(timezoneId));
                     Template template = cfg.getTemplate(contextId + "/" + type,getProfileLocale(toSend
                         .getAttribute("notificationLocale")));
                     final Environment env = template.createProcessingEnvironment(dataModel, writer);
@@ -109,6 +115,7 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
         cfg = new Configuration(Configuration.VERSION_2_3_21);
         cfg.setDefaultEncoding("UTF-8");
         cfg.setOutputEncoding("UTF-8");
+
         cfg.setTemplateLoader(socialFreemarkerLoader);
     }
 
@@ -123,6 +130,10 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
 
     public void setSystemDefaultLocale(final String systemDefaultLocale) {
         this.systemDefaultLocale = systemDefaultLocale;
+    }
+
+    public void setPreferencesService(final ContextPreferencesService preferencesService) {
+        this.preferencesService = preferencesService;
     }
 
     public void setModelExt(Map modelExt) {
