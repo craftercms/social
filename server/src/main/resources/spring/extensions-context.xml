@@ -10,6 +10,6 @@
            <property name="systemDefaultLocale" value="${studio.social.system.defaultLocale}"/>
            <property name="modelExt" ref="social.notification.emailModelExt"/>
            <property name="emailService" ref="social.util.emailService"/>
-
+            <property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
        </bean>
 </beans>

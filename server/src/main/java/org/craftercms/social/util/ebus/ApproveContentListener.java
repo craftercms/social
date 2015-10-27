@@ -22,6 +22,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,7 +41,9 @@ import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.system.ContextPreferences;
 import org.craftercms.social.exceptions.SocialException;
+import org.craftercms.social.services.system.ContextPreferencesService;
 import org.craftercms.social.services.system.EmailService;
 import org.craftercms.social.services.system.TenantConfigurationService;
 import org.craftercms.social.util.SocialFreemarkerLoader;
@@ -62,12 +66,12 @@ public class ApproveContentListener {
     private String systemDefaultLocale;
     private HashMap<String,Object> modelExt;
     private EmailService emailService;
+    private ContextPreferencesService contextPreferencesService;
 
     @EventHandler(
         event = "ugc.create",
         ebus = SocialEventConstants.SOCIAL_REACTOR_NAME,
         type = EventSelectorType.REGEX)
-
     public void onAudit(final Event<? extends SocialEvent> socialEvent) {
         SocialEvent event = socialEvent.getData();
 
@@ -108,6 +112,11 @@ public class ApproveContentListener {
                 dataModel.put("ugc",ugc);
                 dataModel.put("verificationToken",id);
                 dataModel.put("baseUrl",baseUrl);
+                final Map<String, Object> contextPreferences = contextPreferencesService.getContextPreferences(ugc
+                    .getContextId());
+                final TimeZone timezone = TimeZone.getTimeZone(contextPreferences.getOrDefault("timezone",TimeZone
+                    .getDefault().getID()).toString());
+                cfg.setTimeZone(timezone);
                 StringWriter writer = new StringWriter();
                 Template template=cfg.getTemplate(ugc.getContextId()+"/"+APPROVER_EMAIL_TEMPLATE_NAME,
                     getProfileLocale(profile.getAttribute("notificationLocale")));
@@ -169,5 +178,9 @@ public class ApproveContentListener {
 
     public void setEmailService(EmailService emailService) {
         this.emailService=emailService;
+    }
+
+    public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
+        this.contextPreferencesService = contextPreferencesService;
     }
 }
