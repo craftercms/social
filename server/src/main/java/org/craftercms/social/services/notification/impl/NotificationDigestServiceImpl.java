@@ -83,7 +83,7 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
                     StringWriter writer = new StringWriter();
                     dataModel.put("digest", auditDigest);
                     final Map<String, Object> preferences = preferencesService.getContextPreferences(contextId);
-                    final String timezoneId=preferences.getOrDefault("timezone",TimeZone.getDefault().getID()).toString();
+                    final String timezoneId=((HashMap<String,Object>)preferences.get("preferences")).get("timezone").toString();
                     cfg.setTimeZone(TimeZone.getTimeZone(timezoneId));
                     Template template = cfg.getTemplate(contextId + "/" + type,getProfileLocale(toSend
                         .getAttribute("notificationLocale")));

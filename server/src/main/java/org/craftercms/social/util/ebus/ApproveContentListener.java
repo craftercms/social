@@ -114,8 +114,7 @@ public class ApproveContentListener {
                 dataModel.put("baseUrl",baseUrl);
                 final Map<String, Object> contextPreferences = contextPreferencesService.getContextPreferences(ugc
                     .getContextId());
-                final TimeZone timezone = TimeZone.getTimeZone(contextPreferences.getOrDefault("timezone",TimeZone
-                    .getDefault().getID()).toString());
+                final TimeZone timezone = TimeZone.getTimeZone(((HashMap<String,Object>)contextPreferences.get("preferences")).get("timezone").toString());
                 cfg.setTimeZone(timezone);
                 StringWriter writer = new StringWriter();
                 Template template=cfg.getTemplate(ugc.getContextId()+"/"+APPROVER_EMAIL_TEMPLATE_NAME,
