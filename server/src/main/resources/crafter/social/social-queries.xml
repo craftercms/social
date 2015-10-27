@@ -171,6 +171,7 @@
         $match:{
         "payload.targetId":#,
         "payload.contextId":#,
+        "payload.moderationStatus":{$nin:#},
         userId:{$nin:#},
         auditDate: {$gte: #, $lt: #}
         }

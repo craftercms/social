@@ -2,9 +2,11 @@ package org.craftercms.social.repositories.system.impl;
 
 import com.mongodb.MongoException;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.i10n.I10nLogger;
@@ -14,6 +16,7 @@ import org.craftercms.social.domain.audit.AuditLog;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.repositories.system.AuditRepository;
 import org.craftercms.social.services.notification.impl.AuditServiceImpl;
+import org.craftercms.social.services.system.ContextPreferencesService;
 import org.craftercms.social.util.LoggerFactory;
 import org.craftercms.social.util.ProfileUtils;
 import org.craftercms.social.util.profile.ProfileAggregator;
@@ -26,6 +29,7 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
 
     private I10nLogger log = LoggerFactory.getLogger(AuditServiceImpl.class);
     private ProfileAggregator profileAggregator;
+    private ContextPreferencesService contextPreferencesService;
 
     @Override
     public void deleteByIds(final List<String> ids) throws SocialException {
@@ -81,8 +85,11 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
             final String querypt1 = getQueryFor("social.notification.audit.getNotificationDigestPt1");
             final String querypt2 = getQueryFor("social.notification.audit.getNotificationDigestPt2");
             final String[] idParts = id.split("/");
+            Map<String,Object> preferences=contextPreferencesService.getContextPreferences(idParts[0]);
+            final String unwantedStatus=  ((HashMap<String,Object>)preferences.get("preferences"))
+                .get("hiddenUgcStatus").toString();
             final Aggregate agregation = getCollection().aggregate(querypt1, idParts[1], idParts[0],
-                profilesToExclude, from, to);
+                Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
             final List<HashMap> preResults = agregation.and(querypt2).as(HashMap.class);
             for (HashMap preResult : preResults) {
                 List<HashMap> ugcList = (List<HashMap>)preResult.get("ugcList");
@@ -107,8 +114,11 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
 
     }
 
-
     public void setProfileAggregatorImpl(ProfileAggregator profileAggregator) {
         this.profileAggregator = profileAggregator;
+    }
+
+    public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
+        this.contextPreferencesService = contextPreferencesService;
     }
 }

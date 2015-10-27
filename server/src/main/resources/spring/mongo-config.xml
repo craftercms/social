@@ -89,6 +89,7 @@
           class="org.craftercms.social.repositories.system.impl.AuditRepositoryImpl"
           parent="social.mongodb.baseRepository">
         <property name="profileAggregatorImpl" ref="social.profileAggregator"/>
+        <property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
     </bean>
 
     <bean id="social.repository.contextPreferencesRepository"
