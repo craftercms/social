@@ -33,6 +33,7 @@
         render: function () {
 
             var me          = this;
+            var ts          = new Date().getTime();
             var profile     = Director.getProfile();
             var model       = $.extend(this.model.toJSON(), {
                 sessionUserId: profile.id,
@@ -54,8 +55,12 @@
                     return profile!==undefined && profile.id !==undefined;
                 },
                 avatarUrl: function(){
+                    var ts="";
+                    if(model.reloadAvatar!==undefined){
+                        ts=model.reloadAvatar;
+                    }
                     return S.url('profile.avatar',{id: model.user?model.user.id:profile.id,
-                                                    context: me.cfg.context})
+                                                    context: me.cfg.context,ts:ts});
                 }
             });
 
@@ -131,6 +136,11 @@
                             }),
                             success: function () {
                                 modal.hide();
+                                me.model.collection.each(function(ugc){
+                                    if(ugc.get("user").id===Director.getProfile().id){
+                                        ugc.set("reloadAvatar",new Date().getTime());
+                                    }
+                                });
                             },
                             error: function () {
                                 modal.$('.modal-body')

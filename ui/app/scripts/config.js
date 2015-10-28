@@ -27,7 +27,7 @@
                 'unsubscribe': '{target}.json'
             },
             profile :{
-                avatar:'/{id}?context={context}'
+                avatar:'/{id}?context={context}&ts{ts}'
             },
             threads: {
                 '{target}': {
