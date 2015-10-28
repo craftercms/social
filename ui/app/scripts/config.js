@@ -39,7 +39,7 @@
                     'unsubscribe': '?context={context}'
                 },
                 '{_id}': {
-                    'subscribe': '?context={context}&frequency={frequency}',
+                    'subscribe': '?context={context}',
                     'unsubscribe': '?context={context}'
                 }
             },
