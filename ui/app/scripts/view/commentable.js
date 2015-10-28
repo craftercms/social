@@ -206,10 +206,10 @@
             S.request({
                 type: 'POST',
                 context: this,
+                data:{frequency: 'INSTANT'},
                 url: S.url((watched ? 'threads.{_id}.unsubscribe' : 'threads.{_id}.subscribe'), {
                     _id: this.cfg.target,
-                    context: this.cfg.context,
-                    frequency: 'none'
+                    context: this.cfg.context
                 }),
                 success: function () {
                     collection.setIsWatched(!watched);
