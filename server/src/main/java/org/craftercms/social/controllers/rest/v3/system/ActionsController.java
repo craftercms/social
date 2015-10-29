@@ -5,6 +5,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 
 import java.util.Arrays;
 
+import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.social.domain.social.system.SocialSecurityAction;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.security.SocialSecurityUtils;
@@ -32,7 +33,7 @@ public class ActionsController {
     @ResponseBody
     @ApiOperation(value = "Gets all Security Actions for current context.")
     public Iterable<SocialSecurityAction> getCurrentActions() {
-        return actionsService.get(SocialSecurityUtils.getContext());
+        return IterableUtils.toList(actionsService.get(SocialSecurityUtils.getContext()));
     }
 
     @RequestMapping(method = {RequestMethod.PUT,RequestMethod.POST})
