@@ -137,7 +137,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
 
     @Override
     @HasPermission(action = UGC_MODERATE, type = SocialPermission.class)
-    public SocialUgc moderate(final String ugcId, final ModerationStatus moderationStatus,
+    public SocialUgc moderate(@SecuredObject  final String ugcId, final ModerationStatus moderationStatus,
                               final String userId, final String contextId) throws SocialException {
         try {
             T ugc = ugcRepository.findUGC(contextId, ugcId);
