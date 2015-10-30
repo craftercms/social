@@ -89,7 +89,7 @@
         },
 
         moderate: function (status, params) {
-            SUBMIT.call(this, 'comments.{_id}.moderate', $.extend({}, params || {}, { status: status }), 'PUT');
+            SUBMIT.call(this, 'comments.{_id}.moderate', $.extend({}, params || {}, { status: status }), 'POST',{context:params.context});
         },
 
         reply: function () {
