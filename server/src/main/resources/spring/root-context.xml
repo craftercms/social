@@ -39,6 +39,7 @@
         <property name="virusScanner" ref="social.ugc.virusScanner"/>
         <property name="reactor" ref="socialReactor"/>
         <property name="notificationServiceImpl" ref="social.services.system.notificationService"/>
+        <property name="arraySortFields" value="${studio.social.ugc.arraySortFields}"/>
     </bean>
 
     <bean class="org.craftercms.commons.web.CORSFilter" id="crafter.corsFilter">

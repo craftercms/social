@@ -100,7 +100,7 @@ public class ProfileHelperController {
                 imageFound=false;
             }
             if (!imageFound) {
-                response.sendRedirect(request.getContextPath()+"/silhouette.png");
+                response.sendRedirect(request.getContextPath()+"/resources/silhouette.png");
                 } else {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 }
