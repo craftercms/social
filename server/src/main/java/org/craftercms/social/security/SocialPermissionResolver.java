@@ -6,6 +6,7 @@ import org.craftercms.commons.security.permissions.Permission;
 import org.craftercms.commons.security.permissions.PermissionResolver;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.Flag;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.repositories.security.PermissionRepository;
 import org.craftercms.social.services.ugc.UGCService;
@@ -40,6 +41,11 @@ public class SocialPermissionResolver<T> implements PermissionResolver<Profile, 
                 } catch (UGCException e) {
                     log.error("Unable to find UGC with id " + ugcId, e);
                 }
+            }
+        }else if(object instanceof Flag){
+            Flag f = (Flag)object;
+            if(f.getUserId().equalsIgnoreCase(subject.getId().toString())){
+                subject.getRoles().add("OWNER");
             }
         }
         return new SocialPermission(SocialSecurityUtils.getSocialRoles(), permissionRepository,

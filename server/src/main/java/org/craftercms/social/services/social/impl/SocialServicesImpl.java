@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.math.RandomUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -12,7 +11,6 @@ import org.craftercms.commons.security.permissions.annotations.SecuredObject;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.services.impl.ProfileServiceRestClient;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.Flag;
 import org.craftercms.social.domain.social.ModerationStatus;
@@ -26,7 +24,6 @@ import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.social.SocialServices;
 import org.craftercms.social.services.social.VoteOptions;
 import org.craftercms.social.services.system.TenantConfigurationService;
-import org.craftercms.social.services.system.impl.TenantConfigurationServiceImpl;
 import org.craftercms.social.services.ugc.pipeline.UgcPipeline;
 import org.craftercms.social.util.ebus.SocialEvent;
 import org.craftercms.social.util.ebus.UGCEvent;
@@ -38,7 +35,6 @@ import reactor.event.Event;
 import static org.craftercms.social.security.SecurityActionNames.UGC_FLAG;
 import static org.craftercms.social.security.SecurityActionNames.UGC_MODERATE;
 import static org.craftercms.social.security.SecurityActionNames.UGC_UNFLAG;
-import static org.craftercms.social.security.SecurityActionNames.UGC_UPDATE;
 import static org.craftercms.social.security.SecurityActionNames.UGC_VOTING;
 
 /**
@@ -113,7 +109,6 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     }
 
     @Override
-    @HasPermission(action = UGC_UNFLAG, type = SocialPermission.class)
     public boolean unFlag(final String ugcId, final String flagId, final String userId,
                           final String contextId) throws SocialException {
         log.debug("Removing flag {} for ugc Id {}", flagId, ugcId);
@@ -122,22 +117,27 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             if (ugcToUpdate == null) {
                 throw new IllegalUgcException("Given ugc does not belong to given context");
             }
-
-            ugcToUpdate.getFlags().remove(new Flag(new ObjectId(flagId),userId));
-            pipeline.processUgc(ugcToUpdate);
-            ugcRepository.save(ugcToUpdate);
-            reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugcToUpdate,
-                SocialSecurityUtils.getCurrentProfile().getId().toString(),UGCEvent.UNFLAG)));
-            return true;
+            return realUnflag(new Flag(new ObjectId(flagId),userId),ugcToUpdate);
         } catch (MongoDataException ex) {
             log.error("Unable to delete flag " + flagId + " from " + ugcId, ex);
             throw new SocialException("Unable to delete flag from UGC");
         }
     }
 
+    @HasPermission(action = UGC_UNFLAG, type = SocialPermission.class)
+    private boolean realUnflag(@SecuredObject Flag flagToDelete, final T ugcToUpdate) throws SocialException,
+        MongoDataException {
+        ugcToUpdate.getFlags().remove(flagToDelete);
+        pipeline.processUgc(ugcToUpdate);
+        ugcRepository.save(ugcToUpdate);
+        reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugcToUpdate,
+            SocialSecurityUtils.getCurrentProfile().getId().toString(),UGCEvent.UNFLAG)));
+        return true;
+    }
+
     @Override
     @HasPermission(action = UGC_MODERATE, type = SocialPermission.class)
-    public SocialUgc moderate(final String ugcId, final ModerationStatus moderationStatus,
+    public SocialUgc moderate(@SecuredObject  final String ugcId, final ModerationStatus moderationStatus,
                               final String userId, final String contextId) throws SocialException {
         try {
             T ugc = ugcRepository.findUGC(contextId, ugcId);
