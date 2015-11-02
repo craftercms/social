@@ -4,10 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +20,10 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.net.URLCodec;
+import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +79,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     private VirusScanner virusScanner;
     private Reactor reactor;
     private NotificationService notificationService;
+    private List<String> arraySortFields;
 
     @Override
     @HasPermission(action = UGC_CREATE, type = SocialPermission.class)
@@ -401,12 +409,47 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     public List<T> read(final String targetId, final String contextId, final int start, final int limit, final List
         sortOrder, final int upToLevel, final int childrenPerLevel) throws UGCException {
         try {
-            Iterable<T> list = ugcRepository.findByTargetId(targetId, contextId, start, limit, sortOrder, upToLevel);
-            return buildUgcTreeList(IterableUtils.toList(list), childrenPerLevel);
+            List<T> list = IterableUtils.toList(ugcRepository.findByTargetId(targetId, contextId, start, limit,
+                sortOrder,upToLevel));
+            list= sortByArrays(list,sortOrder);
+            return buildUgcTreeList(list, childrenPerLevel);
         } catch (MongoDataException e) {
             log.error("logging.ugc.unableToRead");
             throw new UGCException("Unable to find ugc by target");
         }
+    }
+
+    private List<T> sortByArrays(final List<T> list, final List<DefaultKeyValue<String, Boolean>> sortOrder) {
+        if(sortOrder==null || list==null){
+            return list;
+        }
+        for (final DefaultKeyValue<String, Boolean> sort: sortOrder) {
+            if(arraySortFields.contains(sort.getKey())){
+                Collections.sort(list, new Comparator<T>() {
+                    @Override
+                    public int compare(final T o1, final T o2) {
+                        try {
+                            Collection<Object> arrayToCompare1= (Collection<Object>)PropertyUtils.getProperty(o1,sort.getKey());
+                            Collection<Object> arrayToCompare2= (Collection<Object>)PropertyUtils.getProperty(o2,sort.getKey());
+                            int orderOfSort=sort.getValue() ? 1:-1;//true ASC,false DESC
+                            // I'm sorry for this:D
+                            if (arrayToCompare1.size() < arrayToCompare2.size()) {
+                                return -1*orderOfSort;
+                            } else if (arrayToCompare1.size() > arrayToCompare2.size()) {
+                                return 1*orderOfSort;
+                            } else {
+                                return 0;
+                            }
+                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException |
+                            ClassCastException e) {
+                          log.error("Unable to sort by "+sort.getKey(),e);
+                            return 0;
+                        }
+                    }
+                });
+            }
+        }
+        return list;
     }
 
     @Override
@@ -554,6 +597,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         invalidQueryKeys = Pattern.compile(invalidQueryKeysPattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     }
 
+    public void setArraySortFields(final String arraySortFields) {
+        this.arraySortFields = Arrays.asList(arraySortFields.split(","));
+    }
 
     public void setSocialUgcFactory(UgcFactory ugcFactory) {
         this.ugcFactory = ugcFactory;
