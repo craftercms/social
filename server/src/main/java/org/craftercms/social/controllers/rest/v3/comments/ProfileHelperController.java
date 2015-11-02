@@ -100,15 +100,10 @@ public class ProfileHelperController {
                 imageFound=false;
             }
             if (!imageFound) {
-                input = request.getServletContext().getResourceAsStream("silhouette.png");
-                if (input != null) {
-                    response.setContentType("image/png");
-                    response.setContentLength(1340);
-                    IOUtils.copy(input, response.getOutputStream());
+                response.sendRedirect(request.getContextPath()+"/silhouette.png");
                 } else {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 }
-            }
         } finally {
             if (input != null) {
                 input.close();
