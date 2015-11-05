@@ -17,7 +17,7 @@ module.exports = function (grunt) {
         // configurable paths
         yeoman: {
             app: 'app',
-            dist: 'dist'
+            dist: 'dist/resources/sui/'
         },
         watch: {
             compass: {
@@ -169,18 +169,18 @@ module.exports = function (grunt) {
                 }
             }
         },
-        rev: {
-            dist: {
-                files: {
-                    src: [
-                        '<%= yeoman.dist %>/scripts/{,*/}*.js',
-                        '<%= yeoman.dist %>/styles/{,*/}*.css',
-                        '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp}',
-                        '<%= yeoman.dist %>/styles/fonts/{,*/}*.*'
-                    ]
-                }
-            }
-        },
+        //rev: {
+        //    dist: {
+        //        files: {
+        //            src: [
+        //                '<%= yeoman.dist %>/scripts/{,*/}*.js',
+        //                '<%= yeoman.dist %>/styles/{,*/}*.css',
+        //                '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp}',
+        //                '<%= yeoman.dist %>/styles/fonts/{,*/}*.*'
+        //            ]
+        //        }
+        //    }
+        //},
         useminPrepare: {
             options: {
                 dest: '<%= yeoman.dist %>'
