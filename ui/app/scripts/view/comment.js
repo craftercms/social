@@ -33,7 +33,6 @@
         render: function () {
 
             var me          = this;
-            var ts          = new Date().getTime();
             var profile     = Director.getProfile();
             var model       = $.extend(this.model.toJSON(), {
                 sessionUserId: profile.id,
@@ -69,20 +68,19 @@
 
             var $children   = this.$('.comment-children:first');
 
-            this.$("#changeAvatar").hover( null,function(){
-                if(model.createdBy === profile.id){
-                    me.$("#changeAvatar").addClass("hidden");
-                    me.$("#currentAvatar").removeClass("hidden");
+            this.$('.change-avatar').mouseleave(function () {
+                if (model.createdBy === profile.id) {
+                    me.$('.change-avatar').addClass('hidden');
+                    me.$('.current-avatar').removeClass('hidden');
                 }
             });
 
-            this.$("#currentAvatar").hover( function(){
-                if(model.createdBy === profile.id){
-                    me.$("#currentAvatar").addClass("hidden");
-                    me.$("#changeAvatar").removeClass("hidden");
-                    }
-            },null);
-
+            this.$('.current-avatar').mouseover(function () {
+                if (model.createdBy === profile.id) {
+                    me.$('.current-avatar').addClass('hidden');
+                    me.$('.change-avatar').removeClass('hidden');
+                }
+            });
 
             model.children.every(function ( child ) {
 
