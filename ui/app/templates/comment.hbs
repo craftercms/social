@@ -12,12 +12,12 @@
         <div class="comment-data">
             <header>
                 {{#ifm isLogged}}
-                    <a class="pull-right" data-action-flag title="{{multiplicity flags.length 'Flagged %@ times' 'Flagged one time' 'Never flagged'}}.">
+                    <a class="pull-right option" data-action-flag title="{{multiplicity flags.length 'Flagged %@ times' 'Flagged one time' 'Never flagged'}}.">
                         <i class="crafter-social-icon cs-icon-flag"></i>
                     </a>
                 {{/ifm}}
                 {{#ifm isOwner}}
-                    <span class="pull-right dropdown">
+                    <span class="pull-right dropdown option">
                         <a data-toggle="dropdown">
                             <i class="crafter-social-icon cs-icon-trash"></i>
                         </a>
@@ -27,8 +27,10 @@
                             <li><a href="javascript:">No</a></li>
                         </ul>
                     </span>
+                    <a class="pull-right option" data-action="edit" title="Edit Comment">
+                        <i class="crafter-social-icon cs-icon-pencil"></i>
+                    </a>
                 {{/ifm}}
-                {{#mif userInfo.actions 'has' 'moderate'}}{{/mif}}
                 <strong>
                     {{#if user.username}}
                         {{user.username}}
@@ -39,7 +41,12 @@
                 <small>{{date lastModifiedDate}}</small>
             </header>
             <section class="comment-body">
-                {{html body}}
+                <div class="content-wrapper">{{html body}}</div>
+                <div class="editor" contenteditable="true"></div>
+                <div class="edit-controls">
+                    <button type="button" class="btn btn-primary btn-xs" data-action="doEdit">Update</button>
+                    <button type="button" class="btn btn-default btn-xs" data-action="cancelEdit">Cancel</button>
+                </div>
             </section>
         </div>
     </div>

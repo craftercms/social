@@ -25,7 +25,6 @@
         listen: function () {
             if (this.model) {
                 this.listenTo(this.model, 'sync', this.render);
-                this.listenTo(this.model, 'change', this.render);
                 this.listenTo(this.model, 'destroy', this.remove);
                 this.listenTo(this.model, 'remove', this.remove);
             }
@@ -162,6 +161,49 @@
         removeVote: function () {
             var params = this.getRequestParams();
             this.model.removeVote(params);
+        },
+
+        edit: function (e) {
+
+            var $body = this.$('.comment-data').addClass('editing');
+            var $editor = $body.find('.editor');
+
+            $editor.html($body.find('.content-wrapper').html());
+
+            var editor = CKEDITOR.inline($editor.get(0), {
+                startupFocus: true
+            });
+
+            this.cache('editor', editor);
+
+        },
+        cancelEdit: function (e) {
+            if (this.cache('editor')) {
+                this.cache('editor').destroy();
+                this.cache('editor', S.Constants.get('DESTROY'));
+                this.$('.comment-data').removeClass('editing')
+                    .find('.editor').html('');
+            }
+        },
+        doEdit: function (e) {
+            var editor;
+            if ((editor = this.cache('editor'))) {
+
+                var me = this;
+                var body = editor.getData();
+                if (!body) { return; }
+
+                // Can't use backbone's save due to backend param expectations
+                // this.model.save({ 'body': body });
+                this.model.set('body', body);
+                this.model.update(this.getRequestParams(), {
+                    success: function () {
+                        editor.destroy();
+                        me.cache('editor', S.Constants.get('DESTROY'));
+                    }
+                });
+
+            }
         },
 
         reply: function (e) {
