@@ -7,7 +7,7 @@
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>ui</title>
+    <title>sui</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -110,10 +110,9 @@
      * imported into the page
      */
     var crafterSocial_cfg = {
-
-        'url.service'                   : 'http://localhost:9080/social/api/3/',
-        'url.security.value'            : 'http://localhost:9080/social/crafter-security-login',
-        'url.security.active'           : 'http://localhost:9080/social/crafter-security-current-auth',
+        'url.service'                   : 'http://localhost:8080/crafter-social/api/3/',
+        'url.security.value'            : 'http://localhost:8080/crafter-social/crafter-security-login',
+        'url.security.active'           : 'http://localhost:8080/crafter-social/crafter-security-current-auth',
         'url.base'                      : '/'
     };
 
@@ -128,7 +127,6 @@
      */
     function crafterSocial_onAppReady ( director, CrafterSocial ) {
 
-        //
         CrafterSocial.$.extend(CrafterSocial.string.LOCALE,{
             months: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
             days: ['Sunday','Monday','Tuesday','Wednesday', 'Thursday','Friday','Saturday'],
@@ -143,10 +141,7 @@
             'options.bubble' :'Bubble View',
             'options.refresh':'Refresh',
             'options.close':'Close'
-
         });
-
-
 
         director.socialise({
             target: '#test',
@@ -160,7 +155,9 @@
             }
         });
 
-        director.listenTo(director,'crater.social.event.no.comments.action' , function(){alert('Go TO Login')});
+        director.listenTo(director,'crater.social.event.no.comments.action' , function() {
+            alert('Please login to comment.');
+        });
 
         director.socialise({
             target: '#jumbotron2',
@@ -186,8 +183,6 @@
                 }
             }
         });
-
-
 
         // Initialise the "session user".
         /*

@@ -47,7 +47,7 @@
             comments: {
                 'value': '?context={context}',
                 '{_id}': {
-                    'value': '',
+                    'value': '?context={context}',
                     'votes': {
                         'value': '', // get comment votes
                         'neutral': '',
@@ -55,14 +55,14 @@
                         'up': ''
                     },
                     'flags': {
-                        value: '', // Flag comment flags
-                       '{flagId}':''
+                        'value': '', // Flag comment flags
+                        '{flagId}':''
                     },
                     'attachments': {
                         'value': '',
                         '{fileId}': '?context={context}'
                     },
-                    'moderate': '?context={context}'     // TODO remove hard coded context 
+                    'moderate': '?context={context}'
                 }
             },
 

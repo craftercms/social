@@ -7,6 +7,7 @@
         C = S.Constants,
         $ = S.$;
 
+
     Discussion = Base.extend({
 
         className: [
@@ -51,7 +52,11 @@
 
             var $replies        = this.$('.reply-box');
             var profile         = S.getDirector().getProfile();
-            var isSocialAuthor  = profile.hasRole('SOCIAL_AUTHOR',this.cfg.context) || profile.hasRole('SOCIAL_SUPERADMIN',this.cfg.context)  || profile.hasRole('SOCIAL_MODERATOR',this.cfg.context) || profile.hasRole('SOCIAL_ADMIN',this.cfg.context);;
+            var isSocialAuthor  =
+                profile.hasRole('SOCIAL_AUTHOR',this.cfg.context) ||
+                profile.hasRole('SOCIAL_SUPERADMIN',this.cfg.context) ||
+                profile.hasRole('SOCIAL_MODERATOR',this.cfg.context) ||
+                profile.hasRole('SOCIAL_ADMIN',this.cfg.context);
 
             (!isSocialAuthor) && $replies.hide();
 
@@ -73,27 +78,33 @@
         },
 
         addAll: function () {
-            var profile         = S.getDirector().getProfile();
+            var emptyDiscussion;
+            var profile = S.getDirector().getProfile();
             var labelComment = '';
             this.$('.comments:first').html('');
 
-            if(this.collection.length===0){
+            if (this.collection.length === 0) {
                 labelComment = 'discussion.comment'.loc();
-                $(this.el).find('.comments:empty').append('<span class="sui-log-event">'+ labelComment+ '</span>');
-                var emptyDiscussion=$(this.el).find('.sui-log-event');
-            }else if(true && !(profile.hasRole('SOCIAL_USER',this.cfg.context) || profile.hasRole('SOCIAL_ADMIN',this.cfg.context) || profile.hasRole('SOCIAL_MODERATOR',this.cfg.context))){
-                if( $(this.el).find('.sui-comment-nonempty').length <=0) {
+                $(this.el).find('.comments:empty').append('<span class="sui-log-event">' + labelComment + '</span>');
+                emptyDiscussion = $(this.el).find('.sui-log-event');
+            } else if (!(
+                    profile.hasRole('SOCIAL_USER', this.cfg.context) ||
+                    profile.hasRole('SOCIAL_ADMIN', this.cfg.context) ||
+                    profile.hasRole('SOCIAL_MODERATOR', this.cfg.context)
+                )) {
+                if ($(this.el).find('.sui-comment-nonempty').length <= 0) {
                     labelComment = 'discussion.login-comment'.loc();
                     $(this.el).find('.comments:last').after('<span class="sui-comment-nonempty">' + labelComment + '</span>');
-                    var emptyDiscussion = $(this.el).find('.sui-comment-nonempty');
+                    emptyDiscussion = $(this.el).find('.sui-comment-nonempty');
                 }
-
             }
 
-            $(emptyDiscussion).on('click',function(){
+            $(emptyDiscussion).on('click', function () {
                 Director.trigger(C.get('EVENT_SOCIAL_NOCOMMENT'));
             });
+
             this.collection.each(this.addOne, this);
+
         },
 
         addOne: function (comment) {
