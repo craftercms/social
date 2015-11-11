@@ -17,9 +17,16 @@
                     </a>
                 {{/ifm}}
                 {{#ifm isOwner}}
-                    <a class="pull-right" data-action="trash">
-                        <i class="crafter-social-icon cs-icon-trash"></i>
-                    </a>
+                    <span class="pull-right dropdown">
+                        <a data-toggle="dropdown">
+                            <i class="crafter-social-icon cs-icon-trash"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-header">Delete this comment?</li>
+                            <li><a href="javascript:" data-action="trash">Yes</a></li>
+                            <li><a href="javascript:">No</a></li>
+                        </ul>
+                    </span>
                 {{/ifm}}
                 {{#mif userInfo.actions 'has' 'moderate'}}{{/mif}}
                 <strong>
