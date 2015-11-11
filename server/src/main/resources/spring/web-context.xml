@@ -24,7 +24,9 @@
     <context:component-scan
             base-package="org.craftercms.social.controllers.rest.v3,org.craftercms.social.controllers.web"/>
     <resources mapping="/resources/**" location="/resources/" />
-    <resources mapping="/sui/**" location="classpath:/META-INF/resources/sui/"/>
+    <resources mapping="/sui/v1/**" location="classpath:/META-INF/resources/sui/"/>
+    <resources mapping="/sui/v1/alt/**" location="classpath:/META-INF/resources/sui/alt"/>
+
     <annotation-driven content-negotiation-manager="contentNegotiationManager">
 
         <message-converters>
