@@ -1,0 +1,175 @@
+$font: 'Source Sans Pro', sans-serif;
+
+
+//no external borders
+.crafter-social-view.crafter-social-inline-view .panel {
+    border: none;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.crafter-social-view.crafter-social-inline-view .panel-default > .panel-heading {
+    background-color: transparent;
+    border-bottom: 1px solid #979797;
+    margin: 20px 0 0;
+    padding-bottom: 15px;
+
+    .panel-title {
+        a{
+            padding: 0;
+            color: #616161;
+            font-size: 22px;
+            font-weight: 400;
+            font-family: "Source Sans Pro", sans-serif;
+
+            &:before {
+                content: "";
+            }
+        }
+    }
+}
+
+//comments
+.crafter-social-view.crafter-social-inline-view .panel-default > .panel-heading + .panel-collapse .panel-body {
+    border-top: none;
+    padding: 0px;
+}
+
+//flagged button checked - color
+.crafter-social-view .crafter-social-comment-thread .crafter-social-comment .comment-flagged .cs-icon-flag {
+    color: #f36368;
+}
+
+//comments - spacing and borders
+.crafter-social-view .crafter-social-comment-thread {
+    padding: 15px 0 0 0;
+
+    .crafter-social-comment {
+        position: relative;
+        border-bottom: 1px solid #979797;
+        margin: 0;
+        padding: 15px 0 20px;
+
+        &:first-child {
+            border-bottom: 1px solid #979797;
+            //margin: 0 0 5px 0;
+            padding: 0 0 20px;
+        }
+
+        .body-wrapper {
+            padding-left: 65px;
+
+            .comment-data {
+                .comment-body {
+                    margin-left: -64px;
+                    margin-top: 25px;
+                    margin-bottom: 15px;
+                }
+            }
+
+            .avatar {
+                img {
+                    width: 55px;
+                    height: 55px;
+                }
+            }
+        }
+
+        .body-wrapper .comment-data {
+
+            p, strong {
+                font-size: 15px;
+                font-family: $font;
+            }
+
+            header {
+                line-height: 19px;
+                margin-top: 8px;
+            }
+        }
+    }
+}
+
+//social-votes
+.crafter-social-view .crafter-social-comment-thread .crafter-social-comment {
+    .status-messages {
+        padding: 15px 0 0 0;
+    }
+
+    .comment-actions {
+
+        .vote-up-wrapper {
+            padding: 6px 10px;
+        }
+
+        .vote-down-wrapper {
+            padding: 6px 10px;
+            border-left: 1px solid #979797;
+        }
+
+    }
+
+    a[data-action-flag] {
+        padding: 6px 30px 8px 30px;
+        background: #ECECEC;
+        border-radius: 5px;
+        text-decoration: none;
+        font-family: $font;
+        font-size: 15px;
+        color: #404040;
+
+        &:after {
+            content: attr(flagged-title);
+            color: #404040;
+
+        }
+
+    }
+    a[flagged-title=""], a[flagged-title="undefined"] {
+        &:after {
+            content: "Flag as inappropriate.";
+        }
+    }
+    a[title^="Flagged"] {
+        color: #f36368;
+
+        &:after {
+            content: attr(title);
+            color: #f36368;
+        }
+    }
+}
+
+.crafter-social-view.crafter-social-commenting-view {
+    margin-top: 20px;
+
+    .post-label {
+        color: #616161;
+        font-size: 22px;
+        font-weight: 400;
+        margin-bottom: 0;
+        padding-bottom: 15px;
+        font-family: "Source Sans Pro", sans-serif;
+    }
+
+    .btn-primary {
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+        background: #4D90FE;
+        color: white;
+        padding: 6px 30px;
+        font-size: 15px;
+        border: none;
+        margin-top: 5px;
+    }
+
+    .submission-details {
+        margin-top: 15px;
+    }
+}
+
