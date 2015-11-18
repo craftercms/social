@@ -286,9 +286,11 @@ function resetBody(comment) {
 }
 
 function isLoggedIn() {
-    var ticket = $.cookie('ticket');
-
-    return ticket !== undefined && ticket !== null && ticket !== '';
+    $.getJSON(contextPath+"/crafter-security-current-auth",function(data,status,jxhl){
+        if(jxhl.status!==200){
+            window.location='login'
+        }
+    });
 }
 
 /**
@@ -297,20 +299,15 @@ function isLoggedIn() {
 app.factory('httpErrorHandler', function ($q) {
     return {
         'response': function (response) {
-            if (!isLoggedIn()) {
-                window.location = 'login';
-            }
-
+            isLoggedIn();
             return response;
         },
         'responseError': function (rejection) {
-            if (!isLoggedIn()) {
-                window.location = 'login';
-            } else {
                 var message;
-
                 if (rejection.status == 0) {
                     message = 'Unable to communicate with the server. Please try again later or contact IT support';
+                } else if(rejection.status ===403 || rejection.status === 401){
+                    window.location = 'login';
                 } else {
                     message = 'Server responded with ' + rejection.status + ' error';
                     if (rejection.data.error) {
@@ -321,7 +318,7 @@ app.factory('httpErrorHandler', function ($q) {
                 }
 
                 showGrowlMessage('danger', message);
-            }
+
 
             return $q.reject(rejection);
         }
