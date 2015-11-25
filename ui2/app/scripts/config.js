@@ -27,19 +27,19 @@
                 'unsubscribe': '{target}.json'
             },
             profile :{
-                avatar:'/{id}?context={context}'
+                avatar:'/{id}?context={context}&ts{ts}'
             },
             threads: {
                 '{target}': {
                     'comments': {
-                        'value': '?context={context}&sortOrder=ASC&sortBy=createdDate',
+                        'value': '?context={context}',
                         '{id}': {}
                     },
                     'subscribe': '?context={context}',
                     'unsubscribe': '?context={context}'
                 },
                 '{_id}': {
-                    'subscribe': '?context={context}&frequency={frequency}',
+                    'subscribe': '?context={context}',
                     'unsubscribe': '?context={context}'
                 }
             },
@@ -47,7 +47,7 @@
             comments: {
                 'value': '?context={context}',
                 '{_id}': {
-                    'value': '',
+                    'value': '?context={context}',
                     'votes': {
                         'value': '', // get comment votes
                         'neutral': '',
@@ -55,14 +55,15 @@
                         'up': ''
                     },
                     'flags': {
-                        value: '', // Flag comment flags
+                        'value': '', // Flag comment flags
                        '{flagId}':''
                     },
                     'attachments': {
                         'value': '',
                         '{fileId}': '?context={context}'
                     },
-                    'moderate': '?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'     // TODO remove hard coded context 
+                    'moderate': '?context={context}'
+
                 }
             },
 
