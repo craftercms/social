@@ -172,9 +172,37 @@ $popover-font-size: 12px;
           }
         }
 
+                .editor {
+                    padding: 5px;
+                    display: none;
+                    box-shadow: 0 0 5px #999;
+                    &.cke_focus {
+                        box-shadow: none;
+                    }
       }
 
+                .edit-controls {
+                    display: none;
+                    position: relative;
+                    padding-left: 10px;
     }
+
+                &.editing {
+                    .option {
+                        display: none;
+                    }
+                    .editor,
+                    .edit-controls {
+                        display: block;
+                    }
+                    .content-wrapper {
+                        display: none;
+                    }
+                }
+
+            }
+
+        }
 
     footer {
 

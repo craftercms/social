@@ -9,11 +9,15 @@
         return SUBMIT(url, attributes, data, 'POST');
     }
 
-    function SUBMIT(url, data, method,urlParam) {
+    function SUBMIT(url, data, method, urlParam, callbacks) {
+
+        if (!callbacks) callbacks = {};
 
         var options = {
             type: method || 'POST',
-            url: S.url(url,$.extend({}, this.toJSON() || {}, urlParam) )
+            url: S.url(url,$.extend({}, this.toJSON() || {}, urlParam)),
+            success: callbacks.success,
+            error: callbacks.error
         };
 
         data && (options.data = $.param(data));
@@ -71,6 +75,9 @@
             return null;
         },
         flaggedBy: function (profileId) {
+            if(profileId===undefined){
+                return false
+            }
             var flags = this.attributes.flags,
                 l = flags.length, i;
             for (i = 0; i < l; ++i) {
@@ -86,8 +93,22 @@
         },
 
         moderate: function (status, params) {
-            SUBMIT.call(this, 'comments.{_id}.moderate', $.extend({}, params || {}, { status: status }), 'PUT');
-        },
+                   SUBMIT.call(this,
+                       'comments.{_id}.moderate',
+                       $.extend({}, params || {}, { status: status }),
+                       'POST', {
+                           context: params.context
+                       });
+          },
+
+        update: function (params, callbacks) {
+                   SUBMIT.call(this, 'comments.{_id}', {
+                       id: '',
+                       body: this.get('body')
+                   }, 'PUT', {
+                       context: params.context
+                   }, callbacks);
+          },
 
         reply: function () {
 

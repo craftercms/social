@@ -50,9 +50,16 @@
                 isOwner: function(){
                     return model.createdBy === profile.id
                 },
+                isLogged: function(){
+                    return profile!==undefined && profile.id !==undefined;
+                },
                 avatarUrl: function(){
+                    var ts="";
+                    if(model.reloadAvatar!==undefined){
+                        ts=model.reloadAvatar;
+                    }
                     return S.url('profile.avatar',{id: model.user?model.user.id:profile.id,
-                                                    context: me.cfg.context})
+                                                    context: me.cfg.context,ts:ts});
                 }
             });
 
@@ -61,19 +68,19 @@
 
             var $children   = this.$('.comment-children:first');
 
-            this.$("#changeAvatar").hover( null,function(){
-                if(model.createdBy === profile.id){
-                    me.$("#changeAvatar").addClass("hidden");
-                    me.$("#currentAvatar").removeClass("hidden");
+            this.$('.change-avatar').mouseleave(function () {
+                if (model.createdBy === profile.id) {
+                    me.$('.change-avatar').addClass('hidden');
+                    me.$('.current-avatar').removeClass('hidden');
                 }
             });
 
-            this.$("#currentAvatar").hover( function(){
-                if(model.createdBy === profile.id){
-                    me.$("#currentAvatar").addClass("hidden");
-                    me.$("#changeAvatar").removeClass("hidden");
+            this.$('.current-avatar').mouseover(function () {
+                if (model.createdBy === profile.id) {
+                    me.$('.current-avatar').addClass('hidden');
+                    me.$('.change-avatar').removeClass('hidden');
                     }
-            },null);
+            });
 
 
             model.children.every(function ( child ) {
@@ -128,6 +135,11 @@
                             }),
                             success: function () {
                                 modal.hide();
+                                me.model.collection.each(function(ugc){
+                                    if(ugc.get("user").id===Director.getProfile().id){
+                                        ugc.set("reloadAvatar",new Date().getTime());
+                                    }
+                                });
                             },
                             error: function () {
                                 modal.$('.modal-body')
@@ -153,6 +165,49 @@
         removeVote: function () {
             var params = this.getRequestParams();
             this.model.removeVote(params);
+        },
+
+        edit: function (e) {
+
+            var $body = this.$('.comment-data').addClass('editing');
+            var $editor = $body.find('.editor');
+
+            $editor.html($body.find('.content-wrapper').html());
+
+            var editor = CKEDITOR.inline($editor.get(0), {
+                startupFocus: true
+            });
+
+            this.cache('editor', editor);
+
+        },
+        cancelEdit: function (e) {
+            if (this.cache('editor')) {
+                this.cache('editor').destroy();
+                this.cache('editor', S.Constants.get('DESTROY'));
+                this.$('.comment-data').removeClass('editing')
+                    .find('.editor').html('');
+            }
+        },
+        doEdit: function (e) {
+            var editor;
+            if ((editor = this.cache('editor'))) {
+
+                var me = this;
+                var body = editor.getData();
+                if (!body) { return; }
+
+                // Can't use backbone's save due to backend param expectations
+                // this.model.save({ 'body': body });
+                this.model.set('body', body);
+                this.model.update(this.getRequestParams(), {
+                    success: function () {
+                        editor.destroy();
+                        me.cache('editor', S.Constants.get('DESTROY'));
+                    }
+                });
+
+            }
         },
 
         reply: function (e) {
