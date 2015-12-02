@@ -48,6 +48,7 @@
         <property name="allowOrigins" value="${studio.social.system.cors.accessControlAllowOrigin}"/>
         <property name="maxAge" value="${studio.social.system.cors.accessControlMaxAge}"/>
         <property name="allowCredentials" value="${studio.social.system.cors.accessControlAllowCredentials}"/>
+        <property name="disableCORS" value="${studio.social.system.cors.disableCORS}"/>
     </bean>
 
     <bean id="social.ugc.virusScanner"
