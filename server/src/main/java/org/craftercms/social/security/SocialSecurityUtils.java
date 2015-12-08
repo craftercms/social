@@ -37,15 +37,18 @@ public class SocialSecurityUtils {
 
 
     public static List<String> getSocialRoles(final Profile profile) {
+        return getSocialRoles(profile,getContext());
+    }
+
+    public static List<String> getSocialRoles(final Profile profile,final String socialContext) {
         if (profile.getUsername().equals(ANONYMOUS)) {
             return Arrays.asList(ANONYMOUS);
         }
 
-        List<String> list = new ArrayList<>(getRolesForCurrentContext(getContext(),profile));
+        List<String> list = new ArrayList<>(getRolesForCurrentContext(socialContext,profile));
         if (list == null) {
             list = Collections.synchronizedList(new ArrayList<String>());
         }
-
         for (String role : profile.getRoles()) {
             if(!list.contains(role)) {
                 list.add(role);
@@ -64,6 +67,13 @@ public class SocialSecurityUtils {
 
         return context;
     }
+
+    public static boolean isProfileModeratorOrAdmin(final Profile updateProfile, final String socialContext) {
+        final List<String> roles = SocialSecurityUtils.getSocialRoles(updateProfile,socialContext);
+        return roles.contains(SecurityActionNames.ROLE_SOCIAL_ADMIN) || roles.contains(SecurityActionNames
+            .ROLE_SOCIAL_SUPERADMIN) || roles.contains("SOCIAL_MODERATOR");
+    }
+
 
     public static List<String> getRolesForCurrentContext(final String contextId,final Profile profile) {
 

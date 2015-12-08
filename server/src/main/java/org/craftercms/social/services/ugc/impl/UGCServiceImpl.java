@@ -38,6 +38,8 @@ import org.craftercms.commons.security.permissions.annotations.SecuredObject;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.UGC;
+import org.craftercms.social.domain.social.ModerationStatus;
+import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.IllegalSocialQueryException;
 import org.craftercms.social.exceptions.IllegalUgcException;
 import org.craftercms.social.exceptions.NotificationException;
@@ -48,6 +50,7 @@ import org.craftercms.social.repositories.ugc.UGCRepository;
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.security.SocialSecurityUtils;
 import org.craftercms.social.services.notification.NotificationService;
+import org.craftercms.social.services.system.TenantConfigurationService;
 import org.craftercms.social.services.ugc.UGCService;
 import org.craftercms.social.services.ugc.pipeline.UgcPipeline;
 import org.craftercms.social.util.LoggerFactory;
@@ -80,6 +83,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     private Reactor reactor;
     private NotificationService notificationService;
     private List<String> arraySortFields;
+    private TenantConfigurationService tenantConfigurationService;
 
     @Override
     @HasPermission(action = UGC_CREATE, type = SocialPermission.class)
@@ -156,8 +160,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             final Map attrs = toUpdate.getAttributes();
             attrs.putAll(attrs);
             ugcRepository.setAttributes(ugcId, contextId, attrs);
-            reactor.notify(UGCEvent.UPDATE_ATTRIBUTES.getName(), Event.wrap(new SocialEvent<T>(ugcId, attributes,
-                SocialSecurityUtils.getCurrentProfile().getId().toString(), UGCEvent.UPDATE_ATTRIBUTES)));
+            final SocialEvent<T> event = new SocialEvent<T>(ugcId, attributes, SocialSecurityUtils.getCurrentProfile
+                ().getId().toString(), UGCEvent.UPDATE_ATTRIBUTES);
+            event.setAttribute("baseUrl",calculateBaseUrl());
+            reactor.notify(UGCEvent.UPDATE_ATTRIBUTES.getName(), Event.wrap(event));
         } catch (MongoDataException ex) {
             log.debug("logging.ugc.unableToAddAttrs", ex, attributes, ugcId, contextId);
             throw new UGCException("Unable to add Attributes to UGC", ex);
@@ -171,8 +177,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         log.debug("logging.ugc.deleteAttributes", attributesName, ugcId);
         try {
             ugcRepository.deleteAttribute(ugcId, contextId, attributesName);
-            reactor.notify(UGCEvent.DELETE_ATTRIBUTES.getName(), Event.wrap(new SocialEvent<T>(ugcId,
-                SocialSecurityUtils.getCurrentProfile().getId().toString(), UGCEvent.DELETE_ATTRIBUTES)));
+            final SocialEvent<T> event = new SocialEvent<T>(ugcId, SocialSecurityUtils.getCurrentProfile().getId()
+                .toString(), UGCEvent.DELETE_ATTRIBUTES);
+            event.setAttribute("baseUrl",calculateBaseUrl());
+            reactor.notify(UGCEvent.DELETE_ATTRIBUTES.getName(), Event.wrap(event));
         } catch (MongoDataException ex) {
             log.debug("logging.ugc.unableToDelAttrs", ex, attributesName, ugcId);
             throw new UGCException("Unable to delete attribute for ugc", ex);
@@ -185,8 +193,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         log.debug("logging.ugc.deleteUgc", ugcId);
         try {
             ugcRepository.deleteUgc(ugcId, contextId);
-            reactor.notify(UGCEvent.DELETE.getName(), Event.wrap(new SocialEvent<T>(ugcId, SocialSecurityUtils
-                .getCurrentProfile().getId().toString(), UGCEvent.DELETE)));
+            final SocialEvent<T> event = new SocialEvent<T>(ugcId, SocialSecurityUtils.getCurrentProfile().getId()
+                .toString(), UGCEvent.DELETE);
+            event.setAttribute("baseUrl",calculateBaseUrl());
+
+            reactor.notify(UGCEvent.DELETE.getName(), Event.wrap(event));
         } catch (MongoDataException ex) {
             log.error("logging.ugc.deleteUgcError", ex, ugcId, contextId);
             throw new UGCException("Unable to delete UGC", ex);
@@ -200,6 +211,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         contextId, final Map attributes) throws SocialException, UGCNotFound {
         log.debug("logging.ugc.updateUgc", ugcId);
         try {
+            final Profile currentProfile = SocialSecurityUtils.getCurrentProfile();
+            boolean moderateByMail = Boolean.parseBoolean(tenantConfigurationService.getProperty(contextId,
+                "moderateByMailEnable").toString());
+
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC Id is not valid");
             }
@@ -214,8 +229,16 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 toUpdate.setBody(subject);
             }
             pipeline.processUgc(toUpdate);
+            if(moderateByMail && !SocialSecurityUtils.isProfileModeratorOrAdmin(currentProfile,contextId)){
+                if(toUpdate instanceof SocialUgc){
+                    ((SocialUgc)toUpdate).setModerationStatus(ModerationStatus.UNMODERATED);
+                }
+            }
             ugcRepository.update(ugcId, toUpdate, false, false);
-            reactor.notify(UGCEvent.UPDATE.getName(), Event.wrap(toUpdate));
+            final SocialEvent<T> event = new SocialEvent<>(toUpdate, SocialSecurityUtils.getCurrentProfile().getId()
+                .toString(), UGCEvent.UPDATE);
+            event.setAttribute("baseUrl",calculateBaseUrl());
+            reactor.notify(UGCEvent.UPDATE.getName(), Event.wrap(event));
             if (attributes != null && !attributes.isEmpty()) {
                 toUpdate.getAttributes().putAll(attributes);
                 //ToDo This should be one query, problem is with deep attributes !!
@@ -660,5 +683,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         return buildUgcTree(list);
     }
 
-
+    public void setTenantConfigurationService(final TenantConfigurationService tenantConfigurationService) {
+        this.tenantConfigurationService = tenantConfigurationService;
+    }
 }

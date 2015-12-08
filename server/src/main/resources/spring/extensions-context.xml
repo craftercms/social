@@ -12,4 +12,16 @@
            <property name="emailService" ref="social.util.emailService"/>
             <property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
        </bean>
+    <bean id="social.ApproveContentUpdateListener" class="org.craftercms.social.util.ebus.ApproveContentUpdateListener
+    "
+          init-method="init">
+        <property name="profileClient" ref="crafter.profileServiceRestClient"/>
+        <property name="tenantConfigurationServiceImpl" ref="social.services.system.tenantConfiguration"/>
+        <property name="socialFreemarkerLoader" ref="social.util.email.notificationFreemarkerLoader"/>
+        <property name="systemDefaultLocale" value="${studio.social.system.defaultLocale}"/>
+        <property name="modelExt" ref="social.notification.emailModelExt"/>
+        <property name="emailService" ref="social.util.emailService"/>
+        <property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
+    </bean>
+
 </beans>
