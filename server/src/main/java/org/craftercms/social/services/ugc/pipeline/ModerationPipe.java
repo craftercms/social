@@ -17,6 +17,8 @@
 
 package org.craftercms.social.services.ugc.pipeline;
 
+import java.util.Map;
+
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
@@ -31,7 +33,7 @@ public class ModerationPipe implements UgcPipe{
     private ModerationDecision moderationDecision;
 
     @Override
-    public <T extends UGC> void process(final T ugc) throws SocialException {
+    public <T extends UGC> void process(final T ugc,Map<String,Object> params) throws SocialException {
         if(ugc instanceof SocialUgc)
             moderationDecision.needModeration((SocialUgc)ugc);
     }
