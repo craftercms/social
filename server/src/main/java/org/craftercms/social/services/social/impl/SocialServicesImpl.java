@@ -208,14 +208,14 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
                     if (socialUgc.getModerationStatus() != ModerationStatus.TRASH) { // Once is trash stays thrash (TBC)
                         socialUgc.setModerationStatus(ModerationStatus.APPROVED);
                     }
-                    pipeline.processUgc(socialUgc);
+                    Map<String,Object> processParams=new HashMap<>();
+                    processParams.put("modifierProfile",profile);
+                    pipeline.processUgc(socialUgc,processParams);
                     try {
                         ugcRepository.save(socialUgc);
                     } catch (MongoDataException e) {
                         throw new SocialException("Unable to update UGC");
                     }
-                    reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugc,SocialSecurityUtils.getCurrentProfile()
-                        .getId().toString(),UGCEvent.UNFLAG)));
                 }
                 map.put("alreadyApprove",false);
             }

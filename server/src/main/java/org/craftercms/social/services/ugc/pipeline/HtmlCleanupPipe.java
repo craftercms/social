@@ -1,5 +1,7 @@
 package org.craftercms.social.services.ugc.pipeline;
 
+import java.util.Map;
+
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.Flag;
 import org.craftercms.social.domain.social.SocialUgc;
@@ -14,7 +16,7 @@ import org.jsoup.safety.Whitelist;
 public class HtmlCleanupPipe implements UgcPipe{
     private final Whitelist whitelist = Whitelist.relaxed().addTags("div","em");
     @Override
-    public <T extends UGC> void process(final T ugc) throws SocialException {
+    public <T extends UGC> void process(final T ugc,Map<String,Object> params) throws SocialException {
         ugc.setBody(cleanup(ugc.getBody()));
         if(ugc instanceof SocialUgc) {
             for (Flag flag : ((SocialUgc)ugc).getFlags()){

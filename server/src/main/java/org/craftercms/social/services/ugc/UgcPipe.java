@@ -1,5 +1,7 @@
 package org.craftercms.social.services.ugc;
 
+import java.util.Map;
+
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.SocialException;
 
@@ -14,5 +16,5 @@ public interface UgcPipe {
      * @param <T> Any UGC object
      * @throws SocialException If the UGC can't be process. <b>Stops the pipeline execution</b>
      */
-    <T extends UGC> void process(final T ugc) throws SocialException;
+    <T extends UGC> void process(final T ugc,Map<String,Object> params) throws SocialException;
 }
