@@ -40,6 +40,7 @@ import org.craftercms.social.services.system.EmailService;
 import org.craftercms.social.util.LoggerFactory;
 import org.craftercms.social.util.SocialFreemarkerLoader;
 import org.craftercms.social.util.profile.ProfileAggregator;
+import org.slf4j.Logger;
 
 /**
  *
@@ -49,6 +50,7 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
     public static final String DEFAULT_LOADPATH = "classpath:/crafter/social/notifications";
 
     private I10nLogger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+    private Logger log = org.slf4j.LoggerFactory.getLogger(NotificationDigestServiceImpl.class);
     private ProfileAggregator profileAggregator;
     private TemplateLoader socialFreemarkerLoader;
     private Configuration cfg;
@@ -70,14 +72,11 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
             //TODO Fix this for multi context users!
             List<String> contexts= new ArrayList<>();
             dataModel.put("profile", toSend);
-
-
             for (HashMap hashMap : auditDigest) {
                 if(!contexts.contains(hashMap.get("contextId"))) {
                     contexts.add(hashMap.get("contextId").toString());
                 }
             }
-
             for (String contextId : contexts) {
                 try {
                     StringWriter writer = new StringWriter();
@@ -91,6 +90,7 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
                     env.process();
                     writer.flush();
                     emailService.sendEmail(toSend,writer,null, contextId);
+                    log.info("Notification Email send to {} for ctxId {}",toSend.getEmail(),contextId);
                 } catch (IOException | TemplateException | SocialException ex) {
                     logger.error("logging.system.notification.errorLoadingTemplate", ex);
                 }

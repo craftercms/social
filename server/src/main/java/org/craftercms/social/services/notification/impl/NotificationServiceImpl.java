@@ -128,9 +128,11 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             final List<ThreadsToNotify> toBeSend = watchedThreadsRepository.findProfilesToSend(type);
             for (ThreadsToNotify threadsToNotify : toBeSend) {
+                log.info("Notifying {} users for {}",toBeSend.size(),type);
                 for (String profileId : threadsToNotify.getProfiles()) {
                     final List<HashMap> auditDigest = auditRepository.getNotificationDigest(threadsToNotify
                         .getThreadId(), from, to, Arrays.asList(profileId));
+                    log.info("Notifying sending {} ugs",auditDigest);
                     notificationDigestService.digest(auditDigest, profileId, type);
                 }
             }
