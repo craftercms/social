@@ -45,6 +45,7 @@ import org.craftercms.social.services.notification.NotificationService;
 import org.craftercms.social.util.LoggerFactory;
 import org.craftercms.social.util.profile.ProfileAggregator;
 import org.quartz.SimpleTrigger;
+import org.slf4j.Logger;
 
 import static org.craftercms.social.security.SecurityActionNames.UGC_READ;
 
@@ -60,6 +61,7 @@ public class NotificationServiceImpl implements NotificationService {
     private ProfileAggregator profileAggregator;
     private NotificationDigestService notificationDigestService;
     private Date lastInstantFire;
+    private Logger logger = org.slf4j.LoggerFactory.getLogger(NotificationDigestServiceImpl.class);
 
     public NotificationServiceImpl() {
         lastInstantFire=new Date();
@@ -128,17 +130,17 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             final List<ThreadsToNotify> toBeSend = watchedThreadsRepository.findProfilesToSend(type);
             for (ThreadsToNotify threadsToNotify : toBeSend) {
-                log.info("Notifying {} users for {}",toBeSend.size(),type);
+                logger.info("Notifying {} users for {}",toBeSend.size(),type);
                 for (String profileId : threadsToNotify.getProfiles()) {
                     final List<HashMap> auditDigest = auditRepository.getNotificationDigest(threadsToNotify
                         .getThreadId(), from, to, Arrays.asList(profileId));
-                    log.info("Notifying sending {} ugs",auditDigest);
+                    logger.info("Notifying sending {} ugs",auditDigest);
                     notificationDigestService.digest(auditDigest, profileId, type);
                 }
             }
             lastInstantFire = new Date();
         } catch (SocialException ex) {
-            log.error("Unable to send notifications", ex);
+            logger.error("Unable to send notifications", ex);
         }
 
     }

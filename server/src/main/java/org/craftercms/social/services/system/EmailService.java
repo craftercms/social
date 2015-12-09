@@ -48,20 +48,21 @@ public class EmailService {
         Map<String, Object> emailSettings = getEmailSettings(contextId);
         JavaMailSender sender = getSender(contextId);
         MimeMessage message = sender.createMimeMessage();
+        String realSubject=subject;
+        if(StringUtils.isBlank(realSubject)){
+            realSubject=generateSubjectString(emailSettings.get("subject").toString());
+        }
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(toSend.getEmail());
             helper.setReplyTo(emailSettings.get("replyTo").toString());
             helper.setFrom(emailSettings.get("from").toString());
-            if(StringUtils.isBlank(subject)) {
-                helper.setSubject(generateSubjectString(emailSettings.get("subject").toString()));
-            }else{
-                helper.setSubject(subject);
-            }
+            helper.setSubject(realSubject);
+
             helper.setPriority(NumberUtils.toInt(emailSettings.get("priority").toString(),4));
             helper.setText(writer.toString(), true);
             message.setHeader("Message-ID", String.format("[%s]-%s-%s-%s", RandomStringUtils.randomAlphanumeric(5),contextId,
-                subject,toSend.getId()));
+                realSubject,toSend.getId()));
             sender.send(message);
         } catch (MessagingException e) {
             throw new SocialException("Unable to send Email to " + toSend.getEmail(), e);
