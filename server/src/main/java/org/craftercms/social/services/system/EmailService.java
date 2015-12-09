@@ -25,6 +25,7 @@ import javax.mail.internet.MimeMessage;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.craftercms.profile.api.Profile;
@@ -59,6 +60,8 @@ public class EmailService {
             }
             helper.setPriority(NumberUtils.toInt(emailSettings.get("priority").toString(),4));
             helper.setText(writer.toString(), true);
+            message.setHeader("Message-ID", String.format("[%s]-%s-%s-%s", RandomStringUtils.randomAlphanumeric(5),contextId,
+                subject,toSend.getId()));
             sender.send(message);
         } catch (MessagingException e) {
             throw new SocialException("Unable to send Email to " + toSend.getEmail(), e);
