@@ -265,8 +265,10 @@ module.exports = function (grunt) {
                         '.htaccess',
                         'images/{,*/}*.{webp,gif}',
                         'styles/fonts/{,*/}*.*',
+                        'styles/{,*/}*.png',
                         'libs/sass-bootstrap/fonts/*.*',
                         'libs/ckeditor/**',
+                        'scripts/component/ckeditor/{,*/}*.*',
                         'templates/*.*'
                     ]
                 }]
@@ -276,7 +278,7 @@ module.exports = function (grunt) {
                 dot: true,
                 cwd: '<%= yeoman.app %>/styles',
                 dest: '.tmp/styles/',
-                src: '{,*/}*.css'
+                src: ['{,*/}*.css','*.{ico,png,txt}']
             }
         },
         modernizr: {

@@ -102,10 +102,10 @@
         },
 
         update: function (params, callbacks) {
-            SUBMIT.call(this, 'comments.{_id}', {
+            SUBMIT.call(this, 'comments.{_id}.update', {
                 id: '',
                 body: this.get('body')
-            }, 'PUT', {
+            }, 'POST', {
                 context: params.context
             }, callbacks);
         },

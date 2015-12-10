@@ -27,10 +27,13 @@
 <div class="comments">
     <div class="row comment" ng-repeat="comment in comments">
         <div class="col-sm-2 col-avatar-small">
+
             <img ng-if="comment.user.attributes.avatarLink" class="avatar-img avatar-img-small"
                  ng-src="{{comment.user.attributes.avatarLink}}"/>
+
             <img ng-if="!comment.user.attributes.avatarLink" class="avatar-img avatar-img-small"
                  src="<@spring.url '/resources/image/profile.jpg'/>"/>
+
             <p>{{comment.user.username | truncateIfTooLarge}}<p>
         </div>
         <div class="form-group col-sm-8">
