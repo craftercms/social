@@ -169,17 +169,17 @@
 
         edit: function (e) {
 
-            var $body = this.$('.comment-data').addClass('editing');
-            var $editor = $body.find('.editor');
+                var $body = this.$('.comment-data').addClass('editing');
+                var $editor = $body.find('.editor');
 
-            $editor.html($body.find('.content-wrapper').html());
+                $editor.html($body.find('.content-wrapper').html());
+                $editor.attr('contenteditable','true');
+                var editor = CKEDITOR.inline($editor.get(0), {
+                    startupFocus: true,
+                    toolbar:'Basic'
+                });
 
-            var editor = CKEDITOR.inline($editor.get(0), {
-                startupFocus: true
-            });
-
-            this.cache('editor', editor);
-
+                this.cache('editor', editor);
         },
         cancelEdit: function (e) {
             if (this.cache('editor')) {
@@ -190,7 +190,7 @@
             }
         },
         doEdit: function (e) {
-            var editor;
+           var editor;
             if ((editor = this.cache('editor'))) {
 
                 var me = this;

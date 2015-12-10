@@ -238,6 +238,8 @@
             var parasite = new View($.extend({
                 target: oCfg.target,
                 context: oCfg.context,
+                commentUrl:oCfg.commentUrl,
+                commentThreadName:oCfg.commentThreadName,
                 sortBy:'createdDate',
                 sortOrder:'DESC',
                 collection: controller

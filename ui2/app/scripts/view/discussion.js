@@ -60,7 +60,9 @@
                 var view = new S.util.instance('view.Commenting', $.extend({
                     collection: this.collection,
                     context: this.cfg.context,
-                    target: this.cfg.target
+                    target: this.cfg.target,
+                    commentUrl:this.cfg.commentUrl,
+                    commentThreadName:this.cfg.commentThreadName
                 }, this.cfg.commenting));
 
                 $replies.append(view.render().el);

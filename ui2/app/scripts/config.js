@@ -54,6 +54,9 @@
                         'down': '',
                         'up': ''
                     },
+                    'update':{
+                        'value':''
+                    },
                     'flags': {
                         'value': '', // Flag comment flags
                        '{flagId}':''
