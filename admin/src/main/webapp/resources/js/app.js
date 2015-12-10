@@ -7,8 +7,8 @@ var app = angular.module('CrafterAdminConsole', ['ngRoute', 'ui.bootstrap', 'ngC
  * Global variables
  */
 var defaultContext = 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9';
-var commentsSortBy = 'lastModifiedDate';
-var commentsSortOrder = 'ASC';
+var commentsSortBy = 'createdDate';
+var commentsSortOrder = 'DESC';
 
 var moderationStatus = [
     {
@@ -605,7 +605,7 @@ app.config(function ($routeProvider) {
 /**
  * Controllers
  */
-app.controller('ModerationDashboardController', function ($scope, commentService, attachmentService, contexts) {
+app.controller('ModerationDashboardController', function ($scope, commentService, attachmentService, contexts,tenantPreferenceService) {
     $scope.moderationStatus = moderationStatus;
     $scope.moderationStatusActions = moderationStatusActions;
     $scope.commentService = commentService;
@@ -649,6 +649,14 @@ app.controller('ModerationDashboardController', function ($scope, commentService
 
             $scope.getCurrentPage();
         });
+    };
+    tenantPreferenceService.getPreferences($scope.selectedContext._id).then(function(result){
+        $scope.preferences=result.preferences;
+        console.log($scope.preferences);
+    });
+
+    $scope.profileAvatar = function(profileId){
+       return  socialRestBaseUrl + '/profile/avatar/' + profileId + '?context=' + $scope.selectedContext._id;
     };
 
     $scope.resetStatusAndGetComments = function () {

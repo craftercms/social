@@ -32,14 +32,22 @@
                  ng-src="{{comment.user.attributes.avatarLink}}"/>
 
             <img ng-if="!comment.user.attributes.avatarLink" class="avatar-img avatar-img-small"
-                 src="<@spring.url '/resources/image/profile.jpg'/>"/>
+                 ng-src="{{profileAvatar(comment.user.id)}}"/>
 
             <p>{{comment.user.username | truncateIfTooLarge}}<p>
         </div>
         <div class="form-group col-sm-8">
             <div class="row">
                 <div class="col-sm-8">
-                    <h4 class="comment-header"><span class="text-muted">Thread:</span> {{comment.targetId}}</h4>
+
+                    <h4 class="comment-header"><span class="text-muted">Thread:</span>
+                      <span ng-if="!comment.attributes.commentUrl"> {{comment.targetId}} </span>
+                      <a ng-if="comment.attributes.commentUrl" href="{{preferences.baseUrl}}{{comment.attributes
+                      .commentUrl}}">
+                          <span ng-if="!comment.attributes.commentThreadName"> {{comment.targetId}} </span>
+                          <span ng-if="comment.attributes.commentThreadName"> {{comment.attributes.commentThreadName}} </span>
+                      </a>
+                    </h4>
                 </div>
                 <div class="col-sm-4"  ng-if="comment.flags.length>0">
                     <span class="label label-warning pull-right mouse-pointer" ng-click="showFlagsModal(comment)">
