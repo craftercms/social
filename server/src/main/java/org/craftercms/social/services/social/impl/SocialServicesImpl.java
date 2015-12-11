@@ -149,7 +149,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             }
             pipeline.processUgc(ugc);
             ugcRepository.save(ugc);
-            reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugc,SocialSecurityUtils.getCurrentProfile()
+            reactor.notify(UGCEvent.MODERATE.getName(), Event.wrap(new SocialEvent(ugc,SocialSecurityUtils.getCurrentProfile()
                 .getId().toString(),UGCEvent.UNFLAG)));
             return ugc;
         } catch (MongoDataException ex) {
@@ -213,6 +213,8 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
                     pipeline.processUgc(socialUgc,processParams);
                     try {
                         ugcRepository.save(socialUgc);
+                        reactor.notify(UGCEvent.MODERATE.getName(), Event.wrap(new SocialEvent(socialUgc,profile
+                            .getId().toString(),UGCEvent.UNFLAG)));
                     } catch (MongoDataException e) {
                         throw new SocialException("Unable to update UGC");
                     }
