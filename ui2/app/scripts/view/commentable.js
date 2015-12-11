@@ -114,7 +114,9 @@
                 view = new S.view.Inline({
                     target: this.cfg.target,
                     context: this.cfg.context,
-                    collection: this.collection
+                    collection: this.collection,
+                    commentUrl:this.cfg.commentUrl,
+                    commentThreadName:this.cfg.commentThreadName
                 });
                 this.cache('view.Inline', view);
                 this.listenTo(view, 'view.change.request', this.viewChangeRequest);

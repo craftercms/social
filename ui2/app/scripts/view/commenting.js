@@ -65,11 +65,8 @@
                     me.cache('editor', editor);
 
                 }
-
             }
-
             return editor;
-
         },
 
         comment: function () {
@@ -84,7 +81,10 @@
                 dateAdded: Date.now(),
                 thread: this.cfg.target,
                 context: this.cfg.context,
-                attributes: {}
+                attributes: {
+                    'commentUrl': this.cfg.commentUrl,
+                    'commentThreadName':this.cfg.commentThreadName
+                }
             };
 
             var collection = this.collection;

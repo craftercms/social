@@ -1,0 +1,15 @@
+{
+    "name": "uploadify",
+    "description": "HTML5 File Upload Script, jQuery Multiple File Upload Plugin - Uploadify / UploadiFive - Uploadify",
+    "version": "3.2.1",
+    "url": "www.uploadify.com",
+    "keywords": ["javascript", "upload"],
+    "dependencies": {
+        "jquery": ">=1.4.0"
+    },
+    "main": "jquery.uploadify.js",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/farrrr/uploadify.git"
+    }
+}

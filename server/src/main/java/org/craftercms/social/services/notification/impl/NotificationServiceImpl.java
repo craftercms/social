@@ -126,19 +126,23 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void notify(final String type) {
         Date from = getStartDateByType(type);
+        lastInstantFire = new Date();
         final Date to = new Date();
         try {
             final List<ThreadsToNotify> toBeSend = watchedThreadsRepository.findProfilesToSend(type);
             for (ThreadsToNotify threadsToNotify : toBeSend) {
-                logger.info("Notifying {} users for {}",toBeSend.size(),type);
+
+                logger.info("Notifying {} users for {} from {} until {} ",threadsToNotify.getProfiles().size(),type
+                    ,from,to);
                 for (String profileId : threadsToNotify.getProfiles()) {
                     final List<HashMap> auditDigest = auditRepository.getNotificationDigest(threadsToNotify
                         .getThreadId(), from, to, Arrays.asList(profileId));
-                    logger.info("Notifying sending {} ugs",auditDigest);
+                    logger.info("Notifying {} sending {} ugs {}",profileId,threadsToNotify.getThreadId(),auditDigest.size
+                        ());
                     notificationDigestService.digest(auditDigest, profileId, type);
                 }
             }
-            lastInstantFire = new Date();
+
         } catch (SocialException ex) {
             logger.error("Unable to send notifications", ex);
         }

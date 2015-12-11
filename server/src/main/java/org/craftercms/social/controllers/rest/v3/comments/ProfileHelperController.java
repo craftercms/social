@@ -54,8 +54,8 @@ public class ProfileHelperController {
 
     @RequestMapping(value = "/avatar/{profileId}", method = RequestMethod.POST)
     @ResponseBody
-    public Profile updateProfileAvatar(MultipartHttpServletRequest request, HttpServletResponse response,
-                                       @PathVariable("profileId") String profileId) throws IOException,
+    public Profile getProfileAvatar(MultipartHttpServletRequest request, HttpServletResponse response,
+                                    @PathVariable("profileId") String profileId) throws IOException,
         ProfileException {
         final Profile profile = SocialSecurityUtils.getCurrentProfile();
         if (profile != null && !profile.getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
@@ -77,8 +77,8 @@ public class ProfileHelperController {
     }
 
     @RequestMapping(value = "/avatar/{profileId}", method = RequestMethod.GET)
-    public void updateProfileAvatar(HttpServletResponse response, @PathVariable("profileId") String profileId,
-                                    HttpServletRequest request) throws IOException, SocialException {
+    public void getProfileAvatar(HttpServletResponse response, @PathVariable("profileId") String profileId,
+                                 HttpServletRequest request) throws IOException, SocialException {
         InputStream input = null;
         boolean imageFound = false;
         try {

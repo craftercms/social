@@ -43,11 +43,11 @@ module.exports = function (grunt) {
         },
         connect: {
             options: {
-                port: 9000,
-                livereload: 35729,
+                port: 9001,
+                livereload: 35730,
                 // change this to '0.0.0.0' to access the server from outside
-                hostname: '0.0.0.0'
-                // hostname: 'localhost'
+//                hostname: '0.0.0.0'
+                 hostname: 'localhost'
             },
             livereload: {
                 options: {
@@ -265,6 +265,7 @@ module.exports = function (grunt) {
                         '.htaccess',
                         'images/{,*/}*.{webp,gif}',
                         'styles/fonts/{,*/}*.*',
+                        'styles/{,*/}*.png',
                         'libs/sass-bootstrap/fonts/*.*',
                         'libs/ckeditor/**',
                         'templates/*.*'
@@ -276,7 +277,7 @@ module.exports = function (grunt) {
                 dot: true,
                 cwd: '<%= yeoman.app %>/styles',
                 dest: '.tmp/styles/',
-                src: '{,*/}*.css'
+                src: ['{,*/}*.css','*.{ico,png,txt}']
             }
         },
         modernizr: {
