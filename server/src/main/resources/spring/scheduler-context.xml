@@ -36,7 +36,7 @@
                 <value type="java.lang.String">INSTANT</value>
             </list>
         </property>
-        <property name="concurrent" value="false"/>
+        <property name="concurrent" value="true"/>
     </bean>
 
     <bean id="social.notification.dailyTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
