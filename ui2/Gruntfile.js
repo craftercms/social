@@ -164,7 +164,8 @@ module.exports = function (grunt) {
                     // http://requirejs.org/docs/errors.html#sourcemapcomments
                     preserveLicenseComments: false,
                     useStrict: true,
-                    wrap: true
+                    wrap: true,
+                    generateSourceMaps: true
                     //uglify2: {} // https://github.com/mishoo/UglifyJS2
                 }
             }
@@ -181,6 +182,12 @@ module.exports = function (grunt) {
         //        }
         //    }
         //},
+        uglify: {
+            options: {
+                sourceMap: true,
+                sourceMapName: '<%= yeoman.dist %>/scripts/social.map'
+            }
+        },
         useminPrepare: {
             options: {
                 dest: '<%= yeoman.dist %>'

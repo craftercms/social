@@ -54,7 +54,7 @@
                     return profile!==undefined && profile.id !==undefined;
                 },
                 avatarUrl: function(){
-                    var ts="";
+                    var ts=me.model.ts;
                     if(model.reloadAvatar!==undefined){
                         ts=model.reloadAvatar;
                     }

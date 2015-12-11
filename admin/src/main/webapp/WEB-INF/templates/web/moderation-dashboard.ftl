@@ -43,7 +43,7 @@
                     <h4 class="comment-header"><span class="text-muted">Thread:</span>
                       <span ng-if="!comment.attributes.commentUrl"> {{comment.targetId}} </span>
                       <a ng-if="comment.attributes.commentUrl" href="{{preferences.baseUrl}}{{comment.attributes
-                      .commentUrl}}">
+                      .commentUrl}}" target="_blank">
                           <span ng-if="!comment.attributes.commentThreadName"> {{comment.targetId}} </span>
                           <span ng-if="comment.attributes.commentThreadName"> {{comment.attributes.commentThreadName}} </span>
                       </a>
