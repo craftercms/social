@@ -9,7 +9,7 @@ var app = angular.module('CrafterAdminConsole', ['ngRoute', 'ui.bootstrap', 'ngC
 var defaultContext = 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9';
 var commentsSortBy = 'createdDate';
 var commentsSortOrder = 'DESC';
-
+var ts=new Date().getTime();
 var moderationStatus = [
     {
         label: 'Unmoderated',
@@ -622,21 +622,21 @@ app.controller('ModerationDashboardController', function ($scope, commentService
         'Image', '-','Source']];
     $scope.editorOptions["height"]=100;
     $scope.getCurrentPage = function () {
+        ts=new Date().getTime();
         commentService.getComments($scope.selectedContext._id, $scope.selectedStatus, $scope.currentPage,
             $scope.itemsPerPage).then(function (comments) {
                 for (var i = 0; i < comments.length; i++) {
                     comments[i].bodyOrig = comments[i].body;
                 }
-
                 $scope.comments = comments;
             });
     };
 
     $scope.resetStatus = function () {
+        ts=new Date().getTime();
         for (var i = 0; i < moderationStatus.length; i++) {
             if (moderationStatus[i].default) {
                 $scope.selectedStatus = moderationStatus[i].value;
-
                 break;
             }
         }
@@ -646,7 +646,6 @@ app.controller('ModerationDashboardController', function ($scope, commentService
         commentService.getCommentsCount($scope.selectedContext._id, $scope.selectedStatus).then(function (count) {
             $scope.totalItems = count;
             $scope.currentPage = 1;
-
             $scope.getCurrentPage();
         });
     };
@@ -656,7 +655,7 @@ app.controller('ModerationDashboardController', function ($scope, commentService
     });
 
     $scope.profileAvatar = function(profileId){
-       return  socialRestBaseUrl + '/profile/avatar/' + profileId + '?context=' + $scope.selectedContext._id;
+       return  socialRestBaseUrl + '/profile/avatar/' + profileId + '?context=' + $scope.selectedContext._id+"ts="+ts;
     };
 
     $scope.resetStatusAndGetComments = function () {
@@ -666,6 +665,7 @@ app.controller('ModerationDashboardController', function ($scope, commentService
 
     $scope.executeAction = function (action, comment) {
         action.execute($scope.selectedContext._id, comment, $scope);
+        ts=new Date().getTime();
     };
 
     $scope.commentStatusUpdatedCallback = function (comment) {

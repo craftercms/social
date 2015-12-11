@@ -21,6 +21,7 @@ import org.craftercms.social.util.LoggerFactory;
 import org.craftercms.social.util.ProfileUtils;
 import org.craftercms.social.util.profile.ProfileAggregator;
 import org.jongo.Aggregate;
+import org.slf4j.Logger;
 
 /**
  * Audit Repository.
@@ -28,6 +29,7 @@ import org.jongo.Aggregate;
 public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> implements AuditRepository {
 
     private I10nLogger log = LoggerFactory.getLogger(AuditServiceImpl.class);
+    private Logger logger = org.slf4j.LoggerFactory.getLogger(AuditRepositoryImpl.class);
     private ProfileAggregator profileAggregator;
     private ContextPreferencesService contextPreferencesService;
 
@@ -90,7 +92,11 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
                 .get("hiddenUgcStatus").toString();
             final Aggregate agregation = getCollection().aggregate(querypt1, idParts[1], idParts[0],
                 Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
+            logger.info("NotificationQ\n\r {} {} {} {} {} {} {}",querypt1, idParts[1], idParts[0],
+                Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
+            logger.info("NotificationQ2\n\r {}",querypt2);
             final List<HashMap> preResults = agregation.and(querypt2).as(HashMap.class);
+            logger.info("PreResults size {}",preResults.size());
             for (HashMap preResult : preResults) {
                 List<HashMap> ugcList = (List<HashMap>)preResult.get("ugcList");
                 for (HashMap ugc : ugcList) {
