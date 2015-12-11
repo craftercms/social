@@ -92,11 +92,11 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
                 .get("hiddenUgcStatus").toString();
             final Aggregate agregation = getCollection().aggregate(querypt1, idParts[1], idParts[0],
                 Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
-            logger.info("NotificationQ\n\r {} {} {} {} {} {} {}",querypt1, idParts[1], idParts[0],
+            logger.debug("NotificationQ\n\r {} {} {} {} {} {} {}",querypt1, idParts[1], idParts[0],
                 Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
-            logger.info("NotificationQ2\n\r {}",querypt2);
+            logger.debug("NotificationQ2\n\r {}",querypt2);
             final List<HashMap> preResults = agregation.and(querypt2).as(HashMap.class);
-            logger.info("PreResults size {}",preResults.size());
+            logger.debug("PreResults size {}",preResults.size());
             for (HashMap preResult : preResults) {
                 List<HashMap> ugcList = (List<HashMap>)preResult.get("ugcList");
                 for (HashMap ugc : ugcList) {

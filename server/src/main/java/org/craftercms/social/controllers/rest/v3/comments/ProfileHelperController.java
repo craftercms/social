@@ -101,8 +101,6 @@ public class ProfileHelperController {
             }
             if (!imageFound) {
                 response.sendRedirect(request.getContextPath()+"/resources/silhouette.png");
-                } else {
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 }
         } finally {
             if (input != null) {
