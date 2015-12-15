@@ -62,6 +62,7 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationDigestService notificationDigestService;
     private Date lastInstantFire;
     private Logger logger = org.slf4j.LoggerFactory.getLogger(NotificationDigestServiceImpl.class);
+    private boolean disableNotifications;
 
     public NotificationServiceImpl() {
         lastInstantFire=new Date();
@@ -125,28 +126,27 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void notify(final String type) {
-        Date from = getStartDateByType(type);
-        lastInstantFire = new Date();
-        final Date to = new Date();
-        try {
-            final List<ThreadsToNotify> toBeSend = watchedThreadsRepository.findProfilesToSend(type);
-            for (ThreadsToNotify threadsToNotify : toBeSend) {
+        if(!disableNotifications) {
+            Date from = getStartDateByType(type);
+            lastInstantFire = new Date();
+            final Date to = new Date();
+            try {
+                final List<ThreadsToNotify> toBeSend = watchedThreadsRepository.findProfilesToSend(type);
+                for (ThreadsToNotify threadsToNotify : toBeSend) {
 
-                logger.info("Notifying {} users for {} from {} until {} ",threadsToNotify.getProfiles().size(),type
-                    ,from,to);
-                for (String profileId : threadsToNotify.getProfiles()) {
-                    final List<HashMap> auditDigest = auditRepository.getNotificationDigest(threadsToNotify
-                        .getThreadId(), from, to, Arrays.asList(profileId));
-                    logger.info("Notifying {} sending {} ugs {}",profileId,threadsToNotify.getThreadId(),auditDigest.size
-                        ());
-                    notificationDigestService.digest(auditDigest, profileId, type);
+                    logger.info("Notifying {} users for {} from {} until {} ", threadsToNotify.getProfiles().size(), type, from, to);
+
+                    for (String profileId : threadsToNotify.getProfiles()) {
+                        final List<HashMap> auditDigest = auditRepository.getNotificationDigest(threadsToNotify.getThreadId(), from, to, Arrays.asList(profileId));
+                        logger.info("Notifying {} sending {} ugs {}", profileId, threadsToNotify.getThreadId(), auditDigest.size());
+                        notificationDigestService.digest(auditDigest, profileId, type);
+                    }
                 }
+
+            } catch (SocialException ex) {
+                logger.error("Unable to send notifications", ex);
             }
-
-        } catch (SocialException ex) {
-            logger.error("Unable to send notifications", ex);
         }
-
     }
 
     @Override
@@ -216,5 +216,7 @@ public class NotificationServiceImpl implements NotificationService {
         this.notificationDigestService = notificationDigestService;
     }
 
-
+    public void setDisableNotifications(final boolean disableNotifications) {
+        this.disableNotifications = disableNotifications;
+    }
 }
