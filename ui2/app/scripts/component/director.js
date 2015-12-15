@@ -220,7 +220,7 @@
          *      }
          */
         socialise: function ( oConfig ) {
-
+            $.ajaxSetup({ cache: false });
             var oCfg = $.extend(true, {}, Director.DEFAULTS, oConfig);
 
             var Ctrl    = S.get(oCfg.ctrl.main.cls)      || S.get(oCfg.ctrl.main.cls, window),

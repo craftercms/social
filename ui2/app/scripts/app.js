@@ -1,6 +1,6 @@
 (function (window) {
     'use strict';
-
+   
     var noConflictReference = window.crafter;
 
     var PLACEHOLDER_STR = '$placeholder$';
