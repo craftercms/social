@@ -128,6 +128,7 @@
         <property name="instantTrigger" ref="social.notification.instantTrigger"/>
         <property name="profileAggregatorImpl" ref="social.profileAggregator"/>
         <property name="notificationDigestServiceImpl" ref="social.services.system.notificationDigestService"/>
+        <property name="disableNotifications" value="${studio.social.notification.disable}"/>
     </bean>
     <bean class="org.craftercms.social.services.notification.impl.NotificationDigestServiceImpl"
 
