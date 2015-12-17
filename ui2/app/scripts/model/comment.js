@@ -112,7 +112,12 @@
 
         reply: function () {
 
-        }
+        },
+        fetch: function (options) {
+                options = options || {};
+                options.cache = false;
+                return Backbone.Collection.prototype.fetch.call(this, options);
+            }
 
     });
 

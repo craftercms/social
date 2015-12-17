@@ -35,44 +35,17 @@ import org.springframework.web.servlet.ModelAndView;
  * @author avasquez
  */
 @Controller
-@RequestMapping("/")
-public class MainController {
+@RequestMapping("/contexts")
+public class ContextController {
 
-    public static final String VIEW_MAIN = "main";
+    public static final String VIEW_MAIN = "contexts";
 
-    public static final String MODEL_LOGGED_IN_USER = "loggedInUser";
-    public static final String MODEL_SOCIAL_APP_URL = "socialAppUrl";
     private static final String IS_LOGGED_USER_SUPERADMIN = "isSuperAdmin";
-
-    private String socialAppRootUrl;
-    private String socialAppName;
-
-    public void setSocialAppRootUrl(String socialAppRootUrl) {
-        this.socialAppRootUrl = socialAppRootUrl;
-    }
-
-    @Required
-    public void setSocialAppName(String socialAppName) {
-        this.socialAppName = socialAppName;
-    }
 
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView viewMain(HttpServletRequest request) {
-        StringBuilder socialAppUrl;
-
-        if (StringUtils.isNotEmpty(socialAppRootUrl)) {
-            socialAppUrl = new StringBuilder(socialAppRootUrl).append("/").append(socialAppName);
-        } else {
-            socialAppUrl = HttpUtils.getBaseRequestUrl(request, false).append("/").append(socialAppName);
-        }
-
         ModelAndView mav = new ModelAndView(VIEW_MAIN);
-        Profile loggedUser=getLoggedInUser(request);
-
-        mav.addObject(MODEL_LOGGED_IN_USER, loggedUser);
-        mav.addObject(IS_LOGGED_USER_SUPERADMIN, isSuperAdmin(loggedUser));
-        mav.addObject(MODEL_SOCIAL_APP_URL, socialAppUrl.toString());
-
+        mav.addObject(IS_LOGGED_USER_SUPERADMIN, isSuperAdmin(getLoggedInUser(request)));
         return mav;
     }
 
