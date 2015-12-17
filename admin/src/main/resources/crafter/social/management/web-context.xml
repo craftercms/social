@@ -80,6 +80,8 @@
         <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
     </bean>
 
+    <bean id="crafter.contextController" class="org.craftercms.social.management.web.controllers.ContextController"/>
+
     <bean id="crafter.fallbackController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
 
     <!-- Freemarker Config -->

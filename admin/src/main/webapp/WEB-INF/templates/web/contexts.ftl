@@ -1,5 +1,5 @@
 <h1 class="page-header">Contexts</h1>
-
+<#if isSuperAdmin>
 <form class="form-inline" role="form">
     <div class="form-group">
         <label for="contextName">Context:</label>
@@ -10,7 +10,7 @@
                 ng-click="createContext()">Add</button>
     </div>
 </form>
-
+</#if>
 <table class="table table-striped form-panel-table">
     <thead>
     <tr>
