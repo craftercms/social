@@ -129,8 +129,6 @@
                 submissionContainer = $(this.el).find('.submission-details'),
                 postBtn = $(this.el).find('.btn.reply');
 
-            postBtn.addClass('disabled');
-
             submissionContainer.find('.submission-label').append(submissionLabel);
             submissionContainer.find('.agree-terms-label').append(agreeTermsLabel);
             submissionContainer.find('.terms-link').append(agreeTermsLinkText);
