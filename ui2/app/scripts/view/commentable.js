@@ -39,6 +39,13 @@
             setTimeout(function(){
                 me.revealDiscussion();
             }, 500);
+
+            // CRAFTERCMS-1687
+            me.mouseenter();
+            me.element().removeClass(REVEAL_CLASS);
+            this.revealed = false;
+            // end of CRAFTERCMS-1687
+
         },
         listen: function () {
 
@@ -263,7 +270,8 @@
                 var me = this;
                 me.timeout = setTimeout(function () {
                     me.element().removeClass(REVEAL_CLASS);
-                    me.$options.hide().detach();
+                    // CRAFTERCMS-1687
+                    //me.$options.hide().detach();
                     me.revealed = false;
                 }, 10);
 
