@@ -81,7 +81,7 @@
             var $badge = this.$options.find('.badge'),
                 length = this.collection.length;
             var targetId = this.cfg.target;
-            this.$options.find('#socialCommentBadge').attr('href','#'+targetId.substring(1,targetId.length));
+            this.$options.find('#socialCommentBadge').attr('href','#'+targetId.substring(1,targetId.length)+'-comments');
             if (length === 0) {
                 $badge.text('');
             } else {
