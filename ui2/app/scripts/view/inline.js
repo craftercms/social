@@ -16,7 +16,8 @@
             var panel   = this.$(me.cmpID('panel'));
             var toggler = this.$(this.cmpID('toggler'));
             var targetId = me.cfg.target;
-            this.$(this.cmpID('toggler')).attr('name',targetId.substring(1,targetId.length));
+            this.$(this.cmpID('toggler')).attr('name',targetId.substring(1,targetId.length)+'-comments');
+            this.$(this.cmpID('toggler')).attr('id',targetId.substring(1,targetId.length)+'-comments');
             toggler
                 .click(function () {
                     if (panel.hasClass('in')) {
