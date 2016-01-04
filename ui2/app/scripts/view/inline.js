@@ -15,7 +15,8 @@
             var me      = this;
             var panel   = this.$(me.cmpID('panel'));
             var toggler = this.$(this.cmpID('toggler'));
-
+            var targetId = me.cfg.target;
+            this.$(this.cmpID('toggler')).attr('name',targetId.substring(1,targetId.length));
             toggler
                 .click(function () {
                     if (panel.hasClass('in')) {
@@ -57,24 +58,7 @@
         },
         templates: {
             /* jshint -W015 */
-            main: [
-                '<div class="panel panel-default">',
-                '<div class="options-view-container pull-right"></div>',
-                    '<div class="panel-heading">',
-                        '<h4 class="panel-title">',
-                            '<a data-indentifyme="toggler">',
-                                'Discussion',
-                            '</a>',
-                        '</h4>',
-                    '</div>',
-                    '<div data-identifyme="panel" class="panel-collapse collapse in">',
-                        '<div class="panel-body">',
-                            '<div class="comments crafter-social-comment-thread"></div>',
-                            '<div class="create-comment-view reply-box"></div>',
-                        '</div>',
-                    '</div>',
-                '</div>'
-            ].join('')
+           main: ('%@inline.hbs').fmt(S.Cfg('url.templates'))
         }
     });
 
