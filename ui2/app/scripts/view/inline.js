@@ -18,17 +18,6 @@
             var targetId = me.cfg.target;
             this.$(this.cmpID('toggler')).attr('name',targetId.substring(1,targetId.length)+'-comments');
             this.$(this.cmpID('toggler')).attr('id',targetId.substring(1,targetId.length)+'-comments');
-            toggler
-                .click(function () {
-                    if (panel.hasClass('in')) {
-                        $(this).addClass('closed').removeClass('opened');
-                    } else {
-                        $(this).addClass('opened').removeClass('closed');
-                    }
-                    panel.toggleClass('in');
-                })
-                .addClass('opened');
-
             return this;
         },
 
