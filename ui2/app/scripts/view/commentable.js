@@ -16,13 +16,12 @@
     Commentable = Base.extend({
 
         hide: false,
-        reveal: false,
+        reveal: true,
         timeout: null,
         className: 'crafter-social-commentable',
         revealed: false,
         events: {
-            'mouseenter' : 'mouseenter',
-            'mouseleave' : 'mouseleave'
+            'mouseenter' : 'mouseenter'
         },
 
         initialize: function (config) {
@@ -38,6 +37,7 @@
 
             setTimeout(function(){
                 me.revealDiscussion();
+                me.mouseenter();
             }, 500);
 
         },
@@ -81,10 +81,8 @@
             } else {
                 $badge.text(length);
             }
-
             var isWatched = this.collection.getIsWatched();
             this.setWatched(isWatched);
-
             return this;
 
         },
