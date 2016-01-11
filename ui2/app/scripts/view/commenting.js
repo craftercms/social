@@ -72,9 +72,10 @@
         comment: function () {
 
             var editor = this.editor(),
+                checkBtn = $(this.el).find('[data-action-terms]'),
                 content = editor.getData();
 
-            if (!content) { return; }
+            if (!content || !checkBtn.is(':checked')) { return; }
 
             var data = {
                 body: content,
