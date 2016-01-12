@@ -55,19 +55,45 @@
                 });
 
             } else if (request.status === 500) {
+                var url = window.location.href;
 
-                // me.trigger(C.get('EVENT_500'));
+                var captured = /500=([^&]+)/.exec(url)
+                if(captured){
+                    var result = captured ? captured : 0;
+                    if(result && result.length>=2) {
+                        var timesReload=0;
+                        if(!isNaN(parseInt(result[1]))) {
+                             timesReload= parseInt(result[1]);
+                        }
+                        if (timesReload <= 2) {
+                            timesReload += 1;
+                            url=url.replace(/500=./gi, '500=' + timesReload.toString());
+                            window.location.href = url;
+                        }
+                    }
+                } else {
+                    if (url.indexOf('?') > -1) {
+                        url += '&500=1'
+                    } else {
+                        url += '?500=1'
+                    }
+                    window.location.href = url;
+                }
 
-                modal = new S.view.Modal({
-                    events: { 'click [data-dismiss]': 'destroy' },
-                    modal: { show: true }
-                }).render();
-
-                modal.set({
-                    title: 'Error',
-                    body: 'The server responded with an error, please verify your data and try again in a few seconds.',
-                    footer: '<button data-dismiss class="btn btn-default">Close</button>'
-                });
+                //
+                //
+                //
+                //if(!captured) {
+                //    var result = captured ? captured : undefined;
+                //    if (!result) {
+                //        if (url.indexOf('?') > -1) {
+                //            url += '&500=1'
+                //        } else {
+                //            url += '?500=1'
+                //        }
+                //        window.location.href = url;
+                //    }
+                //}
 
             }  else if (request.status === 403) {
 
