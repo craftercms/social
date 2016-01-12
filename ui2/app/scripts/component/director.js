@@ -54,7 +54,8 @@
                     footer: '<button data-dismiss class="btn btn-default">Close</button>'
                 });
 
-            } else if (request.status === 500) {
+            } else if (request.status === 500 || request.status===504 || request.status ===502 || request.status===503 ||
+            request.status===511) {
                 var url = window.location.href;
 
                 var captured = /500=([^&]+)/.exec(url)
