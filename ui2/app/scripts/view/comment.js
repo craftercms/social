@@ -153,7 +153,7 @@
             modal.set({
                 'title': 'Upload Profile Image',
                 //---------------  modification to add picture guidelines -----------//
-                'body': '<div class="form-group"><p>If you choose to upload a photo please select a current business relevant photo of yourself.</p><br/><input id="avatarFileupload" type="file" name="avatar" value="Choose new profile picture"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
+                'body': '<div class="form-group"><p>If you choose to upload a photo, select a current business relevant photo of yourself (recommended dimensions are 100x100 pixels).</p><br/><input id="avatarFileupload" type="file" name="avatar" value="Choose new profile picture"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
                 //---------------  modification to add picture guidelines -----------//
                 'footer': '<button class="btn btn-primary">Upload</button>'
             });

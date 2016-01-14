@@ -50,9 +50,15 @@
                         <span class="vote-up-count" title="{{#if votesUp}}{{votesUp.length}} {{multiplicity votesUp.length 'people like' 'person likes'}} this.{{else}}No one has liked this{{/if}}">
                             +{{votesUp.length}}
                         </span>
+                    {{#ifm isOwner}}
+                        <a style="cursor: default" >
+                            <i class="crafter-social-icon cs-icon-chevron-up"></i>
+                        </a>
+                    {{else}}
                         <a data-action="voteUp">
                             <i class="crafter-social-icon cs-icon-chevron-up"></i>
                         </a>
+                    {{/ifm}}
                     </span>
                     <span class="vote-down-wrapper hidden">
                         <a data-action="voteDown">
