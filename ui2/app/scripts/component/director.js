@@ -37,7 +37,11 @@
 
         $( document ).ajaxComplete(function( event, request ) {
             var modal;
-            if (request.status === 403) {
+            if(request.status===200){
+                if(request.getResponseHeader("Content-Type") && request.getResponseHeader("Content-Type").toLowerCase().indexOf('text/html')>=0){
+                    window.location.reload(true);
+                }
+            }else if (request.status === 403) {
                 me.trigger(C.get('EVENT_UNAUTHORISED_RESPONSE'));
             } else if (request.status === 404) {
 
@@ -64,7 +68,7 @@
                     if(result && result.length>=2) {
                         var timesReload=0;
                         if(!isNaN(parseInt(result[1]))) {
-                             timesReload= parseInt(result[1]);
+                            timesReload= parseInt(result[1]);
                         }
                         if (timesReload <= 2) {
                             timesReload += 1;
@@ -80,21 +84,6 @@
                     }
                     window.location.href = url;
                 }
-
-                //
-                //
-                //
-                //if(!captured) {
-                //    var result = captured ? captured : undefined;
-                //    if (!result) {
-                //        if (url.indexOf('?') > -1) {
-                //            url += '&500=1'
-                //        } else {
-                //            url += '?500=1'
-                //        }
-                //        window.location.href = url;
-                //    }
-                //}
 
             }  else if (request.status === 403) {
 

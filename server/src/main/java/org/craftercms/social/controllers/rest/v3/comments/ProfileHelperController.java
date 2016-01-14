@@ -67,7 +67,7 @@ public class ProfileHelperController {
             if (!StringUtils.isBlank(fileName)) {
                 final MultipartFile avatar = request.getFile(fileName);
                 profileService.addProfileAttachment(profile.getId().toString(), AVATAR + "." + FilenameUtils
-                    .getExtension(avatar.getOriginalFilename()), avatar.getInputStream());
+                    .getExtension(avatar.getOriginalFilename()).toLowerCase(), avatar.getInputStream());
             }
             return profile;
         } else {
