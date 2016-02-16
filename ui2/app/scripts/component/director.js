@@ -39,7 +39,12 @@
             var modal;
             if(request.status===200){
                 if(request.getResponseHeader("Content-Type") && request.getResponseHeader("Content-Type").toLowerCase().indexOf('text/html')>=0){
-                    window.location.reload(true);
+                    if (request.responseText != undefined) {
+                        var loginForm = S.string.LOCALE.loginForm;
+                        if (loginForm != undefined && request.responseText.indexOf(loginForm) >= 0) {
+                            window.location.reload(true);
+                        }
+                    }
                 }
             }else if (request.status === 403) {
                 me.trigger(C.get('EVENT_UNAUTHORISED_RESPONSE'));
