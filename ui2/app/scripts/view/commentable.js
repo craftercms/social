@@ -26,6 +26,8 @@
 
         initialize: function (config) {
             var me = this;
+            this.pageWidth = $( window ).width();
+            var isMobile = this.pageWidth < 768;
 
             this.setElement(config.target);
             Base.prototype.initialize.apply(this, arguments);
@@ -35,8 +37,13 @@
                 data : { id: this.cfg.target,sortBy:config.sortBy,sortOrder:config.sortOrder }
             });
 
+            if((!isMobile && config.discussionView == "view.Inline") || config.mobileExpanded == true){
+                setTimeout(function(){
+                    me.revealDiscussion();
+                }, 500);
+            }
+
             setTimeout(function(){
-                me.revealDiscussion();
                 me.mouseenter();
             }, 500);
 
@@ -44,10 +51,9 @@
         listen: function () {
 
             var me = this;
-            $(S.window).resize(function () {
-                if ( me.revealed ) {
-                    me.mouseenter();
-                }
+
+            $(S.window).resize(function() {
+                me.windowWidthChanged()
             });
 
             this.listenTo(this.collection, 'sync', this.render);
@@ -131,7 +137,9 @@
                 view = new S.view.Lightbox({
                     target: this.cfg.target,
                     context: this.cfg.context,
-                    collection: this.collection
+                    collection: this.collection,
+                    commentUrl:this.cfg.commentUrl,
+                    commentThreadName:this.cfg.commentThreadName
                 });
                 this.cache('view.Lightbox', view);
                 this.listenTo(view, 'view.change.request', this.viewChangeRequest);
@@ -146,7 +154,9 @@
                 view = new S.view.Popover({
                     target: this.cfg.target,
                     context: this.cfg.context,
-                    collection: this.collection
+                    collection: this.collection,
+                    commentUrl:this.cfg.commentUrl,
+                    commentThreadName:this.cfg.commentThreadName
                 });
                 this.cache('view.Popover', view);
                 this.listenTo(view, 'visibility.change', this.popoverVisibilityDidChange);
@@ -165,22 +175,33 @@
         },
 
         revealDiscussion: function ( e ) {
+            var me = this;
+            this.isMobile = $( window ).width() < 768;
 
             if ( !(e instanceof $.Event) && (typeof arguments[0] === 'object') ) {
                 var cfg = arguments[0];
                 (cfg.view) && (this.cfg.discussionView = cfg.view);
             }
 
-            this.viewChangeRequest(this.cfg.discussionView);
-            if(e) {
-                $('html, body').animate({
-                    scrollTop: $($(e.currentTarget).attr('href')).offset().top
-                }, 500);
+            if(this.isMobile && this.cfg.mobileView) {
+                this.viewChangeRequest(this.cfg.mobileView);
+            } else {
+                this.viewChangeRequest(this.cfg.discussionView, true);
+
+                if(e && this.cfg.discussionView == 'view.Inline' && !this.isMobile) {
+                    $('html, body').animate({
+                        scrollTop: $($(e.currentTarget).attr('href')).offset().top
+                    }, 500);
+                }
             }
 
-
+            $.each(['view.Popover','view.Lightbox','view.Inline'], function (i, v) {
+                var view = me.cache(v);
+                (view) && view.render();
+            });
         },
-        viewChangeRequest: function ( requested ) {
+
+        viewChangeRequest: function ( requested, updateCfg ) {
 
             var me = this;
             $.each(['view.Popover','view.Lightbox','view.Inline'], function (i, v) {
@@ -204,7 +225,9 @@
                 }
             }
 
-            this.cfg.discussionView = requested;
+            if(updateCfg){
+                this.cfg.discussionView = requested;
+            }
 
         },
 
@@ -245,16 +268,13 @@
 
                 $elem.addClass(REVEAL_CLASS);
 
-                var offset = $elem.offset(),
-                    width = $elem.outerWidth();
+                $options.appendTo($elem).show();
 
-                $options.appendTo('body').show();
-                var optsWidth = $options.outerWidth();
                 $options.hide();
 
                 $options.css({
-                    left: (offset.left + width - optsWidth),
-                    top: offset.top
+                    right: 0,
+                    top: 0
                 }).show();
 
                 this.revealed = true;
@@ -275,6 +295,29 @@
 
             }
 
+        },
+        windowWidthChanged: function() {
+            var currentWidth = $( window ).width(),
+                me = this;
+
+            if((this.pageWidth >= 767 && currentWidth < 767) || (this.pageWidth <= 768 && currentWidth > 768)) {
+                $.each(['view.Popover','view.Lightbox','view.Inline'], function (i, v) {
+                    var view = me.cache(v);
+                    (view) && view.hide();
+                });
+
+                if(((this.pageWidth <= 767 && currentWidth > 768) && this.cfg.discussionView == "view.Inline")){
+                    setTimeout(function(){
+                        me.revealDiscussion();
+                        me.mouseenter();
+                    }, 500);
+                }
+            }
+            this.pageWidth = currentWidth;
+
+            if ( me.revealed ) {
+                me.mouseenter();
+            }
         }
 
     });

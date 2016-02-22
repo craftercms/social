@@ -2,14 +2,25 @@ $font: 'Source Sans Pro', sans-serif;
 
 
 //no external borders
-.crafter-social-view.crafter-social-inline-view .panel {
-    border: none;
-    -webkit-border-radius: 0;
-    -moz-border-radius: 0;
-    border-radius: 0;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
+.crafter-social-view.crafter-social-inline-view {
+
+    .panel {
+        border: none;
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+
+        @media screen and (min-width: 768px) {
+            .options-view-container {
+                a[data-option='close'] {
+                    display: none;
+                }
+            }
+        }
+    }
 }
 
 .crafter-social-view.crafter-social-inline-view .panel-default > .panel-heading {
@@ -33,7 +44,8 @@ $font: 'Source Sans Pro', sans-serif;
     }
 }
 
-//comments
+//commentsclear
+
 .crafter-social-view.crafter-social-inline-view .panel-default > .panel-heading + .panel-collapse .panel-body {
     border-top: none;
     padding: 0px;
@@ -173,3 +185,63 @@ $font: 'Source Sans Pro', sans-serif;
     }
 }
 
+.crafter-social-lightbox-view {
+
+    .modal-dialog {
+        width: 710px;
+
+        .modal-content {
+            max-height: calc( 100vh - 20px );
+
+            .modal-body {
+                display: none;
+            }
+
+            .modal-comment-box {
+                padding: 15px 20px 30px 20px;
+                max-height: calc( 100vh - 350px );
+                overflow-x: hidden;
+                overflow-y: scroll;
+            }
+
+            .modal-footer.reply-box {
+                padding: 0 20px 20px;
+                min-height: 273px;
+            }
+        }
+    }
+}
+
+.crafter-social-modal-view.crafter-social-lightbox-view {
+    height: 100%;
+
+    .modal-dialog {
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        -moz-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        -o-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+}
+
+.crafter-social-modal-view-backdrop.in {
+    opacity: 0;
+}
+
+
+
+//issue with crafter bar
+#controls-overlay ~ .crafter-social-lightbox-view {
+    .modal-dialog {
+        top: 52% !important;
+
+        .modal-content {
+            max-height: calc(100vh - 50px) !important;
+
+            .modal-comment-box {
+                max-height: calc(100vh - 395px) !important;
+            }
+        }
+    }
+}
