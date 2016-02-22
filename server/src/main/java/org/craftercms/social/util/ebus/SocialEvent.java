@@ -2,6 +2,7 @@ package org.craftercms.social.util.ebus;
 
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,7 @@ public class SocialEvent<T extends UGC> {
         this.ugcId = ugcId;
         this.userId= userId;
         this.type=type;
+        this.attributes=new HashMap<>();
     }
 
     public SocialEvent(final String ugcId, final Map<String, Object> attributes,final String userId,UGCEvent type) {
@@ -50,6 +52,7 @@ public class SocialEvent<T extends UGC> {
         this.attachmentId = attachmentId;
         this.userId=userId;
         this.type=type;
+        this.attributes=new HashMap<>();
     }
 
     public T getSource() {
