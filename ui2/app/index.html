@@ -265,7 +265,9 @@
             view:{
                 'parasite':{
                     'cfg':{
-                        'discussionView':'view.Inline'
+                        'discussionView':'view.Lightbox', // Inline, Lightbox, Popover
+                        'mobileView':'view.Inline',
+                        'mobileExpanded': true
                     }
                 }
             }
@@ -273,18 +275,24 @@
 
         director.listenTo(director,'crater.social.event.no.comments.action' , function(){alert('Go TO Login')});
 
-        // director.socialise({
-        //           target: '#jumbotron2',
-        //           context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9',
-        //           view:{
-        //               'parasite':{
-        //                   'cfg':{
-        //                       'discussionView':'view.Inline'
-        //                   }
-        //               }
-        //           }
-        //
-        //       });
+        director.socialise({
+            target: '#assurance-part03-chapter01-para03',
+            context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9',
+            commentUrl:"/hello",
+            commentThreadName:"READABLENAME",
+            view:{
+               'parasite':{
+                   'cfg':{
+                       'discussionView':'view.Lightbox', // Inline, Lightbox, Popover
+                       'mobileView':'view.Inline',
+                       'mobileExpanded': true
+                   }
+               }
+            }
+
+        });
+
+
         //
         //       director.socialise({
         //           target:'#assurance-part03-chapter01-para01',
