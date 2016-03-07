@@ -306,7 +306,8 @@
                     (view) && view.hide();
                 });
 
-                if(((this.pageWidth <= 767 && currentWidth > 768) && this.cfg.discussionView == "view.Inline")){
+                if(((this.pageWidth <= 767 && currentWidth > 768) && this.cfg.discussionView == "view.Inline")
+                    || ((this.pageWidth >= 767 && currentWidth < 768) && this.cfg.mobileExpanded == true)){
                     setTimeout(function(){
                         me.revealDiscussion();
                         me.mouseenter();
