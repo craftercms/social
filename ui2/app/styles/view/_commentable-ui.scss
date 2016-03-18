@@ -62,6 +62,39 @@ $commentable-shadow-color: $brand-primary;
 
   position: relative;
 
+    &.reveal .crafter-social-commentable-options ul {
+        @include opacity(.7);
+
+        &.desktop{
+            display: none;
+        }
+
+        @media only screen and (min-width: 768px) {
+            &.mobile {
+                display: none;
+            }
+
+            &.desktop{
+                display: block;
+            }
+
+            &.desktop:hover {
+                @include opacity(1);
+            }
+        }
+
+        border: 2px solid rgba(
+                red($commentable-shadow-color),
+                green($commentable-shadow-color),
+                blue($commentable-shadow-color), 0.5);
+        border-style: none none solid solid;
+        @include border-radius($border-radius-base);
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        background-color: #fff;
+    }
+
   .badge {
 
     &:empty {
@@ -84,4 +117,7 @@ $commentable-shadow-color: $brand-primary;
     border-radius: $border-radius-base !important;
   }
 
+}
+
+.crafter-social-commentable {
 }

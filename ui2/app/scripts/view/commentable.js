@@ -37,7 +37,7 @@
                 data : { id: this.cfg.target,sortBy:config.sortBy,sortOrder:config.sortOrder }
             });
 
-            if((!isMobile && config.discussionView == "view.Inline") || config.mobileExpanded == true){
+            if((!isMobile && config.discussionView == "view.Inline") || (isMobile && config.mobileExpanded == true)){
                 setTimeout(function(){
                     me.revealDiscussion();
                 }, 500);
@@ -70,10 +70,15 @@
 
             var $options = $(U.template(this.getTemplate('main'), { count: '' }));
             $options.find('a.action').tooltip();
-            $options.mouseenter(function () { clearTimeout(me.timeout);  });
-            $options.mouseleave(function () { me.timeout = setTimeout(function () { me.mouseleave(); }); });
+            //$options.mouseenter(function () { clearTimeout(me.timeout);  });
+            //$options.mouseleave(function () { me.timeout = setTimeout(function () { me.mouseleave(); }); });
 
+            $options.css({
+                right: 0,
+                top: 0
+            });
             this.$options = $options;
+            this.$el.append($options);
 
         },
         render: function () {
@@ -258,42 +263,46 @@
         },
 
         mouseenter: function (  ) {
+            var $elem = this.element();
+            $elem.addClass(REVEAL_CLASS);
 
-            if (!this.hide) {
-
-                clearTimeout(this.timeout);
-
-                var $elem = this.element(),
-                    $options = this.$options;
-
-                $elem.addClass(REVEAL_CLASS);
-
-                $options.appendTo($elem).show();
-
-                $options.hide();
-
-                $options.css({
-                    right: 0,
-                    top: 0
-                }).show();
-
-                this.revealed = true;
-
-            }
+            //if (!this.hide) {
+            //
+            //    clearTimeout(this.timeout);
+            //
+            //    var $elem = this.element(),
+            //        $options = this.$options;
+            //
+            //    $elem.addClass(REVEAL_CLASS);
+            //
+            //    $options.css({
+            //        right: 0,
+            //        top: 0
+            //    });
+            //
+            //    $options.appendTo($elem).show();
+            //
+            //    //$options.hide();
+            //
+            //    this.revealed = true;
+            //
+            //}
 
         },
         mouseleave: function (  ) {
+            var me = this;
+            me.element().removeClass(REVEAL_CLASS);
 
-            if ( !(this.reveal) ) {
-
-                var me = this;
-                me.timeout = setTimeout(function () {
-                    me.element().removeClass(REVEAL_CLASS);
-                    me.$options.hide().detach();
-                    me.revealed = false;
-                }, 10);
-
-            }
+            //if ( !(this.reveal) ) {
+            //
+            //    var me = this;
+            //    me.timeout = setTimeout(function () {
+            //        me.element().removeClass(REVEAL_CLASS);
+            //        me.$options.hide().detach();
+            //        me.revealed = false;
+            //    }, 10);
+            //
+            //}
 
         },
         windowWidthChanged: function() {
