@@ -1,7 +1,16 @@
 <div class="crafter-social-view crafter-social-commentable-options">
-    <ul>
+    <ul class="desktop">
         <li>
             <a id="socialCommentBadge" href="#" class="action" data-action="revealDiscussion" title="{{loc 'commentable.view-comment'}}"
+               data-placement="auto">
+                <i class="crafter-social-icon cs-icon-comment"></i> <span class="badge">{{count}}</span>
+            </a>
+        </li>
+    </ul>
+
+    <ul class="mobile">
+        <li>
+            <a id="socialCommentBadge" href="#" class="" data-action="revealDiscussion" title="{{loc 'commentable.view-comment'}}"
                data-placement="auto">
                 <i class="crafter-social-icon cs-icon-comment"></i> <span class="badge">{{count}}</span>
             </a>
