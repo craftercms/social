@@ -208,6 +208,15 @@ $popover-font-size: 12px;
 
         }
 
+        .comment-attachments {
+            margin: 10px 0;
+            .img-file {
+                max-width: 10%;
+                cursor: pointer;
+                margin-right: 10px;
+            }
+        }
+
         footer {
 
             @include clearfix();

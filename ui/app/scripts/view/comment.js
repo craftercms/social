@@ -86,6 +86,8 @@
                 }
             });
 
+            var $attachments = this.$('.comment-attachments:first');
+
             model.children.every(function ( child ) {
 
                 var m = new Comment(child),
@@ -95,6 +97,22 @@
 
                 return true;
 
+            });
+
+            model.attachments.every(function (attachment) {
+                var File = S.get('model.File');
+                var file = new File();
+                file = file.parse(attachment);
+
+                // only showing preview of images                
+                if (file.fileName.match(/\.(jpg|jpeg|png|gif)$/)) {
+                    // TODO: move this to a view?
+                    var $el = '<img class="img-thumbnail img-file" data-action="viewFile" title="'+ 
+                                file.fileName +'" alt="'+ file.fileName +'" src="'+ file.url +'" />' 
+                    $attachments.append($el);
+                }
+                
+                return true;
             });
 
             return this;
@@ -397,6 +415,19 @@
 
             files.fetch(fetchOptions);
 
+        },
+
+        viewFile: function (event) {
+            var Modal = S.get('view.Modal');
+            var modal  = new Modal({
+                modal: { show: true, keyboard: false, backdrop: 'static' }
+            });
+
+            modal.set('title', 'View Image');
+            modal.set('body', '<img class="img-file" src="'+ event.target.src +'"/>')
+            modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
+
+            modal.render();
         },
 
         remove: function () {

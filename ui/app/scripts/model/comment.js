@@ -34,7 +34,8 @@
             'thread': '',
             'children': [],
             'attributes': {},
-            'createdDate': Date.now()
+            'createdDate': Date.now(),
+            'attachments': []
         },
         hasChildren: function () {
             return this.get('children').length > 0;
