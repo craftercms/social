@@ -234,7 +234,7 @@
 //            var Commenting  = S.get('view.Commenting');
 //            var commenting  = new Commenting(this.cfg.commenting);
             e.stopPropagation();
-            var $body = this.$('.comment-body-reply').addClass('replying');
+            var $body = this.$('.comment-body-reply:first').addClass('replying');
             var $editor = $body.find('.editor');
             $editor.html($body.find('.content-wrapper').html());
             $editor.attr('contenteditable', 'true');
@@ -423,7 +423,6 @@
                 modal: { show: true, keyboard: false, backdrop: 'static' }
             });
 
-            modal.set('title', 'View Image');
             modal.set('body', '<img class="img-file" src="'+ event.target.src +'"/>')
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 

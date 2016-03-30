@@ -29,6 +29,10 @@
         max-width: 100%;
       }
 
+      > .modal-header {
+        min-height: 50px;
+      }
+
       > .modal-footer {
         margin-top: 0;
       }
