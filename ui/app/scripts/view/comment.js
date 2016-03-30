@@ -192,9 +192,11 @@
             var $editor = $body.find('.editor');
 
             $editor.html($body.find('.content-wrapper').html());
+            $editor.attr('contenteditable', 'true')
 
             var editor = CKEDITOR.inline($editor.get(0), {
-                startupFocus: true
+                startupFocus: true,
+                toolbar: 'Basic'
             });
 
             this.cache('editor', editor);

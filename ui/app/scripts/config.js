@@ -53,10 +53,13 @@
                         'neutral': '',
                         'down': '',
                         'up': ''
+                    },'update':{
+                        'value':'?context={context}',
+                        '{_id}': {}
                     },
                     'flags': {
-                        'value': '', // Flag comment flags
-                        '{flagId}':''
+                        'value': '?context={context}', // Flag comment flags
+                       '{flagId}':'?context={context}'
                     },
                     'attachments': {
                         'value': '',
