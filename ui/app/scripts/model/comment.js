@@ -135,7 +135,12 @@
                 }
             };
             this.collection.create(data, callbacks);
-        }
+        },
+        fetch: function (options) {
+                options = options || {};
+                options.cache = false;
+                return Backbone.Collection.prototype.fetch.call(this, options);
+            }
     });
 
     S.define('model.Comment', Comment);

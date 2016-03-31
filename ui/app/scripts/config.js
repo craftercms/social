@@ -53,9 +53,6 @@
                         'neutral': '',
                         'down': '',
                         'up': ''
-                    },'update':{
-                        'value':'?context={context}',
-                        '{_id}': {}
                     },
                     'flags': {
                         'value': '?context={context}', // Flag comment flags
