@@ -173,7 +173,7 @@
 
             modal.set({
                 'title': 'Upload Profile Image',
-                'body': '<div class="form-group"><input id="avatarFileupload" type="file" name="avatar" value="Choose new profile picture"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
+                'body': '<div class="form-group"><p>If you choose to upload a photo please select a current business relevant photo of yourself.</p><br/><input id="avatarFileupload" type="file" name="avatar" value="Choose new profile picture"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
                 'footer': '<button class="btn btn-primary">Upload</button>'
             });
 
