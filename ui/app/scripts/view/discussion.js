@@ -109,6 +109,8 @@
 
         addOne: function (comment) {
             if(!comment.isTrashed()) {
+                var ts=new Date().getTime();
+                comment.ts=ts;
                 this.$('.no-comments').remove();
                 if (!comment.isReply()) { // replies are handled separately
                     var view = new S.view.Comment({
