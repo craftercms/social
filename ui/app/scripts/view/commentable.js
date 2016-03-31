@@ -16,7 +16,7 @@
     Commentable = Base.extend({
 
         hide: false,
-        reveal: false,
+        reveal: true,
         timeout: null,
         className: 'crafter-social-commentable',
         revealed: false,
