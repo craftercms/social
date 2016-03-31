@@ -336,8 +336,7 @@
                     'Underline', '-',
                     'NumberedList',
                     'BulletedList', '-',
-                    'Link', '-',
-                    'Image'
+                    'Link', '-'
                 ]
             ],
             toolbar_Full: [
