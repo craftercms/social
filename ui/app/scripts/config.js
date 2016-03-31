@@ -59,7 +59,7 @@
                     },
                     'flags': {
                         'value': '?context={context}', // Flag comment flags
-                       '{flagId}':'?context={context}'
+                       '{flagId}': '?context={context}'
                     },
                     'attachments': {
                         'value': '',
