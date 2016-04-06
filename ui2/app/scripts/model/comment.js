@@ -29,11 +29,20 @@
 
         idAttribute: '_id',
         defaults: {
+            'ancestors': [],
             'body': '',
             'thread': '',
             'children': [],
             'attributes': {},
-            'createdDate': Date.now()
+            'createdDate': Date.now(),
+            'attachments': []
+        },
+        hasChildren: function () {
+            return this.get('children').length > 0;
+        },
+
+        isReply: function () {
+            return this.get('ancestors').length > 0;
         },
 
         url: function () {
@@ -110,8 +119,23 @@
                    }, callbacks);
           },
 
-        reply: function () {
-
+        reply: function (params, callbacks) {
+            var replyingTo = this.attributes;
+            var ancestors = replyingTo.ancestors.slice();
+            ancestors.push(replyingTo);
+            var data = {
+                    body: params.body,
+                    parent: replyingTo._id, 
+                    dateAdded: Date.now(),
+                    thread: replyingTo.targetId, // this is the targetId
+                    context: params.context,
+                    targetId: replyingTo.targetId,
+                    attributes: {
+                        'commentUrl': replyingTo.attributes.commentUrl,
+                        'commentThreadName': replyingTo.attributes.commentThreadName
+                }
+            };
+            this.collection.create(data, callbacks);
         },
         fetch: function (options) {
                 options = options || {};
