@@ -86,6 +86,7 @@
                     }
             });
 
+            var $attachments = this.$('.comment-attachments:first');
 
             model.children.every(function ( child ) {
 
@@ -286,6 +287,7 @@
         },
         flag: function (e) {
             e.preventDefault();
+            e.stopPropagation();
 
             var me = this;
             var isFlagged = this.model.flaggedBy(Director.getProfile().get('id'));
@@ -343,7 +345,6 @@
         },
 
         files: function () {
-
             var me    = this;
             var model = this.model;
 
@@ -391,7 +392,7 @@
                             return data.files || [];
                         }
                     }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
-                        me.model.fetch(fetchOptions);
+                        me.collection.fetch(fetchOptions);
                     });
 
                 });
@@ -406,7 +407,7 @@
 
             }
 
-            modal.set('title', 'File Attachments');
+            modal.set('title', 'Add Images');
             modal.set('body', view.el);
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 
@@ -414,6 +415,18 @@
 
             files.fetch(fetchOptions);
 
+        },
+
+        viewFile: function (event) {
+            var Modal = S.get('view.Modal');
+            var modal  = new Modal({
+                modal: { show: true, keyboard: false, backdrop: 'static' }
+            });
+
+            modal.set('body', '<img class="img-file-full" src="'+ event.target.src +'"/>')
+            modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
+
+            modal.render();
         },
 
         remove: function () {

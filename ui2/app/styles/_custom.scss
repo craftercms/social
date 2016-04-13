@@ -21,6 +21,19 @@ $font: 'Source Sans Pro', sans-serif;
             }
         }
     }
+
+    .crafter-social-comment {
+        @media screen and (max-width: 768px) {
+            .comment-attachments {
+                margin: 0 auto;
+            }
+
+            .comment-attachments .img-file {
+                max-width: 100%;
+                margin: 10px 0;
+            }
+        }
+    }
 }
 
 .crafter-social-view.crafter-social-inline-view .panel-default > .panel-heading {
@@ -72,12 +85,16 @@ $font: 'Source Sans Pro', sans-serif;
             padding: 0 0 20px;
         }
 
+        $avatar-size: 55;
+        $body-wrapper-padding: 65;
+        $body-wrapper-margin-left: -64;
+
         .body-wrapper {
-            padding-left: 65px;
+            padding-left: $body-wrapper-padding + 0px;
 
             .comment-data {
                 .comment-body {
-                    margin-left: -64px;
+                    margin-left: $body-wrapper-margin-left + 0px;;
                     margin-top: 25px;
                     margin-bottom: 15px;
                 }
@@ -85,9 +102,24 @@ $font: 'Source Sans Pro', sans-serif;
 
             .avatar {
                 img {
-                    width: 55px;
-                    height: 55px;
+                    width: $avatar-size + 0px;
+                    height: $avatar-size + 0px;
                 }
+            }
+        }
+
+        .comment-children {
+            .body-wrapper {
+                padding-left: $body-wrapper-padding - 15px;
+            }
+
+            .body-wrapper .comment-data .comment-body {
+                margin-left: $body-wrapper-margin-left + 15px;
+            }
+
+            .avatar img {
+                width: $avatar-size - 15px;
+                height: $avatar-size - 15px;
             }
         }
 

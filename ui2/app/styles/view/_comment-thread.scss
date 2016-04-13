@@ -139,6 +139,10 @@ $popover-font-size: 12px;
 
 
       .comment-data {
+        a {
+          margin: 0 5px;
+        }
+        
         .reply {
           text-decoration: none;
           i {
@@ -210,7 +214,7 @@ $popover-font-size: 12px;
         }
 
     .comment-attachments {
-        margin: 10px 0;
+        margin: 10px 0 10px -64px;;
         .img-file {
             max-width: 10%;
             cursor: pointer;
