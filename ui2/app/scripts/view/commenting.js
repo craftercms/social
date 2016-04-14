@@ -4,7 +4,10 @@
     var Commenting,
         Base = S.view.Base,
         CKEDITOR = S.Editor,
+        U = S.util,
         $ = S.$;
+
+    var Director = S.getDirector();
 
     Commenting = Base.extend({
 
@@ -16,6 +19,10 @@
         events: {
             'click [data-action-comment]': 'comment',
             'click [data-action-terms]': 'acceptTerms'
+        },
+
+        initialize: function (config) {
+            Base.prototype.initialize.apply(this, arguments);
         },
 
         editor: function ( option ) {
@@ -138,11 +145,30 @@
         },
 
         render: function () {
+            var me       = this;
+            var profile  = Director.getProfile();
+            var model    = $.extend(this.model, {
+                avatarUrl: function() {
+                    var ts = new Date().getTime();
+                    if(model.reloadAvatar !== undefined) {
+                        ts = model.reloadAvatar;
+                    }
+                    return S.url('profile.avatar', {
+                        id: profile.id,
+                        context: me.cfg.context, 
+                        ts: ts
+                    });
+                }
+            });
+
+            this.$el.html(U.template(
+                this.getTemplate('main'), model));
+
             this.editor();
             this.submissionDetails();
+
             return this;
         }
-
     });
 
     Commenting.DEFAULTS = $.extend({}, Base.DEFAULTS, {

@@ -64,7 +64,8 @@
                     context: this.cfg.context,
                     target: this.cfg.target,
                     commentUrl:this.cfg.commentUrl,
-                    commentThreadName:this.cfg.commentThreadName
+                    commentThreadName:this.cfg.commentThreadName,
+                    model: {},
                 }, this.cfg.commenting));
 
                 $replies.append(view.render().el);
