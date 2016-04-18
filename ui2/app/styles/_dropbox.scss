@@ -12,6 +12,21 @@
     padding: 15px;
     background: #ebebeb;
     border-radius: $border-radius-large;
+
+    .cs-file-title a {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 80%;
+      display: inline-block;
+    }
+
+    .file-preview {
+      max-height: 30px;
+      width: auto;
+      margin: 0 10px;
+      border-radius: 4px;
+    }
   }
 
   .cs-file-upload {

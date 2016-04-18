@@ -24,6 +24,9 @@
                     fileId: modelData.fileId,
                     context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'
                 });
+
+                modelData.urlPreview = this.getPreviewUrl(modelData);
+
             } catch (ex) {
                 console && console.log('crafter.social.model.File: ', ex);
             }
@@ -36,6 +39,16 @@
 
         open: function () {
 
+        },
+
+        getPreviewUrl: function (modelData) {
+            if (modelData.fileName.match(/\.(jpg|jpeg|png|gif)$/)) {
+                return modelData.url;
+            } else if (modelData.fileName.match(/\.(mp4)$/)) {
+                return "images/poster.png"; 
+            } else {
+                return ""
+            }
         }
 
     });
