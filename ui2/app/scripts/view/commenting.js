@@ -16,6 +16,8 @@
             'crafter-social-commenting-view'
         ].join(' '),
 
+        createUI: U.emptyFn,
+
         events: {
             'click [data-action-comment]': 'comment',
             'click [data-action-terms]': 'acceptTerms'
