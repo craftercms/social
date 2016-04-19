@@ -147,7 +147,7 @@
         render: function () {
             var me       = this;
             var profile  = Director.getProfile();
-            var model    = $.extend(this.model, {
+            var model    = $.extend(this.model.toJSON(), {
                 avatarUrl: function() {
                     var ts = new Date().getTime();
                     if(model.reloadAvatar !== undefined) {
@@ -164,10 +164,75 @@
             this.$el.html(U.template(
                 this.getTemplate('main'), model));
 
+            this.$('.change-avatar').mouseleave(function () {
+                me.$('.change-avatar').addClass('hidden');
+                me.$('.current-avatar').removeClass('hidden');
+            });
+
+            this.$('.current-avatar').mouseover(function () {
+                me.$('.current-avatar').addClass('hidden');
+                me.$('.change-avatar').removeClass('hidden');
+            });
+
             this.editor();
             this.submissionDetails();
 
             return this;
+        },
+
+        uploadAvatar: function(){
+            var me = this;
+            var files=[];
+            var modal = S.util.instance('view.Modal', {
+                modal: { show: true },
+                events: {
+                    'change input[type=file]': function(event){
+                        files = event.target.files;
+                    },
+                    'click .btn-primary': function () {
+                       // Create a formdata object and add the files
+                        var data = new FormData();
+                        $.each(files, function(key, value)
+                        {
+                            data.append(key, value);
+                        });
+
+                        S.request({
+                            type: 'POST',
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            data:data,
+                            url: S.url('profile.avatar', {
+                                _id: Director.getProfile().id,
+                                 context: me.cfg.context
+                            }),
+                            success: function () {
+                                modal.hide();
+                                me.model.collection.each(function(ugc){
+                                    if(ugc.get("user").id===Director.getProfile().id){
+                                        ugc.set("reloadAvatar",new Date().getTime());
+                                    }
+                                });
+                            },
+                            error: function () {
+                                modal.$('.modal-body')
+                                .prepend('<div class="alert alert-danger">Unable to Upload profile image</div>');
+                            }
+                        });
+                    }
+                }
+            });
+
+            modal.set({
+                'title': 'Upload Profile Image',
+                //---------------  modification to add picture guidelines -----------//
+                'body': '<div class="form-group"><p>If you choose to upload a photo, select a current business relevant photo of yourself (recommended dimensions are 100x100 pixels).</p><br/><input id="avatarFileupload" type="file" name="avatar" value="Choose new profile picture"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
+                //---------------  modification to add picture guidelines -----------//
+                'footer': '<button class="btn btn-primary">Upload</button>'
+            });
+
+            modal.render();
         }
     });
 
@@ -213,7 +278,6 @@
                 element : 'span',
                 styles : { 'color' : '#(color)' }
             },
-            contentsCss: S.Cfg('url.base') + 'styles/editor-content.css',
             contentsLangDirection: 'ui',
             contentsLanguage: 'en',
             corePlugins: '',

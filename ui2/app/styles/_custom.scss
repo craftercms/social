@@ -108,16 +108,20 @@ $body-wrapper-margin-left: -64;
 
         .comment-children {
             .body-wrapper {
-                padding-left: $body-wrapper-padding - 15px;
+                padding-left: $body-wrapper-padding - 20px;
             }
 
             .body-wrapper .comment-data .comment-body {
-                margin-left: $body-wrapper-margin-left + 15px;
+                margin-left: $body-wrapper-margin-left + 20px;
+            }
+
+            .avatar {
+                top: 6px;
             }
 
             .avatar img {
-                width: $avatar-size - 15px;
-                height: $avatar-size - 15px;
+                width: $avatar-size - 20px;
+                height: $avatar-size - 20px;
             }
         }
 

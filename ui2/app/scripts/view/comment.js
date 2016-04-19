@@ -88,31 +88,33 @@
 
             var $attachments = this.$('.comment-attachments:first');
 
-            model.children.every(function ( child ) {
+            model.children.forEach(function ( child ) {
 
                 var m = new Comment(child),
                     v = new CommentView($.extend({}, me.cfg, { model: m }));
 
                 $children.append(v.render().el);
-
-                return true;
-
             });
 
-            model.attachments.every(function (attachment) {
+            model.attachments.forEach(function (attachment) {
                 var File = S.get('model.File');
                 var file = new File();
+                var $el = '';
                 file = file.parse(attachment);
 
                 // only showing preview of images                
-                if (file.fileName.match(/\.(jpg|jpeg|png|gif)$/)) {
+                if (file.fileName.match(S.Constants.get('SUPPORTED_IMAGE_FORMATS'))) {
                     // TODO: move this to a view?
-                    var $el = '<img class="img-thumbnail img-file" data-action="viewFile" title="'+ 
+                    $el = '<img class="img-thumbnail img-file" data-action="viewFile" title="'+ 
                                 file.fileName +'" alt="'+ file.fileName +'" src="'+ file.url +'" />' 
-                    $attachments.append($el);
+                } else if (file.fileName.match(S.Constants.get('SUPPORTED_VIDEO_FORMATS'))) {
+                    var videoType = file.fileName.split('.');
+                    videoType = (videoType.length > 1)? videoType[1] : "";
+                    $el = '<img class="img-thumbnail img-file" data-action="viewFile" data-video-type="'+ videoType +'" data-video-url="'+ file.url +'" title="'+ 
+                                file.fileName +'" alt="'+ file.fileName +'" src="images/poster.png" />' 
                 }
-                
-                return true;
+
+                $attachments.append($el);
             });
 
             return this;
@@ -407,7 +409,7 @@
 
             }
 
-            modal.set('title', 'Add Images');
+            modal.set('title', 'Add Media');
             modal.set('body', view.el);
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 
@@ -423,7 +425,15 @@
                 modal: { show: true, keyboard: false, backdrop: 'static' }
             });
 
-            modal.set('body', '<img class="img-file-full" src="'+ event.target.src +'"/>')
+            var fileObj = event.target;
+
+            if (fileObj.dataset.videoType && fileObj.dataset.videoType.match(/(mp4)$/)) {
+                modal.set('body', '<video controls autoplay class="img-file-full"><source src="'+ fileObj.dataset.videoUrl +'" type="video/'+ fileObj.dataset.videoType +'" ></source></video>')
+            } else {
+                modal.set('body', '<img class="img-file-full" src="'+ event.target.src +'"/>')    
+            }
+
+            
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 
             modal.render();

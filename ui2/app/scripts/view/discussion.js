@@ -59,13 +59,13 @@
 
             if ($replies.size() && isSocialAuthor) {
 
-                var view = new S.util.instance('view.Commenting', $.extend({
+                var view = new S.view.Commenting($.extend({
                     collection: this.collection,
                     context: this.cfg.context,
                     target: this.cfg.target,
                     commentUrl:this.cfg.commentUrl,
                     commentThreadName:this.cfg.commentThreadName,
-                    model: {},
+                    model: new S.Backbone.Model({avatarUrl: ''}),
                 }, this.cfg.commenting));
 
                 $replies.append(view.render().el);
