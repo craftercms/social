@@ -34,6 +34,37 @@ $body-wrapper-margin-left: -64;
                 max-width: 100%;
                 margin: 10px 0;
             }
+
+            .comment-attachments .file-wrapper {
+                max-width: 100%;
+                margin-bottom: 10px;
+                &:hover .file-overlay {
+                    opacity: 1;
+                    -webkit-transition: none;
+                       -moz-transition: none;
+                        -ms-transition: none;
+                         -o-transition: opacity 0;
+                            transition: none;
+                }
+            }
+
+            .comment-attachments .file-overlay {
+                opacity: 1;
+                width: 8%;
+                height: 10%;
+                top: 4px;
+                right: 4px;
+                text-align: center;
+                -webkit-transition: none;
+                   -moz-transition: none;
+                    -ms-transition: none;
+                     -o-transition: opacity 0;
+                        transition: none;
+            }
+
+            .comment-attachments .file-overlay span {
+                margin: 0
+            }
         }
     }
 }

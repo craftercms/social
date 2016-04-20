@@ -214,11 +214,50 @@ $popover-font-size: 12px;
         }
 
     .comment-attachments {
-        margin: 10px 0 10px -64px;;
-        .img-file {
-            max-width: 30%;
+        margin: 10px 0 10px -64px;
+        
+        .file-wrapper {
+          display: inline-block;
+          max-width: 30%;
+          margin-right: 10px;
+          position: relative;
+
+          &:hover {
+            .file-overlay {
+              opacity: .7;
+              -webkit-transition: opacity .2s;
+                 -moz-transition: opacity .2s;
+                  -ms-transition: opacity .2s;
+                   -o-transition: opacity .2s;
+                      transition: opacity .2s;
+            }
+          }
+        }
+
+        .file-overlay {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          opacity: 0;
+          background-color: #fff;
+          text-align: right;
+          -webkit-transition: opacity .2s;
+             -moz-transition: opacity .2s;
+              -ms-transition: opacity .2s;
+               -o-transition: opacity .2s;
+                  transition: opacity .2s;
+
+          span {
+            color: #428bca;
+            margin: 10px;
             cursor: pointer;
-            margin-right: 10px;
+          }
+        }
+
+        .file {
+            max-width: 100%;
+            cursor: pointer;
         }
     }
 

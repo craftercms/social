@@ -104,18 +104,27 @@
                 var File = S.get('model.File');
                 var file = new File();
                 var $el = '';
+                var $overlay = '';
                 file = file.parse(attachment);
+
+                if (model.isOwner()) {
+                    $overlay = '<div class="file-overlay"><span data-action="trashAttachment" class="crafter-social-icon cs-icon-trash"></span></div>';
+                }
 
                 // only showing preview of images or videos          
                 if (file.fileName.match(S.Constants.get('SUPPORTED_IMAGE_FORMATS'))) {
                     // TODO: move this to a view?
-                    $el = '<img class="img-thumbnail img-file" data-action="viewFile" title="'+ 
-                                file.fileName +'" alt="'+ file.fileName +'" src="'+ file.url +'" />' 
+                    $el = '<div class="file-wrapper"><img class="img-thumbnail file" data-action="viewFile" title="'+ 
+                                file.fileName +'" alt="'+ file.fileName +'" src="'+ file.url +'" />'+
+                                $overlay +
+                          '</div>';
                 } else if (file.fileName.match(S.Constants.get('SUPPORTED_VIDEO_FORMATS'))) {
                     var videoType = file.fileName.split('.');
                     videoType = (videoType.length > 1)? videoType[1] : "";
-                    $el = '<img class="img-thumbnail img-file" data-action="viewFile" data-video-type="'+ videoType +'" data-video-url="'+ file.url +'" title="'+ 
-                                file.fileName +'" alt="'+ file.fileName +'" src="images/poster.png" />' 
+                    $el = '<div class="file-wrapper"><img class="img-thumbnail file" data-action="viewFile" data-video-type="'+ videoType +'" data-video-url="'+ file.url +'" title="'+ 
+                                file.fileName +'" alt="'+ file.fileName +'" src="images/poster.png" />'+ 
+                                $overlay +
+                          '</div>';
                 }
 
                 $attachments.append($el);
@@ -449,8 +458,11 @@
         remove: function () {
             this.trigger('remove', this.model);
             this.$el.remove();
-        }
+        },
 
+        trashAttachment: function () {
+            
+        }
     });
 
     CommentView.DEFAULTS = $.extend(true, {}, Base.DEFAULTS, {
