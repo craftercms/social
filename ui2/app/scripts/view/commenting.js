@@ -27,6 +27,13 @@
             Base.prototype.initialize.apply(this, arguments);
         },
 
+        listen: function () {
+            if (this.model) {
+                this.listenTo(this.model, 'change', this.render);
+                this.listenTo(this.collection, 'change', this.render);
+            }
+        },
+
         editor: function ( option ) {
 
             var editor = this.cache('editor');
@@ -34,7 +41,8 @@
             if ( option === 'destroy' ) {
 
                 if ( editor ) {
-                    editor.destroy();
+                    editor.removeAllListeners();
+                    CKEDITOR.remove(editor);
                     this.cache('editor', S.Constants.get('DESTROY'));
                 }
 
@@ -146,9 +154,10 @@
 
         },
 
-        render: function () {
+        render: function (e) {
             var me       = this;
             var profile  = Director.getProfile();
+            var editor = this.cache('editor');
             var model    = $.extend(this.model.toJSON(), {
                 avatarUrl: function() {
                     var ts = new Date().getTime();
@@ -175,6 +184,10 @@
                 me.$('.current-avatar').addClass('hidden');
                 me.$('.change-avatar').removeClass('hidden');
             });
+            
+            if (editor || (e && e.changed)) {
+                this.editor('destroy');
+            } 
 
             this.editor();
             this.submissionDetails();
@@ -191,8 +204,9 @@
                     'change input[type=file]': function(event){
                         files = event.target.files;
                     },
-                    'click .btn-primary': function () {
+                    'click .btn-primary': function (e) {
                        // Create a formdata object and add the files
+                        $(e.target).addClass('disabled');
                         var data = new FormData();
                         $.each(files, function(key, value)
                         {
@@ -210,14 +224,18 @@
                                  context: me.cfg.context
                             }),
                             success: function () {
+                                var d = new Date().getTime();
+                                $(e.target).removeClass('disabled');
                                 modal.hide();
-                                me.model.collection.each(function(ugc){
+                                me.collection.each(function(ugc) {
                                     if(ugc.get("user").id===Director.getProfile().id){
-                                        ugc.set("reloadAvatar",new Date().getTime());
+                                        ugc.set("reloadAvatar", d);
                                     }
                                 });
+                                me.model.set("reloadAvatar", d);
                             },
                             error: function () {
+                                $(e.target).removeClass('disabled');
                                 modal.$('.modal-body')
                                 .prepend('<div class="alert alert-danger">Unable to Upload profile image</div>');
                             }

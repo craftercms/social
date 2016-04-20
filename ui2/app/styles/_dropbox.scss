@@ -1,6 +1,7 @@
 
 // TODO MOVE THIS OUT OF HERE!
 .#{$app-namespace}-view.#{$app-namespace}-file-view {
+  $cs-file-title-height: 30;
 
   background: #fff;
   margin: 0 0 10px 0;
@@ -13,19 +14,25 @@
     background: #ebebeb;
     border-radius: $border-radius-large;
 
+    .cs-file-title {
+      min-height: $cs-file-title-height + 0px;
+    }
+
     .cs-file-title a {
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       max-width: 80%;
       display: inline-block;
+      line-height: $cs-file-title-height + 0px;
     }
 
     .file-preview {
       max-height: 30px;
       width: auto;
-      margin: 0 10px;
+      margin-left: 10px;
       border-radius: 4px;
+      float: right;
     }
   }
 

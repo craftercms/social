@@ -32,6 +32,7 @@
                 this.listenTo(this.model, 'sync', this.render);
                 this.listenTo(this.model, 'destroy', this.remove);
                 this.listenTo(this.model, 'remove', this.remove);
+                this.listenTo(this.model, 'change', this.render);
             }
         },
         render: function () {
@@ -58,12 +59,15 @@
                     return profile!==undefined && profile.id !==undefined;
                 },
                 avatarUrl: function(){
-                    var ts=me.model.ts;
-                    if(model.reloadAvatar!==undefined){
-                        ts=model.reloadAvatar;
+                    var ts = me.model.ts;
+                    if(model.reloadAvatar !== undefined){
+                        ts= model.reloadAvatar;
                     }
-                    return S.url('profile.avatar',{id: model.user?model.user.id:profile.id,
-                                                    context: me.cfg.context,ts:ts});
+                    return S.url('profile.avatar',{
+                        id: model.user? model.user.id: profile.id,
+                        context: me.cfg.context,
+                        ts:ts
+                    });
                 }
             });
 
@@ -102,7 +106,7 @@
                 var $el = '';
                 file = file.parse(attachment);
 
-                // only showing preview of images                
+                // only showing preview of images or videos          
                 if (file.fileName.match(S.Constants.get('SUPPORTED_IMAGE_FORMATS'))) {
                     // TODO: move this to a view?
                     $el = '<img class="img-thumbnail img-file" data-action="viewFile" title="'+ 
@@ -138,8 +142,9 @@
                     'change input[type=file]': function(event){
                         files = event.target.files;
                     },
-                    'click .btn-primary': function () {
+                    'click .btn-primary': function (e) {
                        // Create a formdata object and add the files
+                        $(e.target).addClass('disabled');
                         var data = new FormData();
                         $.each(files, function(key, value)
                         {
@@ -157,6 +162,7 @@
                                  context: me.cfg.context
                             }),
                             success: function () {
+                                $(e.target).removeClass('disabled');
                                 modal.hide();
                                 me.model.collection.each(function(ugc){
                                     if(ugc.get("user").id===Director.getProfile().id){
@@ -165,6 +171,7 @@
                                 });
                             },
                             error: function () {
+                                $(e.target).removeClass('disabled');
                                 modal.$('.modal-body')
                                 .prepend('<div class="alert alert-danger">Unable to Upload profile image</div>');
                             }
