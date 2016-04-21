@@ -192,12 +192,13 @@
                 this.viewChangeRequest(this.cfg.mobileView);
             } else {
                 this.viewChangeRequest(this.cfg.discussionView, true);
+            }
 
-                if(e && this.cfg.discussionView == 'view.Inline' && !this.isMobile) {
-                    $('html, body').animate({
-                        scrollTop: $($(e.currentTarget).attr('href')).offset().top
-                    }, 500);
-                }
+
+            if(e && ((!this.isMobile && this.cfg.discussionView == "view.Inline") || (this.isMobile && this.cfg.mobileView == "view.Inline"))) {
+                $('html, body').animate({
+                    scrollTop: $($(e.currentTarget).attr('href')).offset().top
+                }, 500);
             }
 
             $.each(['view.Popover','view.Lightbox','view.Inline'], function (i, v) {

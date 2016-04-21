@@ -66,16 +66,20 @@ $commentable-shadow-color: $brand-primary;
         @include opacity(.7);
 
         &.desktop{
-            display: none;
+            display: none !important;
+        }
+
+        &.mobile {
+            display: block !important;
         }
 
         @media only screen and (min-width: 768px) {
             &.mobile {
-                display: none;
+                display: none !important;
             }
 
             &.desktop{
-                display: block;
+                display: block !important;
             }
 
             &.desktop:hover {
