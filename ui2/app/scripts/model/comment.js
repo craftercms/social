@@ -100,7 +100,10 @@
         trash: function (params) {
             this.moderate(C.get('MODERATION_STATUS_TRASH'), params);
         },
-
+        trashAttachment: function (params, callbacks) {
+            //TODO: fix endpoint
+            //SUBMIT.call(this, 'comments.{_id}.attachments.{fileId}.delete', {}, 'POST', params, callbacks);
+        },
         moderate: function (status, params) {
                    SUBMIT.call(this,
                        'comments.{_id}.moderate',

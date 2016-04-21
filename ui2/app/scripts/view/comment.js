@@ -460,8 +460,36 @@
             this.$el.remove();
         },
 
-        trashAttachment: function () {
+        trashAttachment: function (event) {
+            var self = this;
+            var Modal = S.get('view.Modal');
+            var modal  = new Modal({
+                modal: { 
+                    show: true, 
+                    keyboard: false, 
+                    backdrop: 'static'
+                },
+                events: {
+                    'click .btn-danger': function () {
+                        self.model.trashAttachment(self.getRequestParams({fileId: '5710f560a826ecdfcd5f6df2'}), {
+                            success: function(data) {
+                                console.log('Success ', data);
+                            },
+                            error: function(data) {
+                                console.log('Error ', data);
+                            }
+                        });
+                    }
+                }
+            });
+
+            var fileObj = event.target;
             
+            modal.set('title', 'Delete Attachment');
+            modal.set('body', '<span>Are you sure you want to delete the attachment?</span>')
+            modal.set('footer', '<button class="btn btn-danger">Delete</button><button class="btn btn-default" data-dismiss="modal">Cancel</button>');
+
+            modal.render();
         }
     });
 
