@@ -351,7 +351,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             }
             ObjectId attachmentOid = new ObjectId(attachmentId);
             FileInfo info = ugcRepository.getFileInfo(attachmentOid);
-            if (!info.getFileName().startsWith(File.separator + contextId)) {
+            if (!info.getStoreName().startsWith(File.separator + contextId)) {
                 throw new IllegalSocialQueryException("Given Attachment does not belong to the given context");
             }
             ugc.getAttachments().remove(info);
