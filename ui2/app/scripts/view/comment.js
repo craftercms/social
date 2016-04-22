@@ -107,27 +107,18 @@
                 var $overlay = '';
                 file = file.parse(attachment);
 
-                if (model.isOwner()) {
-                    $overlay = '<div class="file-overlay"><span data-action="trashAttachment" class="crafter-social-icon cs-icon-trash"></span></div>';
-                }
+                var tempModel = $.extend(file, {
+                    commentId: model._id,
+                    showOverlay: model.isOwner(),
+                });
 
-                // only showing preview of images or videos          
-                if (file.fileName.match(S.Constants.get('SUPPORTED_IMAGE_FORMATS'))) {
-                    // TODO: move this to a view?
-                    $el = '<div class="file-wrapper"><img class="img-thumbnail file" data-action="viewFile" title="'+ 
-                                file.fileName +'" alt="'+ file.fileName +'" src="'+ file.url +'" />'+
-                                $overlay +
-                          '</div>';
-                } else if (file.fileName.match(S.Constants.get('SUPPORTED_VIDEO_FORMATS'))) {
-                    var videoType = file.fileName.split('.');
-                    videoType = (videoType.length > 1)? videoType[1] : "";
-                    $el = '<div class="file-wrapper"><img class="img-thumbnail file" data-action="viewFile" data-video-type="'+ videoType +'" data-video-url="'+ file.url +'" title="'+ 
-                                file.fileName +'" alt="'+ file.fileName +'" src="images/poster.png" />'+ 
-                                $overlay +
-                          '</div>';
-                }
+                var attachmentModel = new S.model.AttachmentPreview(attachment);
+                var attachmentView = new S.view.AttachmentPreview({ 
+                    model: attachmentModel,
+                    context: me.cfg.context
+                })
 
-                $attachments.append($el);
+                $attachments.append(attachmentView.render().el);
             });
 
             return this;
@@ -459,38 +450,6 @@
             this.trigger('remove', this.model);
             this.$el.remove();
         },
-
-        trashAttachment: function (event) {
-            var self = this;
-            var Modal = S.get('view.Modal');
-            var modal  = new Modal({
-                modal: { 
-                    show: true, 
-                    keyboard: false, 
-                    backdrop: 'static'
-                },
-                events: {
-                    'click .btn-danger': function () {
-                        self.model.trashAttachment(self.getRequestParams({fileId: '5710f560a826ecdfcd5f6df2'}), {
-                            success: function(data) {
-                                console.log('Success ', data);
-                            },
-                            error: function(data) {
-                                console.log('Error ', data);
-                            }
-                        });
-                    }
-                }
-            });
-
-            var fileObj = event.target;
-            
-            modal.set('title', 'Delete Attachment');
-            modal.set('body', '<span>Are you sure you want to delete the attachment?</span>')
-            modal.set('footer', '<button class="btn btn-danger">Delete</button><button class="btn btn-default" data-dismiss="modal">Cancel</button>');
-
-            modal.render();
-        }
     });
 
     CommentView.DEFAULTS = $.extend(true, {}, Base.DEFAULTS, {
