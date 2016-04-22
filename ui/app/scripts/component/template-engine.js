@@ -157,7 +157,7 @@
         var date = new Date(millis);
         var format;
 
-        var str = (format || '{day} {date}, {month} {year}').fmt({
+        var str = (format || '{month} {date}, {year}').fmt({
             month: 'months.%@'.fmt(date.getMonth()).loc(),
             day: 'days.%@'.fmt(date.getDay()).loc(),
             date: date.getDate(),

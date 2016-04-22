@@ -59,12 +59,13 @@
 
             if ($replies.size() && isSocialAuthor) {
 
-                var view = new S.util.instance('view.Commenting', $.extend({
+                var view = new S.view.Commenting($.extend({
                     collection: this.collection,
                     context: this.cfg.context,
                     target: this.cfg.target,
                     commentUrl:this.cfg.commentUrl,
-                    commentThreadName:this.cfg.commentThreadName
+                    commentThreadName:this.cfg.commentThreadName,
+                    model: new S.Backbone.Model({avatarUrl: ''}),
                 }, this.cfg.commenting));
 
                 $replies.append(view.render().el);
@@ -104,11 +105,14 @@
                 var ts=new Date().getTime();
                 comment.ts=ts;
                 this.$('.no-comments').remove();
-                var view = new S.view.Comment({
-                    model: comment,
-                    context: this.cfg.context
-                });
-                this.$('.comments:first').append(view.render().element());
+                if (!comment.isReply()) { // replies are handled separately
+                    var view = new S.view.Comment({
+                        model: comment,
+                        context: this.cfg.context,
+                        collection: this.collection
+                    });
+                    this.$('.comments:first').append(view.render().element());
+                }
             }
         }
 

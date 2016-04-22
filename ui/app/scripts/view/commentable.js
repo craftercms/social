@@ -16,7 +16,7 @@
     Commentable = Base.extend({
 
         hide: false,
-        reveal: false,
+        reveal: true,
         timeout: null,
         className: 'crafter-social-commentable',
         revealed: false,
@@ -69,7 +69,8 @@
 
             var $badge = this.$options.find('.badge'),
                 length = this.collection.length;
-
+            var targetId = this.cfg.target;
+            this.$options.find('#socialCommentBadge').attr('href','#'+targetId.substring(1,targetId.length)+'-comments');
             if (length === 0) {
                 $badge.text('');
             } else {
@@ -166,7 +167,11 @@
             }
 
             this.viewChangeRequest(this.cfg.discussionView);
-
+            if(e) {
+                $('html, body').animate({
+                    scrollTop: $($(e.currentTarget).attr('href')).offset().top
+                }, 500);
+            }
         },
         viewChangeRequest: function ( requested ) {
 

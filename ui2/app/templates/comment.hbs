@@ -21,6 +21,9 @@
                     <a class="pull-right option" data-action="edit" title="Edit Comment">
                         <i class="crafter-social-icon cs-icon-pencil"></i>
                     </a>
+                    <a class="pull-right reply" data-action-reply>
+                        <i class="crafter-social-icon cs-icon-share-alt" title="Reply"></i>
+                    </a>
                 {{/ifm}}
                 {{#mif userInfo.actions 'has' 'moderate'}}{{/mif}}
                 <strong>
@@ -40,6 +43,7 @@
                     <button type="button" class="btn btn-default btn-xs" data-action="cancelEdit">Cancel</button>
                 </div>
             </section>
+            <div class="comment-attachments"></div>
         </div>
     </div>
     <footer class="comment-actions">
@@ -74,9 +78,9 @@
                     <a data-action-reply><i class="crafter-social-icon cs-icon-transfer"></i> Reply ({{childCount}})</a>
                 </li>
             </ul>
-            <ul class="list-inline list-unstyled pull-right hide">
+            <ul class="list-inline list-unstyled pull-left">
                 <li>
-                    <a data-action="files"><i class="crafter-social-icon cs-icon-upload"></i> Files ({{attachments.length}})</a>
+                    <a data-action="files"><i class="crafter-social-icon cs-icon-picture"></i> Add Media ({{attachments.length}})</a>
                 </li>
             </ul>
             <a class="pull-right" data-action-flag title="{{multiplicity flags.length 'Flagged %@ times' 'Flagged one time' 'Flag as inappropriate'}}." flagged-title="{{loc 'comments.flag'}}">
@@ -94,5 +98,13 @@
             </div>
         {{/mif}}
     </footer>
+    <div class="comment-body-reply">
+        <div class="content-wrapper"></div>
+        <div class="editor"></div>
+        <div class="reply-controls">
+            <button type="button" class="btn btn-primary btn-xs" data-action="doReply">Reply</button>
+            <button type="button" class="btn btn-default btn-xs" data-action="cancelReply">Cancel</button>
+        </div>
+    </div>
     <div class="comment-children"></div>
 </article>

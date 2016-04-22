@@ -330,9 +330,32 @@
                 // TODO ie < 10 still fails to work properly
                 // attachments are uploaded but post-request behaviour is an issue
                 // popping the user to download the json response as a file
-                if ($.browser.msie && $.browser.versionNumber < 10) {
+                if (isIE() && msieversion() < 10) {
                     var $el = $(this);
                     $el.find('.cs-file-data, .cs-file-upload, .btn.cancel').remove();
+                }
+
+                // previously using $.browser.msie but that is deprecated.
+                // using now pure javascript browser check
+                function isIE() {
+                    var ua = window.navigator.userAgent;
+                    var msie = ua.indexOf("MSIE ");
+                    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                function msieversion() {
+                    var ua = window.navigator.userAgent;
+                    var msie = ua.indexOf("MSIE ");
+
+                    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+                        return parseInt(ua.substring(msie + 5, ua.indexOf(".", msie)));
+                    } else {
+                        return -1;
+                    }
                 }
             },
             // Callback for file deletion:

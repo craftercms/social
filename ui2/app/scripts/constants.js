@@ -21,6 +21,10 @@
         AREA_VISIBILITY_MODE_HOVER          : 'area.visibility.mode.hover',
         AREA_VISIBILITY_MODE_HIDE           : 'area.visibility.mode.hide',
 
+        SUPPORTED_IMAGE_FORMATS             : /\.(jpg|jpeg|png|gif)$/,
+        SUPPORTED_VIDEO_FORMATS             : /\.(mp4)$/,
+        POSTER_URL                          : 'images/poster.png',  
+
         //
         // Dynamic Constants
         //

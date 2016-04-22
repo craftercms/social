@@ -22,6 +22,11 @@
             'click [data-action-flag]': 'flag'
         },
 
+        initialize: function (config) {
+            Base.prototype.initialize.apply(this, arguments);
+            this.model.collection = this.model.collection || config.collection;
+        },
+
         listen: function () {
             if (this.model) {
                 this.listenTo(this.model, 'sync', this.render);
@@ -53,7 +58,7 @@
                     return profile!==undefined && profile.id !==undefined;
                 },
                 avatarUrl: function(){
-                    var ts="";
+                    var ts=me.model.ts;
                     if(model.reloadAvatar!==undefined){
                         ts=model.reloadAvatar;
                     }
@@ -81,6 +86,8 @@
                 }
             });
 
+            var $attachments = this.$('.comment-attachments:first');
+
             model.children.every(function ( child ) {
 
                 var m = new Comment(child),
@@ -90,6 +97,22 @@
 
                 return true;
 
+            });
+
+            model.attachments.every(function (attachment) {
+                var File = S.get('model.File');
+                var file = new File();
+                file = file.parse(attachment);
+
+                // only showing preview of images                
+                if (file.fileName.match(/\.(jpg|jpeg|png|gif)$/)) {
+                    // TODO: move this to a view?
+                    var $el = '<img class="img-thumbnail img-file" data-action="viewFile" title="'+ 
+                                file.fileName +'" alt="'+ file.fileName +'" src="'+ file.url +'" />' 
+                    $attachments.append($el);
+                }
+                
+                return true;
             });
 
             return this;
@@ -150,7 +173,7 @@
 
             modal.set({
                 'title': 'Upload Profile Image',
-                'body': '<div class="form-group"><input id="avatarFileupload" type="file" name="avatar" value="Choose new profile picture"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
+                'body': '<div class="form-group"><p>If you choose to upload a photo please select a current business relevant photo of yourself.</p><br/><input id="avatarFileupload" type="file" name="avatar" value="Choose new profile picture"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
                 'footer': '<button class="btn btn-primary">Upload</button>'
             });
 
@@ -169,9 +192,11 @@
             var $editor = $body.find('.editor');
 
             $editor.html($body.find('.content-wrapper').html());
+            $editor.attr('contenteditable', 'true')
 
             var editor = CKEDITOR.inline($editor.get(0), {
-                startupFocus: true
+                startupFocus: true,
+                toolbar: 'Basic'
             });
 
             this.cache('editor', editor);
@@ -210,6 +235,57 @@
             e.preventDefault();
 //            var Commenting  = S.get('view.Commenting');
 //            var commenting  = new Commenting(this.cfg.commenting);
+            e.stopPropagation();
+            var $body = this.$('.comment-body-reply:first').addClass('replying');
+            var $editor = $body.find('.editor');
+            $editor.html($body.find('.content-wrapper').html());
+            $editor.attr('contenteditable', 'true');
+            var editor = CKEDITOR.inline($editor.get(0), {
+                startupFocus: true,
+                toolbar: 'Basic'
+            });
+            this.cache('editor', editor);
+        },
+        cancelReply: function (e) {
+            if (this.cache('editor')) {
+                this.cache('editor').destroy();
+                this.cache('editor', S.Constants.get('DESTROY'));
+                this.$('.comment-body-reply').removeClass('replying')
+                    .find('.editor').html('');
+            }
+        },
+        doReply: function (e) {
+            var editor;
+            if ((editor = this.cache('editor'))) {
+                var me = this;
+                var body = editor.getData();
+                if (body) {
+                    this.model.reply(this.getRequestParams({body: body}), {
+                        success: function() {
+                            editor.destroy();
+                            me.cache('editor', S.Constants.get('DESTROY'));
+                            // fetch again the collection, with the updated replies
+                            me.collection.fetch({
+                                data : {
+                                    target: me.cfg.target,
+                                    context: me.cfg.context
+                                }
+                            });
+                        },
+                        error: function(model) {
+                            // Put back the comment that didn't get posted.
+                            // Attach any text that could have been written while request completed.
+                            editor.setData('<div>' + model.get('body') + '</div>' + editor.getData());
+                            // Put the cursor position to the end of the editor, where it is likely that it will be
+                            var range = editor.createRange();
+                            range.moveToPosition(range.root, CKEDITOR.POSITION_BEFORE_END);
+                            editor.getSelection().selectRanges([ range ]);
+                            // Remove the un-posted comment from the controller
+                            collection.remove(model);
+                        }
+                    });
+                }
+            }
         },
         flag: function (e) {
             e.preventDefault();
@@ -255,6 +331,7 @@
         trash: function () {
             if (!this.model.isTrashed()) {
                 this.model.trash(this.getRequestParams());
+                this.$el.remove();
             }
         },
 
@@ -340,6 +417,18 @@
 
             files.fetch(fetchOptions);
 
+        },
+
+        viewFile: function (event) {
+            var Modal = S.get('view.Modal');
+            var modal  = new Modal({
+                modal: { show: true, keyboard: false, backdrop: 'static' }
+            });
+
+            modal.set('body', '<img class="img-file" src="'+ event.target.src +'"/>')
+            modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
+
+            modal.render();
         },
 
         remove: function () {

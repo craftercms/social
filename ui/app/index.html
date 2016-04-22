@@ -113,7 +113,30 @@
         'url.service'                   : 'http://localhost:8080/crafter-social/api/3/',
         'url.security.value'            : 'http://localhost:8080/crafter-social/crafter-security-login',
         'url.security.active'           : 'http://localhost:8080/crafter-social/crafter-security-current-auth',
-        'url.base'                      : '/'
+        'url.base'                      : '/',
+
+        'url.comments': {
+            value: "?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9",
+            "{_id}": {
+                value: "?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9",
+                update:"?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9",
+                votes: {
+                    value: "",
+                    neutral: "?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9",
+                    down: "?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9",
+                    up: "?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9"
+                },
+                flags: {
+                    value: "?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9", // Flag comment flags
+                   '{flagId}':"?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9"
+                },
+                attachments: {
+                    value: "",
+                    "{fileId}": "?context={context}"
+                },
+                moderate: "?context=f5b143c2-f1c0-4a10-b56e-f485f00d3fe9"
+            }
+        }
     };
 
     /*
@@ -162,6 +185,8 @@
         director.socialise({
             target: '#jumbotron2',
             context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9',
+            commentUrl:"/hello",
+            commentThreadName:"READABLENAME",
             view:{
                 'parasite':{
                     'cfg':{

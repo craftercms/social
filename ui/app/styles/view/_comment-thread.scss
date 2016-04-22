@@ -55,6 +55,15 @@ $popover-font-size: 12px;
                 color: $brand-danger;
             }
 
+            .reply {
+                text-decoration: none;
+                i {
+                    transform: scale(-1, 1); // no reply icon, using the share icon mirrored for now.
+                }
+                &:after {
+                    content: "Reply";
+                }
+            }
         }
 
         .status-messages {
@@ -199,6 +208,15 @@ $popover-font-size: 12px;
 
         }
 
+        .comment-attachments {
+            margin: 10px 0;
+            .img-file {
+                max-width: 10%;
+                cursor: pointer;
+                margin-right: 10px;
+            }
+        }
+
         footer {
 
             @include clearfix();
@@ -237,6 +255,38 @@ $popover-font-size: 12px;
 
         * {
             max-width: 100%;
+        }
+
+        .comment-body-reply {
+            .reply-controls {
+                display: none;
+            }
+
+            .editor {
+                padding: 5px;
+                display: none;
+                box-shadow: 0 0 5px #999;
+                margin: 12px 0;
+
+                &.cke_focus {
+                    box-shadow: none;
+                }
+            }
+
+            &.replying {
+                .option {
+                    display: none;
+                }
+
+                .editor,
+                .reply-controls {
+                    display: block;
+                }
+
+                .content-wrapper {
+                    display: none;
+                }
+            }
         }
 
     }
