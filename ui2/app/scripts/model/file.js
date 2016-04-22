@@ -45,7 +45,7 @@
             if (modelData.fileName.match(S.Constants.get('SUPPORTED_IMAGE_FORMATS'))) {
                 return modelData.url;
             } else if (modelData.fileName.match(S.Constants.get('SUPPORTED_VIDEO_FORMATS'))) {
-                return "images/poster.png"; 
+                return S.Constants.get('POSTER_URL');
             } else {
                 return ""
             }

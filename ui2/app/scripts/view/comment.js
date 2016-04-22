@@ -425,27 +425,7 @@
             files.fetch(fetchOptions);
 
         },
-
-        viewFile: function (event) {
-            var Modal = S.get('view.Modal');
-            var modal  = new Modal({
-                modal: { show: true, keyboard: false, backdrop: 'static' }
-            });
-
-            var fileObj = event.target;
-
-            if (fileObj.dataset.videoType && fileObj.dataset.videoType.match(/(mp4)$/)) {
-                modal.set('body', '<video controls autoplay class="img-file-full"><source src="'+ fileObj.dataset.videoUrl +'" type="video/'+ fileObj.dataset.videoType +'" ></source></video>')
-            } else {
-                modal.set('body', '<img class="img-file-full" src="'+ event.target.src +'"/>')    
-            }
-
-            
-            modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
-
-            modal.render();
-        },
-
+        
         remove: function () {
             this.trigger('remove', this.model);
             this.$el.remove();

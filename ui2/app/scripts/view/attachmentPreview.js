@@ -28,8 +28,8 @@
                     var src = '';
                     if (model.fileName.match(S.Constants.get('SUPPORTED_IMAGE_FORMATS'))) {
                         src = model.url;
-                    } else if (file.fileName.match(S.Constants.get('SUPPORTED_VIDEO_FORMATS'))) {
-                        src = "images/poster.png";
+                    } else if (model.fileName.match(S.Constants.get('SUPPORTED_VIDEO_FORMATS'))) {
+                        src = S.Constants.get('POSTER_URL');
                     }
                     return src;
                 }
@@ -84,10 +84,38 @@
             return attachmentName;
         },
 
+        getAttachmentType: function (name) {
+            var parts = name.split('.');
+            var attachmentType = (parts.length > 1)? parts[1]: '';
+            return attachmentT,ype;  
+        },
+
         getRequestParams: function (extraParams) {
             return $.extend({
                 context: this.cfg.context
             }, extraParams || {});
+        },
+
+        viewAttachment: function (event) {
+            var self = this;
+            var model = this.model;
+            var Modal = S.get('view.Modal');
+            var modal  = new Modal({
+                modal: { show: true, keyboard: false, backdrop: 'static' }
+            });
+
+            var fileObj = event.target;
+
+            if (model.get('fileName').match(S.Constants.get('SUPPORTED_VIDEO_FORMATS'))) {
+                var attachmentType = self.getAttachmentType(model.get('fileName'));
+                modal.set('body', '<video controls autoplay class="img-file-full"><source src="'+ model.get('url') +'" type="video/'+ attachmentType +'" ></source></video>')
+            } else {
+                modal.set('body', '<img class="img-file-full" src="'+ model.get('url') +'" alt="'+ model.get('fileName') +'" title="'+ model.get('fileName') +'" />')    
+            }
+
+            modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
+
+            modal.render();
         },
     });
 
