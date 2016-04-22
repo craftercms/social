@@ -40,11 +40,6 @@ $body-wrapper-margin-left: -64;
                 margin-bottom: 10px;
                 &:hover .file-overlay {
                     opacity: 1;
-                    -webkit-transition: none;
-                       -moz-transition: none;
-                        -ms-transition: none;
-                         -o-transition: opacity 0;
-                            transition: none;
                 }
             }
 
@@ -54,16 +49,11 @@ $body-wrapper-margin-left: -64;
                 height: 10%;
                 top: 4px;
                 right: 4px;
-                text-align: center;
-                -webkit-transition: none;
-                   -moz-transition: none;
-                    -ms-transition: none;
-                     -o-transition: opacity 0;
-                        transition: none;
             }
 
             .comment-attachments .file-overlay span {
-                margin: 0
+                margin: 0;
+                padding: 0;
             }
         }
     }
