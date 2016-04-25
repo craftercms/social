@@ -30,6 +30,10 @@
             this.refresh();
         },
         refresh: function () {
+            if(!this.cfg.sortOrder && !this.cfg.sortBy){
+                this.cfg.sortOrder="DESC";
+                this.cfg.sortBy="createdDate";
+            }
             this.collection.fetch({
                 data: { target: this.cfg.target, context: this.cfg.context,sortBy:this.cfg.sortBy,sortOrder:this.cfg.sortOrder
                 }

@@ -4,7 +4,10 @@
     var Commenting,
         Base = S.view.Base,
         CKEDITOR = S.Editor,
+        U = S.util,
         $ = S.$;
+
+    var Director = S.getDirector();
 
     Commenting = Base.extend({
 
@@ -13,9 +16,22 @@
             'crafter-social-commenting-view'
         ].join(' '),
 
+        createUI: U.emptyFn,
+
         events: {
             'click [data-action-comment]': 'comment',
             'click [data-action-terms]': 'acceptTerms'
+        },
+
+        initialize: function (config) {
+            Base.prototype.initialize.apply(this, arguments);
+        },
+
+        listen: function () {
+            if (this.model) {
+                this.listenTo(this.model, 'change', this.render);
+                this.listenTo(this.collection, 'change', this.render);
+            }
         },
 
         editor: function ( option ) {
@@ -25,7 +41,8 @@
             if ( option === 'destroy' ) {
 
                 if ( editor ) {
-                    editor.destroy();
+                    editor.removeAllListeners();
+                    CKEDITOR.remove(editor);
                     this.cache('editor', S.Constants.get('DESTROY'));
                 }
 
@@ -137,12 +154,106 @@
 
         },
 
-        render: function () {
+        render: function (e) {
+            var me       = this;
+            var profile  = Director.getProfile();
+            var editor = this.cache('editor');
+            var model    = $.extend(this.model.toJSON(), {
+                avatarUrl: function() {
+                    var ts = new Date().getTime();
+                    if(model.reloadAvatar !== undefined) {
+                        ts = model.reloadAvatar;
+                    }
+                    return S.url('profile.avatar', {
+                        id: profile.id,
+                        context: me.cfg.context, 
+                        ts: ts
+                    });
+                }
+            });
+
+            this.$el.html(U.template(
+                this.getTemplate('main'), model));
+
+            this.$('.change-avatar').mouseleave(function () {
+                me.$('.change-avatar').addClass('hidden');
+                me.$('.current-avatar').removeClass('hidden');
+            });
+
+            this.$('.current-avatar').mouseover(function () {
+                me.$('.current-avatar').addClass('hidden');
+                me.$('.change-avatar').removeClass('hidden');
+            });
+            
+            if (editor || (e && e.changed)) {
+                this.editor('destroy');
+            } 
+
             this.editor();
             this.submissionDetails();
-            return this;
-        }
 
+            return this;
+        },
+
+        uploadAvatar: function(){
+            var me = this;
+            var files=[];
+            var modal = S.util.instance('view.Modal', {
+                modal: { show: true },
+                events: {
+                    'change input[type=file]': function(event){
+                        files = event.target.files;
+                    },
+                    'click .btn-primary': function (e) {
+                       // Create a formdata object and add the files
+                        $(e.target).addClass('disabled');
+                        var data = new FormData();
+                        $.each(files, function(key, value)
+                        {
+                            data.append(key, value);
+                        });
+
+                        S.request({
+                            type: 'POST',
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            data:data,
+                            url: S.url('profile.avatar', {
+                                _id: Director.getProfile().id,
+                                 context: me.cfg.context
+                            }),
+                            success: function () {
+                                var d = new Date().getTime();
+                                $(e.target).removeClass('disabled');
+                                modal.hide();
+                                me.collection.each(function(ugc) {
+                                    if(ugc.get("user").id===Director.getProfile().id){
+                                        ugc.set("reloadAvatar", d);
+                                    }
+                                });
+                                me.model.set("reloadAvatar", d);
+                            },
+                            error: function () {
+                                $(e.target).removeClass('disabled');
+                                modal.$('.modal-body')
+                                .prepend('<div class="alert alert-danger">Unable to Upload profile image</div>');
+                            }
+                        });
+                    }
+                }
+            });
+
+            modal.set({
+                'title': 'Upload Profile Image',
+                //---------------  modification to add picture guidelines -----------//
+                'body': '<div class="form-group"><p>If you choose to upload a photo, select a current business relevant photo of yourself (recommended dimensions are 100x100 pixels).</p><br/><input id="avatarFileupload" type="file" name="avatar" value="Choose new profile picture"><br/><div id="progress"><div class="bar" style="width: 0%;"></div></div>     </div>',
+                //---------------  modification to add picture guidelines -----------//
+                'footer': '<button class="btn btn-primary">Upload</button>'
+            });
+
+            modal.render();
+        }
     });
 
     Commenting.DEFAULTS = $.extend({}, Base.DEFAULTS, {
@@ -187,7 +298,6 @@
                 element : 'span',
                 styles : { 'color' : '#(color)' }
             },
-            contentsCss: S.Cfg('url.base') + 'styles/editor-content.css',
             contentsLangDirection: 'ui',
             contentsLanguage: 'en',
             corePlugins: '',

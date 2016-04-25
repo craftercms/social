@@ -13,8 +13,7 @@ crafter.social.Editor.editorConfig = function( config ) {
             'Underline', '-',
             'NumberedList',
             'BulletedList', '-',
-            'Link', '-',
-            'Image'
+            'Link', '-'
         ]
     ];
 

@@ -109,12 +109,17 @@
 
         addOne: function (comment) {
             if(!comment.isTrashed()) {
+                var ts=new Date().getTime();
+                comment.ts=ts;
                 this.$('.no-comments').remove();
-                var view = new S.view.Comment({
-                    model: comment,
-                    context: this.cfg.context
-                });
-                this.$('.comments:first').append(view.render().element());
+                if (!comment.isReply()) { // replies are handled separately
+                    var view = new S.view.Comment({
+                        model: comment,
+                        context: this.cfg.context,
+                        collection: this.collection
+                    });
+                    this.$('.comments:first').append(view.render().element());
+                }
             }
         }
 

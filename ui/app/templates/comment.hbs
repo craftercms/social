@@ -49,6 +49,7 @@
                 </div>
             </section>
         </div>
+        <div class="comment-attachments"></div>
     </div>
     <footer class="comment-actions">
         <div class="clearfix">
@@ -66,6 +67,9 @@
                     <span class="vote-down-count" title="{{#if votesDown}}{{votesDown.length}} {{multiplicity votesDown.length 'people don\'t' 'person doesn\'t'}} like this.{{else}}No one has disliked this{{/if}}">
                         -{{votesDown.length}}
                     </span>
+                    <a class="reply" data-action-reply>
+                        <i class="crafter-social-icon cs-icon-share-alt" title="Reply"></i>
+                    </a>
                 </li>
                 <li class="hide">
                     <a data-action-reply><i class="crafter-social-icon cs-icon-transfer"></i> Reply ({{childCount}})</a>
@@ -88,5 +92,13 @@
             </div>
         {{/mif}}
     </footer>
+    <div class="comment-body-reply">
+        <div class="content-wrapper"></div>
+        <div class="editor"></div>
+        <div class="reply-controls">
+            <button type="button" class="btn btn-primary btn-xs" data-action="doReply">Reply</button>
+            <button type="button" class="btn btn-default btn-xs" data-action="cancelReply">Cancel</button>
+        </div>
+    </div>
     <div class="comment-children"></div>
 </article>

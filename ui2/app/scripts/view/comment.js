@@ -22,12 +22,17 @@
             'click [data-action-flag]': 'flag'
         },
 
+        initialize: function (config) {
+            Base.prototype.initialize.apply(this, arguments);
+            this.model.collection = this.model.collection || config.collection;
+        },
+
         listen: function () {
             if (this.model) {
                 this.listenTo(this.model, 'sync', this.render);
-                this.listenTo(this.model, 'change', this.render);
                 this.listenTo(this.model, 'destroy', this.remove);
                 this.listenTo(this.model, 'remove', this.remove);
+                this.listenTo(this.model, 'change', this.render);
             }
         },
         render: function () {
@@ -54,12 +59,15 @@
                     return profile!==undefined && profile.id !==undefined;
                 },
                 avatarUrl: function(){
-                    var ts=me.model.ts;
-                    if(model.reloadAvatar!==undefined){
-                        ts=model.reloadAvatar;
+                    var ts = me.model.ts;
+                    if(model.reloadAvatar !== undefined){
+                        ts= model.reloadAvatar;
                     }
-                    return S.url('profile.avatar',{id: model.user?model.user.id:profile.id,
-                                                    context: me.cfg.context,ts:ts});
+                    return S.url('profile.avatar',{
+                        id: model.user? model.user.id: profile.id,
+                        context: me.cfg.context,
+                        ts:ts
+                    });
                 }
             });
 
@@ -82,16 +90,35 @@
                     }
             });
 
+            var $attachments = this.$('.comment-attachments:first');
 
-            model.children.every(function ( child ) {
+            model.children.forEach(function ( child ) {
 
                 var m = new Comment(child),
                     v = new CommentView($.extend({}, me.cfg, { model: m }));
 
                 $children.append(v.render().el);
+            });
 
-                return true;
+            model.attachments.forEach(function (attachment) {
+                var File = S.get('model.File');
+                var file = new File();
+                var $el = '';
+                var $overlay = '';
+                file = file.parse(attachment);
 
+                var tempModel = $.extend(file, {
+                    commentId: model._id,
+                    showOverlay: model.isOwner(),
+                });
+
+                var attachmentModel = new S.model.AttachmentPreview(attachment);
+                var attachmentView = new S.view.AttachmentPreview({ 
+                    model: attachmentModel,
+                    context: me.cfg.context
+                })
+
+                $attachments.append(attachmentView.render().el);
             });
 
             return this;
@@ -115,8 +142,9 @@
                     'change input[type=file]': function(event){
                         files = event.target.files;
                     },
-                    'click .btn-primary': function () {
+                    'click .btn-primary': function (e) {
                        // Create a formdata object and add the files
+                        $(e.target).addClass('disabled');
                         var data = new FormData();
                         $.each(files, function(key, value)
                         {
@@ -134,6 +162,7 @@
                                  context: me.cfg.context
                             }),
                             success: function () {
+                                $(e.target).removeClass('disabled');
                                 modal.hide();
                                 me.model.collection.each(function(ugc){
                                     if(ugc.get("user").id===Director.getProfile().id){
@@ -142,6 +171,7 @@
                                 });
                             },
                             error: function () {
+                                $(e.target).removeClass('disabled');
                                 modal.$('.modal-body')
                                 .prepend('<div class="alert alert-danger">Unable to Upload profile image</div>');
                             }
@@ -212,11 +242,61 @@
 
         reply: function (e) {
             e.preventDefault();
-//            var Commenting  = S.get('view.Commenting');
-//            var commenting  = new Commenting(this.cfg.commenting);
+            e.stopPropagation();
+            var $body = this.$('.comment-body-reply:first').addClass('replying');
+            var $editor = $body.find('.editor');
+            $editor.html($body.find('.content-wrapper').html());
+            $editor.attr('contenteditable', 'true');
+            var editor = CKEDITOR.inline($editor.get(0), {
+                startupFocus: true,
+                toolbar: 'Basic'
+            });
+            this.cache('editor', editor);
+        },
+        cancelReply: function (e) {
+            if (this.cache('editor')) {
+                this.cache('editor').destroy();
+                this.cache('editor', S.Constants.get('DESTROY'));
+                this.$('.comment-body-reply').removeClass('replying')
+                    .find('.editor').html('');
+            }
+        },
+        doReply: function (e) {
+            var editor;
+            if ((editor = this.cache('editor'))) {
+                var me = this;
+                var body = editor.getData();
+                if (body) {
+                    this.model.reply(this.getRequestParams({body: body}), {
+                        success: function() {
+                            editor.destroy();
+                            me.cache('editor', S.Constants.get('DESTROY'));
+                            // fetch again the collection, with the updated replies
+                            me.collection.fetch({
+                                data : {
+                                    target: me.cfg.target,
+                                    context: me.cfg.context
+                                }
+                            });
+                        },
+                        error: function(model) {
+                            // Put back the comment that didn't get posted.
+                            // Attach any text that could have been written while request completed.
+                            editor.setData('<div>' + model.get('body') + '</div>' + editor.getData());
+                            // Put the cursor position to the end of the editor, where it is likely that it will be
+                            var range = editor.createRange();
+                            range.moveToPosition(range.root, CKEDITOR.POSITION_BEFORE_END);
+                            editor.getSelection().selectRanges([ range ]);
+                            // Remove the un-posted comment from the controller
+                            collection.remove(model);
+                        }
+                    });
+                }
+            }
         },
         flag: function (e) {
             e.preventDefault();
+            e.stopPropagation();
 
             var me = this;
             var isFlagged = this.model.flaggedBy(Director.getProfile().get('id'));
@@ -259,6 +339,7 @@
         trash: function () {
             if (!this.model.isTrashed()) {
                 this.model.trash(this.getRequestParams());
+                this.$el.remove();
             }
         },
 
@@ -273,7 +354,6 @@
         },
 
         files: function () {
-
             var me    = this;
             var model = this.model;
 
@@ -321,7 +401,7 @@
                             return data.files || [];
                         }
                     }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
-                        me.model.fetch(fetchOptions);
+                        me.collection.fetch(fetchOptions);
                     });
 
                 });
@@ -336,7 +416,7 @@
 
             }
 
-            modal.set('title', 'File Attachments');
+            modal.set('title', 'Add Media');
             modal.set('body', view.el);
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 
@@ -345,12 +425,11 @@
             files.fetch(fetchOptions);
 
         },
-
+        
         remove: function () {
             this.trigger('remove', this.model);
             this.$el.remove();
-        }
-
+        },
     });
 
     CommentView.DEFAULTS = $.extend(true, {}, Base.DEFAULTS, {

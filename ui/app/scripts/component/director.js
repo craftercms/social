@@ -54,7 +54,8 @@
                     footer: '<button data-dismiss class="btn btn-default">Close</button>'
                 });
 
-            } else if (request.status === 500) {
+            } else if (request.status === 500 || request.status===504 || request.status ===502 || request.status===503 ||
+            request.status===511) {
 
                 // me.trigger(C.get('EVENT_500'));
 
@@ -220,7 +221,7 @@
          *      }
          */
         socialise: function ( oConfig ) {
-
+            $.ajaxSetup({ cache: false });
             var oCfg = $.extend(true, {}, Director.DEFAULTS, oConfig);
 
             var Ctrl    = S.get(oCfg.ctrl.main.cls)      || S.get(oCfg.ctrl.main.cls, window),
