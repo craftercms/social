@@ -105,7 +105,7 @@
                 var file = new File();
                 var $el = '';
                 var $overlay = '';
-                file = file.parse(attachment);
+                file = file.parse(attachment, me.cfg.context);
 
                 var tempModel = $.extend(file, {
                     commentId: model._id,

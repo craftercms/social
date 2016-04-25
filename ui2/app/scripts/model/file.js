@@ -17,12 +17,12 @@
             }
         },
 
-        parse: function (modelData) {
+        parse: function (modelData, context) {
             try {
                 modelData.url = S.url('comments.{_id}.attachments.{fileId}', {
                     _id: modelData.attributes.owner,
                     fileId: modelData.fileId,
-                    context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'
+                    context: context || 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'
                 });
 
                 modelData.urlPreview = this.getPreviewUrl(modelData);
