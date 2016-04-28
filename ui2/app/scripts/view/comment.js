@@ -24,6 +24,7 @@
 
         initialize: function (config) {
             Base.prototype.initialize.apply(this, arguments);
+            this.model.collection = this.model.collection || config.collection;
         },
 
         listen: function () {
