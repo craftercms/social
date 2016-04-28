@@ -24,7 +24,6 @@
 
         initialize: function (config) {
             Base.prototype.initialize.apply(this, arguments);
-            this.model.collection = this.model.collection || config.collection;
         },
 
         listen: function () {
@@ -103,16 +102,14 @@
             model.attachments.forEach(function (attachment) {
                 var File = S.get('model.File');
                 var file = new File();
-                var $el = '';
-                var $overlay = '';
-                file = file.parse(attachment, me.cfg.context);
+                file = file.parse(attachment, me.cfg);
 
                 var tempModel = $.extend(file, {
                     commentId: model._id,
                     showOverlay: model.isOwner(),
                 });
 
-                var attachmentModel = new S.model.AttachmentPreview(attachment);
+                var attachmentModel = new S.model.AttachmentPreview(tempModel);
                 var attachmentView = new S.view.AttachmentPreview({ 
                     model: attachmentModel,
                     context: me.cfg.context
