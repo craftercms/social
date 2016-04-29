@@ -373,7 +373,6 @@
             var fetchOptions = { data: { context: this.cfg.context } };
 
             modal.$el.on('hidden.bs.modal', function () {
-                me.model.fetch(fetchOptions);
                 modal.uploader && modal.uploader.fileupload('destroy');
                 modal.destroy();
             });
