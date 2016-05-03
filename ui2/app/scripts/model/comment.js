@@ -139,7 +139,7 @@
         fetch: function (options) {
                 options = options || {};
                 options.cache = false;
-                //return S.Backbone.Collection.prototype.fetch.call(this, options);
+                return S.Backbone.Collection.prototype.fetch.call(this, options);
             }
 
     });
