@@ -103,16 +103,14 @@
             model.attachments.forEach(function (attachment) {
                 var File = S.get('model.File');
                 var file = new File();
-                var $el = '';
-                var $overlay = '';
-                file = file.parse(attachment);
+                file = file.parse(attachment, me.cfg);
 
                 var tempModel = $.extend(file, {
                     commentId: model._id,
                     showOverlay: model.isOwner(),
                 });
 
-                var attachmentModel = new S.model.AttachmentPreview(attachment);
+                var attachmentModel = new S.model.AttachmentPreview(tempModel);
                 var attachmentView = new S.view.AttachmentPreview({ 
                     model: attachmentModel,
                     context: me.cfg.context
@@ -375,7 +373,6 @@
             var fetchOptions = { data: { context: this.cfg.context } };
 
             modal.$el.on('hidden.bs.modal', function () {
-                me.model.fetch(fetchOptions);
                 modal.uploader && modal.uploader.fileupload('destroy');
                 modal.destroy();
             });

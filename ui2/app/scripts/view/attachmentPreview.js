@@ -12,7 +12,7 @@
 
         className: [
             Base.prototype.className,
-            'crafter-social-file-view'
+            'file-wrapper'
         ].join(' '),
 
         initialize: function () {

@@ -132,7 +132,7 @@ $body-wrapper-margin-left: -64;
                 padding-left: $body-wrapper-padding - 20px;
             }
 
-            .body-wrapper .comment-data .comment-body {
+            .body-wrapper .comment-data .comment-body, .body-wrapper .comment-data .comment-attachments {
                 margin-left: $body-wrapper-margin-left + 20px;
             }
 
