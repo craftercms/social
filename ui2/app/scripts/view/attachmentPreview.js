@@ -30,6 +30,8 @@
                         src = model.url;
                     } else if (model.fileName.match(S.Constants.get('SUPPORTED_VIDEO_FORMATS'))) {
                         src = S.Constants.get('POSTER_URL');
+                    } else {
+                        src = '';
                     }
                     return src;
                 }
