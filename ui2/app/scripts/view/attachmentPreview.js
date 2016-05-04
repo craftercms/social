@@ -89,7 +89,7 @@
         getAttachmentType: function (name) {
             var parts = name.split('.');
             var attachmentType = (parts.length > 1)? parts[1]: '';
-            return attachmentT,ype;  
+            return attachmentType;  
         },
 
         getRequestParams: function (extraParams) {
