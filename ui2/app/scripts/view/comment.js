@@ -413,7 +413,7 @@
 
             }
 
-            modal.set('title', 'Add Media');
+            modal.set('title', 'Upload Photo(s)');
             modal.set('body', view.el);
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 
