@@ -26,6 +26,20 @@
                     </a>
                 {{/ifm}}
                 {{#mif userInfo.actions 'has' 'moderate'}}{{/mif}}
+                <span class="vote-up-wrapper pull-right">
+                    <span class="vote-up-count" title="{{#if votesUp}}{{votesUp.length}} {{multiplicity votesUp.length 'people like' 'person likes'}} this.{{else}}No one has liked this{{/if}}">
+                        +{{votesUp.length}}
+                    </span>
+                {{#ifm isOwner}}
+                    <a style="cursor: default" >
+                        <i class="crafter-social-icon cs-icon-chevron-up"></i>
+                    </a>
+                {{else}}
+                    <a data-action="voteUp">
+                        <i class="crafter-social-icon cs-icon-chevron-up"></i>
+                    </a>
+                {{/ifm}}
+                </span>
                 <strong>
                     {{#if user.attributes.displayName}}
                         {{user.attributes.displayName}}
@@ -50,20 +64,6 @@
         <div class="clearfix">
             <ul class="list-inline list-unstyled pull-left">
                 <li>
-                    <span class="vote-up-wrapper">
-                        <span class="vote-up-count" title="{{#if votesUp}}{{votesUp.length}} {{multiplicity votesUp.length 'people like' 'person likes'}} this.{{else}}No one has liked this{{/if}}">
-                            +{{votesUp.length}}
-                        </span>
-                    {{#ifm isOwner}}
-                        <a style="cursor: default" >
-                            <i class="crafter-social-icon cs-icon-chevron-up"></i>
-                        </a>
-                    {{else}}
-                        <a data-action="voteUp">
-                            <i class="crafter-social-icon cs-icon-chevron-up"></i>
-                        </a>
-                    {{/ifm}}
-                    </span>
                     <span class="vote-down-wrapper hidden">
                         <a data-action="voteDown">
                             <i class="crafter-social-icon cs-icon-chevron-down"></i>

@@ -142,6 +142,15 @@ $popover-font-size: 12px;
         a {
           margin: 0 5px;
         }
+
+        .vote-up-count,
+        .vote-down-count {
+          font-weight: bold;
+        }
+
+        .vote-up-count {
+          color: $brand-success;
+        }
         
         .reply {
           text-decoration: none;
