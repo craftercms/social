@@ -282,8 +282,7 @@ $popover-font-size: 12px;
     }
 
     .comment-children {
-      border-left: 2px solid darken($popover-title-bg, 20%);
-      padding: 5px 0 0 5px;
+      padding: 5px 0 0 15px;
 
       &:empty {
         display: none;
