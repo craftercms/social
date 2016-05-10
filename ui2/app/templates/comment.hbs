@@ -102,7 +102,12 @@
         <div class="content-wrapper"></div>
         <div class="editor"></div>
         <div class="reply-controls">
-            <button type="button" class="btn btn-primary btn-xs" data-action="doReply">Reply</button>
+            <p class="submission-label"></p>
+            <p>
+                <input type="checkbox" name="accept" value="accept" data-action-terms>
+                <span class="agree-terms-label"></span>&nbsp;(<a target="_blank" class="terms-link" href=""></a>)
+            </p>
+            <button type="button" class="btn btn-primary btn-xs disabled" data-action="doReply">Reply</button>
             <button type="button" class="btn btn-default btn-xs" data-action="cancelReply">Cancel</button>
         </div>
     </div>
