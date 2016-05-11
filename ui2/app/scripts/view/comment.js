@@ -19,7 +19,8 @@
 
         events: {
             'click [data-action-reply]': 'reply',
-            'click [data-action-flag]': 'flag'
+            'click [data-action-flag]': 'flag',
+            'click [data-action-terms]': 'acceptTerms'
         },
 
         initialize: function (config) {
@@ -33,6 +34,29 @@
                 this.listenTo(this.model, 'destroy', this.remove);
                 this.listenTo(this.model, 'remove', this.remove);
                 this.listenTo(this.model, 'change', this.render);
+            }
+        },
+        submissionDetails: function () {
+            var submissionLabel = 'commenting.submissionLabel'.loc(),
+                agreeTermsLabel = 'commenting.agreeTermsLabel'.loc(),
+                agreeTermsLinkText = 'commenting.agreeTermsLinkText'.loc(),
+                agreeTermsLink = 'commenting.agreeTermsLink'.loc(),
+                submissionContainer = $(this.el).find('.reply-controls');
+
+            submissionContainer.find('.submission-label').append(submissionLabel);
+            submissionContainer.find('.agree-terms-label').append(agreeTermsLabel);
+            submissionContainer.find('.terms-link').append(agreeTermsLinkText);
+            submissionContainer.find('.terms-link').attr('href', agreeTermsLink);
+
+        },
+        acceptTerms: function () {
+            var postBtn = $(this.el).find('.reply-controls .btn.btn-primary'),
+                checkBtn = $(this.el).find('.reply-controls input[type=checkbox]');
+
+            if(checkBtn.is(':checked')){
+                postBtn.removeClass('disabled');
+            }else{
+                postBtn.addClass('disabled');
             }
         },
         render: function () {
@@ -250,6 +274,7 @@
                 toolbar: 'Basic'
             });
             this.cache('editor', editor);
+            this.submissionDetails();
         },
         cancelReply: function (e) {
             if (this.cache('editor')) {
@@ -261,7 +286,8 @@
         },
         doReply: function (e) {
             var editor;
-            if ((editor = this.cache('editor'))) {
+            var checkBtn = $(this.el).find('.reply-controls input[type=checkbox]');
+            if ((editor = this.cache('editor')) || !checkBtn.is(':checked')) {
                 var me = this;
                 var body = editor.getData();
                 if (body) {
@@ -413,7 +439,7 @@
 
             }
 
-            modal.set('title', 'Add Media');
+            modal.set('title', 'Upload Photo(s)');
             modal.set('body', view.el);
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 

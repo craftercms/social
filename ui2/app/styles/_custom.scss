@@ -98,12 +98,11 @@ $body-wrapper-margin-left: -64;
 
     .crafter-social-comment {
         position: relative;
-        border-bottom: 1px solid #979797;
+        border-bottom: none;
         margin: 0;
         padding: 15px 0 20px;
 
         &:first-child {
-            border-bottom: 1px solid #979797;
             //margin: 0 0 5px 0;
             padding: 0 0 20px;
         }

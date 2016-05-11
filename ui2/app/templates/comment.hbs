@@ -26,6 +26,20 @@
                     </a>
                 {{/ifm}}
                 {{#mif userInfo.actions 'has' 'moderate'}}{{/mif}}
+                <span class="vote-up-wrapper pull-right">
+                    <span class="vote-up-count" title="{{#if votesUp}}{{votesUp.length}} {{multiplicity votesUp.length 'people like' 'person likes'}} this.{{else}}No one has liked this{{/if}}">
+                        +{{votesUp.length}}
+                    </span>
+                {{#ifm isOwner}}
+                    <a style="cursor: default" >
+                        <i class="crafter-social-icon cs-icon-chevron-up"></i>
+                    </a>
+                {{else}}
+                    <a data-action="voteUp">
+                        <i class="crafter-social-icon cs-icon-chevron-up"></i>
+                    </a>
+                {{/ifm}}
+                </span>
                 <strong>
                     {{#if user.attributes.displayName}}
                         {{user.attributes.displayName}}
@@ -50,20 +64,6 @@
         <div class="clearfix">
             <ul class="list-inline list-unstyled pull-left">
                 <li>
-                    <span class="vote-up-wrapper">
-                        <span class="vote-up-count" title="{{#if votesUp}}{{votesUp.length}} {{multiplicity votesUp.length 'people like' 'person likes'}} this.{{else}}No one has liked this{{/if}}">
-                            +{{votesUp.length}}
-                        </span>
-                    {{#ifm isOwner}}
-                        <a style="cursor: default" >
-                            <i class="crafter-social-icon cs-icon-chevron-up"></i>
-                        </a>
-                    {{else}}
-                        <a data-action="voteUp">
-                            <i class="crafter-social-icon cs-icon-chevron-up"></i>
-                        </a>
-                    {{/ifm}}
-                    </span>
                     <span class="vote-down-wrapper hidden">
                         <a data-action="voteDown">
                             <i class="crafter-social-icon cs-icon-chevron-down"></i>
@@ -80,7 +80,7 @@
             </ul>
             <ul class="list-inline list-unstyled pull-left">
                 <li>
-                    <a data-action="files"><i class="crafter-social-icon cs-icon-picture"></i> Add Media ({{attachments.length}})</a>
+                    <a data-action="files"><i class="crafter-social-icon cs-icon-picture"></i> Upload Photo(s) ({{attachments.length}})</a>
                 </li>
             </ul>
             <a class="pull-right" data-action-flag title="{{multiplicity flags.length 'Flagged %@ times' 'Flagged one time' 'Flag as inappropriate'}}." flagged-title="{{loc 'comments.flag'}}">
@@ -102,7 +102,12 @@
         <div class="content-wrapper"></div>
         <div class="editor"></div>
         <div class="reply-controls">
-            <button type="button" class="btn btn-primary btn-xs" data-action="doReply">Reply</button>
+            <p class="submission-label"></p>
+            <p>
+                <input type="checkbox" name="accept" value="accept" data-action-terms>
+                <span class="agree-terms-label"></span>&nbsp;(<a target="_blank" class="terms-link" href=""></a>)
+            </p>
+            <button type="button" class="btn btn-primary btn-xs disabled" data-action="doReply">Reply</button>
             <button type="button" class="btn btn-default btn-xs" data-action="cancelReply">Cancel</button>
         </div>
     </div>
