@@ -62,7 +62,10 @@
                     },
                     'attachments': {
                         'value': '',
-                        '{fileId}': '?context={context}'
+                        '{fileId}': {
+                            'value': '?context={context}',
+                            'delete': '?context={context}'
+                        }
                     },
                     'moderate': '?context={context}'
 

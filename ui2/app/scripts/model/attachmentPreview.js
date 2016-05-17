@@ -23,7 +23,7 @@
 
     var AttachmentPreview = Model.extend({
         trashAttachment: function (params, callbacks) {
-            SUBMIT.call(this, 'comments.{_id}.attachments.{fileId}.delete', {}, 'POST', params, callbacks);
+            SUBMIT.call(this, 'comments.{_id}.attachments.{fileId}.delete', {context:params.context}, 'POST', params, callbacks);
         },
     });
 
