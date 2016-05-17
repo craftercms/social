@@ -360,6 +360,20 @@ module.exports = function (grunt) {
         'usemin'
     ]);
 
+    grunt.registerTask('build2', [
+        'clean:dist',
+        'useminPrepare',
+        'concurrent:dist',
+        'autoprefixer',
+        'concat',
+        'cssmin',
+        //'uglify',
+//        'modernizr',
+        'copy:dist',
+        // 'rev',
+        //'usemin'
+    ]);
+
     grunt.registerTask('default', [
         'jshint',
         'test',
