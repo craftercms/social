@@ -158,7 +158,7 @@
         render: function (e) {
             var me       = this;
             var profile  = Director.getProfile();
-            var editor = this.cache('editor');
+            var editor   = this.cache('editor');
             var model    = $.extend(this.model.toJSON(), {
                 avatarUrl: function() {
                     var ts = new Date().getTime();

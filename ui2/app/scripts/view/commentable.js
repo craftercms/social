@@ -34,7 +34,7 @@
             this.delegateActions(this, this.$options);
 
             this.collection.fetch({
-                data : { id: this.cfg.target,sortBy:config.sortBy,sortOrder:config.sortOrder }
+                data: {id: this.cfg.target, sortBy: config.sortBy, sortOrder: config.sortOrder}
             });
 
             if((!isMobile && config.discussionView == "view.Inline") || (isMobile && config.mobileExpanded == true)){
