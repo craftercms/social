@@ -21,29 +21,36 @@
         className: 'crafter-social-commentable',
         revealed: false,
         events: {
-            'mouseenter' : 'mouseenter'
+            'mouseenter': 'mouseenter'
         },
 
         initialize: function (config) {
             var me = this;
-            this.pageWidth = $( window ).width();
+            this.pageWidth = $(window).width();
             var isMobile = this.pageWidth < 768;
+
+            config.sortOrder && S.Cfg('global.threadSortOrder', config.sortOrder);
+            config.sortBy && S.Cfg('global.threadSortBy', config.sortBy);
 
             this.setElement(config.target);
             Base.prototype.initialize.apply(this, arguments);
             this.delegateActions(this, this.$options);
 
             this.collection.fetch({
-                data : { id: this.cfg.target,sortBy:config.sortBy,sortOrder:config.sortOrder }
+                data: {
+                    id: this.cfg.target,
+                    sortBy: S.Cfg('global.threadSortBy'),
+                    sortOrder: S.Cfg('global.threadSortOrder')
+                }
             });
 
-            if((!isMobile && config.discussionView == "view.Inline") || (isMobile && config.mobileExpanded == true)){
-                setTimeout(function(){
+            if ((!isMobile && config.discussionView == "view.Inline") || (isMobile && config.mobileExpanded == true)) {
+                setTimeout(function () {
                     me.revealDiscussion();
                 }, 500);
             }
 
-            setTimeout(function(){
+            setTimeout(function () {
                 me.mouseenter();
             }, 500);
 
@@ -52,7 +59,7 @@
 
             var me = this;
 
-            $(S.window).resize(function() {
+            $(S.window).resize(function () {
                 me.windowWidthChanged()
             });
 
@@ -68,7 +75,7 @@
             var me = this, $elem = this.element();
             $elem.addClass('crafter-social-commentable');
 
-            var $options = $(U.template(this.getTemplate('main'), { count: '' }));
+            var $options = $(U.template(this.getTemplate('main'), {count: ''}));
             $options.find('a.action').tooltip();
             //$options.mouseenter(function () { clearTimeout(me.timeout);  });
             //$options.mouseleave(function () { me.timeout = setTimeout(function () { me.mouseleave(); }); });
@@ -86,7 +93,7 @@
             var $badge = this.$options.find('.badge'),
                 length = this.collection.length;
             var targetId = this.cfg.target;
-            this.$options.find('#socialCommentBadge').attr('href','#'+targetId.substring(1,targetId.length)+'-comments');
+            this.$options.find('#socialCommentBadge').attr('href', '#' + targetId.substring(1, targetId.length) + '-comments');
             if (length === 0) {
                 $badge.text('');
             } else {
@@ -126,8 +133,8 @@
                     target: this.cfg.target,
                     context: this.cfg.context,
                     collection: this.collection,
-                    commentUrl:this.cfg.commentUrl,
-                    commentThreadName:this.cfg.commentThreadName
+                    commentUrl: this.cfg.commentUrl,
+                    commentThreadName: this.cfg.commentThreadName
                 });
                 this.cache('view.Inline', view);
                 this.listenTo(view, 'view.change.request', this.viewChangeRequest);
@@ -143,8 +150,8 @@
                     target: this.cfg.target,
                     context: this.cfg.context,
                     collection: this.collection,
-                    commentUrl:this.cfg.commentUrl,
-                    commentThreadName:this.cfg.commentThreadName
+                    commentUrl: this.cfg.commentUrl,
+                    commentThreadName: this.cfg.commentThreadName
                 });
                 this.cache('view.Lightbox', view);
                 this.listenTo(view, 'view.change.request', this.viewChangeRequest);
@@ -160,8 +167,8 @@
                     target: this.cfg.target,
                     context: this.cfg.context,
                     collection: this.collection,
-                    commentUrl:this.cfg.commentUrl,
-                    commentThreadName:this.cfg.commentThreadName
+                    commentUrl: this.cfg.commentUrl,
+                    commentThreadName: this.cfg.commentThreadName
                 });
                 this.cache('view.Popover', view);
                 this.listenTo(view, 'visibility.change', this.popoverVisibilityDidChange);
@@ -171,67 +178,70 @@
             view.show();
             this.setActiveView(view);
         },
-        setActiveView: function ( view ) {
+        setActiveView: function (view) {
             this.activeView = view;
         },
 
-        popoverVisibilityDidChange: function ( visible ) {
+        popoverVisibilityDidChange: function (visible) {
             this.$el[visible ? 'addClass' : 'removeClass']('revealed-by-view');
         },
 
-        revealDiscussion: function ( e ) {
+        revealDiscussion: function (e) {
             var me = this;
-            this.isMobile = $( window ).width() < 768;
+            this.isMobile = $(window).width() < 768;
 
-            if ( !(e instanceof $.Event) && (typeof arguments[0] === 'object') ) {
+            if (!(e instanceof $.Event) && (typeof arguments[0] === 'object')) {
                 var cfg = arguments[0];
                 (cfg.view) && (this.cfg.discussionView = cfg.view);
             }
 
-            if(this.isMobile && this.cfg.mobileView) {
+            if (this.isMobile && this.cfg.mobileView) {
                 this.viewChangeRequest(this.cfg.mobileView);
             } else {
                 this.viewChangeRequest(this.cfg.discussionView, true);
             }
 
 
-            if(e && ((!this.isMobile && this.cfg.discussionView == "view.Inline") || (this.isMobile && this.cfg.mobileView == "view.Inline"))) {
+            if (e && ((!this.isMobile && this.cfg.discussionView == "view.Inline") || (this.isMobile && this.cfg.mobileView == "view.Inline"))) {
                 $('html, body').animate({
                     scrollTop: $($(e.currentTarget).attr('href')).offset().top
                 }, 500);
             }
 
-            $.each(['view.Popover','view.Lightbox','view.Inline'], function (i, v) {
+            $.each(['view.Popover', 'view.Lightbox', 'view.Inline'], function (i, v) {
                 var view = me.cache(v);
                 (view) && view.render();
             });
         },
 
-        viewChangeRequest: function ( requested, updateCfg ) {
+        viewChangeRequest: function (requested, updateCfg) {
 
             var me = this;
-            $.each(['view.Popover','view.Lightbox','view.Inline'], function (i, v) {
+            $.each(['view.Popover', 'view.Lightbox', 'view.Inline'], function (i, v) {
                 var view = me.cache(v);
                 (view) && view.hide();
             });
 
             /* jshint -W086 */
             switch (requested) {
-                case 'view.Popover': {
+                case 'view.Popover':
+                {
                     this.popover();
                     break;
                 }
-                case 'view.Lightbox': {
+                case 'view.Lightbox':
+                {
                     this.lightbox();
                     break;
                 }
-                case 'view.Inline': {
+                case 'view.Inline':
+                {
                     this.inline();
                     break;
                 }
             }
 
-            if(updateCfg){
+            if (updateCfg) {
                 this.cfg.discussionView = requested;
             }
 
@@ -244,7 +254,7 @@
             S.request({
                 type: 'POST',
                 context: this,
-                data:{frequency: 'INSTANT'},
+                data: {frequency: 'INSTANT'},
                 url: S.url((watched ? 'threads.{_id}.unsubscribe' : 'threads.{_id}.subscribe'), {
                     _id: this.cfg.target,
                     context: this.cfg.context
@@ -257,13 +267,13 @@
                 }
             });
         },
-        setWatched: function ( isWatched ) {
+        setWatched: function (isWatched) {
             var $elem = this.$options.find('[data-action="watch"]');
-            $elem.parents('li:first')[ (isWatched === null) ? 'addClass' : 'removeClass' ]('hide');
+            $elem.parents('li:first')[(isWatched === null) ? 'addClass' : 'removeClass']('hide');
             $elem.show().css('color', isWatched ? 'green' : '');
         },
 
-        mouseenter: function (  ) {
+        mouseenter: function () {
             var $elem = this.element();
             $elem.addClass(REVEAL_CLASS);
 
@@ -290,7 +300,7 @@
             //}
 
         },
-        mouseleave: function (  ) {
+        mouseleave: function () {
             var me = this;
             me.element().removeClass(REVEAL_CLASS);
 
@@ -306,19 +316,19 @@
             //}
 
         },
-        windowWidthChanged: function() {
-            var currentWidth = $( window ).width(),
+        windowWidthChanged: function () {
+            var currentWidth = $(window).width(),
                 me = this;
 
-            if((this.pageWidth >= 767 && currentWidth < 767) || (this.pageWidth <= 768 && currentWidth > 768)) {
-                $.each(['view.Popover','view.Lightbox','view.Inline'], function (i, v) {
+            if ((this.pageWidth >= 767 && currentWidth < 767) || (this.pageWidth <= 768 && currentWidth > 768)) {
+                $.each(['view.Popover', 'view.Lightbox', 'view.Inline'], function (i, v) {
                     var view = me.cache(v);
                     (view) && view.hide();
                 });
 
-                if(((this.pageWidth <= 767 && currentWidth > 768) && this.cfg.discussionView == "view.Inline")
-                    || ((this.pageWidth >= 767 && currentWidth < 768) && this.cfg.mobileExpanded == true)){
-                    setTimeout(function(){
+                if (((this.pageWidth <= 767 && currentWidth > 768) && this.cfg.discussionView == "view.Inline")
+                    || ((this.pageWidth >= 767 && currentWidth < 768) && this.cfg.mobileExpanded == true)) {
+                    setTimeout(function () {
                         me.revealDiscussion();
                         me.mouseenter();
                     }, 500);
@@ -326,7 +336,7 @@
             }
             this.pageWidth = currentWidth;
 
-            if ( me.revealed ) {
+            if (me.revealed) {
                 me.mouseenter();
             }
         }
@@ -344,4 +354,4 @@
 
     S.define('view.Commentable', Commentable);
 
-}) (crafter.social);
+})(crafter.social);

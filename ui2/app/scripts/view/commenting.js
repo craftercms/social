@@ -107,6 +107,8 @@
 
             var collection = this.collection;
             collection.create(data, {
+                at: 0,
+                wait: true,
                 error: function (model) {
 
                     // Put back the comment that didn't get posted.
@@ -147,7 +149,8 @@
                 submissionContainer = $(this.el).find('.submission-details'),
                 postBtn = $(this.el).find('.btn.reply');
 
-            submissionContainer.find('.submission-label').append(submissionLabel);
+            submissionContainer.find('.submission-label').text(submissionLabel);
+            submissionContainer.find('.attachments-tip').text('commenting.attachmentsTip'.loc());
             submissionContainer.find('.agree-terms-label').append(agreeTermsLabel);
             submissionContainer.find('.terms-link').append(agreeTermsLinkText);
             submissionContainer.find('.terms-link').attr('href', agreeTermsLink);
@@ -157,7 +160,7 @@
         render: function (e) {
             var me       = this;
             var profile  = Director.getProfile();
-            var editor = this.cache('editor');
+            var editor   = this.cache('editor');
             var model    = $.extend(this.model.toJSON(), {
                 avatarUrl: function() {
                     var ts = new Date().getTime();
@@ -166,7 +169,7 @@
                     }
                     return S.url('profile.avatar', {
                         id: profile.id,
-                        context: me.cfg.context, 
+                        context: me.cfg.context,
                         ts: ts
                     });
                 }
@@ -184,10 +187,10 @@
                 me.$('.current-avatar').addClass('hidden');
                 me.$('.change-avatar').removeClass('hidden');
             });
-            
+
             if (editor || (e && e.changed)) {
                 this.editor('destroy');
-            } 
+            }
 
             this.editor();
             this.submissionDetails();

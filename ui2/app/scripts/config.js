@@ -10,6 +10,12 @@
             cls: 'component.Director',
             cfg: {  }
         },
+
+        /* Currently only supporting single global sorting order (not per thread) */
+        'global': {
+            threadSortBy: 'DESC',
+            threadSortOrder: 'createdDate'
+        },
         /**
          * URL configurations
          */
