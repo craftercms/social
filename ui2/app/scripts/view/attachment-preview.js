@@ -24,6 +24,9 @@
                 title: function () {
                     return model.fileName;
                 },
+                isVideo: function () {
+                    return (model.contentType.indexOf('video/') !== -1);
+                },
                 src: function () {
                     var src = '';
                     var fileName = model.fileName.toLowerCase();
