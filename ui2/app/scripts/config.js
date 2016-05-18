@@ -38,7 +38,7 @@
             threads: {
                 '{target}': {
                     'comments': {
-                        'value': '?context={context}',
+                        'value': '?context={context}&sortBy={sortBy}&sortOrder={sortOrder}',
                         '{id}': {}
                     },
                     'subscribe': '?context={context}',

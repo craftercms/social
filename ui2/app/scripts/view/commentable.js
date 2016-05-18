@@ -38,9 +38,7 @@
 
             this.collection.fetch({
                 data: {
-                    id: this.cfg.target,
-                    sortBy: S.Cfg('global.threadSortBy'),
-                    sortOrder: S.Cfg('global.threadSortOrder')
+                    id: this.cfg.target
                 }
             });
 

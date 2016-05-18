@@ -426,12 +426,7 @@
                             return data.files || [];
                         }
                     }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
-                        me.collection.fetch({
-                            data: $.extend({
-                                sortBy: S.Cfg('global.threadSortBy'),
-                                sortOrder: S.Cfg('global.threadSortOrder')
-                            }, fetchOptions)
-                        });
+                        me.collection.fetch();
                     });
 
                 });
