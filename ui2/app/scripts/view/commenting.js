@@ -147,7 +147,8 @@
                 submissionContainer = $(this.el).find('.submission-details'),
                 postBtn = $(this.el).find('.btn.reply');
 
-            submissionContainer.find('.submission-label').append(submissionLabel);
+            submissionContainer.find('.submission-label').text(submissionLabel);
+            submissionContainer.find('.attachments-tip').text('commenting.attachmentsTip'.loc());
             submissionContainer.find('.agree-terms-label').append(agreeTermsLabel);
             submissionContainer.find('.terms-link').append(agreeTermsLinkText);
             submissionContainer.find('.terms-link').attr('href', agreeTermsLink);
@@ -166,7 +167,7 @@
                     }
                     return S.url('profile.avatar', {
                         id: profile.id,
-                        context: me.cfg.context, 
+                        context: me.cfg.context,
                         ts: ts
                     });
                 }
@@ -184,10 +185,10 @@
                 me.$('.current-avatar').addClass('hidden');
                 me.$('.change-avatar').removeClass('hidden');
             });
-            
+
             if (editor || (e && e.changed)) {
                 this.editor('destroy');
-            } 
+            }
 
             this.editor();
             this.submissionDetails();
