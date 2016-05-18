@@ -107,6 +107,8 @@
 
             var collection = this.collection;
             collection.create(data, {
+                at: 0,
+                wait: true,
                 error: function (model) {
 
                     // Put back the comment that didn't get posted.
