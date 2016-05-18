@@ -12,7 +12,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   &:empty {
-    width: 1em;
+    min-width: 1em;
   }
 }
 
