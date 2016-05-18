@@ -37,8 +37,10 @@
         },
 
         url: function () {
-            // TODO set order through class configuration
-            return S.url('threads.{target}.comments', this.cfg);
+            return S.url('threads.{target}.comments', $.extend({}, this.cfg, {
+                sortBy: S.Cfg('global.threadSortBy'),
+                sortOrder: S.Cfg('global.threadSortOrder')
+            }));
         },
 
         parse: function ( response ) {
