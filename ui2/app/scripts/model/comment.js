@@ -123,15 +123,15 @@
             var ancestors = replyingTo.ancestors.slice();
             ancestors.push(replyingTo);
             var data = {
-                    body: params.body,
-                    parent: replyingTo._id, 
-                    dateAdded: Date.now(),
-                    thread: replyingTo.targetId, // this is the targetId
-                    context: params.context,
-                    targetId: replyingTo.targetId,
-                    attributes: {
-                        'commentUrl': replyingTo.attributes.commentUrl,
-                        'commentThreadName': replyingTo.attributes.commentThreadName
+                body: params.body,
+                parent: replyingTo._id,
+                dateAdded: Date.now(),
+                thread: replyingTo.targetId, // this is the targetId
+                context: params.context,
+                targetId: replyingTo.targetId,
+                attributes: {
+                    'commentUrl': replyingTo.attributes.commentUrl,
+                    'commentThreadName': replyingTo.attributes.commentThreadName
                 }
             };
             this.collection.create(data, callbacks);

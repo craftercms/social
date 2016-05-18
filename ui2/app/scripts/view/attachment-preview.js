@@ -45,10 +45,10 @@
 
         trashAttachment: function (event) {
             event.stopPropagation();
-            var self = this;
+            var self  = this;
             var model = this.model;
             var Modal = S.get('view.Modal');
-            var modal  = new Modal({
+            var modal = new Modal({
                 modal: {
                     show: true,
                     keyboard: false,
@@ -61,8 +61,8 @@
                             _id: model.get('commentId')
                         }), {
                             success: function(data) {
-                                console.log('Success ', data);
                                 self.$el.remove();
+                                modal.destroy();
                             },
                             error: function(data) {
                                 console.log('Error ', data);
