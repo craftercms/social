@@ -7,6 +7,7 @@
 
     var backdrop = '.dropdown-backdrop';
     var toggle   = '[data-toggle="dropdown"]';
+    var Cfg = S.Cfg;
 
     Options = Base.extend({
 
@@ -25,17 +26,20 @@
 
         },
         sortBy:function(e,value,order){
-            this.cfg.sortBy=value;
-            this.cfg.sortOrder=order;
+
+            Cfg('global.threadSortBy', value);
+            Cfg('global.threadSortOrder', order);
+
             this.refresh();
+
         },
         refresh: function () {
-            if(!this.cfg.sortOrder && !this.cfg.sortBy){
-                this.cfg.sortOrder="DESC";
-                this.cfg.sortBy="createdDate";
-            }
             this.collection.fetch({
-                data: { target: this.cfg.target, context: this.cfg.context,sortBy:this.cfg.sortBy,sortOrder:this.cfg.sortOrder
+                data: {
+                    target: this.cfg.target,
+                    context: this.cfg.context,
+                    sortBy: Cfg('global.threadSortBy'),
+                    sortOrder: Cfg('global.threadSortOrder')
                 }
             });
         },

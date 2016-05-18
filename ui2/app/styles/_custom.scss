@@ -97,14 +97,12 @@ $body-wrapper-margin-left: -64;
     padding: 15px 0 0 0;
 
     .crafter-social-comment {
+
         position: relative;
         border-bottom: none;
-        margin: 0;
-        padding: 15px 0 20px;
 
         &:first-child {
-            //margin: 0 0 5px 0;
-            padding: 0 0 20px;
+
         }
 
         .body-wrapper {

@@ -135,10 +135,10 @@
                 });
 
                 var attachmentModel = new S.model.AttachmentPreview(tempModel);
-                var attachmentView = new S.view.AttachmentPreview({ 
+                var attachmentView = new S.view.AttachmentPreview({
                     model: attachmentModel,
                     context: me.cfg.context
-                })
+                });
 
                 $attachments.append(attachmentView.render().el);
             });
@@ -396,7 +396,9 @@
                 modal: { show: true, keyboard: false, backdrop: 'static' }
             });
 
-            var fetchOptions = { data: { context: this.cfg.context } };
+            var fetchOptions = {
+                data: { context: me.cfg.context }
+            };
 
             modal.$el.on('hidden.bs.modal', function () {
                 modal.uploader && modal.uploader.fileupload('destroy');
@@ -424,7 +426,12 @@
                             return data.files || [];
                         }
                     }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
-                        me.collection.fetch(fetchOptions);
+                        me.collection.fetch({
+                            data: $.extend({
+                                sortBy: S.Cfg('global.threadSortBy'),
+                                sortOrder: S.Cfg('global.threadSortOrder')
+                            }, fetchOptions)
+                        });
                     });
 
                 });
@@ -448,7 +455,7 @@
             files.fetch(fetchOptions);
 
         },
-        
+
         remove: function () {
             this.trigger('remove', this.model);
             this.$el.remove();

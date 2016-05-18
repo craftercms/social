@@ -49,9 +49,9 @@
             var model = this.model;
             var Modal = S.get('view.Modal');
             var modal  = new Modal({
-                modal: { 
-                    show: true, 
-                    keyboard: false, 
+                modal: {
+                    show: true,
+                    keyboard: false,
                     backdrop: 'static'
                 },
                 events: {
@@ -73,7 +73,7 @@
             });
 
             var fileObj = event.target;
-            
+
             modal.set('title', 'Delete Attachment');
             modal.set('body', '<span>Are you sure you want to delete the attachment <strong>'+ self.getAttachmentName(model.get('fileName')) +'</strong>?</span>')
             modal.set('footer', '<button class="btn btn-danger">Delete</button><button class="btn btn-default" data-dismiss="modal">Cancel</button>');
@@ -90,7 +90,7 @@
         getAttachmentType: function (name) {
             var parts = name.split('.');
             var attachmentType = (parts.length > 1)? parts[1]: '';
-            return attachmentType;  
+            return attachmentType;
         },
 
         getRequestParams: function (extraParams) {
@@ -113,19 +113,19 @@
                 var attachmentType = self.getAttachmentType(model.get('fileName'));
                 modal.set('body', '<video controls autoplay class="img-file-full"><source src="'+ model.get('url') +'" type="video/'+ attachmentType +'" ></source></video>')
             } else {
-                modal.set('body', '<img class="img-file-full" src="'+ model.get('url') +'" alt="'+ model.get('fileName') +'" title="'+ model.get('fileName') +'" />')    
+                modal.set('body', '<img class="img-file-full" src="'+ model.get('url') +'" alt="'+ model.get('fileName') +'" title="'+ model.get('fileName') +'" />')
             }
 
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 
             modal.render();
-        },
+        }
     });
 
     AttachmentPreview.DEFAULTS = $.extend(true, {}, Base.DEFAULTS, {
         templates: {
             main: ('%@attachment-preview.hbs').fmt(S.Cfg('url.templates'))
-        },
+        }
     });
 
     S.define('view.AttachmentPreview', AttachmentPreview);
