@@ -349,8 +349,8 @@
             });
 
             modal.set({
-                'title': isFlagged ? 'Discard Comment Flag' : 'Flag Comment',
-                'body': (isFlagged ? '<p>You previously flagged this comment. This form allows you to retreat your flag.</p>' : '') + '<div class="form-group"><label>Reason</label><textarea class="form-control"></textarea></div>',
+                'title': isFlagged ? 'Discard  Report' : 'Report Comment',
+                'body': (isFlagged ? '<p>You previously reported this comment. This form allows you to retreat your report.</p>' : '') + '<div class="form-group"><label>Reason</label><textarea class="form-control"></textarea></div>',
                 'footer': '<button class="btn btn-primary">Submit</button>'
             });
 
