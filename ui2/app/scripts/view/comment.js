@@ -43,7 +43,8 @@
                 agreeTermsLink = 'commenting.agreeTermsLink'.loc(),
                 submissionContainer = $(this.el).find('.reply-controls');
 
-            submissionContainer.find('.submission-label').append(submissionLabel);
+            submissionContainer.find('.submission-label').text(submissionLabel);
+            submissionContainer.find('.attachments-tip').text('commenting.attachmentsTip'.loc());
             submissionContainer.find('.agree-terms-label').append(agreeTermsLabel);
             submissionContainer.find('.terms-link').append(agreeTermsLinkText);
             submissionContainer.find('.terms-link').attr('href', agreeTermsLink);
