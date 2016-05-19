@@ -195,7 +195,7 @@ $body-wrapper-margin-left: -64;
     }
     a[flagged-title=""], a[flagged-title="undefined"] {
         &:after {
-            content: "Flag as inappropriate.";
+            content: "Flag as inappropriate";
         }
     }
     a[title^="Flagged"] {
