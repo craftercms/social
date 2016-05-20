@@ -37,6 +37,7 @@
 
             this.$el.on('hidden.bs.modal', function () {
                 me.trigger('hidden');
+                me.cfg.destroyOnClose && me.destroy(true);
             });
 
             this.listenTo(this, 'shown', function () {
@@ -105,8 +106,8 @@
 
         },
 
-        destroy: function () {
-            this.trigger('hidden');
+        destroy: function (silent) {
+            if (silent !== true) this.trigger('hidden');
             this.$el.remove();
             this.$backdrop && this.$backdrop.remove();
         }
@@ -121,6 +122,7 @@
         templates: {
             main: ('%@modal.hbs').fmt(S.Cfg('url.templates'))
         },
+        destroyOnClose: false,
         modal: $.extend({}, $.fn.modal.Constructor.DEFAULTS, {
             backdrop: true,
             keyboard: true,
