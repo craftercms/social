@@ -1,10 +1,10 @@
 (function (S) {
     'use strict';
 
-    var AttachmentPreview                ,
-        Base    = S.view.Base   ,
+    var AttachmentPreview,
+        Base    = S.view.Base,
         U       = S.util,
-        $       = S.$           ;
+        $       = S.$;
 
     AttachmentPreview = Base.extend({
 
@@ -103,10 +103,12 @@
         },
 
         viewAttachment: function (event) {
+
             var self = this;
             var model = this.model;
             var Modal = S.get('view.Modal');
             var modal  = new Modal({
+                destroyOnClose: true,
                 modal: { show: true, keyboard: false, backdrop: 'static' }
             });
 
@@ -122,7 +124,9 @@
             modal.set('footer', '<button class="btn btn-default" data-dismiss="modal">Close</button>');
 
             modal.render();
+
         }
+
     });
 
     AttachmentPreview.DEFAULTS = $.extend(true, {}, Base.DEFAULTS, {
