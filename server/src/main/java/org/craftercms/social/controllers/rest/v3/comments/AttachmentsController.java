@@ -47,7 +47,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
     @RequestParam(required = true) CommonsMultipartFile attachment) throws SocialException, IOException {
         log.debug("Adding Attachment for UGC {} ", id);
         return ugcService.addAttachment(id, context(), attachment.getInputStream(), attachment.getOriginalFilename(),
-            new MimetypesFileTypeMap(mimeFile.getInputStream()).getContentType(attachment.getOriginalFilename()));
+            new MimetypesFileTypeMap(mimeFile.getInputStream()).getContentType(attachment.getOriginalFilename().toLowerCase()));
     }
 
 
