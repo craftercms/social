@@ -257,6 +257,7 @@
 
             modal.render();
         }
+
     });
 
     Commenting.DEFAULTS = $.extend({}, Base.DEFAULTS, {

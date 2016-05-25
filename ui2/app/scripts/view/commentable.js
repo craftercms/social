@@ -125,21 +125,29 @@
         },
 
         inline: function () {
+
             var view = this.cache('view.Inline');
-            if (!view) {
-                view = new S.view.Inline({
-                    target: this.cfg.target,
-                    context: this.cfg.context,
-                    collection: this.collection,
-                    commentUrl: this.cfg.commentUrl,
-                    commentThreadName: this.cfg.commentThreadName
-                });
-                this.cache('view.Inline', view);
-                this.listenTo(view, 'view.change.request', this.viewChangeRequest);
-                view.render();
+
+            if (view) {
+                view.destroy();
+                this.stopListening(view);
             }
+
+            view = new S.view.Inline({
+                target: this.cfg.target,
+                context: this.cfg.context,
+                collection: this.collection,
+                commentUrl: this.cfg.commentUrl,
+                commentThreadName: this.cfg.commentThreadName
+            });
+
+            view.render();
             view.show();
+
+            this.cache('view.Inline', view);
+            this.listenTo(view, 'view.change.request', this.viewChangeRequest);
             this.setActiveView(view);
+
         },
         lightbox: function () {
             var view = this.cache('view.Lightbox');
@@ -185,6 +193,7 @@
         },
 
         revealDiscussion: function (e) {
+
             var me = this;
             this.isMobile = $(window).width() < 768;
 
@@ -199,7 +208,6 @@
                 this.viewChangeRequest(this.cfg.discussionView, true);
             }
 
-
             if (e && ((!this.isMobile && this.cfg.discussionView == "view.Inline") || (this.isMobile && this.cfg.mobileView == "view.Inline"))) {
                 $('html, body').animate({
                     scrollTop: $($(e.currentTarget).attr('href')).offset().top
@@ -210,6 +218,7 @@
                 var view = me.cache(v);
                 (view) && view.render();
             });
+
         },
 
         viewChangeRequest: function (requested, updateCfg) {
