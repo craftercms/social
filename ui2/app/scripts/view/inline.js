@@ -38,6 +38,12 @@
 
             this.$el.detach();
 
+        },
+
+        destroy: function () {
+            var view = this.cache('commentingView');
+            view && view.editor('destroy');
+            this.$el.remove();
         }
 
     });
