@@ -16,6 +16,8 @@ import org.craftercms.social.exceptions.SocialException;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,9 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
 
     private Logger log = LoggerFactory.getLogger(AttachmentsController.class);
 
+    @Value("${studio.social.web.mimeFile}")
+    protected Resource mimeFile;
+
     @RequestMapping(value = "/{id}/attachments", method = RequestMethod.POST)
     @ResponseBody()
     @ApiOperation(value = "Adds and attachment to the given UGC")
@@ -42,7 +47,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
     @RequestParam(required = true) CommonsMultipartFile attachment) throws SocialException, IOException {
         log.debug("Adding Attachment for UGC {} ", id);
         return ugcService.addAttachment(id, context(), attachment.getInputStream(), attachment.getOriginalFilename(),
-            new MimetypesFileTypeMap().getContentType(attachment.getOriginalFilename()));
+            new MimetypesFileTypeMap(mimeFile.getInputStream()).getContentType(attachment.getOriginalFilename().toLowerCase()));
     }
 
 
