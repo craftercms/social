@@ -21,10 +21,11 @@
                     <a class="pull-right option" data-action="edit" title="Edit Comment">
                         <i class="crafter-social-icon cs-icon-pencil"></i>
                     </a>
+                {{/ifm}}
                     <a class="pull-right reply" data-action-reply>
                         <i class="crafter-social-icon cs-icon-share-alt" title="Reply"></i>
                     </a>
-                {{/ifm}}
+
                 {{#mif userInfo.actions 'has' 'moderate'}}{{/mif}}
                 <span class="vote-up-wrapper pull-right">
                     <span class="vote-up-count" title="{{#if votesUp}}{{votesUp.length}} {{multiplicity votesUp.length 'people like' 'person likes'}} this.{{else}}No one has liked this{{/if}}">
