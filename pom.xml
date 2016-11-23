@@ -56,6 +56,9 @@
 		<module>admin</module>
     </modules>
 
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
 	<profiles>
         <profile>
             <id>migrationTool</id>
@@ -72,16 +75,14 @@
         <profile>
             <id>JDK8</id>
             <activation>
-                <jdk>
-                    1.8
-                </jdk>
+                <jdk>[1.8,)</jdk>
             </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9</version>
+                        <version>2.10.4</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -97,7 +98,6 @@
                 </plugins>
             </build>
         </profile>
-
 		<profile>
 			<id>release-sign-artifacts</id>
 			<activation>
@@ -226,6 +226,15 @@
                     <doCheck>false</doCheck>
                     <doUpdate>false</doUpdate>
                     <revisionOnScmFailure>unknown</revisionOnScmFailure>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
     	</plugins>
