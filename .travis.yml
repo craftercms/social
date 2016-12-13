@@ -1,0 +1,25 @@
+language: java
+jdk:
+ - oraclejdk8
+branches:
+  except:
+    - travis
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#craftercms"
+    use_notice: true
+    skip_join: true
+  slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
+addons:
+  sonarqube: true
+env:
+  global:
+    - secure: "Hj5S4FbWlbjU8cAn9BH8j/r5KbuLoL/l0ExQErmpGzCoFEvMa6Arcj6zs5gkIKnjGichvLfQ8qDxmnMEpN8AcmSRi/QtMqToXgIQG+OR20FUE1/CVqLoEC/9ndMOrzB7wJLq/kWJRt1XkmsoxNcXd+SVKAB9s+ZZ36MxYltJZLs="
+    - secure: "Ad8N6m3P5VCCLoJFswlc7jGmkLMhHm1WUOrj4MLJs2DPm5gTvRWHFprfoN1pGnHY6nVyxW1jQhpCepwQovSTVcYTdcgfLvY1Q4VMVEEGy2BUbfHH3fhduzlfsL/uatyyPP9gmPVVcf+jAsfuuAtPESAJa6zu5FjebjaXG76pdEk="
+    - secure: "JpCwkoSRBRtg1A5gUPn94KL6nueu13XQ2DXGUyfWLgLJ+Yli6yctqHajP7w6R+XrAeDiUdOJqWJxSK3DraQjoaOgxa2GUo+vhbRxuuNdBoHChFfHUpsmbhVepXNWxBWJV5bznCpCZbCIgsA1N6rzPvz1xFpmWBBY0w5UZQTuab8="
+before_install: "git clone -b travis `git config --get remote.origin.url` target/travis"
+script:
+  # other script steps might be done before running the actual SonarQube analysis
+    - mvn deploy --settings target/travis/settings.xml
+    - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN
