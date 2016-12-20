@@ -100,12 +100,16 @@ $commentable-shadow-color: $brand-primary;
     }
 
   .badge {
-
+    font-size: 16px;
     &:empty {
       display: none;
     }
 
   }
+    .crafter-social-fa-icon{
+        font-family: "FontAwesome";
+        font-size: 30pt;
+    }
 
   &.reveal,
   &.revealed-by-options,

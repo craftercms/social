@@ -1,4 +1,4 @@
-
+$fa-font-path: 'fonts';
 @import 'compass';
 @import 'variables';
 @import 'mixins';
@@ -23,3 +23,6 @@
 @import "dropbox";
 
 @import "_custom";
+
+
+@import 'fontawesome/scss/font-awesome';
