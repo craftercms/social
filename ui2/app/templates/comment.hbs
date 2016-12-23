@@ -33,11 +33,11 @@
                     </span>
                 {{#ifm isOwner}}
                     <a style="cursor: default" >
-                        <i class="crafter-social-icon cs-icon-chevron-up"></i>
+                        <i class="crafter-social-icon crafter-social-fa-icon fa-thumbs-up {{#mif votesUp 'has' sessionUserId}}you-voted{{/mif}}"></i>
                     </a>
                 {{else}}
                     <a data-action="voteUp">
-                        <i class="crafter-social-icon cs-icon-chevron-up"></i>
+                        <i class="crafter-social-icon crafter-social-fa-icon fa-thumbs-up {{#mif votesUp 'has' sessionUserId}}you-voted{{/mif}}"></i>
                     </a>
                 {{/ifm}}
                 </span>
