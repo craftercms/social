@@ -41,13 +41,14 @@ $commentable-shadow-color: $brand-primary;
         }
 
         .badge {
-          background-color: $color-crimson;
-          position: absolute;
-          font-weight: bold;
-          font-size: 8px;
-          padding: 3px;
-          right: 0;
-          top: 0;
+            background-color: #ed1c24;
+            position: absolute;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 4px 5px;
+            line-height: 10px;
+            right: 1px;
+            top: -2px;
         }
 
       }
@@ -100,12 +101,16 @@ $commentable-shadow-color: $brand-primary;
     }
 
   .badge {
-
+    font-size: 16px;
     &:empty {
       display: none;
     }
 
   }
+    .crafter-social-fa-icon{
+        font-family: "FontAwesome";
+        font-size: 30pt;
+    }
 
   &.reveal,
   &.revealed-by-options,

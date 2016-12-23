@@ -17,12 +17,17 @@
         initialize: function () {
             Base.prototype.initialize.apply(this, arguments);
 
-            var me = this;
+            var me = this,
+                collection = this.collection,
+                watched = collection.getIsWatched();
+
             $.each(this.cfg.hidden, function (i, o) {
                 me.$(S.string.fmt('[data-option="%@"]', o)).hide();
             });
 
             this.$('[data-toggle]').dropdown();
+
+            this.setWatched(watched);
 
         },
         sortBy:function(e,value,order){
@@ -42,6 +47,43 @@
                     sortOrder: Cfg('global.threadSortOrder')
                 }
             });
+        },
+
+        watch: function() {
+            var me = this,
+                collection = this.collection,
+                watched = collection.getIsWatched();
+            // TODO: what's backend like?
+            S.request({
+                type: 'POST',
+                context: this,
+                data: {frequency: 'INSTANT'},
+                url: S.url((watched ? 'threads.{_id}.unsubscribe' : 'threads.{_id}.subscribe'), {
+                    _id: this.cfg.target,
+                    context: this.cfg.context
+                }),
+                success: function () {
+                    collection.setIsWatched(!watched);
+                    me.setWatched(!watched);
+                },
+                error: function () {
+
+                }
+            });
+        },
+
+        setWatched: function (isWatched) {
+            var $elem = $(this.el).find('[data-action="watch"]');
+            $elem.parents('li:first')[(isWatched === null) ? 'addClass' : 'removeClass']('hide');
+            //$elem.find('i').toggleClass("fa-bell-slash", "fa-bell")
+
+            if(isWatched){
+                $elem.find('i').removeClass("fa-bell-slash").addClass("fa-bell");
+                $elem.find('.text').text('Disable Notifications');
+            }else{
+                $elem.find('i').removeClass("fa-bell").addClass("fa-bell-slash");
+                $elem.find('.text').text('Enable Notifications');
+            }
         },
 
         changeView: function (e, view) {

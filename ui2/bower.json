@@ -11,7 +11,8 @@
     "ckeditor": "*",
     "handlebars": "~1.1.0",
     "jquery-file-upload": "~9.5.4",
-    "uploadify": "~3.2.1"
+    "uploadify": "~3.2.1",
+    "fontawesome": "fontawesome#^4.7.0"
   },
   "devDependencies": {}
 }

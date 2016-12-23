@@ -41,6 +41,7 @@
         <property name="notificationServiceImpl" ref="social.services.system.notificationService"/>
         <property name="arraySortFields" value="${studio.social.ugc.arraySortFields}"/>
         <property name="tenantConfigurationService" ref="social.services.system.tenantConfiguration"/>
+        <property name="profileService" ref="crafter.profileServiceRestClient"/>
     </bean>
 
     <bean class="org.craftercms.commons.web.CORSFilter" id="crafter.corsFilter">

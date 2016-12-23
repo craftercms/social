@@ -97,8 +97,6 @@
             } else {
                 $badge.text(length);
             }
-            var isWatched = this.collection.getIsWatched();
-            this.setWatched(isWatched);
             return this;
 
         },
@@ -252,32 +250,6 @@
                 this.cfg.discussionView = requested;
             }
 
-        },
-
-        watch: function (/*e*/) {
-            var collection = this.collection;
-            var watched = collection.getIsWatched();
-            // TODO: what's backend like?
-            S.request({
-                type: 'POST',
-                context: this,
-                data: {frequency: 'INSTANT'},
-                url: S.url((watched ? 'threads.{_id}.unsubscribe' : 'threads.{_id}.subscribe'), {
-                    _id: this.cfg.target,
-                    context: this.cfg.context
-                }),
-                success: function () {
-                    collection.setIsWatched(!watched);
-                },
-                error: function () {
-
-                }
-            });
-        },
-        setWatched: function (isWatched) {
-            var $elem = this.$options.find('[data-action="watch"]');
-            $elem.parents('li:first')[(isWatched === null) ? 'addClass' : 'removeClass']('hide');
-            $elem.show().css('color', isWatched ? 'green' : '');
         },
 
         mouseenter: function () {

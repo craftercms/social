@@ -36,6 +36,8 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.commons.security.permissions.annotations.SecuredObject;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.ModerationStatus;
@@ -84,6 +86,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     private NotificationService notificationService;
     private List<String> arraySortFields;
     private TenantConfigurationService tenantConfigurationService;
+    private ProfileService profileService;
 
     @Override
     @HasPermission(action = UGC_CREATE, type = SocialPermission.class)
@@ -139,8 +142,20 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         if (profileMap.containsKey("defaultFrequency") && profileMap.containsKey("autoWatch")) {
             boolean autoWatch = currentProfile.getAttribute("autoWatch");
             if (autoWatch) {
-                notificationService.subscribeUser(currentProfile, context + "/" + targetId, (String)currentProfile
-                    .getAttribute("defaultFrequency"));
+                notificationService.subscribeUser(currentProfile, context + "/" + targetId, (String)currentProfile.getAttribute("defaultFrequency"));
+            }
+        }else if(Boolean.valueOf(tenantConfigurationService.getProperty(context,"setupAutoWatch").toString())){
+            try{
+                currentProfile.setAttribute("autoWatch",true);
+                currentProfile.setAttribute("defaultFrequency",tenantConfigurationService.getProperty(context,
+                    "defaultFrequency"));
+                HashMap<String,Object> updatedMap = new HashMap<>();
+                updatedMap.put("autoWatch",true);
+                updatedMap.put("defaultFrequency",tenantConfigurationService.getProperty(context,"defaultFrequency"));
+                Profile updatedProfile = profileService.updateAttributes(currentProfile.getId().toString(),updatedMap);
+                setupAutoWatch(targetId,updatedProfile,context);
+            }catch (ProfileException ex){
+                log.error("logging.ugc.autowatch",currentProfile.getId().toString(),ex);
             }
         } else {
             log.debug("Profile don't have set either defaultFrequency or autoWatch attributes");
@@ -685,5 +700,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     public void setTenantConfigurationService(final TenantConfigurationService tenantConfigurationService) {
         this.tenantConfigurationService = tenantConfigurationService;
+    }
+
+    public void setProfileService(final ProfileService profileService) {
+        this.profileService = profileService;
     }
 }
