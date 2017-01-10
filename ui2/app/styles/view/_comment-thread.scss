@@ -221,6 +221,10 @@ $popover-font-size: 12px;
                 .crafter-social-fa-icon{
                     font-family: "FontAwesome";
                     font-size: 12pt;
+
+                    &.you-voted {
+                        color: #5cb85c;
+                    }
                 }
             }
 

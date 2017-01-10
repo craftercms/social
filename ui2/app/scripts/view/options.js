@@ -21,6 +21,8 @@
                 collection = this.collection,
                 watched = collection.getIsWatched();
 
+            this.cfg.hidden.push('options.watch');
+
             $.each(this.cfg.hidden, function (i, o) {
                 me.$(S.string.fmt('[data-option="%@"]', o)).hide();
             });
