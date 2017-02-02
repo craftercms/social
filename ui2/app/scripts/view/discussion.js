@@ -63,6 +63,7 @@
                     collection: this.collection,
                     context: this.cfg.context,
                     target: this.cfg.target,
+                    discussionView: this.cfg.discussionView,
                     commentUrl:this.cfg.commentUrl,
                     commentThreadName:this.cfg.commentThreadName,
                     model: new S.Backbone.Model({avatarUrl: ''}),
