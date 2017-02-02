@@ -7,6 +7,7 @@
         $       = S.$;
 
     var Director = S.getDirector();
+    var acceptTermsOnComment = S.Cfg('comments.acceptTerms');
 
     var CommentView = Base.extend({
 
@@ -93,7 +94,8 @@
                         context: me.cfg.context,
                         ts:ts
                     });
-                }
+                },
+                showTermsAcceptance: (acceptTermsOnComment === true)
             });
 
             this.$el.html(U.template(
@@ -288,7 +290,9 @@
         doReply: function (e) {
             var editor;
             var checkBtn = $(this.el).find('.reply-controls input[type=checkbox]');
-            if ((editor = this.cache('editor')) || !checkBtn.is(':checked')) {
+            var acceptTermsInvalid = (acceptTermsOnComment === true) ? !checkBtn.is(':checked') : false;
+            
+            if ((editor = this.cache('editor')) || acceptTermsInvalid) {
                 var me = this;
                 var body = editor.getData();
                 if (body) {

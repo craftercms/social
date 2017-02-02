@@ -136,7 +136,8 @@
                 context: this.cfg.context,
                 collection: this.collection,
                 commentUrl: this.cfg.commentUrl,
-                commentThreadName: this.cfg.commentThreadName
+                commentThreadName: this.cfg.commentThreadName,
+                discussionView: this.cfg.discussionView
             });
 
             view.render();

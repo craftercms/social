@@ -8,6 +8,7 @@
         $ = S.$;
 
     var Director = S.getDirector();
+    var acceptTermsOnComment = S.Cfg('comments.acceptTerms');
 
     Commenting = Base.extend({
 
@@ -87,12 +88,12 @@
         },
 
         comment: function () {
-
             var editor = this.editor(),
                 checkBtn = $(this.el).find('[data-action-terms]'),
+                acceptTermsInvalid = (acceptTermsOnComment === true) ? !checkBtn.is(':checked') : false,
                 content = editor.getData();
-
-            if (!content || !checkBtn.is(':checked')) { return; }
+            
+            if (!content || acceptTermsInvalid) { return; }
 
             var data = {
                 body: content,
@@ -104,7 +105,11 @@
                     'commentThreadName':this.cfg.commentThreadName
                 }
             };
-
+            if (this.cfg.discussionView == "view.Inline") {
+                $('html, body').animate({
+                    scrollTop: $(this.cfg.target + '-comments').offset().top
+                }, 800);
+            }
             var collection = this.collection;
             collection.create(data, {
                 at: 0,
@@ -136,7 +141,7 @@
             if(checkBtn.is(':checked')){
                 postBtn.removeClass('disabled');
             }else{
-                postBtn.addClass('disabled');
+                postBtn.addClass('disabled'); 
             }
 
         },
@@ -172,7 +177,8 @@
                         context: me.cfg.context,
                         ts: ts
                     });
-                }
+                },
+                showTermsAcceptance: (acceptTermsOnComment === true)
             });
 
             this.$el.html(U.template(
