@@ -130,3 +130,11 @@ $commentable-shadow-color: $brand-primary;
 
 .crafter-social-commentable {
 }
+
+#socialCommentBadge {
+  .crafter-social-icon{
+    &.cs-icon-comment{
+      font-size: 30pt;
+    }
+  } 
+}

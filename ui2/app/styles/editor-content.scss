@@ -3,15 +3,19 @@
 @import 'variables';
 @import 'mixins';
 
-@import 'sass-bootstrap/lib/normalize';
+.crafter-social-view{
+	@import 'sass-bootstrap/lib/normalize';
+	
+	body {
+	  padding: 5px;
+	  font-size: $font-size-small;
+	}
 
-body {
-  padding: 5px;
-  font-size: $font-size-small;
+	p {
+	  margin-top: 0;
+	  margin-bottom: 5px;
+	}
 }
 
-p {
-  margin-top: 0;
-  margin-bottom: 5px;
-}
+
 
