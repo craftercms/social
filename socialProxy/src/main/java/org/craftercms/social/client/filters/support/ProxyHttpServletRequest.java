@@ -2,6 +2,7 @@ package org.craftercms.social.client.filters.support;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -15,12 +16,14 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.cookie.SM;
 
 public class ProxyHttpServletRequest extends HttpServletRequestWrapper {
     private final DelegateServletInputStream wrapServletInput;
     private List<Cookie> cookieList;
     private String cookieProxyFilter;
+    private int contentLength;
 
     /**
      * Constructs a request object wrapping the given request.
@@ -33,13 +36,44 @@ public class ProxyHttpServletRequest extends HttpServletRequestWrapper {
         super(request);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         IOUtils.copy(super.getInputStream(), out);
-        wrapServletInput = new DelegateServletInputStream(new ByteArrayInputStream(out.toByteArray()));
+
+        if(out.size() <= 0 &&
+                (null != request.getHeader("content-type")) &&
+                request.getHeader("content-type").toLowerCase().contains("application/x-www-form-urlencoded")){
+
+            StringBuilder strBuilder = new StringBuilder();
+            Enumeration<String> parameters = request.getParameterNames();
+            while (parameters.hasMoreElements()){
+                String parameter = parameters.nextElement();
+                String value = request.getParameter(parameter);
+                if(StringUtils.isNotBlank(value)){
+                    strBuilder.append(URLEncoder.encode(parameter, "UTF-8")).append("=").append(URLEncoder.encode(request.getParameter(parameter), "UTF-8"));
+                    if(parameters.hasMoreElements()){
+                        strBuilder.append("&");
+                    }
+                }
+            }
+            strBuilder.trimToSize();
+
+            wrapServletInput = new DelegateServletInputStream(IOUtils.toInputStream(strBuilder.toString()));
+            contentLength = wrapServletInput.available();
+
+        } else {
+            contentLength = out.size();
+            wrapServletInput = new DelegateServletInputStream(new ByteArrayInputStream(out.toByteArray()));
+        }
+
         if (request.getCookies() != null && request.getCookies().length > 0) {
             cookieList = new ArrayList<Cookie>(Arrays.asList(request.getCookies()));
         } else {
             cookieList = new ArrayList<Cookie>();
         }
         this.cookieProxyFilter = cookieProxyFilter;
+    }
+
+    @Override
+    public int getContentLength() {
+        return contentLength;
     }
 
     @Override
