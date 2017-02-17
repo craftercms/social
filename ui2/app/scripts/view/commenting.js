@@ -8,7 +8,7 @@
         $ = S.$;
 
     var Director = S.getDirector();
-    var acceptTermsOnComment = S.Cfg('comments.acceptTerms');
+    var acceptTermsOnComment = typeof S.Cfg('comments.acceptTerms') !== 'undefined' ? S.Cfg('comments.acceptTerms') : true;
 
     Commenting = Base.extend({
 
