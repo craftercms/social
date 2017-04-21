@@ -32,6 +32,10 @@
 
     <annotation-driven content-negotiation-manager="contentNegotiationManager">
 
+        <beans:bean id="gdata" class="org.craftercms.commons.jackson.mvc.GDataPropertyFilter">
+            <beans:property name="selectorParameterName" value="selector"/>
+        </beans:bean>
+
         <message-converters>
             <beans:bean id="jacksonMessageConverter"
                         class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
@@ -43,16 +47,20 @@
                     <beans:bean class="org.craftercms.commons.jackson.mvc.SelectorFilterFactory">
                         <beans:property name="filters">
                             <beans:list>
-                                <beans:bean class="org.craftercms.commons.jackson.mvc.GDataPropertyFilter">
-                                    <beans:property name="selectorParameterName" value="selector"/>
-                                </beans:bean>
+                              <beans:ref bean="gdata"/>
                             </beans:list>
                         </beans:property>
                     </beans:bean>
                 </beans:property>
 
+
                 <beans:property name="objectMapper">
                     <beans:bean class="org.craftercms.social.util.serialization.UGCObjectMapper">
+                        <beans:property name="filterProvider">
+                            <beans:bean class="com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider">
+                                <beans:property name="defaultFilter" ref="gdata"/>
+                            </beans:bean>
+                        </beans:property>
                         <beans:property name="annotationIntrospector">
                             <beans:bean class="org.craftercms.commons.jackson.mvc.CrafterJacksonAnnotationIntrospector">
                                 <beans:property name="defaultFilter" value="gdata"/>
