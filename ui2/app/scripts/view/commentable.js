@@ -90,6 +90,19 @@
 
             var $badge = this.$options.find('.badge'),
                 length = this.collection.length;
+
+            // Need to discard items with moderation status = TRASH (recently deleted)
+            var noTrashLength = 0;
+
+            for(var x = 0; x < length; x++){
+                var elem = this.collection.models[x];
+                if(elem && elem.attributes && elem.attributes.moderationStatus && elem.attributes.moderationStatus != "TRASH"){
+                    noTrashLength++;
+                }
+            }
+
+            length = noTrashLength != 0 ? noTrashLength : length;
+
             var targetId = this.cfg.target;
             this.$options.find('#socialCommentBadge').attr('href', '#' + targetId.substring(1, targetId.length) + '-comments');
             if (length === 0) {
