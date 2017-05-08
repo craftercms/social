@@ -30,11 +30,13 @@
     <resources mapping="/sui/v2/**" location="classpath:/META-INF/resources/sui/"/>
     <resources mapping="/sui/v2/alt/**" location="classpath:/META-INF/resources/sui/alt"/>
 
+	<beans:bean id="jacksonMessageConverter"
+                        class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
+		
     <annotation-driven content-negotiation-manager="contentNegotiationManager">
 
         <message-converters>
-            <beans:bean id="jacksonMessageConverter"
-                        class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
+            
                 <beans:property name="supportedMediaTypes" value="application/json"/>
                 <beans:property name="prettyPrint" value="false"/>
                 <beans:property name="injectValueFactory" ref="social.InjectValueHandler"/>
