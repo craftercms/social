@@ -31,13 +31,13 @@
     <resources mapping="/sui/v2/alt/**" location="classpath:/META-INF/resources/sui/alt"/>
 
 	<beans:bean id="jacksonMessageConverter"
-                        class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
+                        class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">  <beans:bean id="gdata" class="org.craftercms.commons.jackson.mvc.GDataPropertyFilter">
+            <beans:property name="selectorParameterName" value="selector"/>
+        </beans:bean>
 		
     <annotation-driven content-negotiation-manager="contentNegotiationManager">
 
-        <beans:bean id="gdata" class="org.craftercms.commons.jackson.mvc.GDataPropertyFilter">
-            <beans:property name="selectorParameterName" value="selector"/>
-        </beans:bean>
+      
 
         <message-converters>
             
