@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>crafter-social-admin</artifactId>
-	<version>2.5.7-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
 	<name>Crafter Social Admin Console</name>
 	<description>Crafter Social Admin Console</description>
 	<url>https://github.com/craftercms/social/tree/master/admin</url>
@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.craftercms</groupId>
 		<artifactId>crafter-social-parent</artifactId>
-		<version>2.5.7-SNAPSHOT</version>
+		<version>3.0.0-SNAPSHOT</version>
 	</parent>
 	<organization>
 		<name>CrafterCMS</name>
@@ -37,22 +37,22 @@
 		<url>scm:git:git://github.com/craftercms/social/tree/master/admin</url>
 	</scm>
 	<properties>
-		<java.version>1.7</java.version>
-		<org.springframework.version>4.0.1.RELEASE</org.springframework.version>
+		<java.version>1.8</java.version>
+		<org.springframework.version>4.3.7.RELEASE</org.springframework.version>
 		<org.slf4j.version>1.7.5</org.slf4j.version>
 		<javax.inject.version>1</javax.inject.version>
 		<servlet.api.version>3.0.1</servlet.api.version>
-		<org.freemarker.version>2.3.20</org.freemarker.version>
+		<org.freemarker.version>2.3.23</org.freemarker.version>
 		<org.apache.commons.fileupload.version>1.2.2</org.apache.commons.fileupload.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- Crafter -->
 		<dependency>
 			<groupId>org.craftercms</groupId>

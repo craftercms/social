@@ -6,7 +6,7 @@
              xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc
 			http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <beans:bean name="social.properties"
@@ -30,7 +30,13 @@
     <resources mapping="/sui/v2/**" location="classpath:/META-INF/resources/sui/"/>
     <resources mapping="/sui/v2/alt/**" location="classpath:/META-INF/resources/sui/alt"/>
 
+    <beans:bean id="gdata" class="org.craftercms.commons.jackson.mvc.GDataPropertyFilter">
+        <beans:property name="selectorParameterName" value="selector"/>
+    </beans:bean>
+
     <annotation-driven content-negotiation-manager="contentNegotiationManager">
+
+
 
         <message-converters>
             <beans:bean id="jacksonMessageConverter"
@@ -43,16 +49,20 @@
                     <beans:bean class="org.craftercms.commons.jackson.mvc.SelectorFilterFactory">
                         <beans:property name="filters">
                             <beans:list>
-                                <beans:bean class="org.craftercms.commons.jackson.mvc.GDataPropertyFilter">
-                                    <beans:property name="selectorParameterName" value="selector"/>
-                                </beans:bean>
+                                <beans:ref bean="gdata"/>
                             </beans:list>
                         </beans:property>
                     </beans:bean>
                 </beans:property>
 
+
                 <beans:property name="objectMapper">
                     <beans:bean class="org.craftercms.social.util.serialization.UGCObjectMapper">
+                        <beans:property name="filterProvider">
+                            <beans:bean class="com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider">
+                                <beans:property name="defaultFilter" ref="gdata"/>
+                            </beans:bean>
+                        </beans:property>
                         <beans:property name="annotationIntrospector">
                             <beans:bean class="org.craftercms.commons.jackson.mvc.CrafterJacksonAnnotationIntrospector">
                                 <beans:property name="defaultFilter" value="gdata"/>
