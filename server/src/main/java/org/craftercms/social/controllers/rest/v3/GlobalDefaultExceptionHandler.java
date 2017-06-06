@@ -115,6 +115,7 @@ public class GlobalDefaultExceptionHandler {
             error.put("error","Unknown Error");
         } else {
             error.put("error", ex.getMessage());
+            error.put("message",ex.getMessage());
         }
 
         if (throwStacktrace) {

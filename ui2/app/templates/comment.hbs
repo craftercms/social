@@ -16,7 +16,7 @@
                 </a>
                 {{#ifm isOwner}}
                     <a class="pull-right" data-action="trash">
-                        <i class="crafter-social-icon cs-icon-trash"></i>
+                        <i class="crafter-social-fa-icon fa fa-trash-o"></i>
                     </a>
                     <a class="pull-right option" data-action="edit" title="Edit Comment">
                         <i class="crafter-social-icon cs-icon-pencil"></i>
@@ -25,6 +25,7 @@
                     <a class="pull-right reply" data-action-reply>
                         <i class="crafter-social-icon cs-icon-share-alt" title="Reply"></i>
                     </a>
+
                 {{#mif userInfo.actions 'has' 'moderate'}}{{/mif}}
                 <span class="vote-up-wrapper pull-right">
                     <span class="vote-up-count" title="{{#if votesUp}}{{votesUp.length}} {{multiplicity votesUp.length 'people like' 'person likes'}} this.{{else}}No one has liked this{{/if}}">
@@ -32,11 +33,11 @@
                     </span>
                 {{#ifm isOwner}}
                     <a style="cursor: default" >
-                        <i class="crafter-social-icon cs-icon-chevron-up"></i>
+                        <i class="crafter-social-icon crafter-social-fa-icon fa-thumbs-up {{#mif votesUp 'has' sessionUserId}}you-voted{{/mif}}"></i>
                     </a>
                 {{else}}
                     <a data-action="voteUp">
-                        <i class="crafter-social-icon cs-icon-chevron-up"></i>
+                        <i class="crafter-social-icon crafter-social-fa-icon fa-thumbs-up {{#mif votesUp 'has' sessionUserId}}you-voted{{/mif}}"></i>
                     </a>
                 {{/ifm}}
                 </span>
@@ -78,11 +79,13 @@
                     <a data-action-reply><i class="crafter-social-icon cs-icon-transfer"></i> Reply ({{childCount}})</a>
                 </li>
             </ul>
-            <ul class="list-inline list-unstyled pull-left">
-                <li>
-                    <a data-action="files"><i class="crafter-social-icon cs-icon-picture"></i> Upload Photo(s) ({{attachments.length}})</a>
-                </li>
-            </ul>
+            {{#ifm isOwner}}
+                <ul class="list-inline list-unstyled pull-left">
+                    <li>
+                        <a data-action="files"><i class="crafter-social-icon cs-icon-picture"></i> Upload Photo(s)  ({{attachments.length}})</a>
+                    </li>
+                </ul>
+            {{/ifm}}
             <a class="pull-right" data-action-flag flagged-title="{{multiplicity flags.length 'Reported %@ times' 'Reported Once' 'Report'}}">
                 <i class="crafter-social-icon cs-icon-flag"></i>
             </a>

@@ -129,7 +129,12 @@
 .#{$icon-item-class}-plane                  { &:before { content: "\e108"; } }
 .#{$icon-item-class}-calendar               { &:before { content: "\e109"; } }
 .#{$icon-item-class}-random                 { &:before { content: "\e110"; } }
-.#{$icon-item-class}-comment                { &:before { content: "\e111"; } }
+.#{$icon-item-class}-comment{ 
+  font-family: "FontAwesome";
+  &:before { 
+    content: "";
+  } 
+}
 .#{$icon-item-class}-magnet                 { &:before { content: "\e112"; } }
 .#{$icon-item-class}-chevron-up             { &:before { content: "\e113"; } }
 .#{$icon-item-class}-chevron-down           { &:before { content: "\e114"; } }

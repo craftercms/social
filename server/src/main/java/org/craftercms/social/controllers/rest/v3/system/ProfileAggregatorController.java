@@ -28,7 +28,7 @@ public class ProfileAggregatorController {
     @Autowired
     private ProfileAggregator profileAggregator;
 
-    @RequestMapping(value = "/clear", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/clear", method = {RequestMethod.DELETE,RequestMethod.GET})
     @ApiOperation("Clear Profile Aggregator Cache")
     @ResponseBody
     @HasPermission(action = "ClearCache",type = SocialPermission.class)

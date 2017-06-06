@@ -89,7 +89,9 @@ public class ApproveContentListener {
                 if (profile != null) {
                     final List<Profile> toSendEmail = profileService.getProfilesByQuery(profile.getTenant(),
                         "{\"attributes" + ".socialContexts" + ".id\":\"" + ugc.getContextId() + "\",\"attributes" +
-                            "" + ".socialContexts" + ".roles\":{$in:[\""+moderateRole+"\"]},enabled:true}", "createdOn", SortOrder.ASC, 0, 999);
+                            "" + ".socialContexts" + ".roles\":{$in:[\""+moderateRole+"\"]},enabled:true,\"attributes"
+                            + ".socialContexts.id\":\""+ugc.getContextId()+"\"}",
+                        "createdOn", SortOrder.ASC, 0, 999);
                     logger.debug("To Send emails {}", toSendEmail);
 
                     buildEmailToApprover(toSendEmail,ugc,emailSubject,(String)event.getAttribute("baseUrl"));

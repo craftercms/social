@@ -274,6 +274,7 @@ module.exports = function (grunt) {
                         'styles/fonts/{,*/}*.*',
                         'styles/{,*/}*.png',
                         'libs/sass-bootstrap/fonts/*.*',
+                        'libs/fontawesome/fonts/*.*',
                         'libs/ckeditor/**',
                         'scripts/component/ckeditor/{,*/}*.*',
                         'templates/*.*'
