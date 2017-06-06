@@ -125,13 +125,13 @@
                         </goals>
                         <configuration>
                           <outputDirectory>${basedir}/target/extra-resources</outputDirectory>
-                          <resources>          
+                          <resources>
                             <resource>
                               <directory>src/non-packaged-resources</directory>
                               <filtering>true</filtering>
                             </resource>
-                          </resources>              
-                        </configuration>            
+                          </resources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

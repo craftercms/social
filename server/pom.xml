@@ -86,7 +86,7 @@
             <artifactId>crafter-commons-ebus</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-commons-audit</artifactId>
@@ -280,7 +280,7 @@
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>2.3.23</version>
+            <version>2.3.23 </version>
         </dependency>
         <!-- Apache Commons -->
         <dependency>
@@ -360,7 +360,7 @@
             <version>1.1.2</version>
         </dependency>
 
-     
+
         <!-- Test -->
 
         <dependency>
@@ -437,7 +437,7 @@
             <version>${project.parent.version}</version>
         </dependency>
 
-      
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>

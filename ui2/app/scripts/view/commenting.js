@@ -8,7 +8,7 @@
         $ = S.$;
 
     var Director = S.getDirector();
-    var acceptTermsOnComment = S.Cfg('comments.acceptTerms');
+    var acceptTermsOnComment = typeof S.Cfg('comments.acceptTerms') !== 'undefined' ? S.Cfg('comments.acceptTerms') : true;
 
     Commenting = Base.extend({
 
@@ -105,7 +105,11 @@
                     'commentThreadName':this.cfg.commentThreadName
                 }
             };
-
+            if (this.cfg.discussionView == "view.Inline") {
+                $('html, body').animate({
+                    scrollTop: $(this.cfg.target + '-comments').offset().top
+                }, 800);
+            }
             var collection = this.collection;
             collection.create(data, {
                 at: 0,

@@ -218,7 +218,14 @@ $popover-font-size: 12px;
                         display: none;
                     }
                 }
+                .crafter-social-fa-icon{
+                    font-family: "FontAwesome";
+                    font-size: 12pt;
 
+                    &.you-voted {
+                        color: #5cb85c;
+                    }
+                }
             }
 
         }
@@ -306,11 +313,28 @@ $popover-font-size: 12px;
             .editor {
                 padding: 5px;
                 display: none;
-                box-shadow: 0 0 5px #999;
                 margin: 12px 0;
+
+                -webkit-box-shadow: 0 0 5px #999;
+                -moz-box-shadow: 0 0 5px #999;
+                -ms-box-shadow: 0 0 5px #999;
+                box-shadow: 0 0 5px #999; 
 
                 &.cke_focus {
                     box-shadow: none;
+                }
+            }
+
+            @media screen and (min-width:0\0) {
+                /* IE9 and IE10 rule sets go here */
+                .editor {
+                    box-shadow: 0 0 5px #999; 
+                    border: 1px solid #b6b6b6;
+                    border-radius: 4px;
+
+                    &.cke_focus {
+                    box-shadow: 0 0 5px #999; 
+                }
                 }
             }
 

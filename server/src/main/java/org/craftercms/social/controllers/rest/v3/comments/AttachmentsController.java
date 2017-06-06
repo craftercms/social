@@ -13,6 +13,7 @@ import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
+import org.craftercms.social.exceptions.UGCException;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +47,14 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
         "id") final String id, @ApiParam(value = "File to upload, Do notice that the server will enforce ")
     @RequestParam(required = true) CommonsMultipartFile attachment) throws SocialException, IOException {
         log.debug("Adding Attachment for UGC {} ", id);
-        return ugcService.addAttachment(id, context(), attachment.getInputStream(), attachment.getOriginalFilename(),
-            new MimetypesFileTypeMap(mimeFile.getInputStream()).getContentType(attachment.getOriginalFilename().toLowerCase()));
+        final FileInfo fileInfo =ugcService.addAttachment(id, context(), attachment.getInputStream(), attachment
+            .getOriginalFilename(), new MimetypesFileTypeMap(mimeFile.getInputStream()).getContentType(attachment
+            .getOriginalFilename().toLowerCase()));
+        if(fileInfo==null){
+            throw new UGCException("Given File contains a virus");
+        }else{
+            return fileInfo;
+        }
     }
 
 
