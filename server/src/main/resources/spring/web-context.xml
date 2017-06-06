@@ -39,7 +39,8 @@
 
 
         <message-converters>
-            
+            <beans:bean id="jacksonMessageConverter"
+                        class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
                 <beans:property name="supportedMediaTypes" value="application/json"/>
                 <beans:property name="prettyPrint" value="false"/>
                 <beans:property name="injectValueFactory" ref="social.InjectValueHandler"/>
