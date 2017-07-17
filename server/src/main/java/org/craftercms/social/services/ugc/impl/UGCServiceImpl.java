@@ -158,7 +158,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 log.error("logging.ugc.autowatch",currentProfile.getId().toString(),ex);
             }
         } else {
-            log.debug("Profile don't have set either defaultFrequency or autoWatch attributes");
+            log.debug("Profile doesn't have either defaultFrequency or autoWatch attributes set");
         }
     }
 
@@ -170,7 +170,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             T toUpdate = (T)ugcRepository.findUGC(contextId, ugcId);
             if (toUpdate == null) {
-                throw new UGCNotFound("Unable to found ugc with id " + ugcId);
+                throw new UGCNotFound("Unable to find ugc with id " + ugcId);
             }
             final Map attrs = toUpdate.getAttributes();
             attrs.putAll(attrs);
@@ -235,7 +235,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             }
             T toUpdate = (T)ugcRepository.findUGC(contextId, ugcId);
             if (toUpdate == null) {
-                throw new IllegalArgumentException("UGC with Id " + ugcId + " does not exists");
+                throw new IllegalArgumentException("UGC with Id " + ugcId + " does not exist");
             }
             if (StringUtils.isNotBlank(body)) {
                 toUpdate.setBody(body);
@@ -393,7 +393,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             T ugc = (T)ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
-                throw new IllegalUgcException("Given UGC Id does not exists");
+                throw new IllegalUgcException("Given UGC Id does not exist");
             }
             FileInfo oldInfo = ugcRepository.getFileInfo(attachmentId);
             ugc.getAttachments().remove(oldInfo);
@@ -651,7 +651,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
      * <p>Given a list of results Builds A UGC Tree.</p>
      * <p><b>The first element of the list will be taken as the root of the tree</b></p>
      *
-     * @param ugs Lis of the UGS to build the tree. First Element will be the root.
+     * @param ugs List of the UGS to build the tree. First Element will be the root.
      * @return A Ugc with its children array filled (and its children...).
      */
     protected T buildUgcTree(List<T> ugs) {
@@ -676,7 +676,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     /**
      * Finds the parent of the orphanChild in the list of possible parents.
      * It will also go recursively to the children's children until there is nothing left.
-     * <b>Is possible that it will never finds a parent (the orphanChild will be dispose silently</b>
+     * <b>It is possible that it will never find a parent (the orphanChild will be disposed silently</b>
      *
      * @param possibleParents Possible parent of orphanChild
      * @param orphanChild     UGC to find it's parent.
