@@ -173,7 +173,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 throw new UGCNotFound("Unable to find ugc with id " + ugcId);
             }
             final Map attrs = toUpdate.getAttributes();
-            attrs.putAll(attrs);
+            attrs.putAll(attributes);
             ugcRepository.setAttributes(ugcId, contextId, attrs);
             final SocialEvent<T> event = new SocialEvent<T>(ugcId, attributes, SocialSecurityUtils.getCurrentProfile
                 ().getId().toString(), UGCEvent.UPDATE_ATTRIBUTES);
