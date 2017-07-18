@@ -1,8 +1,5 @@
 package org.craftercms.social.controllers.rest.v3.comments;
 
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-
 import java.io.File;
 import java.io.IOException;
 import javax.activation.MimetypesFileTypeMap;
@@ -25,7 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+
 
 /**
  *
@@ -45,7 +46,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
     @ApiOperation(value = "Adds and attachment to the given UGC")
     public FileInfo addAttachment(@ApiParam(value = "Id of the UGC", name = "id") @NotBlank @PathVariable(value =
         "id") final String id, @ApiParam(value = "File to upload, Do notice that the server will enforce ")
-    @RequestParam(required = true) CommonsMultipartFile attachment) throws SocialException, IOException {
+    @RequestParam() MultipartFile attachment) throws SocialException, IOException {
         log.debug("Adding Attachment for UGC {} ", id);
         final FileInfo fileInfo =ugcService.addAttachment(id, context(), attachment.getInputStream(), attachment
             .getOriginalFilename(), new MimetypesFileTypeMap(mimeFile.getInputStream()).getContentType(attachment
@@ -79,29 +80,17 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
         return this.removeAttachment(id,attachmentId);
     }
 
-
-    @RequestMapping(value = "/{id}/attachments/{attachmentId}", method = RequestMethod.PUT)
-    @ResponseBody()
-    @ApiOperation("Updates the given attachment for the UGC")
-    public boolean updateAttachment(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "id") final String
-                                            id, @ApiParam("Id of the attachment to delete") @NotBlank
-    @PathVariable(value = "attachmentId") final String attachmentId, CommonsMultipartFile file) throws
-        SocialException, IOException {
-        log.debug("Removing Attachment for UGC {} with Id {}", id, attachmentId);
-
-        ugcService.updateAttachment(id, context(), attachmentId, file.getInputStream());
-        return true;
-    }
-
-
     @RequestMapping(value = "/{id}/attachments/{attachmentId}/update", method = RequestMethod.POST)
     @ResponseBody()
     @ApiOperation("Updates the given attachment for the UGC")
     public boolean updateAttachmentPost(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "id") final String
                                         id, @ApiParam("Id of the attachment to delete") @NotBlank
-                                    @PathVariable(value = "attachmentId") final String attachmentId, CommonsMultipartFile file) throws
+                                        @PathVariable(value = "attachmentId") final String attachmentId,
+                                        @RequestParam MultipartFile file) throws
         SocialException, IOException {
-        return this.updateAttachment(id, attachmentId, file);
+        log.debug("Removing Attachment for UGC {} with Id {}", id, attachmentId);
+        ugcService.updateAttachment(id, context(), attachmentId, file.getInputStream());
+        return true;
     }
 
 
