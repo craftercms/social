@@ -4,6 +4,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -170,7 +171,7 @@ public class ThreadsController {
     public static List<DefaultKeyValue<String, Boolean>> getSortOrder(final List<String> sortFields, final
     List<SocialSortOrder> sortOrder) {
         if (CollectionUtils.isEmpty(sortFields)) {
-            return null;
+            return Arrays.asList(new DefaultKeyValue<>("createdBy",SocialSortOrder.DESC.value()));
         }
         List<DefaultKeyValue<String, Boolean>> toReturn = new ArrayList<>();
         for (int i = 0; i < sortFields.size(); i++) {
