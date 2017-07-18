@@ -395,11 +395,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             if (ugc == null) {
                 throw new IllegalUgcException("Given UGC Id does not exist");
             }
-            FileInfo oldInfo = ugcRepository.getFileInfo(attachmentId);
-            ugc.getAttachments().remove(oldInfo);
+            FileInfo oldInfo = ugcRepository.getFileInfo(new ObjectId(attachmentId));
             FileInfo newInfo = ugcRepository.updateFile(new ObjectId(attachmentId), newAttachment, oldInfo
-                .getFileName(), oldInfo.getContentType(), true);
+                .getStoreName(), oldInfo.getContentType(), true);
             ugc.getAttachments().add(newInfo);
+            ugc.getAttachments().remove(oldInfo);
             ugcRepository.update(ugcId, ugc);
             reactor.notify(UGCEvent.DELETE_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, attachmentId,
                 UGCEvent.DELETE_ATTACHMENT)));
