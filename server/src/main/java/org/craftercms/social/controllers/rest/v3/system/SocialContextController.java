@@ -199,8 +199,10 @@ public class SocialContextController {
                 contextPreferencesService.deleteContextPreference(SocialSecurityUtils.getContext(), Arrays.asList
                     (preferences.split(",")));
             }
+        }else {
+            throw new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
         }
-        throw new AuthenticationRequiredException("User must be logged in and must be social admin or context admin");
+        return true;
     }
 
 
