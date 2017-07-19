@@ -19,6 +19,7 @@ import org.craftercms.social.security.SocialSecurityUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -149,7 +150,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
 
 
     @RequestMapping(value = "{id}/attributes", method = {RequestMethod.POST, RequestMethod.PUT}, consumes =
-        {MimeTypeUtils.APPLICATION_FORM_URLENCODED_VALUE})
+        {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     @ResponseBody
     @ApiOperation(value = "Adds or updates the given attributes with there new value " + "if attribute does not " +
         "exists it will be created Json is expected to by the POST body",
