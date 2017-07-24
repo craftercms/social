@@ -1,11 +1,6 @@
 package org.craftercms.social.services.ugc;
 
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.apache.commons.io.FileExistsException;
 import org.craftercms.commons.mongo.FileInfo;
@@ -13,6 +8,11 @@ import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Defines all Rest Services for UGCs.
@@ -52,7 +52,6 @@ public interface UGCService<T extends UGC> {
      * @param ugcId      Id of the Ugc to add Attribute.
      * @param contextId  Context ID of the UGC.
      * @param attributes Attributes to set.<b>Nested attributes Must be nested with in the map</b>
-     * @return A new Public (secure) UGC.
      * @throws org.craftercms.social.exceptions.SocialException if attribute can be set.
      * @throws java.lang.IllegalArgumentException               If given UGC does not exist.*
      */
@@ -66,11 +65,11 @@ public interface UGCService<T extends UGC> {
      * @param ugcId    id Id of the Ugc to add Attribute.
      * @param name     Attributes Name of the attribute to delete.
      * @param contextId Context ID of the UGC
-     * @return A new Public (secure) UGC.
+
      * @throws org.craftercms.social.exceptions.SocialException if attribute can be deleted.
      * @throws java.lang.IllegalArgumentException               If given UGC does not exist.*
      */
-    public void deleteAttribute(final String ugcId, final String[] name, final String contextId) throws SocialException;
+     void deleteAttribute(final String ugcId, final String[] name, final String contextId) throws SocialException;
 
     /**
      * <p>Deletes a UGC <i>If the Ugc is a parent it will delete the whole tree</i></p>
@@ -99,7 +98,7 @@ public interface UGCService<T extends UGC> {
      * @throws SocialException                    If the UGC can be updated.
      * @throws java.lang.IllegalArgumentException If given UGC does not exist.*
      */
-    public T update(final String ugcId, final String body, final String subject, final String contextId,
+     T update(final String ugcId, final String body, final String subject, final String contextId,
                     final Map<String, Object> attributes) throws SocialException, UGCNotFound;
 
 
@@ -117,7 +116,7 @@ public interface UGCService<T extends UGC> {
      *                                                          set to 0
      * @throws org.craftercms.social.exceptions.SocialException If is unable to get the UGC.
      */
-    public T read(final String ugcId, final boolean includeChildren, final int childCount,
+     T read(final String ugcId, final boolean includeChildren, final int childCount,
                   final String contextId) throws UGCException;
 
     <T extends UGC> Iterable<T> readByTargetId(String targetId, String contextId) throws UGCException;
@@ -166,7 +165,7 @@ public interface UGCService<T extends UGC> {
                  List<DefaultKeyValue<String, Boolean>> sortOrder, final int upToLevel, final int childrenPerLevel)
         throws UGCException;
 
-    public List<T> readChildren(final String ugcId, final String targetId, final String contextId,
+    List<T> readChildren(final String ugcId, final String targetId, final String contextId,
                                     final int start, final int limit, final List sortOrder, final int upToLevel,
                                     final int childrenPerLevel) throws UGCException, UGCNotFound;
     /**

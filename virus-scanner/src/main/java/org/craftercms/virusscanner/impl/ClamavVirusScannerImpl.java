@@ -1,14 +1,14 @@
 package org.craftercms.virusscanner.impl;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import clamavj.ClamScan;
 import clamavj.ScanResult;
 import org.craftercms.virusscanner.api.VirusScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * A virus scanner that uses ClamScan to scan input-streams/files
@@ -42,9 +42,8 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 	}
 
     /**
-     *
+     * Scans the file for virus.
      * @param filename full path
-     * @return  null for a successful scan (the file is clean) or an error message if the scan fails or a threat is found
      */
 	public void scan(String filename) {
         try {
@@ -56,9 +55,8 @@ public class ClamavVirusScannerImpl implements VirusScanner {
     }
 
     /**
-     *
+     * Scans the {@link InputStream} for viruses.
      * @param inputStream
-     * @return  null for a successful scan (the input stream is clean) or an error message if the scan fails or a threat is found
      */
 	public void scan(InputStream inputStream) {
 		ClamScan clamScan;
