@@ -23,14 +23,23 @@ public interface ModerationDecision {
 	
 	/**
 	 * Makes the decision if a {@link UGC} have to been moderate
-	 * based on {@link ModerationFilter#needModeration(UGC)} result
+	 * based on {@link ModerationFilter#needModeration(SocialUgc)} result
 	 * returns True at least one of {@link ModerationFilter} returns true
 	 * @param ugc UGC to test
-	 * @return True if at least one {@link ModerationFilter#needModeration(UGC)} returns true; 
+	 * @return True if at least one {@link ModerationFilter#needModeration(SocialUgc)}  returns true;
 	 */
 	boolean needModeration(final SocialUgc ugc);
 
+	/**
+	 * Set {@link UGC} as Trash
+	 * @param ugc the {@link UGC} to be thrashed
+	 * @return true if it can be set in the thrash.
+	 */
 	boolean isTrash(SocialUgc ugc);
-	
+
+	/**
+	 * Sets the number of user flags threshold before the {@link UGC} is send to the thrash.
+	 * @param maxFlags Maximum number of flags (unique flags).
+	 */
 	void setMaxFlagsBeforeTrash(int maxFlags);
 }

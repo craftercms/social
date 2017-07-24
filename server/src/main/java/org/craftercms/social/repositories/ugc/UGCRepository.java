@@ -1,14 +1,14 @@
 package org.craftercms.social.repositories.ugc;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.ModerationStatus;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * UGC Repository Definitions.
@@ -43,7 +43,6 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
      * @param ugcId         Id of the ugc to remove the attribute.
      * @param contextId     Context ID of the UGCs.
      * @param attributeName Attributes name(<b>Full dot notation</b>) to unset/delete
-     * @return True if attribute is delete, false otherwise
      */
     void deleteAttribute(final String ugcId, final String contextId, final String[] attributeName) throws
         MongoDataException;
@@ -53,7 +52,7 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
      *
      * @param contextId Context ID of the UGCs.
      * @param ugcId    Id of the ugc
-     * @return
+     * @return The Found {@link UGC}.
      */
     T findUGC(final String contextId, final String ugcId) throws MongoDataException;
 
