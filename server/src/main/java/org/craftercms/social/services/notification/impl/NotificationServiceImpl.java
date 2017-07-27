@@ -120,7 +120,7 @@ public class NotificationServiceImpl implements NotificationService {
             WatchedThread thread = watchedThreadsRepository.isUserSubscribe(threadId, profileId);
             return thread != null;
         } catch (MongoDataException e) {
-            throw new NotificationException("Unable to Check if user is subscribe", e);
+            throw new NotificationException("Unable to Check if user is subscribed", e);
         }
     }
 

@@ -30,7 +30,7 @@ public interface SecurityActionsService {
     /**
      * Gets All SecurityAction for the given context.
      * @param context the context.
-     * @return All SecurityActions for the given context empty Iterator if nothing if found
+     * @return All SecurityActions for the given context, empty Iterator if nothing is found
      */
     Iterable<SocialSecurityAction> get(final String context);
 
@@ -38,14 +38,14 @@ public interface SecurityActionsService {
      * Updates the Roles for the given Action of the Context.
      * @param context context of the action.
      * @param actionName Action name to removeWatcher.
-     * @param roles New roles to assigned the action.
-     * @return the updated SecurityAction,null if unable to find action for the given context.
+     * @param roles New roles to assign the action.
+     * @return the updated SecurityAction, null if unable to find action for the given context.
      */
     SocialSecurityAction update(String context, String actionName, List<String> roles) throws SocialException;
 
     /**
      * Saves a new Action
-     * @param action Action to be save.
+     * @param action Action to be saved.
      */
     void save(SocialSecurityAction action) throws SocialException;
 }

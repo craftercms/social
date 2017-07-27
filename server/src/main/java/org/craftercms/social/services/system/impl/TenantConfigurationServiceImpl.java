@@ -53,7 +53,7 @@ public class TenantConfigurationServiceImpl implements TenantConfigurationServic
         } else if (systemDefaults.containsKey(propertyName)) {
             pValue = (T)systemDefaults.get(propertyName);
         } else {
-            log.info("The configuration key {} does not exist as a tenant property nor as a system property",propertyName);
+            log.info("The configuration key {} does not exist as a tenant property or as a system property", propertyName);
         }
         return pValue;
     }
@@ -71,7 +71,7 @@ public class TenantConfigurationServiceImpl implements TenantConfigurationServic
                 log.error("Unable to get preferences for context {} will not update", contextId);
             }
         }else{
-            log.error("Context has empty  preferences ? ignoring",contextId);
+            log.error("Context has empty  preferences {} ignoring", contextId);
         }
 
     }

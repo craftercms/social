@@ -126,7 +126,7 @@ public class EmailService {
             emailConfigCache.put(new Element(cacheKey, toReturn));
             return toReturn;
         } else {
-            throw new SocialException("Email is not configure for context " + cacheKey);
+            throw new SocialException("Email is not configured for context " + cacheKey);
         }
     }
 
