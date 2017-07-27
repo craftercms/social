@@ -17,7 +17,7 @@ import org.craftercms.social.exceptions.UGCException;
  * <p>Implementers Must
  * <ul>
  * <li>Audit all Calls</li>
- * <li>Check that this call are made with an authenticated user and the the UGC belongs to the user's context.</li>
+ * <li>Check that these calls are made with an authenticated user and that the UGC belongs to the user's context.</li>
  * </ul>
  * </p>
  */
@@ -26,7 +26,7 @@ public interface SocialServices<T extends SocialUgc> {
 
     /**
      * Executes the given UserContentInteraction for the given User Content Action.
-     * <p>Implementers must check if the current user is allow to removeWatcher UGC and that the user belongs to the same
+     * <p>Implementers must check if the current user is allowed to removeWatcher UGC and that the user belongs to the same
      * ugc context</p>.
      *
      * @param ugcId       Id of the UGC.
@@ -41,12 +41,12 @@ public interface SocialServices<T extends SocialUgc> {
            final String contextId) throws SocialException;
 
     /**
-     * Flags the given UGC, with for given reason.
-     * <p>Implementers must check if the current user is allow to removeWatcher UGC and that the user belongs to the same
+     * Flags the given UGC, with a given reason why.
+     * <p>Implementers must check if the current user is allowed to removeWatcher UGC and that the user belongs to the same
      * ugc context</p>.
      *
      * @param ugcId  Id of the UGC to flag.
-     * @param reason The reason for this ugc is been flag.
+     * @param reason The reason for flagging this ugc.
      * @param userId Id of the user that is flagging this UGC.
      * @param contextId Context of the UGC.
      * @return A new (updated) Public (secure) UGC.
@@ -54,11 +54,11 @@ public interface SocialServices<T extends SocialUgc> {
      T flag(String ugcId, String contextId, String reason, String userId) throws SocialException;
 
     /**
-     * Un flags the given UGC for the given reason.
-     * <p>Implementers must check if the current user is allow to removeWatcher UGC and that the user belongs to the same
+     * Unflags the given UGC for the given reason.
+     * <p>Implementers must check if the current user is allowed to removeWatcher UGC and that the user belongs to the same
      * ugc context</p>.
      *
-     * @param ugcId  Id of the UGC to un flag.
+     * @param ugcId  Id of the UGC to unflag.
      * @param flagId Id of the flag to delete.
      * @param userId Id of the user that is unflagging this UGC.
      * @param contextId Context of the UGC.
@@ -77,14 +77,14 @@ public interface SocialServices<T extends SocialUgc> {
 
 
     /**
-     * Finds all Comments with the given Moderation status. Optional filter the thread
+     * Finds all Comments with the given Moderation status. Optional: filter the thread
      * @param status ModerationStatus to filter.
      * @param thread Thread owner of the comments (optional)
      * @param start Where to to start the count.
      * @param limit Amount of Comments to return.
      * @param contextId Context of the UGC.
      * @param sort Sort Fields.
-     * @return A Iterable with the results.
+     * @return An Iterable with the results.
      */
     Iterable<T> findByModerationStatus(ModerationStatus status, String thread, String contextId,
                                        int start, int limit, final List<DefaultKeyValue<String, Boolean>> sort)
@@ -92,7 +92,7 @@ public interface SocialServices<T extends SocialUgc> {
 
 
     /**
-     * Counts all Comments with the given Moderation status. Optional filter the thread
+     * Counts all Comments with the given Moderation status. Optional: filter the thread
      * @param status ModerationStatus to filter.
      * @param thread Thread owner of the comments (optional)
      * @param contextId Context of the UGC.
@@ -102,12 +102,12 @@ public interface SocialServices<T extends SocialUgc> {
 
 
     /**
-     * Returns all Flagged UGc
-     * @param context Context of the Ugc
-     * @param start Where to to start the count.
+     * Returns all Flagged UGC
+     * @param context Context of the UGC
+     * @param start Where to start the count.
      * @param pageSize  Amount of Comments to return
      * @param sortOrder Sort Fields.
-     * @return A Iterable with the results.
+     * @return An Iterable with the results.
      */
     Iterable<T> findAllFlaggedUgs(String context, int start, int pageSize, List<DefaultKeyValue<String,Boolean>> sortOrder);
 

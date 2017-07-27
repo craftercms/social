@@ -43,7 +43,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
 
     @RequestMapping(value = "/{id}/attachments", method = RequestMethod.POST)
     @ResponseBody()
-    @ApiOperation(value = "Adds and attachment to the given UGC")
+    @ApiOperation(value = "Adds an attachment to the given UGC")
     public FileInfo addAttachment(@ApiParam(value = "Id of the UGC", name = "id") @NotBlank @PathVariable(value =
         "id") final String id, @ApiParam(value = "File to upload, Do notice that the server will enforce ")
     @RequestParam() MultipartFile attachment) throws SocialException, IOException {
@@ -103,7 +103,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
 
         T ugc = (T)ugcService.read(id, context());
         if (ugc == null) {
-            throw new UGCNotFound("Ugc with Id " + id + " does not Exists");
+            throw new UGCNotFound("Ugc with Id " + id + " does not Exist");
         }
         return ugc.getAttachments();
     }
@@ -111,7 +111,7 @@ public class AttachmentsController<T extends SocialUgc> extends AbstractComments
     @RequestMapping(value = "/{id}/attachments/{attachmentId}", method = RequestMethod.GET)
     @ResponseBody()
     @ApiOperation(value = "Sends the attachment to the client", notes = "This will send the headers  content-type " +
-        "(based on extension),content-length,and content-disposition")
+        "(based on extension), content-length, and content-disposition")
     public void readAttachment(@ApiParam("Id of the UGC") @NotBlank @PathVariable(value = "id") final String
                                        id, @ApiParam("Id of the attachment") @NotBlank @PathVariable(value =
         "attachmentId") final String attachmentId, final HttpServletResponse response) throws SocialException,

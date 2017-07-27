@@ -31,14 +31,14 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
     /**
      * Finds all UGC's of a contextId that belongs to the given target-id.
      *
-     * @param targetId Target Id which the ugs belong.
+     * @param targetId Target Id which the ugs belongs to.
      * @param contextId Context ID of the UGCs.
      * @return A Iterable of UGC that belong to the contextId and are associated to the target.
      */
     Iterable<T> findByTargetId(String targetId, String contextId) throws MongoDataException;
 
     /**
-     * Deletes a attribute <b>Has to be full "dot notation" mode </b>
+     * Deletes an attribute <b>Has to be full "dot notation" mode </b>
      *
      * @param ugcId         Id of the ugc to remove the attribute.
      * @param contextId     Context ID of the UGCs.
@@ -48,7 +48,7 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
         MongoDataException;
 
     /**
-     * Find's a ugc with the given id and contextId.
+     * Finds a ugc with the given id and contextId.
      *
      * @param contextId Context ID of the UGCs.
      * @param ugcId    Id of the ugc
@@ -68,7 +68,7 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
 
 
     /**
-     * Deletes The Given UGC and <b>All its children</b>.
+     * Deletes the given UGC and <b>All its children</b>.
      *
      * @param ugcId    Id of the ugc
      * @param contextId Context ID of the UGCs.
@@ -76,15 +76,15 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
     void deleteUgc(final String ugcId, final String contextId) throws MongoDataException;
 
     /**
-     * Finds Ugcs by the given user query. <b>It assumes that the query is been sanitize for any security
+     * Finds Ugcs by the given user query. <b>It assumes that the query has been sanitized for any security
      * concerns</b>
      *
      * @param contextId Context ID of the UGCs.
      * @param query  Query to execute.
-     * @param sort   Sort query <i>If null or empty it will be ignore</i>
+     * @param sort   Sort query <i>If null or empty it will be ignored</i>
      * @param start  Where to start
      * @param limit  How many results
-     * @return A list of the Ugc that match the given query in the given order, empty if nothing if found.
+     * @return A list of the Ugc that match the given query in the given order, empty if nothing is found.
      */
     Iterable<T> findByUserQuery(final String contextId, final String query, final String sort, final int start,
                                 final int limit) throws MongoDataException;
@@ -97,8 +97,8 @@ public interface UGCRepository<T extends UGC> extends CrudRepository<T> {
      * @param limit     How many results
      * @param start     where to start.
      * @param upToLevel how many sub-children levels to lookup.
-     * @param targetId  Target Id which the ugs belong.
-     * @return A iterate with the results.empty if noting is found.
+     * @param targetId  Target Id which the ugs belongs to.
+     * @return An iterable with the results.empty if nothing is found.
      * @throws MongoDataException
      */
     Iterable<T> findChildren(final String ugcId, final String targetId, final String contextId, final int start,

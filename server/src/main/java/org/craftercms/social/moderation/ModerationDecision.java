@@ -22,9 +22,9 @@ import org.craftercms.social.domain.social.SocialUgc;
 public interface ModerationDecision {
 	
 	/**
-	 * Makes the decision if a {@link UGC} have to been moderate
+	 * Makes the decision if a {@link UGC} has to be moderated
 	 * based on {@link ModerationFilter#needModeration(SocialUgc)} result
-	 * returns True at least one of {@link ModerationFilter} returns true
+	 * returns True if at least one of {@link ModerationFilter} returns true
 	 * @param ugc UGC to test
 	 * @return True if at least one {@link ModerationFilter#needModeration(SocialUgc)}  returns true;
 	 */
@@ -32,13 +32,13 @@ public interface ModerationDecision {
 
 	/**
 	 * Set {@link UGC} as Trash
-	 * @param ugc the {@link UGC} to be thrashed
-	 * @return true if it can be set in the thrash.
+	 * @param ugc the {@link UGC} to be trashed
+	 * @return true if it can be set in the trash.
 	 */
 	boolean isTrash(SocialUgc ugc);
 
 	/**
-	 * Sets the number of user flags threshold before the {@link UGC} is send to the thrash.
+	 * Sets the number of user flags threshold before the {@link UGC} is sent to the trash.
 	 * @param maxFlags Maximum number of flags (unique flags).
 	 */
 	void setMaxFlagsBeforeTrash(int maxFlags);
