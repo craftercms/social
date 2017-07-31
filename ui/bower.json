@@ -2,7 +2,7 @@
   "name": "ui",
   "version": "0.0.0",
   "dependencies": {
-    "sass-bootstrap": "~3.0.0",
+    "sass-bootstrap": "~3.0.1-SNAPSHOT",
     "requirejs": "~2.1.8",
     "modernizr": "~2.6.2",
     "jquery": "~1.10.2",

@@ -1,10 +1,10 @@
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; Win 9x 4.90; http://www.Abolimba.de)
-msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; JyxoToolbar1.0; http://www.Abolimba.de; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 1.1.4322)
+msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; JyxoToolbar1.0; http://www.Abolimba.de; .NET CLR 2.0.50727; .NET CLR 3.0.1-SNAPSHOT4506.648; .NET CLR 3.5.21022; .NET CLR 1.1.4322)
 	0	Mozilla/5.0 (compatible; ABrowse 0.4; Syllable)
 webkit	420	Mozilla/5.0 (compatible; U; ABrowse 0.6; Syllable) AppleWebKit/420+ (KHTML, like Gecko)
 msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Acoo Browser; InfoPath.2; .NET CLR 2.0.50727; Alexa Toolbar)
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; Acoo Browser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)
-msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)
+msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.1-SNAPSHOT4506)
 	0	amaya/9.52 libwww/5.4.0
 	0	amaya/11.1 libwww/5.4.0
 	0	Amiga-AWeb/3.5.07 beta
@@ -20,7 +20,7 @@ webkit	527	Mozilla/5.0 (X11; U; Linux; en-US) AppleWebKit/527+ (KHTML, like Geck
 webkit	523.15	Mozilla/5.0 (X11; U; Linux; C -) AppleWebKit/523.15 (KHTML, like Gecko, Safari/419.3) Arora/0.5
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; Avant Browser; Avant Browser; .NET CLR 1.1.4322; .NET CLR 2.0.50727; InfoPath.1)
 	0	Avant Browser (http://www.avantbrowser.com)
-msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; JyxoToolbar1.0;  Embedded Web Browser from: http://bsalsa.com/; Avant Browser; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 1.1.4322)
+msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; JyxoToolbar1.0;  Embedded Web Browser from: http://bsalsa.com/; Avant Browser; .NET CLR 2.0.50727; .NET CLR 3.0.1-SNAPSHOT4506.648; .NET CLR 3.5.21022; .NET CLR 1.1.4322)
 msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; GTB5; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; Avant Browser)
 mozilla	0	Mozilla/5.0 (Windows; U; Win9x; en; Stable) Gecko/20020911 Beonex/0.8.1-stable
 mozilla	0	Mozilla/5.0 (Windows; U; WinNT; en; Preview) Gecko/20020603 Beonex/0.8-stable
@@ -41,7 +41,7 @@ chrome	1.0.154.36	Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/52
 chrome	1.0.154.53	Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.53 Safari/525.19
 mozilla	1.9.0.10	Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.10) Gecko/2009042815 Firefox/3.0.10 CometBird/3.0.10
 mozilla	1.9.0.5	Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.5) Gecko/2009011615 Firefox/3.0.5 CometBird/3.0.5
-msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; Crazy Browser 3.0.0 Beta2)
+msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; Crazy Browser 3.0.1-SNAPSHOT Beta2)
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; Crazy Browser 2.0.1)
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; Crazy Browser 1.0.5; .NET CLR 1.1.4322; InfoPath.1)
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; Deepnet Explorer 1.5.0; .NET CLR 1.0.3705)
@@ -89,11 +89,11 @@ mozilla	1.9.0.8	Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.8) Gecko/200903
 mozilla	1.9.1.5	Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.5) Gecko/20091105 Firefox/3.5.5 compat GlobalMojo/1.5.5 GlobalMojoExt/1.5
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; GreenBrowser)
 msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727; GreenBrowser)
-msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 1.1.4322; InfoPath.1; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30; GreenBrowser)
+msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 1.1.4322; InfoPath.1; .NET CLR 2.0.50727; .NET CLR 3.0.1-SNAPSHOT4506.30; GreenBrowser)
 	0	HotJava/1.1.2 FCS
 mozilla	0	Mozilla/3.0 (x86 [cs] Windows NT 5.1; Sun)
 mozilla	1.8.0.3	Mozilla/5.1 (X11; U; Linux i686; en-US; rv:1.8.0.3) Gecko/20060425 SUSE/1.5.0.3-7 Hv3/alpha
-msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SIMBAR={CFBFDAEA-F21E-4D6E-A9B0-E100A69B860F}; Hydra Browser; .NET CLR 2.0.50727; .NET CLR 1.1.4322; .NET CLR 3.0.04506.30)
+msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SIMBAR={CFBFDAEA-F21E-4D6E-A9B0-E100A69B860F}; Hydra Browser; .NET CLR 2.0.50727; .NET CLR 1.1.4322; .NET CLR 3.0.1-SNAPSHOT4506.30)
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; Hydra Browser; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)
 	0	IBrowse/2.3 (AmigaOS 3.9)
 	0	Mozilla/5.0 (compatible; IBrowse 3.0; AmigaOS4.0)
@@ -112,7 +112,7 @@ mozilla	1.8.1.1	Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.8.1.1) Gecko/2006
 mozilla	1.9.0.5	Mozilla/5.0 (X11; U; Linux i686; it; rv:1.9.0.5) Gecko/2008122011 Iceweasel/3.0.5 (Debian-3.0.5-1)
 msie	4.0	Mozilla/2.0 (compatible; MSIE 4.0; Windows 98)
 msie	6.0	Mozilla/4.0 (Windows; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)
-msie	7.0	Mozilla/4.0 (Mozilla/4.0; MSIE 7.0; Windows NT 5.1; FDM; SV1; .NET CLR 3.0.04506.30)
+msie	7.0	Mozilla/4.0 (Mozilla/4.0; MSIE 7.0; Windows NT 5.1; FDM; SV1; .NET CLR 3.0.1-SNAPSHOT4506.30)
 msie	5.01	Mozilla/4.0 (compatible; MSIE 5.01; Windows NT)
 msie	8.0	Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 1.1.4322; InfoPath.2; .NET CLR 3.5.21022; .NET CLR 3.5.30729; MS-RTC LM 8; OfficeLiveConnector.1.4; OfficeLivePatch.1.3; .NET CLR 3.0.30729)
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322; Media Center PC 4.0; .NET CLR 2.0.50727)
@@ -120,7 +120,7 @@ msie	5.0b1	Mozilla/4.0 (compatible; MSIE 5.0b1; Mac_PowerPC)
 msie	5.0	Mozilla/4.0 (compatible; MSIE 5.0; Windows NT;)
 msie	5.23	Mozilla/4.0 (compatible; MSIE 5.23; Mac_PowerPC)
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; GTB6; Ant.com Toolbar 1.6; MSIECrawler)
-msie	8.0	Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; GTB5; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506; InfoPath.2; OfficeLiveConnector.1.3; OfficeLivePatch.0.0)
+msie	8.0	Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; GTB5; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.1-SNAPSHOT4506; InfoPath.2; OfficeLiveConnector.1.3; OfficeLivePatch.0.0)
 msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Trident/4.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 1.1.4322; InfoPath.2; .NET CLR 3.5.21022; .NET CLR 3.5.30729; MS-RTC LM 8; OfficeLiveConnector.1.4; OfficeLivePatch.1.3; .NET CLR 3.0.30729)
 msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; InfoPath.2)
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; iRider 2.21.1108; FDM)
@@ -157,7 +157,7 @@ msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows XP 5.1) Lobo/0.98.4
 	0	Mozilla/4.0 (compatible; Lotus-Notes/6.0; Windows-NT)
 msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; .NET CLR 1.1.4322; Lunascape 2.1.3)
 mozilla	1.9.1b3pre	Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1b3pre) Gecko/2008 Lunascape/4.9.9.98
-msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; JyxoToolbar1.0; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 1.1.4322; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; Lunascape 5.1.4.5)
+msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; JyxoToolbar1.0; .NET CLR 2.0.50727; .NET CLR 3.0.1-SNAPSHOT4506.648; .NET CLR 3.5.21022; .NET CLR 1.1.4322; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; Lunascape 5.1.4.5)
 webkit	528	Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/528+ (KHTML, like Gecko, Safari/528.0) Lunascape/5.0.2.0
 mozilla	1.9.1.2	Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.2) Gecko/20090804 Firefox/3.5.2 Lunascape/5.1.4.5
 	0	Lynx/2.8.6rel.4 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/1.6.3
@@ -179,7 +179,7 @@ mozilla	1.2.1	Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.2.1; MultiZil
 	0	NCSA Mosaic/1.0 (X11;SunOS 4.1.4 sun4m)
 	0	NCSA_Mosaic/2.6 (X11; SunOS 4.1.3 sun4m)
 	0	Mozilla/3.01 (compatible; Netbox/3.5 R92; Linux 2.2)
-msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; NetCaptor 7.5.4; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 1.1.4322; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)
+msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; NetCaptor 7.5.4; .NET CLR 2.0.50727; .NET CLR 3.0.1-SNAPSHOT4506.648; .NET CLR 3.5.21022; .NET CLR 1.1.4322; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)
 msie	5.01	Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; NetCaptor 6.5.0RC1)
 mozilla	1.7.5	Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.5) Gecko/20060127 Netscape/8.1
 mozilla	0	Mozilla/4.04 [en] (X11; I; IRIX 5.3 IP22)
@@ -243,7 +243,7 @@ webkit	528.16	Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebK
 webkit	525.18	Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_4_11; en) AppleWebKit/525.18 (KHTML, like Gecko) Sunrise/1.7.4 like Safari/4525.22
 webkit	125.5.7	Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-us) AppleWebKit/125.5.7 (KHTML, like Gecko) SunriseBrowser/0.853
 mozilla	1.9.0.10pre	Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.10pre) Gecko/2009041814 Firefox/3.0.10pre (Swiftfox)
-msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 1.1.4322; TheWorld)
+msie	6.0	Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727; .NET CLR 3.0.1-SNAPSHOT4506.648; .NET CLR 3.5.21022; .NET CLR 1.1.4322; TheWorld)
 webkit	1.1.8	Webkit/1.1.8 (Linux; en-us) Uzbl
 webkit	1.1.10	Uzbl (X11; U; Linux x86_64; en-GB) AppleWebkit/1.1.10
 webkit	1.1.9	Uzbl (Webkit 1.1.9) (Linux)
@@ -253,20 +253,20 @@ webkit	1.1.10	Uzbl (U; Linux x86_64; en-GB) Webkit 1.1.10
 webkit	103u	Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-us) AppleWebKit/103u (KHTML, like Gecko) wKiosk/100
 mozilla	1.9.0.9	Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.9) Gecko/2009042410 Firefox/3.0.9 Wyzo/3.0.3
 	0	X-Smiles/1.2-20081113
-msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; .NET CLR 2.0.50727; .NET CLR 1.1.4322; .NET CLR 3.0.04506.30; MEGAUPLOAD 2.0)
-msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30)
+msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; .NET CLR 2.0.50727; .NET CLR 1.1.4322; .NET CLR 3.0.1-SNAPSHOT4506.30; MEGAUPLOAD 2.0)
+msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.1-SNAPSHOT4506.30)
 mozilla	1.9.0.4	Mozilla/5.0 (X11; U; Linux i686; en-GB; rv:1.9.0.4) Gecko/2008111217 Fedora/3.0.4-1.fc9 Firefox/3.0.4
 mozilla	1.9.0.4	Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.0.4) Gecko/2008102920 Firefox/3.0.4
-msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506; .NET CLR 1.1.4322; FDM)
+msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.1-SNAPSHOT4506; .NET CLR 1.1.4322; FDM)
 msie	6.0	mozilla/4.0 (compatible; msie 6.0; windows nt 5.1; mra 4.6 (build 01425); .net clr 2.0.50727)
 msie	7.0	mozilla/4.0 (compatible; msie 7.0; windows nt 5.1; mra 4.9 (build 01863))
 msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; InfoPath?.2; .NET CLR 3.5.21022; .NET CLR 3.5.30729; .NET CLR 3.0.30618; MS-RTC LM 8; .NET CLR 1.1.4322)
-msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; InfoPath?.2; .NET CLR 3.5.21022)
+msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.1-SNAPSHOT4506; InfoPath?.2; .NET CLR 3.5.21022)
 msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Sky Broadband; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; .NET CLR 1.1.4322)
 msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; InfoPath.2; .NET CLR 3.5.21022; .NET CLR 3.5.30729; .NET CLR 3.0.30618; MS-RTC LM 8; .NET CLR 1.1.4322)
-msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; InfoPath.2; .NET CLR 3.5.21022)
+msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.1-SNAPSHOT4506; InfoPath.2; .NET CLR 3.5.21022)
 msie	7.0	Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; GTB6; User-agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; http://bsalsa.com); .NET CLR 1.1.4322; .NET CLR 2.0.50727
 opera	10.00	Opera/9.80 (Macintosh; Intel Mac OS X; U; en) Presto/2.2.15 Version/10.00
-msie	8.0	Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; .NET CLR 1.1.4322; InfoPath?.2; .NET CLR 2.0.50727; CIBA; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)
+msie	8.0	Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; .NET CLR 1.1.4322; InfoPath?.2; .NET CLR 2.0.50727; CIBA; .NET CLR 3.0.1-SNAPSHOT4506.648; .NET CLR 3.5.21022; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)
 opera	10.00	Opera/9.80 (X11; Linux x86_64; U; de) Presto/2.2.15 Version/10.00
 opera	10.50	Opera/9.80 (Macintosh; Intel Mac OS X; U; en) Presto/2.5.38 Version/10.50
