@@ -52,6 +52,7 @@
     <logger name="org.craftercms.security" level="INFO"/>
     <logger name="org.craftercms" level="INFO"/>
     <logger name="org.springframework.scheduling" level="INFO"/>
+    <logger name="org.mongodb.driver" level="ERROR"/>
     <root level="INFO">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>

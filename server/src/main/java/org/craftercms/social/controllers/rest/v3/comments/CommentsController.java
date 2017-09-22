@@ -41,7 +41,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     private Logger log = LoggerFactory.getLogger(CommentsController.class);
 
     @RequestMapping(method = RequestMethod.POST)
-    @ApiOperation(value = "Creates a new comment", consumes = MimeTypeUtils.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Creates a new comment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public T create(@ApiParam(value = "Body of the comment, some Html/scripts tags will be stripped") @RequestParam()
                         final String body, @ApiParam(name = "thread",

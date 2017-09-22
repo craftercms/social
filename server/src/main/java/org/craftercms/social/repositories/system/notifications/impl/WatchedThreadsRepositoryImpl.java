@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.notifications.ThreadsToNotify;
@@ -90,7 +91,7 @@ public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<Watche
             String aggregationQuerypt4 = getQueryFor("social.notification.getProfilePt4");
             final Aggregate aggregation = getCollection().aggregate(aggregationQuerypt1);
             aggregation.and(aggregationQuerypt2).and(aggregationQuerypt3,type).and(aggregationQuerypt4);
-            return aggregation.as(ThreadsToNotify.class);
+            return IterableUtils.toList(aggregation.as(ThreadsToNotify.class));
         }catch (MongoException ex){
             throw new NotificationException("Unable to find Profiles to notify", ex);
         }
@@ -103,7 +104,7 @@ public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<Watche
         String query3=getQueryFor("social.notification.byWatcherId3");
         try{
 
-           return getCollection().aggregate(query).and(query2,profileId).and(query3).map(new ResultHandler<Map>() {
+           return IterableUtils.toList(getCollection().aggregate(query).and(query2,profileId).and(query3).map(new ResultHandler<Map>() {
                @Override
                public Map map(final DBObject result) {
                    HashMap<String,String> map= new HashMap<String, String>();
@@ -111,7 +112,7 @@ public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<Watche
                    map.put("frequency",result.get("frequency").toString());
                    return map;
                }
-           });
+           }));
         }catch (MongoException ex){
             throw new SocialException("Unable to read watched threads for user",ex);
         }
