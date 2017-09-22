@@ -66,7 +66,7 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
         try {
                 String fQuery=getQueryFor("social.system.preferences.emailPreferencesByContextId");
                 String uQuery=getQueryFor("social.system.preferences.updateContextEmailPref");
-            checkCommandResult(getCollection().update(fQuery, contextId).with(uQuery,emailPref.get("host"),
+            getCollection().update(fQuery, contextId).with(uQuery,emailPref.get("host"),
                 emailPref.get("encoding"),
                 emailPref.get("port"),
                 emailPref.get("auth"),
@@ -77,9 +77,9 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
                 emailPref.get("from"),
                 emailPref.get("priority"),
                 emailPref.get("subject")
-            ));
+            );
             return emailPref;
-        } catch (MongoDataException ex) {
+        } catch (MongoException ex) {
             throw new SocialException("Unable to read email preferences for " + contextId);
         }
     }
@@ -185,8 +185,8 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
     @Override
     public void saveAllContextPreferences(final String contextId, final Map<String, Object> newPreferences) throws SocialException {
         try{
-            checkCommandResult(getCollection().save(newPreferences));
-        }catch (MongoDataException ex){
+            getCollection().save(newPreferences);
+        }catch (MongoException ex){
             throw new SocialException("Unable to save email Preferences");
         }
     }
@@ -196,10 +196,10 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
         try{
             String findQ=getQueryFor("social.system.preferences.byContextAndTemplateType");
             String updateQ=getQueryFor("social.system.preferences.updateContextTemplateType");
-            final WriteResult r = getCollection().update(findQ, context, type.toUpperCase()).with(updateQ, template);
-            checkCommandResult(r);
+            WriteResult r = getCollection().update(findQ, context, type.toUpperCase()).with(updateQ, template);
+
             return r.getN()==1;
-        } catch (MongoException | MongoDataException ex){
+        } catch (MongoException ex){
             throw new SocialException("Unable to update Email template",ex);
         }
     }
