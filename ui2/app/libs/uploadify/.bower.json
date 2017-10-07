@@ -8,7 +8,7 @@
     "tag": "v3.2.1",
     "commit": "103eb2b707ea11aab2737ee115d7eff668e6cab4"
   },
-  "_source": "git://github.com/farrrr/uploadify.git",
+  "_source": "https://github.com/farrrr/uploadify.git",
   "_target": "~3.2.1",
   "_originalSource": "uploadify"
 }
