@@ -113,8 +113,13 @@ public class BlackListModeration implements ModerationFilter {
 			xmlFile=new FileInputStream(blackListFile); 
 		}
 		log.debug("Loading File {} as blacklist file", blackListFile);
-		Document doc = DocumentBuilderFactory.newInstance()
-				.newDocumentBuilder().parse(xmlFile);
+		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+		dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+		dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		dbf.setXIncludeAware(false);
+		dbf.setExpandEntityReferences(false);
+		Document doc = dbf.newDocumentBuilder().parse(xmlFile);
 		addRegexRules(doc);
 		addWordRules(doc);
 		doc=null;
