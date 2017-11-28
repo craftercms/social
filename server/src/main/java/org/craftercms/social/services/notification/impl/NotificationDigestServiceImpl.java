@@ -86,6 +86,7 @@ public class NotificationDigestServiceImpl implements NotificationDigestService 
                     cfg.setTimeZone(TimeZone.getTimeZone(timezoneId));
                     Template template = cfg.getTemplate(contextId + "/" + type,getProfileLocale(toSend
                         .getAttribute("notificationLocale")));
+                    dataModel.put("baseUrl", preferences.get("baseUrl"));
                     final Environment env = template.createProcessingEnvironment(dataModel, writer);
                     env.process();
                     writer.flush();
