@@ -48,7 +48,7 @@
   ],
   "dependencies": {
     "jquery": ">=1.6",
-    "blueimp-tmpl": ">=3.0.1-SNAPSHOT",
+    "blueimp-tmpl": ">=2.5.3",
     "blueimp-load-image": ">=1.11.0",
     "blueimp-canvas-to-blob": ">=2.1.0"
   },
@@ -88,7 +88,7 @@
     "tag": "9.5.8",
     "commit": "c4e55498ac1883b92bced12db90313a7a50cbd29"
   },
-  "_source": "git://github.com/blueimp/jQuery-File-Upload.git",
+  "_source": "https://github.com/blueimp/jQuery-File-Upload.git",
   "_target": "~9.5.4",
   "_originalSource": "jquery-file-upload"
 }
