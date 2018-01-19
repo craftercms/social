@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.craftercms</groupId>
 		<artifactId>crafter-social-parent</artifactId>
-		<version>3.0.4-SNAPSHOT</version>
+		<version>3.0.4</version>
 	</parent>
 
 	<organization>
@@ -93,7 +93,7 @@
     </build>
 
     <properties>
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
         <spring.core.version>4.0.1.RELEASE</spring.core.version>
         <skipTests>true</skipTests>
     </properties>
