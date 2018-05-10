@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-social-parent</artifactId>
-        <version>3.0.10</version>
+        <version>3.0.11</version>
     </parent>
     <organization>
         <name>CrafterCMS</name>
@@ -69,18 +69,6 @@
             <artifactId>crafter-commons-utilities</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.craftercms</groupId>
-            <artifactId>crafter-social-sui</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.craftercms</groupId>
-            <artifactId>crafter-social-sui-alt</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-commons-ebus</artifactId>

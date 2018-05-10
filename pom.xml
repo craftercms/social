@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>crafter-social-parent</artifactId>
-	<version>3.0.10</version>
+	<version>3.0.11</version>
 	<packaging>pom</packaging>
 	<name>Crafter Social</name>
 	<description>Crafter Social</description>
@@ -166,6 +166,7 @@
                             <argLine>${jacoco.agent.arg}</argLine>
                         </configuration>
                     </plugin>
+                   
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
