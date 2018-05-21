@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>crafter-social-parent</artifactId>
-	<version>3.0.13</version>
+	<version>3.0.14-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Crafter Social</name>
 	<description>Crafter Social</description>
