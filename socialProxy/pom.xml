@@ -9,7 +9,7 @@
     <groupId>org.craftercms.social</groupId>
     <artifactId>social-client-proxy</artifactId>
     <packaging>jar</packaging>
-    <version>3.0.13-SNAPSHOT</version>
+    <version>3.0.14-SNAPSHOT</version>
     <name>Social Client Proxy</name>
     <description>A Social proxy that will create and auth users to profile</description>
     <dependencies>
