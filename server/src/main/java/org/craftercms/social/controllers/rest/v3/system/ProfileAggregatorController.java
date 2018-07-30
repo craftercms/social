@@ -1,9 +1,5 @@
 package org.craftercms.social.controllers.rest.v3.system;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,18 +18,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/api/3/system/profile")
-@Api(value = "System Profile",description = "Clears profile cache,Only for Social Admins or Super Admins.")
 public class ProfileAggregatorController {
 
     @Autowired
     private ProfileAggregator profileAggregator;
 
     @RequestMapping(value = "/clear", method = {RequestMethod.DELETE,RequestMethod.GET})
-    @ApiOperation("Clear Profile Aggregator Cache")
     @ResponseBody
     @HasPermission(action = "ClearCache",type = SocialPermission.class)
-    public boolean clearProfileCache(@ApiParam(value = "List of Id to be remove from Social Profiles Cache")
-                                         @RequestParam(required = false, defaultValue = "") final String profileIds) {
+    public boolean clearProfileCache(@RequestParam(required = false, defaultValue = "") final String profileIds) {
         if (StringUtils.isBlank(profileIds)) {
             profileAggregator.clearProfileCache();
         } else {
