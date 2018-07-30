@@ -19,7 +19,6 @@
             </beans:list>
         </beans:property>
     </beans:bean>
-    <resources mapping="/swagger-ui/**" location="/swagger-ui/"/>
     <beans:bean class="org.craftercms.social.util.SocialSecurePropertyHandler" id="social.utils.securePropertyHandler"/>
     <context:component-scan
             base-package="org.craftercms.social.controllers.rest.v3,org.craftercms.social.controllers.web"/>
