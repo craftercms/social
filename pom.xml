@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.craftercms</groupId>
-	<artifactId>crafter-social-parent</artifactId>
-	<version>3.0.16-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>Crafter Social</name>
-	<description>Crafter Social</description>
-	<url>https://github.com/craftercms/social</url>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.craftercms</groupId>
+    <artifactId>crafter-social-parent</artifactId>
+    <version>3.0.16-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Crafter Social</name>
+    <description>Crafter Social</description>
+    <url>https://github.com/craftercms/social</url>
 
-	<organization>
-		<name>CrafterCMS</name>
-		<url>http://craftercms.org</url>
-	</organization>
-	<licenses>
-		<license>
-			<name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
-			<url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<developers>
-		<developer>
-			<id>sumerjabri</id>
-			<name>Sumer Jabri</name>
-			<email>sumer.jabri@craftercms.org</email>
-		</developer>
-	</developers>
-	<scm>
-		<connection>scm:git:git://github.com/craftercms/social</connection>
-		<developerConnection>scm:git:git://github.com/craftercms/social</developerConnection>
-		<url>scm:git:git://github.com/craftercms/social</url>
-	</scm>
+    <organization>
+        <name>CrafterCMS</name>
+        <url>http://craftercms.org</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>sumerjabri</id>
+            <name>Sumer Jabri</name>
+            <email>sumer.jabri@craftercms.org</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/craftercms/social</connection>
+        <developerConnection>scm:git:git://github.com/craftercms/social</developerConnection>
+        <url>scm:git:git://github.com/craftercms/social</url>
+    </scm>
     <repositories>
         <repository>
             <id>sonatype-snapshots</id>
@@ -47,16 +48,16 @@
 
 
     <modules>
-		<module>virus-scanner</module>
-		<module>server</module>
-		<module>admin</module>
+        <module>virus-scanner</module>
+        <module>server</module>
+        <module>admin</module>
     </modules>
 
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-	<profiles>
+    <profiles>
         <profile>
             <id>migrationTool</id>
             <activation>
@@ -95,38 +96,38 @@
                 </plugins>
             </build>
         </profile>
-		<profile>
-			<id>release-sign-artifacts</id>
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-deploy-plugin</artifactId>
-						<version>2.7</version>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.4</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>2.7</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.4</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>coverage</id>
             <activation>
@@ -166,7 +167,7 @@
                             <argLine>${jacoco.agent.arg}</argLine>
                         </configuration>
                     </plugin>
-                   
+
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
@@ -178,8 +179,8 @@
             </build>
         </profile>
 
-	</profiles>
-	<build>
+    </profiles>
+    <build>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -200,13 +201,15 @@
             </plugins>
         </pluginManagement>
 
-    	<plugins>
-    		<plugin>
-    			<groupId>org.apache.maven.plugins</groupId>
-    			<artifactId>maven-resources-plugin</artifactId>
-    			<version>2.6</version>
-    			<configuration><encoding>${project.build.sourceEncoding}</encoding></configuration>
-    		</plugin>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
@@ -235,17 +238,17 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-    	</plugins>
+        </plugins>
     </build>
-	<distributionManagement>
-<snapshotRepository>
-<id>sonatype-nexus-snapshots</id>
-<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-</snapshotRepository>
-<repository>
-<id>sonatype-nexus-staging</id>
-<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-</repository>
-</distributionManagement>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
 </project>

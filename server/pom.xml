@@ -106,11 +106,6 @@
             <artifactId>crafter-profile-client</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.craftercms</groupId>
-            <artifactId>crafter-commons-api-documentation</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.craftercms</groupId>
