@@ -54,6 +54,7 @@
         <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
         <org.apache.httpcomponents.version>4.3.3</org.apache.httpcomponents.version>
         <jackson.version>2.9.6</jackson.version>
+        <logback.version>1.2.3</logback.version>
         <test.port>8080</test.port>
     </properties>
 
@@ -341,12 +342,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.1.2</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.2</version>
+            <version>${logback.version}</version>
         </dependency>
 
 
