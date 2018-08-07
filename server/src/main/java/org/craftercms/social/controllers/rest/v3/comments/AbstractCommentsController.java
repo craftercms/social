@@ -3,15 +3,6 @@ package org.craftercms.social.controllers.rest.v3.comments;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.Api;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletResponse;
-
 import org.bson.types.ObjectId;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.exception.AuthenticationRequiredException;
@@ -21,17 +12,20 @@ import org.craftercms.social.services.notification.NotificationService;
 import org.craftercms.social.services.social.SocialServices;
 import org.craftercms.social.services.ugc.UGCService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.activation.MimetypesFileTypeMap;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Generic Information about all Comments related Rest Services
  */
 @Controller
 @RequestMapping("/api/3/comments")
-@Api(value = "Comment Services", basePath = "/api/3/comments", description = "Comments services")
 public class AbstractCommentsController<T extends SocialUgc> {
 
     @Autowired

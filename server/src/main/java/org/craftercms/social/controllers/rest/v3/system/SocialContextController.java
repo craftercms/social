@@ -40,14 +40,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.wordnik.swagger.annotations.Api;
 
 /**
  *
  */
 @RequestMapping("/api/3/system/context")
 @Controller
-@Api(value = "Handles Context Configuration", description = "Creates and associates Social " + "Context to profiles")
 public class SocialContextController {
 
     @Autowired

@@ -37,12 +37,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.wordnik.swagger.annotations.Api;
 
 @Controller
 @RequestMapping("/api/3/comments/extension")
-@Api(value = "Comment Services Extension", basePath = "/api/3/comments/extension",
-    description = "Comments services Extension")
 public class CommentsExtensionController {
 
     private static final String APPROVER_RESULT_TEMPLATE_NAME = "APPROVER_RESULT_TEMPLATE";
