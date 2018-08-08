@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,9 @@ import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
+import org.craftercms.commons.entitlements.model.EntitlementType;
+import org.craftercms.commons.entitlements.model.Module;
+import org.craftercms.commons.entitlements.validator.EntitlementValidator;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.FileInfo;
@@ -88,10 +90,21 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     private TenantConfigurationService tenantConfigurationService;
     private ProfileService profileService;
 
+    protected EntitlementValidator entitlementValidator;
+
     @Override
     @HasPermission(action = UGC_CREATE, type = SocialPermission.class)
     public UGC create(final String contextId, final String ugcParentId, final String targetId, final String
         textContent, final String subject, final Map attrs, final boolean isAnonymous) throws SocialException {
+
+        try {
+            entitlementValidator.validateEntitlement(Module.SOCIAL, EntitlementType.ITEM,
+                (int) ugcRepository.count(), 1);
+        } catch (Exception e) {
+            throw  new SocialException("Unable to complete request due to entitlement limits. Please contact your "
+                + "system administrator.", e);
+        }
+
         log.debug("logging.ugc.creatingUgc", contextId, targetId, ugcParentId, subject, attrs);
         final UGC template = new UGC(subject, textContent, targetId);
 
@@ -705,4 +718,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     public void setProfileService(final ProfileService profileService) {
         this.profileService = profileService;
     }
+
+    public void setEntitlementValidator(final EntitlementValidator entitlementValidator) {
+        this.entitlementValidator = entitlementValidator;
+    }
+
 }

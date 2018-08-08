@@ -25,6 +25,9 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.craftercms.commons.collections.IterableUtils;
+import org.craftercms.commons.entitlements.model.EntitlementType;
+import org.craftercms.commons.entitlements.model.Module;
+import org.craftercms.commons.entitlements.validator.EntitlementValidator;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.profile.api.Profile;
@@ -60,6 +63,8 @@ public class SocialContextServiceImpl implements SocialContextService {
     private SecurityActionsService securityActionsService;
     private ContextPreferencesService contextPreferencesService;
 
+    protected EntitlementValidator entitlementValidator;
+
     private Logger log = LoggerFactory.getLogger(SocialContextServiceImpl.class);
 
     @Override
@@ -88,6 +93,15 @@ public class SocialContextServiceImpl implements SocialContextService {
     @Override
     @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_CREATE_CONTEXT)
     public SocialContext createNewContext(final String contextName) throws SocialException {
+
+        try {
+            entitlementValidator.validateEntitlement(Module.PROFILE, EntitlementType.SITE,
+                (int) socialContextRepository.count(), 1);
+        } catch (Exception e) {
+            throw new SocialException("Unable to complete request due to entitlement limits. Please contact your "
+                + "system administrator.", e);
+        }
+
         SocialContext context = new SocialContext(contextName);
         try {
             socialContextRepository.save(context);
@@ -221,4 +235,9 @@ public class SocialContextServiceImpl implements SocialContextService {
     public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
         this.contextPreferencesService = contextPreferencesService;
     }
+
+    public void setEntitlementValidator(final EntitlementValidator entitlementValidator) {
+        this.entitlementValidator = entitlementValidator;
+    }
+
 }
