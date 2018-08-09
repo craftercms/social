@@ -55,7 +55,7 @@
         <org.apache.httpcomponents.version>4.3.3</org.apache.httpcomponents.version>
         <jackson.version>2.9.6</jackson.version>
         <logback.version>1.2.3</logback.version>
-        <bouncycastle.version>1.59</bouncycastle.version>
+        <bouncycastle.version>1.60</bouncycastle.version>
         <test.port>8080</test.port>
     </properties>
 
