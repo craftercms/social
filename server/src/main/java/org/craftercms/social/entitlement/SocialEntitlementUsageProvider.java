@@ -17,7 +17,11 @@
 
 package org.craftercms.social.entitlement;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.craftercms.commons.entitlements.model.Entitlement;
+import org.craftercms.commons.entitlements.model.EntitlementType;
 import org.craftercms.commons.entitlements.model.Module;
 import org.craftercms.commons.entitlements.usage.EntitlementUsageProvider;
 import org.craftercms.social.repositories.SocialContextRepository;
@@ -33,7 +37,7 @@ import static org.craftercms.commons.entitlements.model.Module.SOCIAL;
  *
  * @author joseross
  */
-public class SocialEntitlementUsageProvider implements EntitlementUsageProvider<Entitlement> {
+public class SocialEntitlementUsageProvider implements EntitlementUsageProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(SocialEntitlementUsageProvider.class);
 
@@ -69,15 +73,19 @@ public class SocialEntitlementUsageProvider implements EntitlementUsageProvider<
      * {@inheritDoc}
      */
     @Override
-    public Entitlement getCurrentUsage() {
-        Entitlement usage = new Entitlement(SOCIAL);
+    public List<Entitlement> getCurrentUsage() {
+        Entitlement sites = new Entitlement();
+        sites.setType(EntitlementType.SITE);
+        Entitlement items = new Entitlement();
+        items.setType(EntitlementType.ITEM);
+
         try {
-            usage.setNumberOfItems((int) ugcRepository.count());
-            usage.setNumberOfSites((int) socialContextRepository.count());
+            items.setValue((int) ugcRepository.count());
+            sites.setValue((int) socialContextRepository.count());
         } catch (Exception e) {
             logger.error("Error fetching data", e);
         }
-        return usage;
+        return Arrays.asList(items, sites);
     }
     
 }
