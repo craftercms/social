@@ -97,12 +97,20 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     public UGC create(final String contextId, final String ugcParentId, final String targetId, final String
         textContent, final String subject, final Map attrs, final boolean isAnonymous) throws SocialException {
 
+        long start = 0;
+        if(log.isDebugEnabled()) {
+            start = System.currentTimeMillis();
+            log.debug("social.entitlement.start");
+        }
         try {
             entitlementValidator.validateEntitlement(Module.SOCIAL, EntitlementType.ITEM,
                 (int) ugcRepository.count(), 1);
         } catch (Exception e) {
             throw  new SocialException("Unable to complete request due to entitlement limits. Please contact your "
                 + "system administrator.", e);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug("social.entitlement.complete", System.currentTimeMillis() - start);
         }
 
         log.debug("logging.ugc.creatingUgc", contextId, targetId, ugcParentId, subject, attrs);

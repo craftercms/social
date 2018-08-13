@@ -94,12 +94,20 @@ public class SocialContextServiceImpl implements SocialContextService {
     @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_CREATE_CONTEXT)
     public SocialContext createNewContext(final String contextName) throws SocialException {
 
+        long start = 0;
+        if(log.isDebugEnabled()) {
+            start = System.currentTimeMillis();
+            log.debug("social.entitlement.start");
+        }
         try {
             entitlementValidator.validateEntitlement(Module.PROFILE, EntitlementType.SITE,
                 (int) socialContextRepository.count(), 1);
         } catch (Exception e) {
             throw new SocialException("Unable to complete request due to entitlement limits. Please contact your "
                 + "system administrator.", e);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug("social.entitlement.complete", System.currentTimeMillis() - start);
         }
 
         SocialContext context = new SocialContext(contextName);
