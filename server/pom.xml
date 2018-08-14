@@ -55,6 +55,7 @@
         <org.apache.httpcomponents.version>4.3.3</org.apache.httpcomponents.version>
         <jackson.version>2.9.6</jackson.version>
         <logback.version>1.2.3</logback.version>
+        <bouncycastle.version>1.60</bouncycastle.version>
         <test.port>8080</test.port>
     </properties>
 
@@ -83,6 +84,11 @@
             <version>${project.parent.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-commons-entitlements</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.craftercms</groupId>
@@ -96,7 +102,12 @@
             <version>1.5.2</version>
         </dependency>
 
-
+        <!-- Providers -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpg-jdk15on</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>net.sf.ehcache</groupId>

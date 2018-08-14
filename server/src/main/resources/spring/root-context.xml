@@ -6,13 +6,14 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <import resource="classpath:/crafter/security/rest-security-context.xml"/>
+    <import resource="classpath:crafter/entitlements/entitlements-context.xml"/>
     <context:annotation-config/>
     <util:list id="social.util.configurationFileList">
         <value>classpath:crafter/social/social.properties</value>
         <value>classpath*:crafter/social/extension/social.properties</value>
     </util:list>
     <bean name="social.properties"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+          class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="order" value="0"/>
         <property name="locations" ref="social.util.configurationFileList" />
@@ -42,6 +43,7 @@
         <property name="arraySortFields" value="${studio.social.ugc.arraySortFields}"/>
         <property name="tenantConfigurationService" ref="social.services.system.tenantConfiguration"/>
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
+        <property name="entitlementValidator" ref="crafter.entitlementValidator"/>
     </bean>
 
     <bean class="org.craftercms.commons.web.CORSFilter" id="crafter.corsFilter">
@@ -115,6 +117,7 @@
         <property name="profileServiceRestClient" ref="crafter.profileServiceRestClient"/>
         <property name="securityActionsService" ref="social.system.securityActionsService"/>
         <property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
+        <property name="entitlementValidator" ref="crafter.entitlementValidator"/>
     </bean>
 
     <bean id="org.craftercms.commons.audit.AuditServiceImpl"
@@ -177,7 +180,11 @@
 
     </bean>
 
-
+    <!-- Entitlements -->
+    <bean id="crafter.entitlementsProvider" class="org.craftercms.social.entitlement.SocialEntitlementUsageProvider">
+        <property name="ugcRepository" ref="social.repository.ugcRepository"/>
+        <property name="socialContextRepository" ref="social.repository.socialContextRepository"/>
+    </bean>
 
     <import resource="scheduler-context.xml"/>
     <import resource="extensions-context.xml"/>
