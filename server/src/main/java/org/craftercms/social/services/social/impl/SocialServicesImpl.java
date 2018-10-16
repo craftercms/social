@@ -7,7 +7,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
-import org.craftercms.commons.security.permissions.annotations.SecuredObject;
+import org.craftercms.commons.security.permissions.annotations.ProtectedResource;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
@@ -53,7 +53,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
 
     @Override
     @HasPermission(action = UGC_VOTING, type = SocialPermission.class)
-    public SocialUgc vote(@SecuredObject final String ugcId, final VoteOptions voteOptions, final String userId,
+    public SocialUgc vote(@ProtectedResource final String ugcId, final VoteOptions voteOptions, final String userId,
                           final String contextId) throws SocialException {
         try {
             T ugc = ugcRepository.findUGC(contextId, ugcId);
@@ -125,7 +125,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
     }
 
     @HasPermission(action = UGC_UNFLAG, type = SocialPermission.class)
-    private boolean realUnflag(@SecuredObject Flag flagToDelete, final T ugcToUpdate) throws SocialException,
+    private boolean realUnflag(@ProtectedResource Flag flagToDelete, final T ugcToUpdate) throws SocialException,
         MongoDataException {
         ugcToUpdate.getFlags().remove(flagToDelete);
         pipeline.processUgc(ugcToUpdate);
@@ -137,7 +137,7 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
 
     @Override
     @HasPermission(action = UGC_MODERATE, type = SocialPermission.class)
-    public SocialUgc moderate(@SecuredObject  final String ugcId, final ModerationStatus moderationStatus,
+    public SocialUgc moderate(@ProtectedResource  final String ugcId, final ModerationStatus moderationStatus,
                               final String userId, final String contextId) throws SocialException {
         try {
             T ugc = ugcRepository.findUGC(contextId, ugcId);
