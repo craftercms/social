@@ -36,7 +36,7 @@ import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
-import org.craftercms.commons.security.permissions.annotations.SecuredObject;
+import org.craftercms.commons.security.permissions.annotations.ProtectedResource;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
@@ -185,7 +185,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public void setAttributes(@SecuredObject final String ugcId, final String contextId, final Map attributes) throws
+    public void setAttributes(@ProtectedResource final String ugcId, final String contextId, final Map attributes) throws
         SocialException, UGCNotFound {
         log.debug("logging.ugc.addingAttributes", attributes, ugcId, contextId);
         try {
@@ -208,7 +208,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public void deleteAttribute(@SecuredObject final String ugcId, final String[] attributesName, final String
+    public void deleteAttribute(@ProtectedResource final String ugcId, final String[] attributesName, final String
         contextId) throws SocialException {
         log.debug("logging.ugc.deleteAttributes", attributesName, ugcId);
         try {
@@ -243,7 +243,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public UGC update(@SecuredObject final String ugcId, final String body, final String subject, final String
+    public UGC update(@ProtectedResource final String ugcId, final String body, final String subject, final String
         contextId, final Map attributes) throws SocialException, UGCNotFound {
         log.debug("logging.ugc.updateUgc", ugcId);
         try {
@@ -335,7 +335,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public FileInfo addAttachment(@SecuredObject final String ugcId, final String contextId, final InputStream
+    public FileInfo addAttachment(@ProtectedResource final String ugcId, final String contextId, final InputStream
         attachment, final String fileName, final String contentType) throws FileExistsException, UGCException {
         String internalFileName = File.separator + contextId + File.separator + ugcId + File.separator +
             fileName;
@@ -375,7 +375,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public void removeAttachment(@SecuredObject final String ugcId, final String contextId, final String
+    public void removeAttachment(@ProtectedResource final String ugcId, final String contextId, final String
         attachmentId) throws UGCException, FileNotFoundException {
         try {
             UGC ugc = ugcRepository.findUGC(contextId, ugcId);
@@ -403,7 +403,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
-    public FileInfo updateAttachment(@SecuredObject final String ugcId, final String contextId, final String
+    public FileInfo updateAttachment(@ProtectedResource final String ugcId, final String contextId, final String
         attachmentId, final InputStream newAttachment) throws UGCException, FileNotFoundException {
         if (!ObjectId.isValid(ugcId)) {
             throw new IllegalArgumentException("Given Ugc Id is not valid");
