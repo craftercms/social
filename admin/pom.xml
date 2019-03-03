@@ -54,16 +54,10 @@
 		<url>scm:git:git://github.com/craftercms/social/tree/master/admin</url>
 	</scm>
 	<properties>
-		<java.version>1.8</java.version>
-		<org.springframework.version>4.3.18.RELEASE</org.springframework.version>
-		<org.slf4j.version>1.7.5</org.slf4j.version>
-		<javax.inject.version>1</javax.inject.version>
-		<servlet.api.version>3.0.1</servlet.api.version>
 		<org.freemarker.version>2.3.23</org.freemarker.version>
-		<org.apache.commons.fileupload.version>1.3.3</org.apache.commons.fileupload.version>
-		<logback.version>1.2.3</logback.version>
 	</properties>
 	<dependencies>
+		<!-- Testing -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -87,12 +81,12 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.version}</version>
 			<exclusions>
 				<!-- Exclude Commons Logging in favor of SLF4j -->
 				<exclusion>
@@ -104,7 +98,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<!-- Other -->
 		<dependency>
@@ -134,23 +128,33 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${org.slf4j.version}</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${org.slf4j.version}</version>
+			<version>${slf4j.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-web</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

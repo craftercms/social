@@ -29,6 +29,11 @@
         <param-value>true</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>log4jConfiguration</param-name>
+        <param-value>classpath:crafter/social/management/extension/logging.xml</param-value>
+    </context-param>
+
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
