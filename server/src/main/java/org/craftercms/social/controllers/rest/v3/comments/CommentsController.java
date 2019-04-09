@@ -52,7 +52,7 @@ public class CommentsController<T extends SocialUgc> extends AbstractCommentsCon
     @ResponseBody
     public T create(@RequestParam final String body,
                     @RequestParam final String thread,
-                    @RequestParam final String parent,
+                    @RequestParam(required = false, defaultValue = "") final String parent,
                     @RequestParam(required = false, defaultValue = "false", value = "anonymous") final boolean anonymous,
                     @RequestParam(required = false, defaultValue = "", value = "subject") final String subject,
                     @RequestParam(required = false, defaultValue = "{}") final String attributes, MultipartFile attachment)
