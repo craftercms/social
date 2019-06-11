@@ -20,14 +20,12 @@ package org.craftercms.social.entitlement;
 import java.util.Arrays;
 import java.util.List;
 
-import org.craftercms.commons.entitlements.model.Entitlement;
+import org.craftercms.commons.entitlements.exception.UnsupportedEntitlementException;
 import org.craftercms.commons.entitlements.model.EntitlementType;
 import org.craftercms.commons.entitlements.model.Module;
 import org.craftercms.commons.entitlements.usage.EntitlementUsageProvider;
 import org.craftercms.social.repositories.SocialContextRepository;
 import org.craftercms.social.repositories.ugc.UGCRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import static org.craftercms.commons.entitlements.model.Module.SOCIAL;
@@ -38,8 +36,6 @@ import static org.craftercms.commons.entitlements.model.Module.SOCIAL;
  * @author joseross
  */
 public class SocialEntitlementUsageProvider implements EntitlementUsageProvider {
-
-    private static final Logger logger = LoggerFactory.getLogger(SocialEntitlementUsageProvider.class);
 
     /**
      * Current instance of {@link SocialContextRepository}.
@@ -73,19 +69,23 @@ public class SocialEntitlementUsageProvider implements EntitlementUsageProvider 
      * {@inheritDoc}
      */
     @Override
-    public List<Entitlement> getCurrentUsage() {
-        Entitlement sites = new Entitlement();
-        sites.setType(EntitlementType.SITE);
-        Entitlement items = new Entitlement();
-        items.setType(EntitlementType.ITEM);
+    public List<EntitlementType> getSupportedEntitlements() {
+        return Arrays.asList(EntitlementType.SITE, EntitlementType.ITEM);
+    }
 
-        try {
-            items.setValue((int) ugcRepository.count());
-            sites.setValue((int) socialContextRepository.count());
-        } catch (Exception e) {
-            logger.error("Error fetching data", e);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int doGetEntitlementUsage(final EntitlementType type) throws Exception {
+        switch (type) {
+            case SITE:
+                return (int) socialContextRepository.count();
+            case ITEM:
+                return (int) ugcRepository.count();
+            default:
+                throw new UnsupportedEntitlementException(SOCIAL, type);
         }
-        return Arrays.asList(items, sites);
     }
     
 }
