@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.entitlements.model.EntitlementType;
-import org.craftercms.commons.entitlements.model.Module;
 import org.craftercms.commons.entitlements.validator.EntitlementValidator;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -93,21 +92,11 @@ public class SocialContextServiceImpl implements SocialContextService {
     @Override
     @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_CREATE_CONTEXT)
     public SocialContext createNewContext(final String contextName) throws SocialException {
-
-        long start = 0;
-        if(log.isDebugEnabled()) {
-            start = System.currentTimeMillis();
-            log.debug("social.entitlement.start");
-        }
         try {
-            entitlementValidator.validateEntitlement(Module.PROFILE, EntitlementType.SITE,
-                (int) socialContextRepository.count(), 1);
+            entitlementValidator.validateEntitlement(EntitlementType.SITE, 1);
         } catch (Exception e) {
             throw new SocialException("Unable to complete request due to entitlement limits. Please contact your "
                 + "system administrator.", e);
-        }
-        if(log.isDebugEnabled()) {
-            log.debug("social.entitlement.complete", System.currentTimeMillis() - start);
         }
 
         SocialContext context = new SocialContext(contextName);

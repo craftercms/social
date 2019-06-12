@@ -23,11 +23,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <import resource="classpath:/crafter/security/rest-security-context.xml"/>
-    <import resource="classpath:crafter/entitlements/entitlements-context.xml"/>
+
     <context:annotation-config/>
     <util:list id="social.util.configurationFileList">
         <value>classpath:crafter/social/social.properties</value>
         <value>classpath*:crafter/social/extension/social.properties</value>
+        <value>classpath:crafter/entitlements/entitlements.properties</value>
     </util:list>
     <bean name="social.properties"
           class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
@@ -206,4 +207,5 @@
     <import resource="scheduler-context.xml"/>
     <import resource="extensions-context.xml"/>
     <import resource="classpath*:crafter/social/extension/services-context.xml"/>
+    <import resource="classpath:crafter/entitlements/entitlements-context.xml"/>
 </beans>
