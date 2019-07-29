@@ -61,7 +61,6 @@
         <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
         <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
         <org.apache.httpcomponents.version>4.5.6</org.apache.httpcomponents.version>
-        <jackson.version>2.9.9</jackson.version>
         <bouncycastle.version>1.60</bouncycastle.version>
         <test.port>8080</test.port>
     </properties>
@@ -398,7 +397,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson.databind.version}</version>
         </dependency>
 
 
