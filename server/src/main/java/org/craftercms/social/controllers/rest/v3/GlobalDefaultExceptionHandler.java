@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.exceptions.InvalidManagementTokenException;
 import org.craftercms.commons.file.FileUtils;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.security.exception.AuthenticationRequiredException;
@@ -104,6 +105,12 @@ public class GlobalDefaultExceptionHandler {
         serializeError(e, resp, HttpStatus.UNAUTHORIZED, req);
     }
 
+    @ExceptionHandler(InvalidManagementTokenException.class)
+    public void invalidManagementTokenExceptionHandler(HttpServletRequest request, HttpServletResponse response,
+                                                       InvalidManagementTokenException e) throws IOException {
+        log.error("Request: {} raised and error", request.getRequestURL(), e);
+        serializeError(e, response, HttpStatus.UNAUTHORIZED, request);
+    }
 
     @ExceptionHandler(value = MaxUploadSizeExceededException.class)
     public void sizeLimitExceededException(HttpServletRequest req, HttpServletResponse response,
