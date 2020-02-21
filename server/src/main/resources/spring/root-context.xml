@@ -28,7 +28,6 @@
     <util:list id="social.util.configurationFileList">
         <value>classpath:crafter/social/social.properties</value>
         <value>classpath*:crafter/social/extension/social.properties</value>
-        <value>classpath:crafter/entitlements/entitlements.properties</value>
     </util:list>
     <bean name="social.properties"
           class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">

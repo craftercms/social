@@ -18,6 +18,7 @@
 package org.craftercms.social.controllers.rest.v3.monitoring;
 
 import org.craftercms.commons.monitoring.rest.MonitoringRestControllerBase;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,5 +31,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class MonitoringController extends MonitoringRestControllerBase {
 
     public static final String URL_ROOT = "/api/3";
+
+    protected String authorizationToken;
+
+    public MonitoringController(@Value("${crafter.social.management.authorizationToken}") String authorizationToken) {
+        this.authorizationToken = authorizationToken;
+    }
+
+    @Override
+    protected String getConfiguredToken() {
+        return authorizationToken;
+    }
 
 }
