@@ -58,7 +58,7 @@ public class ThreadsController {
                          @RequestParam(required = false, defaultValue = MAX_INT) final int recursive,
                          @RequestParam(required = false, defaultValue = "0") final int pageNumber,
                          @RequestParam(required = false, defaultValue = MAX_INT) final int pageSize,
-                         @RequestParam final int childrenCount,
+                         @RequestParam(required = false, defaultValue = MAX_INT) final int childrenCount,
                          @RequestParam(required = false) final List<String> sortBy,
                          @RequestParam(required = false) final List<SocialSortOrder> sortOrder) throws SocialException {
         int start = 0;
