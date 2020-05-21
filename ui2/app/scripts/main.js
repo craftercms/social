@@ -31,22 +31,22 @@
             ckeditor: '../libs/ckeditor/ckeditor',
             'ckeditor.plugins.autogrow': 'component/ckeditor/plugins/autogrow/plugin',
             handlebars: '../libs/handlebars/handlebars',
-            bootstrapAffix: '../libs/sass-bootstrap/js/affix',
-            bootstrapAlert: '../libs/sass-bootstrap/js/alert',
-            bootstrapButton: '../libs/sass-bootstrap/js/button',
-            bootstrapCarousel: '../libs/sass-bootstrap/js/carousel',
-            bootstrapCollapse: '../libs/sass-bootstrap/js/collapse',
-            bootstrapDropdown: '../libs/sass-bootstrap/js/dropdown',
-            bootstrapModal: '../libs/sass-bootstrap/js/modal',
-            bootstrapPopover: '../libs/sass-bootstrap/js/popover',
-            bootstrapScrollspy: '../libs/sass-bootstrap/js/scrollspy',
-            bootstrapTab: '../libs/sass-bootstrap/js/tab',
-            bootstrapTooltip: '../libs/sass-bootstrap/js/tooltip',
-            bootstrapTransition: '../libs/sass-bootstrap/js/transition',
+            bootstrapAffix: '../libs/bootstrap-sass/assets/javascript/bootstrap/affix',
+            bootstrapAlert: '../libs/bootstrap-sass/assets/javascript/bootstrap/alert',
+            bootstrapButton: '../libs/bootstrap-sass/assets/javascript/bootstrap/button',
+            bootstrapCarousel: '../libs/bootstrap-sass/assets/javascript/bootstrap/carousel',
+            bootstrapCollapse: '../libs/bootstrap-sass/assets/javascript/bootstrap/collapse',
+            bootstrapDropdown: '../libs/bootstrap-sass/assets/javascript/bootstrap/dropdown',
+            bootstrapModal: '../libs/bootstrap-sass/assets/javascript/bootstrap/modal',
+            bootstrapPopover: '../libs/bootstrap-sass/assets/javascript/bootstrap/popover',
+            bootstrapScrollspy: '../libs/bootstrap-sass/assets/javascript/bootstrap/scrollspy',
+            bootstrapTab: '../libs/bootstrap-sass/assets/javascript/bootstrap/tab',
+            bootstrapTooltip: '../libs/bootstrap-sass/assets/javascript/bootstrap/tooltip',
+            bootstrapTransition: '../libs/bootstrap-sass/assets/javascript/bootstrap/transition',
             'blueimp-canvas-to-blob': '../libs/blueimp-canvas-to-blob/js/canvas-to-blob',
             'blueimp-tmpl': '../libs/blueimp-tmpl/js/tmpl',
             requirejs: '../libs/requirejs/require',
-            'sass-bootstrap': '../libs/sass-bootstrap/dist/js/bootstrap',
+            'sass-bootstrap': '../libs/bootstrap-sass/assets/javascript/bootstrap',
             'load-image': '../libs/blueimp-load-image/js/load-image',
             'load-image-ios': '../libs/blueimp-load-image/js/load-image-ios',
             'load-image-orientation': '../libs/blueimp-load-image/js/load-image-orientation',
@@ -70,7 +70,7 @@
         shim: {
             'crafter.social': {
                 deps: [
-    
+
                 ]
             },
             'crafter.social_api': {
@@ -202,7 +202,7 @@
             },
             ckeditor: {
                 deps: [
-    
+
                 ]
             },
             'ckeditor.plugins.autogrow': {

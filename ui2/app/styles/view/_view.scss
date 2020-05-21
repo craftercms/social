@@ -34,24 +34,24 @@
   }
 
   // Reset
-  @import 'sass-bootstrap/lib/normalize';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_normalize';
 
   // Core CSS
-  @import 'sass-bootstrap/lib/scaffolding';
-  @import 'sass-bootstrap/lib/type';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_scaffolding';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_type';
   h1, h2, h3 {
     margin-top: 0;
     margin-bottom: 0;
   }
-  @import 'sass-bootstrap/lib/grid';
-  @import 'sass-bootstrap/lib/tables';
-  @import 'sass-bootstrap/lib/forms';
-  @import 'sass-bootstrap/lib/buttons';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_grid';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_tables';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_forms';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_buttons';
 
   // Components
-  @import 'sass-bootstrap/lib/component-animations';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_component-animations';
   @import '../icons';
-  @import "sass-bootstrap/lib/dropdowns";
+  @import "bootstrap-sass/assets/stylesheets/bootstrap/_dropdowns";
 
   .dropdown-menu {
     &.tip {
@@ -93,19 +93,19 @@
     }
   }
 
-  @import 'sass-bootstrap/lib/button-groups';
-  @import 'sass-bootstrap/lib/input-groups';
-  @import 'sass-bootstrap/lib/badges';
-  @import 'sass-bootstrap/lib/alerts';
-  @import 'sass-bootstrap/lib/close';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_button-groups';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_input-groups';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_badges';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_alerts';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_close';
   @import '../progress-bars';
 
   // Components w/ JavaScript
-  @import 'sass-bootstrap/lib/tooltip';
-  @import 'sass-bootstrap/lib/popovers';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_tooltip';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_popovers';
 
   // Utility classes
-  @import 'sass-bootstrap/lib/utilities';
+  @import 'bootstrap-sass/assets/stylesheets/bootstrap/_utilities';
 
   a {
 
