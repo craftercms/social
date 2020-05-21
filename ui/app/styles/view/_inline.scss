@@ -1,7 +1,7 @@
 
 .#{$app-namespace}-view.#{$app-namespace}-inline-view {
 
-  @import "sass-bootstrap/lib/panels";
+  @import "bootstrap-sass/assets/stylesheets/bootstrap/_panels";
 
   &, .panel-heading {
     overflow: visible;

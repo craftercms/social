@@ -13,7 +13,7 @@ $icon-item-class:         'cs-icon';
 // Override bootstrap variables here. ---------------
 
 // Iconography
-$icon-font-path:          '../libs/sass-bootstrap/fonts/' !default;
+$icon-font-path:          '../libs/bootstrap-sass/assets/fonts/bootstrap/' !default;
 
 // Modals
 // -------------------------
@@ -23,7 +23,7 @@ $modal-backdrop-bg:           #fff !default;
 // End bootstrap overrides. -------------------------
 // --------------------------------------------------
 
-@import 'sass-bootstrap/lib/variables';
+@import 'bootstrap-sass/assets/stylesheets/bootstrap/_variables';
 
 $main-elements:
   div,
