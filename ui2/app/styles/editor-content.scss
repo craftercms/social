@@ -4,8 +4,8 @@
 @import 'mixins';
 
 .crafter-social-view{
-	@import 'sass-bootstrap/lib/normalize';
-	
+	@import 'bootstrap-sass/assets/stylesheets/bootstrap/_normalize';
+
 	body {
 	  padding: 5px;
 	  font-size: $font-size-small;

@@ -17,7 +17,7 @@
             base: '/',
             files: '/attachment/{attachmentId}?context={context}',
             service: '/api/3/',
-            templates: 'templates/',
+            templates: '/templates/',
             security: {
                 value: '/crafter-social/crafter-security-login',
                 active: '/crafter-social/crafter-security-current-auth'
