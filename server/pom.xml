@@ -70,7 +70,7 @@
         <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
         <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
         <org.apache.httpcomponents.version>4.3.3</org.apache.httpcomponents.version>
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.10.3</jackson.version>
         <logback.version>1.2.3</logback.version>
         <bouncycastle.version>1.60</bouncycastle.version>
         <test.port>8080</test.port>
