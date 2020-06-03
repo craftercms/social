@@ -59,7 +59,21 @@
             this.$element  = $this;
             this.$backdrop = this.isShown = null;
 
-            ( this.options.remote ) && this.$element.load(this.options.remote);
+            this.$body = $(document.body)
+            this.$dialog = this.$element.find('.modal-dialog')
+            this.isShown = null
+            this.originalBodyPad = null
+            this.scrollbarWidth = 0
+            this.ignoreBackdropClick = false
+            this.fixedContent = '.navbar-fixed-top, .navbar-fixed-bottom'
+
+            if (this.options.remote) {
+                this.$element
+                    .find('.modal-content')
+                    .load(this.options.remote, $.proxy(function () {
+                        this.$element.trigger('loaded.bs.modal')
+                    }, this))
+            }
 
             // TODO required?
             // if (typeof option == 'string') data[option](_relatedTarget)

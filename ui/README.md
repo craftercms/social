@@ -6,7 +6,7 @@ Crafter Social Front End.
 Project Setup
 -------------
 
-1. Download & install [node](http://nodejs.org).
+1. Download & install [node](https://nodejs.org/dist/latest-v8.x/) (version 8.x or minor).
 2. Execute: `npm install -g yo`
 3. On the ui project folder, execute: `npm install grunt —save-dev`
 4. Execute: `npm install`
