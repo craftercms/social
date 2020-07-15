@@ -16,57 +16,37 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-social</artifactId>
+    
     <name>Crafter Social</name>
     <description>Crafter Social</description>
     <url>https://github.com/craftercms/social/tree/master/server</url>
+    
     <packaging>war</packaging>
+    
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-social-parent</artifactId>
         <version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
     </parent>
-    <organization>
-        <name>CrafterCMS</name>
-        <url>http://craftercms.org</url>
-    </organization>
-    <licenses>
-        <license>
-            <name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <developers>
-        <developer>
-            <id>sumerjabri</id>
-            <name>Sumer Jabri</name>
-            <email>sumer.jabri@craftercms.org</email>
-        </developer>
-    </developers>
+
     <scm>
         <connection>scm:git:git://github.com/craftercms/social/</connection>
         <developerConnection>scm:git:git://github.com/craftercms/social/</developerConnection>
         <url>scm:git:git://github.com/craftercms/social/</url>
     </scm>
+
     <properties>
         <servlet.jsp.api.version>2.2</servlet.jsp.api.version>
         <servlet.jstl.version>1.2</servlet.jstl.version>
-        <ehcache.version>2.8.2</ehcache.version>
-        <org.hibernate.version>5.1.1.Final</org.hibernate.version>
-        <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
-        <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
-        <org.apache.httpcomponents.version>4.5.6</org.apache.httpcomponents.version>
-        <bouncycastle.version>1.60</bouncycastle.version>
         <test.port>8080</test.port>
     </properties>
 
     <dependencies>
-
-
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-commons-mongo</artifactId>
@@ -104,7 +84,7 @@
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>javax.mail-api</artifactId>
-            <version>1.5.2</version>
+            <version>${javax.mail.version}</version>
         </dependency>
 
         <!-- Providers -->
@@ -242,9 +222,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
@@ -258,7 +235,7 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.2.1</version>
+            <version>${quartz.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>c3p0</groupId>
@@ -275,39 +252,38 @@
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4.7</version>
+            <version>${javax.mail.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>2.3.23 </version>
+            <version>${freemarker.version}</version>
         </dependency>
         <!-- Apache Commons -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${org.apache.commons.io.version}</version>
+            <version>${commons.io.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>${org.apache.commons.fileupload.version}</version>
+            <version>${commons.fileupload.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>${org.apache.commons.codec.version}</version>
+            <version>${commons.codec.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${org.apache.httpcomponents.version}</version>
+            <version>${httpcomponents.httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>${org.apache.httpcomponents.version}</version>
+            <version>${httpcomponents.httpmime.version}</version>
         </dependency>
 
         <!-- Servlet -->
@@ -399,11 +375,10 @@
             <version>${jackson.databind.version}</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>${org.hibernate.version}</version>
+            <version>${hibernate.validator.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -411,6 +386,7 @@
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
@@ -422,11 +398,11 @@
             <artifactId>powermock-api-mockito</artifactId>
             <version>1.5.1</version>
             <scope>test</scope>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.jayway.restassured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>1.8.0</version>
+            <version>${rest.assured.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.codehaus.groovy</groupId>
@@ -438,16 +414,16 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>2.1.2</version>
+            <version>${groovy.version}</version>
             <scope>test</scope>
         </dependency>
+
         <!-- virus scanner -->
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-virus-scanner</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework</groupId>
@@ -458,17 +434,9 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.6.1</version>
+            <version>${jsoup.version}</version>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>sonatype-snapshots</id>
-            <name>Sonatype</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
 
     <build>
         <testResources>
@@ -477,13 +445,11 @@
                 <filtering>true</filtering>
             </testResource>
         </testResources>
+
         <plugins>
-
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.14.1</version>
                 <configuration>
                     <includes>
                         <include>**/unit/**/*.java</include>
@@ -494,10 +460,8 @@
                     </excludes>
                 </configuration>
             </plugin>
-
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.6</version>
                 <configuration>
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <testFailureIgnore>false</testFailureIgnore>
@@ -519,116 +483,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>install</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <warName>${project.artifactId}</warName>
-                    <attachClasses>true</attachClasses>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <Implementation-Build>${buildNumber}</Implementation-Build>
-                            <Build-On>${timestamp}</Build-On>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>2.7</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.4</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
 </project>

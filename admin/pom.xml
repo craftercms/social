@@ -15,52 +15,38 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>crafter-social-admin</artifactId>
 	<version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
+	
 	<name>Crafter Social Admin Console</name>
 	<description>Crafter Social Admin Console</description>
 	<url>https://github.com/craftercms/social/tree/master/admin</url>
+	
 	<packaging>war</packaging>
+	
 	<parent>
 		<groupId>org.craftercms</groupId>
 		<artifactId>crafter-social-parent</artifactId>
 		<version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
 	</parent>
-	<organization>
-		<name>CrafterCMS</name>
-		<url>http://craftercms.org</url>
-	</organization>
-	<licenses>
-		<license>
-			<name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
-			<url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<developers>
-		<developer>
-			<id>sumerjabri</id>
-			<name>Sumer Jabri</name>
-			<email>sumer.jabri@craftercms.org</email>
-		</developer>
-	</developers>
+
 	<scm>
 		<connection>scm:git:git://github.com/craftercms/social/tree/master/admin</connection>
 		<developerConnection>scm:git:git://github.com/craftercms/social/tree/master/admin</developerConnection>
 		<url>scm:git:git://github.com/craftercms/social/tree/master/admin</url>
 	</scm>
-	<properties>
-		<org.freemarker.version>2.3.23</org.freemarker.version>
-	</properties>
+
 	<dependencies>
 		<!-- Testing -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -103,7 +89,7 @@
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
-			<version>${org.freemarker.version}</version>
+			<version>${freemarker.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -114,7 +100,7 @@
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
-			<version>${org.apache.commons.fileupload.version}</version>
+			<version>${commons.fileupload.version}</version>
 		</dependency>
 		<!-- Servlet -->
 		<dependency>
@@ -155,12 +141,12 @@
 			<version>${log4j.version}</version>
 		</dependency>
 	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.14.1</version>
 				<configuration>
 					<includes>
 						<include>**/unit/**/*.java</include>
@@ -173,7 +159,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.4</version>
 				<executions>
 					<execution>
 						<id>install</id>
@@ -187,7 +172,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.5</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 				</configuration>
@@ -195,67 +179,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.2</version>
 				<configuration>
 					<warName>${project.artifactId}</warName>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>Sonar</id>
-			<properties>
-				<clover.version>3.1.8</clover.version>
-				<sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
-				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-				<sonar.clover.reportPath>${project.build.directory}/clover.xml</sonar.clover.reportPath>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.atlassian.maven.plugins</groupId>
-						<artifactId>maven-clover2-plugin</artifactId>
-						<version>${clover.version}</version>
-						<configuration>
-							<license>${clover.license}</license>
-							<reportDescriptor>clover-report.xml</reportDescriptor>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>release-sign-artifacts</id>
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-deploy-plugin</artifactId>
-						<version>2.7</version>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.4</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>
