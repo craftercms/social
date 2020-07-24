@@ -21,7 +21,6 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,10 +52,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.beans.factory.InitializingBean;
 
 @Controller
 @RequestMapping("/api/3/comments/extension")
-public class CommentsExtensionController {
+public class CommentsExtensionController implements InitializingBean {
 
     private static final String APPROVER_RESULT_TEMPLATE_NAME = "APPROVER_RESULT_TEMPLATE";
     @Autowired
@@ -136,15 +136,12 @@ public class CommentsExtensionController {
         response.setStatus(200);
     }
 
-
-    @PostConstruct
-    public void init() {
+    public void afterPropertiesSet() {
         cfg = new Configuration(Configuration.VERSION_2_3_21);
         cfg.setDefaultEncoding("UTF-8");
         cfg.setOutputEncoding("UTF-8");
         cfg.setTemplateLoader(this.templateLoader);
     }
-
 
     private Locale getProfileLocale(final Profile profile) {
         if (profile == null) {
