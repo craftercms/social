@@ -437,6 +437,12 @@
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
         </dependency>
+
+	<dependency>
+	  <groupId>jakarta.xml.bind</groupId>
+	  <artifactId>jakarta.xml.bind-api</artifactId>
+	  <version>${jakarta.xml.bind-api.version}</version>
+	</dependency>
     </dependencies>
 
     <build>
