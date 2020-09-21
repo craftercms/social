@@ -95,9 +95,9 @@
         </dependency>
 
         <dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
-            <version>${ehcache.version}</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.craftercms</groupId>
@@ -438,14 +438,17 @@
             <version>${jsoup.version}</version>
         </dependency>
 
-	<dependency>
-	  <groupId>jakarta.xml.bind</groupId>
-	  <artifactId>jakarta.xml.bind-api</artifactId>
-	  <version>${jakarta.xml.bind-api.version}</version>
-	</dependency>
+        <dependency>
+          <groupId>jakarta.xml.bind</groupId>
+          <artifactId>jakarta.xml.bind-api</artifactId>
+          <version>${jakarta.xml.bind-api.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
+        <finalName>crafter-profile</finalName>
+
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>

@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
+import com.google.common.cache.Cache;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.system.ContextPreferences;
 import org.craftercms.social.exceptions.SocialException;
@@ -42,7 +41,7 @@ import org.springframework.core.io.Resource;
  */
 public class TenantConfigurationServiceImpl implements TenantConfigurationService {
 
-    private Ehcache tenantConfigCache;
+    private Cache<String, Map<String, Object>> tenantConfigCache;
     private Properties systemDefaults;
     private List<Resource> defaultLocations;
     private ContextPreferencesService contextPreferencesService;
@@ -53,15 +52,15 @@ public class TenantConfigurationServiceImpl implements TenantConfigurationServic
     public <T> T getProperty(final String contextId, final String propertyName) {
         Map<String, Object> tenantConfig = null;
         T pValue = null;
-        if (tenantConfigCache.isKeyInCache(contextId)) {
-            tenantConfig = (Map<String, Object>)((Element)tenantConfigCache.get(contextId)).getObjectValue();
+        if (tenantConfigCache.asMap().containsKey(contextId)) {
+            tenantConfig = (tenantConfigCache.getIfPresent(contextId));
         }
         if(tenantConfig==null){
             reloadTenant(contextId);
             //Key should be in the cache since we just reload.
-            Element tenantCacheConfig=tenantConfigCache.get(contextId);
+            Map<String, Object> tenantCacheConfig=tenantConfigCache.getIfPresent(contextId);
             if(tenantCacheConfig!=null) {
-                tenantConfig = (Map<String, Object>)tenantCacheConfig.getObjectValue();
+                tenantConfig = tenantCacheConfig;
             }
         }
         if (tenantConfig != null && tenantConfig.containsKey(propertyName)) {
@@ -81,8 +80,8 @@ public class TenantConfigurationServiceImpl implements TenantConfigurationServic
             final HashMap<String,Object> prefMap = new HashMap<>((HashMap<String,Object>)pref.get("preferences"));
             prefMap.put("contextId",contextId);
             if (pref != null) {
-                tenantConfigCache.remove(contextId);
-                tenantConfigCache.put(new Element(contextId, prefMap));
+                tenantConfigCache.invalidate(contextId);
+                tenantConfigCache.put(contextId, prefMap);
             } else {
                 log.error("Unable to get preferences for context {} will not update", contextId);
             }
@@ -111,7 +110,7 @@ public class TenantConfigurationServiceImpl implements TenantConfigurationServic
 
         final List<Map<String, Object>> toCache = getAllPreferences();
         for (Map<String, Object> contextPref : toCache) {
-            tenantConfigCache.put(new Element(contextPref.get("contextId"), contextPref));
+            tenantConfigCache.put((String) contextPref.get("contextId"), contextPref);
         }
     }
 
@@ -137,7 +136,7 @@ public class TenantConfigurationServiceImpl implements TenantConfigurationServic
         }
     }
 
-    public void setTenantConfigCache(Ehcache tenantConfigCache) {
+    public void setTenantConfigCache(Cache<String, Map<String, Object>> tenantConfigCache) {
         this.tenantConfigCache = tenantConfigCache;
     }
 
