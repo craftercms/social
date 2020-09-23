@@ -16,24 +16,18 @@
 
 package org.craftercms.social.services.system.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Ehcache;
-import org.craftercms.commons.mongo.MongoDataException;
+import com.google.common.cache.Cache;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
-import org.craftercms.social.domain.system.ContextPreferences;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.repositories.system.ContextPreferencesRepository;
 import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.security.SocialPermission;
 import org.craftercms.social.services.system.ContextPreferencesService;
-import org.craftercms.social.services.system.EmailService;
 import org.craftercms.social.services.system.TenantConfigurationService;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -42,7 +36,7 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
     private ContextPreferencesRepository contextPreferencesRepository;
     private String invalidKeys;
     private TenantConfigurationService tenantConfigurationService;
-    private Ehcache emailConfigCache;
+    private Cache<String, Object> emailConfigCache;
 
     @Override
     public Map findEmailPreference(final String contextId) throws SocialException {
@@ -126,8 +120,8 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
     private void invalidatedEmailSettings(final String contextId) {
         final String preferenceCacheKey = contextId + "-preferences";
         final String javaMailCacheKey = contextId + "-javaMail";
-        emailConfigCache.remove(preferenceCacheKey);
-        emailConfigCache.remove(javaMailCacheKey);
+        emailConfigCache.invalidate(preferenceCacheKey);
+        emailConfigCache.invalidate(javaMailCacheKey);
     }
 
 
@@ -136,7 +130,7 @@ public class ContextPreferencesServiceImpl implements ContextPreferencesService{
     }
 
 
-    public void setEmailConfigCache(Ehcache emailConfigCache) {
+    public void setEmailConfigCache(Cache<String, Object> emailConfigCache) {
         this.emailConfigCache = emailConfigCache;
     }
 

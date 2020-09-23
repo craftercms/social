@@ -18,8 +18,7 @@ package org.craftercms.social.util.profile;
 
 import java.util.List;
 
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
+import com.google.common.cache.Cache;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
@@ -32,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class ProfileAggregatorImpl implements ProfileAggregator {
 
     private ProfileService profileService;
-    private Ehcache cache;
+    private Cache<String, Profile> cache;
     private Logger log = LoggerFactory.getLogger(ProfileAggregatorImpl.class);
 
     private String[] attributesToReturn;
@@ -44,10 +43,10 @@ public class ProfileAggregatorImpl implements ProfileAggregator {
     @Override
     public void clearProfileCache(final List<String> profileIds) {
         for (String profileId : profileIds) {
-            if (cache.get(profileId) != null) {
+            if (cache.getIfPresent(profileId) != null) {
                 try {
-                    cache.remove(profileId, false);
-                    log.debug("Profile {} deleted from cache");
+                    cache.invalidate(profileId);
+                    log.debug("Profile {} deleted from cache", profileId);
                 } catch (IllegalStateException ex) {
                     log.warn("Unable to remove profile " + profileId + " from cache ", ex);
                 }
@@ -58,7 +57,7 @@ public class ProfileAggregatorImpl implements ProfileAggregator {
     @Override
     public void clearProfileCache() {
         try {
-            cache.removeAll();
+            cache.invalidateAll();
         } catch (IllegalStateException ex) {
             log.warn("Unable to clear profile cache ", ex);
         }
@@ -66,15 +65,12 @@ public class ProfileAggregatorImpl implements ProfileAggregator {
 
     @Override
     public Profile getProfile(final String profileId) {
-        Profile profile;
-        Element element = cache.get(profileId);
-        if (element == null) {
+        Profile profile = cache.getIfPresent(profileId);
+        if (profile == null) {
             profile = getProfileFromServer(profileId);
             if (profile != null) {
-                cache.put(new Element(profileId, profile));
+                cache.put(profileId, profile);
             }
-        } else {
-            profile = (Profile)element.getObjectValue();
         }
         return profile;
 
@@ -104,7 +100,7 @@ public class ProfileAggregatorImpl implements ProfileAggregator {
         this.profileService = profileService;
     }
 
-    public void setCache(final Ehcache cache) {
+    public void setCache(final Cache<String, Profile> cache) {
         this.cache = cache;
     }
 

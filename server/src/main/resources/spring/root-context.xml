@@ -98,22 +98,20 @@
 
     <bean class="org.craftercms.social.util.profile.ProfileAggregatorImpl" id="social.profileAggregator">
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
-        <property name="cache" ref="crafter.ehCacheAuthenticationCache"/>
+        <property name="cache" ref="crafter.guavaAuthenticationCache"/>
         <property name="attributesToReturn" value="${studio.social.system.profileAgg.attributesToReturn}"/>
     </bean>
 
-    <bean id="social.support.ehCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="name" value="social.profileAggregationCache"/>
-        <property name="timeToLiveSeconds" value="${studio.social.system.profileAgg.cache.ttl}"/>
-        <property name="timeToIdleSeconds" value="${studio.social.system.profileAgg.cache.tti}"/>
-        <property name="maxEntriesLocalHeap" value="${studio.social.system.profileAgg.cache.maxElementsInMemory}"/>
+    <bean id="social.support.guavaCache" class="org.craftercms.commons.cache.GuavaCacheFactoryBean">
+        <property name="timeToLive" value="${studio.social.system.profileAgg.cache.ttl}"/>
+        <property name="timeToIdle" value="${studio.social.system.profileAgg.cache.tti}"/>
+        <property name="maxSize" value="${studio.social.system.profileAgg.cache.maxElementsInMemory}"/>
     </bean>
 
-    <bean id="social.support.emailConfig" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="name" value="social.profileAggregationCache"/>
-        <property name="timeToLiveSeconds" value="${studio.social.system.emailConfig.cache.ttl}"/>
-        <property name="timeToIdleSeconds" value="${studio.social.system.emailConfig.cache.tti}"/>
-        <property name="maxEntriesLocalHeap" value="${studio.social.system.emailConfig.cache.maxElementsInMemory}"/>
+    <bean id="social.support.emailConfig" class="org.craftercms.commons.cache.GuavaCacheFactoryBean">
+        <property name="timeToLive" value="${studio.social.system.emailConfig.cache.ttl}"/>
+        <property name="timeToIdle" value="${studio.social.system.emailConfig.cache.tti}"/>
+        <property name="maxSize" value="${studio.social.system.emailConfig.cache.maxElementsInMemory}"/>
     </bean>
 
     <bean class="org.craftercms.social.util.serialization.SocialInjectValueFactory" id="social.InjectValueHandler">
@@ -179,11 +177,10 @@
     </bean>
 
 
-    <bean id="social.support.tenantConfigCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="name" value="social.tenatConfigCache"/>
-        <property name="timeToLiveSeconds" value="${studio.social.system.emailConfig.cache.ttl}"/>
-        <property name="timeToIdleSeconds" value="${studio.social.system.emailConfig.cache.tti}"/>
-        <property name="maxEntriesLocalHeap" value="${studio.social.system.emailConfig.cache.maxElementsInMemory}"/>
+    <bean id="social.support.tenantConfigCache" class="org.craftercms.commons.cache.GuavaCacheFactoryBean">
+        <property name="timeToLive" value="${studio.social.system.emailConfig.cache.ttl}"/>
+        <property name="timeToIdle" value="${studio.social.system.emailConfig.cache.tti}"/>
+        <property name="maxSize" value="${studio.social.system.emailConfig.cache.maxElementsInMemory}"/>
     </bean>
 
 

@@ -22,8 +22,7 @@ import java.util.Properties;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
+import com.google.common.cache.Cache;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -39,7 +38,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
  */
 public class EmailService {
 
-    private Ehcache emailConfigCache;
+    private Cache<String, Object> emailConfigCache;
     private ContextPreferencesService contextPreferences;
 
     public void sendEmail(final Profile toSend, final StringWriter writer, final String subject, final String contextId)
@@ -76,29 +75,29 @@ public class EmailService {
     public void updateContextEmailCache(final String contextId) throws SocialException {
         final String preferenceCacheKey = contextId + "-preferences";
         final String javaMailCacheKey = contextId + "-javaMail";
-        emailConfigCache.remove(preferenceCacheKey);
-        emailConfigCache.remove(preferenceCacheKey);
+        emailConfigCache.invalidate(preferenceCacheKey);
+        emailConfigCache.invalidate(javaMailCacheKey);
         getEmailSettings(contextId);
         getSender(contextId);
     }
 
     protected Map<String, Object> getEmailSettings(final String contextId) throws SocialException {
         final String cacheKey = contextId + "-preferences";
-        final Element config = emailConfigCache.get(cacheKey);
+        final Map<String, Object> config = (Map<String, Object>) emailConfigCache.getIfPresent(cacheKey);
         if (config != null) {
-            return (Map<String, Object>)config.getObjectValue();
+            return config;
         } else {
             final Map<String, Object> toReturn = contextPreferences.findEmailPreference(contextId);
-            emailConfigCache.put(new Element(cacheKey, toReturn));
+            emailConfigCache.put(cacheKey, toReturn);
             return toReturn;
         }
     }
 
     public JavaMailSender getSender(final String contextId) throws SocialException {
         final String cacheKey = contextId + "-javaMail";
-        final Element config = emailConfigCache.get(cacheKey);
+        final JavaMailSender config = (JavaMailSender) emailConfigCache.getIfPresent(cacheKey);
         if (config != null) {
-            return (JavaMailSender)config.getObjectValue();
+            return config;
         } else {
             return loadConfig(contextId + "-javaMail", getEmailSettings(contextId));
         }
@@ -122,14 +121,14 @@ public class EmailService {
                 javaMailProps.put("mail.smtp.starttls.enable", "true");
             }
             toReturn.setJavaMailProperties(javaMailProps);
-            emailConfigCache.put(new Element(cacheKey, toReturn));
+            emailConfigCache.put(cacheKey, toReturn);
             return toReturn;
         } else {
             throw new SocialException("Email is not configured for context " + cacheKey);
         }
     }
 
-    public void setEmailConfigCache(Ehcache emailConfigCache) {
+    public void setEmailConfigCache(Cache<String, Object> emailConfigCache) {
         this.emailConfigCache = emailConfigCache;
     }
 
