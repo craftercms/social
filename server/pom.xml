@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-social-parent</artifactId>
-        <version>3.1.10-SNAPSHOT</version><!-- craftercms version flag -->
+        <version>3.1.11-SNAPSHOT</version><!-- craftercms version flag -->
     </parent>
     <organization>
         <name>CrafterCMS</name>
@@ -60,7 +60,7 @@
         <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
         <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
         <org.apache.httpcomponents.version>4.5.6</org.apache.httpcomponents.version>
-        <bouncycastle.version>1.60</bouncycastle.version>
+        <bouncycastle.version>1.61</bouncycastle.version>
         <test.port>8080</test.port>
     </properties>
 
