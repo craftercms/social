@@ -447,7 +447,7 @@
     </dependencies>
 
     <build>
-        <finalName>crafter-profile</finalName>
+        <finalName>crafter-social</finalName>
 
         <testResources>
             <testResource>
