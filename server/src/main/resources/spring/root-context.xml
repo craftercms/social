@@ -62,13 +62,17 @@
         <property name="entitlementValidator" ref="crafter.entitlementValidator"/>
     </bean>
 
-    <bean class="org.craftercms.commons.web.CORSFilter" id="crafter.corsFilter">
-        <property name="allowHeaders" value="${studio.social.system.cors.accessControlAllowHeaders}"/>
-        <property name="allowMethods" value="${studio.social.system.cors.accessControlAllowMethods}" />
-        <property name="allowOrigins" value="${studio.social.system.cors.accessControlAllowOrigin}"/>
-        <property name="maxAge" value="${studio.social.system.cors.accessControlMaxAge}"/>
-        <property name="allowCredentials" value="${studio.social.system.cors.accessControlAllowCredentials}"/>
-        <property name="disableCORS" value="${studio.social.system.cors.disableCORS}"/>
+    <bean id="crafter.corsConfigSource" class="org.craftercms.commons.spring.cors.FixedCorsConfigurationSource">
+        <constructor-arg name="allowHeaders" value="${studio.social.system.cors.accessControlAllowHeaders}"/>
+        <constructor-arg name="allowMethods" value="${studio.social.system.cors.accessControlAllowMethods}" />
+        <constructor-arg name="allowOrigins" value="${studio.social.system.cors.accessControlAllowOrigin}"/>
+        <constructor-arg name="maxAge" value="${studio.social.system.cors.accessControlMaxAge}"/>
+        <constructor-arg name="allowCredentials" value="${studio.social.system.cors.accessControlAllowCredentials}"/>
+        <constructor-arg name="disableCORS" value="${studio.social.system.cors.disableCORS}"/>
+    </bean>
+
+    <bean class="org.springframework.web.filter.CorsFilter" id="crafter.corsFilter">
+        <constructor-arg ref="crafter.corsConfigSource"/>
     </bean>
 
     <bean id="social.ugc.virusScanner"
