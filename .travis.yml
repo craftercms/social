@@ -6,6 +6,9 @@ branches:
     - develop
     - master
     - support/.*
+cache:
+  directories:
+    - $HOME/.m2
 notifications:
   irc:
     channels:
