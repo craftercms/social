@@ -42,7 +42,7 @@
     </parent>
 
     <modules>
-        <!--module>virus-scanner</module-->
+        <module>virus-scanner</module>
         <module>server</module>
         <module>admin</module>
     </modules>
