@@ -54,6 +54,7 @@
 	</scm>
 	<properties>
 		<org.freemarker.version>2.3.23</org.freemarker.version>
+	        <httpclient.version>4.5.2</httpclient.version>
 	</properties>
 	<dependencies>
 		<!-- Testing -->
@@ -116,6 +117,12 @@
 			<artifactId>commons-fileupload</artifactId>
 			<version>${org.apache.commons.fileupload.version}</version>
 		</dependency>
+	        <dependency>
+        	    <groupId>org.apache.httpcomponents</groupId>
+	            <artifactId>httpclient</artifactId>
+	            <version>${httpclient.version}</version>
+	        </dependency>
+
 		<!-- Servlet -->
 		<dependency>
             <groupId>javax.servlet</groupId>
