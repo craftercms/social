@@ -54,7 +54,7 @@
 	</scm>
 	<properties>
 		<org.freemarker.version>2.3.23</org.freemarker.version>
-	        <httpclient.version>4.5.2</httpclient.version>
+	        <httpclient.version>4.5.13</httpclient.version>
 	</properties>
 	<dependencies>
 		<!-- Testing -->
