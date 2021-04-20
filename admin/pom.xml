@@ -53,7 +53,7 @@
 		<url>scm:git:git://github.com/craftercms/social/tree/master/admin</url>
 	</scm>
 	<properties>
-		<org.freemarker.version>2.3.23</org.freemarker.version>
+		<org.freemarker.version>2.3.31</org.freemarker.version>
 	        <httpclient.version>4.5.13</httpclient.version>
 	</properties>
 	<dependencies>
