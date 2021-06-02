@@ -46,8 +46,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
-    <bean id="crafter.profileObjectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper"
-          init-method="init">
+    <bean id="crafter.profileObjectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper">
         <property name="serializers">
             <list>
                 <bean class="org.craftercms.commons.jackson.ObjectIdSerializer"/>
