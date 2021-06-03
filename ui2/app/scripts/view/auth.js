@@ -7,7 +7,9 @@
         Director    = S.getDirector(),
         Profile     = S.model.Profile,
         $           = S.$,
-        U           = S.util;
+        U           = S.util,
+        authId          = U.uniqueId(),
+        clickEvent  = `click #submitBtn_${authId}`;
 
     Auth = Base.extend({
 
@@ -17,11 +19,11 @@
         ].join(' '),
 
         events: {
-            'click #submitBtn_%@': 'submit'
-            //'log-event':'login'
+            [clickEvent]: 'submit'
         },
 
         initialize: function () {
+            console.log('model', U.uniqueId());
             Base.prototype.initialize.apply(this, arguments);
             (!this.model) && (this.model = new Profile());
         },
@@ -129,7 +131,7 @@
     Auth.DEFAULTS = $.extend(true, {}, Base.DEFAULTS, {
         templates: {
             form: ('%@auth-form.hbs').fmt(S.Cfg('url.templates')),
-            submit: '<button data-indentifyme="submitBtn" class="btn btn-primary">Submit</button>',
+            submit: `<button id="submitBtn_${authId}" class="btn btn-primary">Submit</button>`,
             /* jshint -W015 */
             message: [
                 '<div class="alert alert-{{type}}">',

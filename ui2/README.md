@@ -17,7 +17,7 @@ Other Tasks
 
 Run the app: `$ grunt server`
 
-Build the app: `$ grunt`
+Build the app: `$ grunt build`
 
 Libraries
 ---------
