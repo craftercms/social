@@ -75,7 +75,7 @@
     display: block;
     border: 1px solid #b6b6b6;
     padding: 0;
-    @include box-shadow(none);
+    box-shadow: unset;
     border-radius: $border-radius-base;
     overflow: hidden;
   }
