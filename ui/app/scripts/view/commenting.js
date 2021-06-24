@@ -6,6 +6,8 @@
         CKEDITOR = S.Editor,
         $ = S.$;
 
+    var acceptTermsOnComment = typeof S.Cfg('comments.acceptTerms') !== 'undefined' ? S.Cfg('comments.acceptTerms') : true;
+
     Commenting = Base.extend({
 
         className: [
@@ -72,12 +74,12 @@
         },
 
         comment: function () {
-
             var editor = this.editor(),
                 checkBtn = $(this.el).find('[data-action-terms]'),
+                acceptTermsInvalid = (acceptTermsOnComment === true) ? !checkBtn.is(':checked') : false,
                 content = editor.getData();
 
-            if (!content || !checkBtn.is(':checked')) { return; }
+            if (!content || acceptTermsInvalid) { return; }
 
             var data = {
                 body: content,
