@@ -22,7 +22,7 @@
 
     <bean id="moderationDecisionManager"
           class="org.craftercms.social.moderation.impl.ModerationDecisionImpl">
-        <constructor-arg>
+        <constructor-arg name="filters">
             <list>
                 <ref bean="comunityModeration"/>
                 <ref bean="blackListModeration"/>
@@ -42,7 +42,7 @@
 
     <bean id="blackListModeration"
           class="org.craftercms.social.moderation.impl.BlackListModeration">
-        <constructor-arg value="classpath:/spam-blacklist.xml"/>
+        <constructor-arg name="blackListFile" value="classpath:/spam-blacklist.xml"/>
     </bean>
 
 

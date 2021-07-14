@@ -15,6 +15,7 @@
  */
 package org.craftercms.social.moderation.impl;
 
+import java.beans.ConstructorProperties;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +55,7 @@ public class BlackListModeration implements ModerationFilter {
 	private List<String> registerWords;
 	private Logger log = LoggerFactory.getLogger(BlackListModeration.class);
 
+	@ConstructorProperties({"blackListFile"})
 	public BlackListModeration(String blackListFile) throws SAXException,
 			IOException, ParserConfigurationException, XPathException {
 		loadBlackList(blackListFile);
