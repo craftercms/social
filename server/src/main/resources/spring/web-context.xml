@@ -101,7 +101,7 @@
 
                         <beans:property name="dateFormat">
                             <beans:bean class="java.text.SimpleDateFormat">
-                                <beans:constructor-arg type="java.lang.String"
+                                <beans:constructor-arg index="0"
                                                        value="${studio.social.web.mapping.dateFormat}"/>
                             </beans:bean>
                         </beans:property>

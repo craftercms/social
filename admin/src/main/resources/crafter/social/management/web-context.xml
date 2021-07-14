@@ -61,7 +61,7 @@
         </property>
         <property name="dateFormat">
             <bean class="java.text.SimpleDateFormat">
-                <constructor-arg value="${crafter.social.management.date.format}"/>
+                <constructor-arg index="0" value="${crafter.social.management.date.format}"/>
             </bean>
         </property>
     </bean>

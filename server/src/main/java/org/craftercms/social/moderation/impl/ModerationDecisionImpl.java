@@ -15,6 +15,7 @@
  */
 package org.craftercms.social.moderation.impl;
 
+import java.beans.ConstructorProperties;
 import java.util.List;
 
 import org.craftercms.social.domain.social.SocialUgc;
@@ -35,7 +36,8 @@ public class ModerationDecisionImpl implements ModerationDecision {
 	private List<ModerationFilter> filters;
 	
 	private int maxFlagsBeforeTrash = 10;
-		
+
+	@ConstructorProperties({"filters"})
 	public ModerationDecisionImpl(List<ModerationFilter> filters) {
 		super();
 		this.filters = filters;

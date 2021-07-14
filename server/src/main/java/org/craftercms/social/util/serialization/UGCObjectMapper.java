@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import java.beans.ConstructorProperties;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ public class UGCObjectMapper extends ObjectMapper {
     private Map<Class, JsonDeserializer> deserializerMap = new HashMap<>();
 
 
+    @ConstructorProperties({"serializerList", "deserializerMap"})
     public UGCObjectMapper(List<JsonSerializer> serializerList, Map<Class, JsonDeserializer> deserializerMap) {
         super();
         super.setSerializationInclusion(JsonInclude.Include.NON_NULL);

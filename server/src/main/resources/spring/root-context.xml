@@ -72,7 +72,7 @@
     </bean>
 
     <bean class="org.springframework.web.filter.CorsFilter" id="crafter.corsFilter">
-        <constructor-arg ref="crafter.corsConfigSource"/>
+        <constructor-arg index="0" ref="crafter.corsConfigSource"/>
     </bean>
 
     <bean id="social.ugc.virusScanner"
