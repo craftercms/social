@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-social-parent</artifactId>
-        <version>3.1.19-SNAPSHOT</version><!-- craftercms version flag -->
+        <version>3.1.22-SNAPSHOT</version><!-- craftercms version flag -->
     </parent>
     <artifactId>crafter-social-sui-alt</artifactId>
     <name>Crafter Social UI</name>
@@ -125,13 +125,13 @@
                         </goals>
                         <configuration>
                           <outputDirectory>${basedir}/target/extra-resources</outputDirectory>
-                          <resources>          
+                          <resources>
                             <resource>
                               <directory>src/non-packaged-resources</directory>
                               <filtering>true</filtering>
                             </resource>
-                          </resources>              
-                        </configuration>            
+                          </resources>
+                        </configuration>
                       </execution>
                     </executions>
                   </plugin>
