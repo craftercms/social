@@ -18,9 +18,9 @@ Project Setup
 Other Tasks
 -----------
 
-Run the app: `$ grunt server`
+Run the app: `$ npm start`
 
-Build the app: `$ grunt`
+Build the app: `$ npm run-script build`
 
 Libraries
 ---------
