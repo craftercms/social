@@ -50,6 +50,7 @@
     </beans:bean>
 
     <annotation-driven content-negotiation-manager="contentNegotiationManager">
+        <path-matching suffix-pattern="true"/>
         <message-converters>
             <beans:bean id="jacksonMessageConverter"
                         class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
