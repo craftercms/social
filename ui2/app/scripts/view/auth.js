@@ -23,7 +23,6 @@
         },
 
         initialize: function () {
-            console.log('model', U.uniqueId());
             Base.prototype.initialize.apply(this, arguments);
             (!this.model) && (this.model = new Profile());
         },

@@ -74,6 +74,7 @@
         },
 
         comment: function () {
+
             var editor = this.editor(),
                 checkBtn = $(this.el).find('[data-action-terms]'),
                 acceptTermsInvalid = (acceptTermsOnComment === true) ? !checkBtn.is(':checked') : false,
