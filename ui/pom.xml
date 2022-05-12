@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-social-parent</artifactId>
-        <version>4.0.0E</version><!-- craftercms version flag -->
+        <version>4.0.1-SNAPSHOT</version><!-- craftercms version flag -->
     </parent>
 
     <build>
