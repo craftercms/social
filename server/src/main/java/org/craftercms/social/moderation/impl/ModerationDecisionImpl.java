@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,6 +15,7 @@
  */
 package org.craftercms.social.moderation.impl;
 
+import java.beans.ConstructorProperties;
 import java.util.List;
 
 import org.craftercms.social.domain.social.SocialUgc;
@@ -35,7 +36,8 @@ public class ModerationDecisionImpl implements ModerationDecision {
 	private List<ModerationFilter> filters;
 	
 	private int maxFlagsBeforeTrash = 10;
-		
+
+	@ConstructorProperties({"filters"})
 	public ModerationDecisionImpl(List<ModerationFilter> filters) {
 		super();
 		this.filters = filters;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,6 +15,7 @@
  */
 package org.craftercms.social.moderation.impl;
 
+import java.beans.ConstructorProperties;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +55,7 @@ public class BlackListModeration implements ModerationFilter {
 	private List<String> registerWords;
 	private Logger log = LoggerFactory.getLogger(BlackListModeration.class);
 
+	@ConstructorProperties({"blackListFile"})
 	public BlackListModeration(String blackListFile) throws SAXException,
 			IOException, ParserConfigurationException, XPathException {
 		loadBlackList(blackListFile);

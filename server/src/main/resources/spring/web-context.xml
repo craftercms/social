@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -50,6 +50,7 @@
     </beans:bean>
 
     <annotation-driven content-negotiation-manager="contentNegotiationManager">
+        <path-matching suffix-pattern="true"/>
         <message-converters>
             <beans:bean id="jacksonMessageConverter"
                         class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
@@ -101,7 +102,7 @@
 
                         <beans:property name="dateFormat">
                             <beans:bean class="java.text.SimpleDateFormat">
-                                <beans:constructor-arg type="java.lang.String"
+                                <beans:constructor-arg index="0"
                                                        value="${studio.social.web.mapping.dateFormat}"/>
                             </beans:bean>
                         </beans:property>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -46,8 +46,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
-    <bean id="crafter.profileObjectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper"
-          init-method="init">
+    <bean id="crafter.profileObjectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper">
         <property name="serializers">
             <list>
                 <bean class="org.craftercms.commons.jackson.ObjectIdSerializer"/>
@@ -62,7 +61,7 @@
         </property>
         <property name="dateFormat">
             <bean class="java.text.SimpleDateFormat">
-                <constructor-arg value="${crafter.social.management.date.format}"/>
+                <constructor-arg index="0" value="${crafter.social.management.date.format}"/>
             </bean>
         </property>
     </bean>
