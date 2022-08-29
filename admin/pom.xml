@@ -19,7 +19,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>crafter-social-admin</artifactId>
-	<version>3.1.26-SNAPSHOT</version><!-- craftercms version flag -->
+	<version>3.1.25</version><!-- craftercms version flag -->
 	<name>Crafter Social Admin Console</name>
 	<description>Crafter Social Admin Console</description>
 	<url>https://github.com/craftercms/social/tree/master/admin</url>
@@ -27,7 +27,7 @@
 	<parent>
 		<groupId>org.craftercms</groupId>
 		<artifactId>crafter-social-parent</artifactId>
-		<version>3.1.26-SNAPSHOT</version><!-- craftercms version flag -->
+		<version>3.1.25</version><!-- craftercms version flag -->
 	</parent>
 	<organization>
 		<name>CrafterCMS</name>
