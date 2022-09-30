@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-social-parent</artifactId>
-        <version>3.1.26-SNAPSHOT</version><!-- craftercms version flag -->
+        <version>3.1.27-SNAPSHOT</version><!-- craftercms version flag -->
     </parent>
     <organization>
         <name>CrafterCMS</name>
@@ -57,7 +57,7 @@
         <servlet.jstl.version>1.2</servlet.jstl.version>
         <ehcache.version>2.10.9.2</ehcache.version>
         <org.hibernate.version>5.1.1.Final</org.hibernate.version>
-        <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
+        <org.apache.commons.io.version>2.7</org.apache.commons.io.version>
         <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
         <org.apache.httpcomponents.version>4.5.6</org.apache.httpcomponents.version>
         <bouncycastle.version>1.61</bouncycastle.version>
