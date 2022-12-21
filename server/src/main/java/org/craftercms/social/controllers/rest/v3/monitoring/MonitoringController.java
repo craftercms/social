@@ -38,7 +38,7 @@ public class MonitoringController extends MonitoringRestControllerBase {
     }
 
     @Override
-    protected String getConfiguredToken() {
+    public String getConfiguredToken() {
         return authorizationToken;
     }
 
