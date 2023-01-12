@@ -31,15 +31,8 @@ public class MonitoringController extends MonitoringRestControllerBase {
 
     public static final String URL_ROOT = "/api/3";
 
-    protected String authorizationToken;
-
     public MonitoringController(@Value("${crafter.social.management.authorizationToken}") String authorizationToken) {
-        this.authorizationToken = authorizationToken;
-    }
-
-    @Override
-    public String getConfiguredToken() {
-        return authorizationToken;
+        super(authorizationToken);
     }
 
 }
