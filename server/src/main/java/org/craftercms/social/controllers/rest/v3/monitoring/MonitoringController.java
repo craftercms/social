@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -31,15 +31,8 @@ public class MonitoringController extends MonitoringRestControllerBase {
 
     public static final String URL_ROOT = "/api/3";
 
-    protected String authorizationToken;
-
     public MonitoringController(@Value("${crafter.social.management.authorizationToken}") String authorizationToken) {
-        this.authorizationToken = authorizationToken;
-    }
-
-    @Override
-    public String getConfiguredToken() {
-        return authorizationToken;
+        super(authorizationToken);
     }
 
 }
