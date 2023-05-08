@@ -24,13 +24,13 @@ import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.services.ugc.UgcPipe;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 /**
  * Cleans up the body of the UGC to prevent XSS
  */
 public class HtmlCleanupPipe implements UgcPipe{
-    private final Whitelist whitelist = Whitelist.relaxed().addTags("div","em");
+    private final Safelist safelist = Safelist.relaxed().addTags("div","em");
     @Override
     public <T extends UGC> void process(final T ugc,Map<String,Object> params) throws SocialException {
         ugc.setBody(cleanup(ugc.getBody()));
@@ -47,6 +47,6 @@ public class HtmlCleanupPipe implements UgcPipe{
      * @return cleanup text.
      */
     private String cleanup(final String toCleanup){
-        return Jsoup.clean(toCleanup,whitelist);
+        return Jsoup.clean(toCleanup, safelist);
     }
 }
