@@ -21,17 +21,17 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>crafter-social-admin</artifactId>
-	
+
 	<name>Crafter Social Admin Console</name>
 	<description>Crafter Social Admin Console</description>
 	<url>https://github.com/craftercms/social/tree/master/admin</url>
-	
+
 	<packaging>war</packaging>
-	
+
 	<parent>
 		<groupId>org.craftercms</groupId>
 		<artifactId>crafter-social-parent</artifactId>
-		<version>4.0.5</version><!-- craftercms version flag -->
+		<version>4.1.0</version><!-- craftercms version flag -->
 	</parent>
 
 	<scm>
@@ -85,6 +85,11 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<!-- Other -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>bson</artifactId>
+			<version>${mongo.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
@@ -146,7 +151,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>

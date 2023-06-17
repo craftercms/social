@@ -17,21 +17,21 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-social</artifactId>
-    
+
     <name>Crafter Social</name>
     <description>Crafter Social</description>
     <url>https://github.com/craftercms/social/tree/master/server</url>
-    
+
     <packaging>war</packaging>
-    
+
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-social-parent</artifactId>
-        <version>4.0.5</version><!-- craftercms version flag -->
+        <version>4.1.0</version><!-- craftercms version flag -->
     </parent>
 
     <scm>
@@ -82,9 +82,15 @@
         </dependency>
 
         <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>bson</artifactId>
+            <version>${mongo.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>javax.mail-api</artifactId>
-            <version>${javax.mail.api.version}</version>
+            <version>${javax.mail.version}</version>
         </dependency>
 
         <!-- Providers -->
@@ -283,7 +289,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>${httpcomponents.httpmime.version}</version>
+            <version>${httpcomponents.httpclient.version}</version>
         </dependency>
 
 	<dependency>
@@ -359,7 +365,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
             <version>${log4j.version}</version>
         </dependency>
 
@@ -388,7 +394,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.databind.version}</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>
@@ -400,38 +406,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>1.5.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>1.5.1</version>
-            <scope>test</scope>
-        </dependency> -->
-        <dependency>
-            <groupId>com.jayway.restassured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>${rest.assured.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.groovy</groupId>
-                    <artifactId>groovy</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${groovy.version}</version>
-	    <type>pom</type>
             <scope>test</scope>
         </dependency>
 

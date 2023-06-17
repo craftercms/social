@@ -18,7 +18,6 @@ package org.craftercms.social.repositories.ugc.impl;
 
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
-import com.mongodb.util.JSONParseException;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ import org.craftercms.social.repositories.TreeUGC;
 import org.craftercms.social.repositories.ugc.UGCRepository;
 import org.craftercms.social.repositories.ugc.support.BaseTreeUgc;
 import org.craftercms.social.services.system.TenantConfigurationService;
-import org.craftercms.social.services.system.impl.TenantConfigurationServiceImpl;
 import org.jongo.Aggregate;
 import org.jongo.Find;
 import org.jongo.ResultHandler;
@@ -197,7 +195,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
                 find.sort(sort);
             }
             return (Iterable<T>)find.skip(start).limit(limit).as(clazz);
-        } catch (MongoException | JSONParseException ex) {
+        } catch (Exception ex) {
             log.error("Unable to Find UGC with given User query " + query + "sorted by " + sort, ex);
             throw new MongoDataException("Unable to find ugcs by user query", ex);
         }
