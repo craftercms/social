@@ -32,12 +32,11 @@ import java.util.Map;
 
 /**
  * Defines all Rest Services for UGCs.
- * <p>Implementers Must
+ * <p>Implementers Must</p>
  * <ul>
  * <li>Audit all Calls</li>
  * <li>Check that this call are made with an authenticated user and the the UGC belongs to the user's contextId.</li>
  * </ul>
- * </p>
  */
 public interface UGCService<T extends UGC> {
 
@@ -130,7 +129,7 @@ public interface UGCService<T extends UGC> {
      * @return The UGC (and its children).
      * @throws java.lang.IllegalArgumentException               If includeChildren is set to true and childCount is
      *                                                          set to 0
-     * @throws org.craftercms.social.exceptions.SocialException If is unable to get the UGC.
+     * @throws org.craftercms.social.exceptions.UGCException If is unable to get the UGC.
      */
      T read(final String ugcId, final boolean includeChildren, final int childCount,
                   final String contextId) throws UGCException;
