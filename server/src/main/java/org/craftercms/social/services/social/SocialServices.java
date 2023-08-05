@@ -30,12 +30,11 @@ import org.craftercms.social.exceptions.UGCException;
 
 /**
  * Defines all Rest Services for Moderation of UGCs.
- * <p>Implementers Must
+ * <p>Implementers Must</p>
  * <ul>
  * <li>Audit all Calls</li>
  * <li>Check that these calls are made with an authenticated user and that the UGC belongs to the user's context.</li>
  * </ul>
- * </p>
  */
 public interface SocialServices<T extends SocialUgc> {
 
