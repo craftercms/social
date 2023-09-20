@@ -16,10 +16,6 @@
 
 package org.craftercms.social.services.social.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -45,26 +41,27 @@ import org.craftercms.social.util.ebus.SocialEvent;
 import org.craftercms.social.util.ebus.UGCEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.Reactor;
-import reactor.event.Event;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.lang.NonNull;
 
-import static org.craftercms.social.security.SecurityActionNames.UGC_FLAG;
-import static org.craftercms.social.security.SecurityActionNames.UGC_MODERATE;
-import static org.craftercms.social.security.SecurityActionNames.UGC_UNFLAG;
-import static org.craftercms.social.security.SecurityActionNames.UGC_VOTING;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.craftercms.social.security.SecurityActionNames.*;
 
 /**
  *
  */
-public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
-
-
+public class SocialServicesImpl<T extends SocialUgc> implements SocialServices, ApplicationContextAware {
+    private static final Logger log = LoggerFactory.getLogger(SocialServicesImpl.class);
     private UGCRepository<T> ugcRepository;
-    private Logger log = LoggerFactory.getLogger(SocialServicesImpl.class);
-    private Reactor reactor;
     private UgcPipeline pipeline;
     private TenantConfigurationService tenantConfigurationService;
     private ProfileService profileService;
+    private ApplicationContext applicationContext;
 
 
     @Override
@@ -93,8 +90,8 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             }
             pipeline.processUgc(ugc);
             ugcRepository.save(ugc);
-            reactor.notify(UGCEvent.VOTE.getName(), Event.wrap(new SocialEvent(ugc, SocialSecurityUtils.getCurrentProfile()
-                .getId().toString(),UGCEvent.VOTE)));
+            applicationContext.publishEvent(new SocialEvent(ugc, SocialSecurityUtils.getCurrentProfile()
+                    .getId().toString(), UGCEvent.VOTE));
             return ugc;
         } catch (MongoDataException ex) {
             throw new UGCException("Unable to find UGC with given Id and contextId");
@@ -115,8 +112,8 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             ugcToFlag.getFlags().add(f);
             pipeline.processUgc(ugcToFlag);
             ugcRepository.save(ugcToFlag);
-            reactor.notify(UGCEvent.FLAG.getName(), Event.wrap(new SocialEvent(ugcToFlag,SocialSecurityUtils.getCurrentProfile
-                ().getId().toString(),UGCEvent.FLAG)));
+            applicationContext.publishEvent(new SocialEvent(ugcToFlag, SocialSecurityUtils.getCurrentProfile
+                    ().getId().toString(), UGCEvent.FLAG));
             return ugcToFlag;
         } catch (MongoDataException ex) {
             log.error("Unable to flag ugc " + ugcId, ex);
@@ -146,8 +143,8 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
         ugcToUpdate.getFlags().remove(flagToDelete);
         pipeline.processUgc(ugcToUpdate);
         ugcRepository.save(ugcToUpdate);
-        reactor.notify(UGCEvent.UNFLAG.getName(), Event.wrap(new SocialEvent(ugcToUpdate,
-            SocialSecurityUtils.getCurrentProfile().getId().toString(),UGCEvent.UNFLAG)));
+        applicationContext.publishEvent(new SocialEvent(ugcToUpdate,
+                SocialSecurityUtils.getCurrentProfile().getId().toString(), UGCEvent.UNFLAG));
         return true;
     }
 
@@ -165,8 +162,8 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
             }
             pipeline.processUgc(ugc);
             ugcRepository.save(ugc);
-            reactor.notify(UGCEvent.MODERATE.getName(), Event.wrap(new SocialEvent(ugc,SocialSecurityUtils.getCurrentProfile()
-                .getId().toString(),UGCEvent.UNFLAG)));
+            applicationContext.publishEvent(new SocialEvent(ugc, SocialSecurityUtils.getCurrentProfile()
+                    .getId().toString(), UGCEvent.UNFLAG));
             return ugc;
         } catch (MongoDataException ex) {
             log.debug("Unable to change ugc moderation status", ex);
@@ -229,8 +226,8 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
                     pipeline.processUgc(socialUgc,processParams);
                     try {
                         ugcRepository.save(socialUgc);
-                        reactor.notify(UGCEvent.MODERATE.getName(), Event.wrap(new SocialEvent(socialUgc,profile
-                            .getId().toString(),UGCEvent.UNFLAG)));
+                        applicationContext.publishEvent(new SocialEvent(socialUgc, profile
+                                .getId().toString(), UGCEvent.UNFLAG));
                     } catch (MongoDataException e) {
                         throw new SocialException("Unable to update UGC");
                     }
@@ -265,27 +262,24 @@ public class SocialServicesImpl<T extends SocialUgc> implements SocialServices {
         ugc.getVotesUp().remove(userId);
     }
 
-
     public void setUgcRepository(final UGCRepository<T> ugcRepository) {
         this.ugcRepository = ugcRepository;
     }
-
-    public void setReactor(final Reactor reactor) {
-        this.reactor = reactor;
-    }
-
 
     public void setUgcPipeline(UgcPipeline ugcPipeline) {
         this.pipeline = ugcPipeline;
     }
 
-
     public void setTenantConfigurationServiceImpl(TenantConfigurationService tenantConfigurationService) {
         this.tenantConfigurationService=tenantConfigurationService;
     }
 
-
     public void setProfileServiceRestClient(ProfileService profileService) {
         this.profileService=profileService;
+    }
+
+    @Override
+    public void setApplicationContext(@NonNull final ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }
