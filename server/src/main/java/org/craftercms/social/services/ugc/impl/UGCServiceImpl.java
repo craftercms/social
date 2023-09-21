@@ -16,25 +16,6 @@
 
 package org.craftercms.social.services.ugc.impl;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.net.URLCodec;
@@ -59,11 +40,7 @@ import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.domain.social.ModerationStatus;
 import org.craftercms.social.domain.social.SocialUgc;
-import org.craftercms.social.exceptions.IllegalSocialQueryException;
-import org.craftercms.social.exceptions.IllegalUgcException;
-import org.craftercms.social.exceptions.NotificationException;
-import org.craftercms.social.exceptions.SocialException;
-import org.craftercms.social.exceptions.UGCException;
+import org.craftercms.social.exceptions.*;
 import org.craftercms.social.repositories.UgcFactory;
 import org.craftercms.social.repositories.ugc.UGCRepository;
 import org.craftercms.social.security.SocialPermission;
@@ -77,19 +54,27 @@ import org.craftercms.social.util.ebus.SocialEvent;
 import org.craftercms.social.util.ebus.UGCEvent;
 import org.craftercms.virusscanner.api.VirusScanner;
 import org.craftercms.virusscanner.impl.VirusScannerException;
-import reactor.core.Reactor;
-import reactor.event.Event;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.lang.NonNull;
 
-import static org.craftercms.social.security.SecurityActionNames.UGC_CREATE;
-import static org.craftercms.social.security.SecurityActionNames.UGC_DELETE;
-import static org.craftercms.social.security.SecurityActionNames.UGC_READ;
-import static org.craftercms.social.security.SecurityActionNames.UGC_UPDATE;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.regex.Pattern;
+
+import static org.craftercms.social.security.SecurityActionNames.*;
 
 /**
  *
  */
 @SuppressWarnings("unchecked")
-public class UGCServiceImpl<T extends UGC> implements UGCService {
+public class UGCServiceImpl<T extends UGC> implements UGCService, ApplicationContextAware {
 
 
     private I10nLogger log = LoggerFactory.getLogger(UGCServiceImpl.class);
@@ -99,31 +84,31 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     private Pattern invalidQueryKeys;
     private UgcFactory ugcFactory;
     private VirusScanner virusScanner;
-    private Reactor reactor;
     private NotificationService notificationService;
     private List<String> arraySortFields;
     private TenantConfigurationService tenantConfigurationService;
     private ProfileService profileService;
 
     protected EntitlementValidator entitlementValidator;
+    private ApplicationContext applicationContext;
 
     @Override
     @HasPermission(action = UGC_CREATE, type = SocialPermission.class)
     public UGC create(final String contextId, final String ugcParentId, final String targetId, final String
-        textContent, final String subject, final Map attrs, final boolean isAnonymous) throws SocialException {
+            textContent, final String subject, final Map attrs, final boolean isAnonymous) throws SocialException {
 
         try {
             entitlementValidator.validateEntitlement(EntitlementType.ITEM, 1);
         } catch (Exception e) {
-            throw  new SocialException("Unable to complete request due to entitlement limits. Please contact your "
-                + "system administrator.", e);
+            throw new SocialException("Unable to complete request due to entitlement limits. Please contact your "
+                    + "system administrator.", e);
         }
 
         log.debug("logging.ugc.creatingUgc", contextId, targetId, ugcParentId, subject, attrs);
         final UGC template = new UGC(subject, textContent, targetId);
 
         template.setAnonymousFlag(isAnonymous);
-        T newUgc = (T)ugcFactory.newInstance(template);
+        T newUgc = (T) ugcFactory.newInstance(template);
         newUgc.setAttributes(attrs);
         try {
             if (ObjectId.isValid(ugcParentId)) {
@@ -139,9 +124,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             ugcRepository.save(newUgc);
 
             final SocialEvent<T> event = new SocialEvent<>(newUgc, SocialSecurityUtils.getCurrentProfile().getId()
-                .toString(), UGCEvent.CREATE);
-            event.setAttribute("baseUrl",calculateBaseUrl());
-            reactor.notify(UGCEvent.CREATE.getName(), Event.wrap(event));
+                    .toString(), UGCEvent.CREATE);
+            event.setAttribute("baseUrl", calculateBaseUrl());
+            applicationContext.publishEvent(event);
             setupAutoWatch(targetId, SocialSecurityUtils.getCurrentProfile(), contextId);
             log.info("logging.ugc.created", newUgc);
             return newUgc;
@@ -153,10 +138,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
 
     private String calculateBaseUrl() {
         HttpServletRequest request = RequestContext.getCurrent().getRequest();
-        return request.getScheme() +"://"+request.getServerName() + ("http".equals(request
-            .getScheme()) &&
-            request.getServerPort() == 80 || "https".equals(request.getScheme()) &&
-            request.getServerPort() == 443 ? "" : ":" + request.getServerPort() )+request.getContextPath();
+        return request.getScheme() + "://" + request.getServerName() + ("http".equals(request
+                .getScheme()) &&
+                request.getServerPort() == 80 || "https".equals(request.getScheme()) &&
+                request.getServerPort() == 443 ? "" : ":" + request.getServerPort()) + request.getContextPath();
     }
 
     public void setNotificationServiceImpl(NotificationService notificationService) {
@@ -164,25 +149,25 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     }
 
     private void setupAutoWatch(final String targetId, final Profile currentProfile, final String context) throws
-        NotificationException {
+            NotificationException {
         final Map<String, Object> profileMap = currentProfile.getAttributes();
         if (profileMap.containsKey("defaultFrequency") && profileMap.containsKey("autoWatch")) {
             boolean autoWatch = currentProfile.getAttribute("autoWatch");
             if (autoWatch) {
-                notificationService.subscribeUser(currentProfile, context + "/" + targetId, (String)currentProfile.getAttribute("defaultFrequency"));
+                notificationService.subscribeUser(currentProfile, context + "/" + targetId, (String) currentProfile.getAttribute("defaultFrequency"));
             }
-        }else if(Boolean.valueOf(tenantConfigurationService.getProperty(context,"setupAutoWatch").toString())){
-            try{
-                currentProfile.setAttribute("autoWatch",true);
-                currentProfile.setAttribute("defaultFrequency",tenantConfigurationService.getProperty(context,
-                    "defaultFrequency"));
-                HashMap<String,Object> updatedMap = new HashMap<>();
-                updatedMap.put("autoWatch",true);
-                updatedMap.put("defaultFrequency",tenantConfigurationService.getProperty(context,"defaultFrequency"));
-                Profile updatedProfile = profileService.updateAttributes(currentProfile.getId().toString(),updatedMap);
-                setupAutoWatch(targetId,updatedProfile,context);
-            }catch (ProfileException ex){
-                log.error("logging.ugc.autowatch",currentProfile.getId().toString(),ex);
+        } else if (Boolean.valueOf(tenantConfigurationService.getProperty(context, "setupAutoWatch").toString())) {
+            try {
+                currentProfile.setAttribute("autoWatch", true);
+                currentProfile.setAttribute("defaultFrequency", tenantConfigurationService.getProperty(context,
+                        "defaultFrequency"));
+                HashMap<String, Object> updatedMap = new HashMap<>();
+                updatedMap.put("autoWatch", true);
+                updatedMap.put("defaultFrequency", tenantConfigurationService.getProperty(context, "defaultFrequency"));
+                Profile updatedProfile = profileService.updateAttributes(currentProfile.getId().toString(), updatedMap);
+                setupAutoWatch(targetId, updatedProfile, context);
+            } catch (ProfileException ex) {
+                log.error("logging.ugc.autowatch", currentProfile.getId().toString(), ex);
             }
         } else {
             log.debug("Profile doesn't have either defaultFrequency or autoWatch attributes set");
@@ -192,10 +177,10 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public void setAttributes(@ProtectedResource final String ugcId, final String contextId, final Map attributes) throws
-        SocialException, UGCNotFound {
+            SocialException, UGCNotFound {
         log.debug("logging.ugc.addingAttributes", attributes, ugcId, contextId);
         try {
-            T toUpdate = (T)ugcRepository.findUGC(contextId, ugcId);
+            T toUpdate = (T) ugcRepository.findUGC(contextId, ugcId);
             if (toUpdate == null) {
                 throw new UGCNotFound("Unable to find ugc with id " + ugcId);
             }
@@ -203,9 +188,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             attrs.putAll(attributes);
             ugcRepository.setAttributes(ugcId, contextId, attrs);
             final SocialEvent<T> event = new SocialEvent<T>(ugcId, attributes, SocialSecurityUtils.getCurrentProfile
-                ().getId().toString(), UGCEvent.UPDATE_ATTRIBUTES);
-            event.setAttribute("baseUrl",calculateBaseUrl());
-            reactor.notify(UGCEvent.UPDATE_ATTRIBUTES.getName(), Event.wrap(event));
+                    ().getId().toString(), UGCEvent.UPDATE_ATTRIBUTES);
+            event.setAttribute("baseUrl", calculateBaseUrl());
+            applicationContext.publishEvent(event);
         } catch (MongoDataException ex) {
             log.debug("logging.ugc.unableToAddAttrs", ex, attributes, ugcId, contextId);
             throw new UGCException("Unable to add Attributes to UGC", ex);
@@ -215,14 +200,14 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public void deleteAttribute(@ProtectedResource final String ugcId, final String[] attributesName, final String
-        contextId) throws SocialException {
+            contextId) throws SocialException {
         log.debug("logging.ugc.deleteAttributes", attributesName, ugcId);
         try {
             ugcRepository.deleteAttribute(ugcId, contextId, attributesName);
             final SocialEvent<T> event = new SocialEvent<T>(ugcId, SocialSecurityUtils.getCurrentProfile().getId()
-                .toString(), UGCEvent.DELETE_ATTRIBUTES);
-            event.setAttribute("baseUrl",calculateBaseUrl());
-            reactor.notify(UGCEvent.DELETE_ATTRIBUTES.getName(), Event.wrap(event));
+                    .toString(), UGCEvent.DELETE_ATTRIBUTES);
+            event.setAttribute("baseUrl", calculateBaseUrl());
+            applicationContext.publishEvent(event);
         } catch (MongoDataException ex) {
             log.debug("logging.ugc.unableToDelAttrs", ex, attributesName, ugcId);
             throw new UGCException("Unable to delete attribute for ugc", ex);
@@ -236,10 +221,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         try {
             ugcRepository.deleteUgc(ugcId, contextId);
             final SocialEvent<T> event = new SocialEvent<T>(ugcId, SocialSecurityUtils.getCurrentProfile().getId()
-                .toString(), UGCEvent.DELETE);
-            event.setAttribute("baseUrl",calculateBaseUrl());
-
-            reactor.notify(UGCEvent.DELETE.getName(), Event.wrap(event));
+                    .toString(), UGCEvent.DELETE);
+            event.setAttribute("baseUrl", calculateBaseUrl());
+            applicationContext.publishEvent(event);
         } catch (MongoDataException ex) {
             log.error("logging.ugc.deleteUgcError", ex, ugcId, contextId);
             throw new UGCException("Unable to delete UGC", ex);
@@ -250,17 +234,17 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public UGC update(@ProtectedResource final String ugcId, final String body, final String subject, final String
-        contextId, final Map attributes) throws SocialException, UGCNotFound {
+            contextId, final Map attributes) throws SocialException, UGCNotFound {
         log.debug("logging.ugc.updateUgc", ugcId);
         try {
             final Profile currentProfile = SocialSecurityUtils.getCurrentProfile();
             boolean moderateByMail = Boolean.parseBoolean(tenantConfigurationService.getProperty(contextId,
-                "moderateByMailEnable").toString());
+                    "moderateByMailEnable").toString());
 
             if (!ObjectId.isValid(ugcId)) {
                 throw new IllegalArgumentException("Given UGC Id is not valid");
             }
-            T toUpdate = (T)ugcRepository.findUGC(contextId, ugcId);
+            T toUpdate = (T) ugcRepository.findUGC(contextId, ugcId);
             if (toUpdate == null) {
                 throw new IllegalArgumentException("UGC with Id " + ugcId + " does not exist");
             }
@@ -271,21 +255,25 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
                 toUpdate.setBody(subject);
             }
             pipeline.processUgc(toUpdate);
-            if(moderateByMail && !SocialSecurityUtils.isProfileModeratorOrAdmin(currentProfile,contextId)){
-                if(toUpdate instanceof SocialUgc){
-                    ((SocialUgc)toUpdate).setModerationStatus(ModerationStatus.UNMODERATED);
+            if (moderateByMail && !SocialSecurityUtils.isProfileModeratorOrAdmin(currentProfile, contextId)) {
+                if (toUpdate instanceof SocialUgc) {
+                    ((SocialUgc) toUpdate).setModerationStatus(ModerationStatus.UNMODERATED);
                 }
             }
             ugcRepository.update(ugcId, toUpdate, false, false);
             final SocialEvent<T> event = new SocialEvent<>(toUpdate, SocialSecurityUtils.getCurrentProfile().getId()
-                .toString(), UGCEvent.UPDATE);
-            event.setAttribute("baseUrl",calculateBaseUrl());
-            reactor.notify(UGCEvent.UPDATE.getName(), Event.wrap(event));
+                    .toString(), UGCEvent.UPDATE);
+            event.setAttribute("baseUrl", calculateBaseUrl());
+//            reactor.notify(UGCEvent.UPDATE.getName(), Event.wrap(event));
+            applicationContext.publishEvent(event);
             if (attributes != null && !attributes.isEmpty()) {
                 toUpdate.getAttributes().putAll(attributes);
                 //ToDo This should be one query, problem is with deep attributes !!
                 setAttributes(toUpdate.getId().toString(), contextId, toUpdate.getAttributes());
-                reactor.notify(UGCEvent.UPDATE_ATTRIBUTES, Event.wrap(attributes));
+                final SocialEvent<T> attributesEvevnt = new SocialEvent<T>(ugcId, attributes, SocialSecurityUtils.getCurrentProfile
+                        ().getId().toString(), UGCEvent.UPDATE_ATTRIBUTES);
+                applicationContext.publishEvent(attributesEvevnt);
+//                reactor.notify(UGCEvent.UPDATE_ATTRIBUTES, Event.wrap(attributes));
             }
             log.info("logging.ugc.updatedUgc", ugcId);
             return toUpdate;
@@ -298,12 +286,12 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
     public T read(final String ugcId, final boolean includeChildren, final int childCount, final String contextId)
-        throws UGCException {
+            throws UGCException {
         try {
             if (includeChildren) {
                 return getUgcTree(ugcId, childCount, contextId);
             } else {
-                return (T)ugcRepository.findUGC(contextId, ugcId);
+                return (T) ugcRepository.findUGC(contextId, ugcId);
             }
         } catch (MongoDataException e) {
             log.error("logging.ugc.unableToRead");
@@ -317,7 +305,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         log.debug("logging.ugc.findingByTarget", targetId, contextId);
         try {
             return buildUgcTreeList(IterableUtils.toList(ugcRepository.findByTargetId(targetId, contextId)), Integer
-                .MAX_VALUE);
+                    .MAX_VALUE);
         } catch (MongoDataException ex) {
             log.error("logging.ugc.unableRead", ex);
             throw new UGCException("Unable to ", ex);
@@ -329,7 +317,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     public Iterable<T> search(final String contextId, final String query, final String sort, final int start, final
     int limit) throws UGCException {
         log.debug("Finding all ugc of context {} with user query {} sorted by {} skipping {} and with a limit of {}",
-            contextId, query, sort, start, limit);
+                contextId, query, sort, start, limit);
         isQueryValid(query);
         try {
             return ugcRepository.findByUserQuery(contextId, query, sort, start, limit);
@@ -342,9 +330,9 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public FileInfo addAttachment(@ProtectedResource final String ugcId, final String contextId, final InputStream
-        attachment, final String fileName, final String contentType) throws FileExistsException, UGCException {
+            attachment, final String fileName, final String contentType) throws FileExistsException, UGCException {
         String internalFileName = File.separator + contextId + File.separator + ugcId + File.separator +
-            fileName;
+                fileName;
         try {
             checkForVirus(attachment);
         } catch (IOException | VirusScannerException ex) {
@@ -366,8 +354,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             info.setAttribute("owner", ugcId);
             ugc.getAttachments().add(info);
             ugcRepository.update(ugcId, ugc);
-            reactor.notify(UGCEvent.ADD_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, new InputStream[]
-                {new CloseShieldInputStream(attachment)})));
+            applicationContext.publishEvent(new SocialEvent<>(ugcId, new InputStream[]
+                    {new CloseShieldInputStream(attachment)}, UGCEvent.ADD_ATTACHMENT));
             return info;
         } catch (MongoDataException e) {
             log.error("logging.ugc.unableToSaveAttachment", e, internalFileName);
@@ -382,7 +370,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public void removeAttachment(@ProtectedResource final String ugcId, final String contextId, final String
-        attachmentId) throws UGCException, FileNotFoundException {
+            attachmentId) throws UGCException, FileNotFoundException {
         try {
             UGC ugc = ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
@@ -399,8 +387,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             ugc.getAttachments().remove(info);
             ugcRepository.deleteFile(attachmentOid);
             ugcRepository.update(ugcId, ugc);
-            reactor.notify(UGCEvent.DELETE_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, attachmentId,
-                UGCEvent.DELETE_ATTACHMENT)));
+            applicationContext.publishEvent(new SocialEvent<>(ugcId, attachmentId,
+                    UGCEvent.DELETE_ATTACHMENT));
         } catch (MongoDataException e) {
             log.error("logging.ugc.attachmentToRemove", e, attachmentId);
             throw new UGCException("Unable to save File to UGC");
@@ -410,7 +398,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_UPDATE, type = SocialPermission.class)
     public FileInfo updateAttachment(@ProtectedResource final String ugcId, final String contextId, final String
-        attachmentId, final InputStream newAttachment) throws UGCException, FileNotFoundException {
+            attachmentId, final InputStream newAttachment) throws UGCException, FileNotFoundException {
         if (!ObjectId.isValid(ugcId)) {
             throw new IllegalArgumentException("Given Ugc Id is not valid");
         }
@@ -418,20 +406,20 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             throw new IllegalArgumentException("Given UGC Id is not valid");
         }
         try {
-            T ugc = (T)ugcRepository.findUGC(contextId, ugcId);
+            T ugc = (T) ugcRepository.findUGC(contextId, ugcId);
             if (ugc == null) {
                 throw new IllegalUgcException("Given UGC Id does not exist");
             }
             FileInfo oldInfo = ugcRepository.getFileInfo(new ObjectId(attachmentId));
             FileInfo newInfo = ugcRepository.updateFile(new ObjectId(attachmentId), newAttachment, oldInfo
-                .getStoreName(), oldInfo.getContentType(), true);
+                    .getStoreName(), oldInfo.getContentType(), true);
             ugc.getAttachments().add(newInfo);
             ugc.getAttachments().remove(oldInfo);
             ugcRepository.update(ugcId, ugc);
-            reactor.notify(UGCEvent.DELETE_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, attachmentId,
-                UGCEvent.DELETE_ATTACHMENT)));
-            reactor.notify(UGCEvent.ADD_ATTACHMENT.getName(), Event.wrap(new SocialEvent<>(ugcId, new InputStream[]
-                {new CloseShieldInputStream(newAttachment)}), UGCEvent.ADD_ATTACHMENT));
+            applicationContext.publishEvent(new SocialEvent<>(ugcId, attachmentId,
+                    UGCEvent.DELETE_ATTACHMENT));
+            applicationContext.publishEvent(new SocialEvent<>(ugcId, new InputStream[]
+                    {new CloseShieldInputStream(newAttachment)}, UGCEvent.ADD_ATTACHMENT));
             return newInfo;
         } catch (MongoDataException e) {
             log.error("logging.ugc.attachmentError");
@@ -445,7 +433,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
     public FileInfo readAttachment(final String ugcId, final String contextId, final String attachmentId) throws
-        FileNotFoundException, UGCException {
+            FileNotFoundException, UGCException {
         if (!ObjectId.isValid(ugcId)) {
             throw new IllegalArgumentException("Given Ugc Id is not valid");
         }
@@ -472,11 +460,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @Override
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
     public List<T> read(final String targetId, final String contextId, final int start, final int limit, final List
-        sortOrder, final int upToLevel, final int childrenPerLevel) throws UGCException {
+            sortOrder, final int upToLevel, final int childrenPerLevel) throws UGCException {
         try {
             List<T> list = IterableUtils.toList(ugcRepository.findByTargetId(targetId, contextId, start, limit,
-                sortOrder,upToLevel));
-            list= sortByArrays(list,sortOrder);
+                    sortOrder, upToLevel));
+            list = sortByArrays(list, sortOrder);
             return buildUgcTreeList(list, childrenPerLevel);
         } catch (MongoDataException e) {
             log.error("logging.ugc.unableToRead");
@@ -485,29 +473,29 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     }
 
     private List<T> sortByArrays(final List<T> list, final List<DefaultKeyValue<String, Boolean>> sortOrder) {
-        if(sortOrder==null || list==null){
+        if (sortOrder == null || list == null) {
             return list;
         }
-        for (final DefaultKeyValue<String, Boolean> sort: sortOrder) {
-            if(arraySortFields.contains(sort.getKey())){
+        for (final DefaultKeyValue<String, Boolean> sort : sortOrder) {
+            if (arraySortFields.contains(sort.getKey())) {
                 Collections.sort(list, new Comparator<T>() {
                     @Override
                     public int compare(final T o1, final T o2) {
                         try {
-                            Collection<Object> arrayToCompare1= (Collection<Object>)PropertyUtils.getProperty(o1,sort.getKey());
-                            Collection<Object> arrayToCompare2= (Collection<Object>)PropertyUtils.getProperty(o2,sort.getKey());
-                            int orderOfSort=sort.getValue() ? 1:-1;//true ASC,false DESC
+                            Collection<Object> arrayToCompare1 = (Collection<Object>) PropertyUtils.getProperty(o1, sort.getKey());
+                            Collection<Object> arrayToCompare2 = (Collection<Object>) PropertyUtils.getProperty(o2, sort.getKey());
+                            int orderOfSort = sort.getValue() ? 1 : -1;//true ASC,false DESC
                             // I'm sorry for this:D
                             if (arrayToCompare1.size() < arrayToCompare2.size()) {
-                                return -1*orderOfSort;
+                                return -1 * orderOfSort;
                             } else if (arrayToCompare1.size() > arrayToCompare2.size()) {
-                                return 1*orderOfSort;
+                                return 1 * orderOfSort;
                             } else {
                                 return 0;
                             }
                         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException |
-                            ClassCastException e) {
-                          log.error("Unable to sort by "+sort.getKey(),e);
+                                 ClassCastException e) {
+                            log.error("Unable to sort by " + sort.getKey(), e);
                             return 0;
                         }
                     }
@@ -521,11 +509,11 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
     @HasPermission(action = UGC_READ, type = SocialPermission.class)
     public List<T> readChildren(final String ugcId, final String targetId, final String contextId, final int start,
                                 final int limit, final List sortOrder, final int upToLevel, final int
-        childrenPerLevel) throws UGCException, UGCNotFound {
+                                        childrenPerLevel) throws UGCException, UGCNotFound {
         log.debug("logging.ugc.readChildren", ugcId, contextId, limit, start);
         try {
             return buildUgcTreeList(IterableUtils.toList(ugcRepository.findChildren(ugcId, targetId, contextId,
-                start, limit, sortOrder, upToLevel)), childrenPerLevel);
+                    start, limit, sortOrder, upToLevel)), childrenPerLevel);
         } catch (MongoDataException ex) {
             log.error("logging.ugc.unableToRead", ex);
             throw new UGCException("Unable to ", ex);
@@ -632,7 +620,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
      * @throws UGCException
      */
     private void setupAncestors(final UGC newUgc, final String ugcParentId, final String contextId) throws
-        MongoDataException, UGCException {
+            MongoDataException, UGCException {
         UGC parent = ugcRepository.findUGC(contextId, ugcParentId);
         if (parent == null) {
             throw new UGCException("Parent UGC does not exist");
@@ -644,10 +632,6 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
             ancestors.addLast(parentId);
             newUgc.setAncestors(ancestors);
         }
-    }
-
-    public void setReactor(Reactor reactor) {
-        this.reactor = reactor;
     }
 
     public void setUGCRepositoryImpl(UGCRepository UGCRepositoryImpl) {
@@ -737,4 +721,8 @@ public class UGCServiceImpl<T extends UGC> implements UGCService {
         this.entitlementValidator = entitlementValidator;
     }
 
+    @Override
+    public void setApplicationContext(@NonNull final ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }

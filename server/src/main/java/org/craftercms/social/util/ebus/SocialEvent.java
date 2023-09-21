@@ -17,13 +17,11 @@
 package org.craftercms.social.util.ebus;
 
 
+import org.craftercms.social.domain.UGC;
+
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.craftercms.social.domain.UGC;
 
 /**
  * Created by Carlos Ortiz on 7/29/14.
@@ -36,39 +34,43 @@ public class SocialEvent<T extends UGC> {
     private InputStream[] attachments;
     private String attachmentId;
     private String userId;
+    private final UGCEvent type;
 
-
-    private UGCEvent type;
-
-    public SocialEvent(final T source,final String userId,UGCEvent type) {
+    public SocialEvent(final T source, final String userId, UGCEvent type) {
         this.source = source;
-        this.attributes=source.getAttributes();
-        this.ugcId=source.getId().toString();
-        this.userId=userId;
-        this.type=type;
+        this.attributes = source.getAttributes();
+        this.ugcId = source.getId().toString();
+        this.userId = userId;
+        this.type = type;
     }
 
 
-    public SocialEvent(final String ugcId,final String userId,UGCEvent type) {
+    public SocialEvent(final String ugcId, final String userId, UGCEvent type) {
         this.ugcId = ugcId;
-        this.userId= userId;
-        this.type=type;
-        this.attributes=new HashMap<>();
+        this.userId = userId;
+        this.type = type;
+        this.attributes = new HashMap<>();
     }
 
-    public SocialEvent(final String ugcId, final Map<String, Object> attributes,final String userId,UGCEvent type) {
+    public SocialEvent(final String ugcId, final Map<String, Object> attributes, final String userId, UGCEvent type) {
         this.ugcId = ugcId;
         this.attributes = attributes;
-        this.userId=userId;
-        this.type=type;
+        this.userId = userId;
+        this.type = type;
     }
 
-    public SocialEvent(final String ugcId, final String attachmentId,final String userId,UGCEvent type) {
+    public SocialEvent(final String ugcId, final String attachmentId, final String userId, UGCEvent type) {
         this.ugcId = ugcId;
         this.attachmentId = attachmentId;
-        this.userId=userId;
-        this.type=type;
-        this.attributes=new HashMap<>();
+        this.userId = userId;
+        this.type = type;
+        this.attributes = new HashMap<>();
+    }
+
+    public SocialEvent(final String ugcId, final InputStream[] attachments, UGCEvent type) {
+        this.ugcId = ugcId;
+        this.attachments = attachments;
+        this.type = type;
     }
 
     public T getSource() {
@@ -77,13 +79,6 @@ public class SocialEvent<T extends UGC> {
 
     public String getUgcId() {
         return ugcId;
-    }
-
-
-
-    public SocialEvent(final String ugcId, final InputStream[] attachments) {
-        this.ugcId = ugcId;
-        this.attachments = attachments;
     }
 
     public InputStream[] getAttachments() {
