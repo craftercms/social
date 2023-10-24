@@ -16,22 +16,11 @@
 
 package org.craftercms.social.util.ebus;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
-
 import freemarker.cache.TemplateLoader;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.craftercms.commons.ebus.annotations.EListener;
-import org.craftercms.commons.ebus.annotations.EventHandler;
-import org.craftercms.commons.ebus.annotations.EventSelectorType;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.VerificationToken;
@@ -45,12 +34,15 @@ import org.craftercms.social.services.system.ContextPreferencesService;
 import org.craftercms.social.services.system.EmailService;
 import org.craftercms.social.services.system.TenantConfigurationService;
 import org.slf4j.Logger;
-import reactor.event.Event;
+import org.springframework.context.event.EventListener;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  *
  */
-@EListener
 public class ApproveContentUpdateListener {
 
     private static final String APPROVER_EMAIL_TEMPLATE_NAME = "APPROVEREMAIL";
@@ -64,12 +56,8 @@ public class ApproveContentUpdateListener {
     private EmailService emailService;
     private ContextPreferencesService contextPreferencesService;
 
-    @EventHandler(
-        event = "ugc.update",
-        ebus = SocialEventConstants.SOCIAL_REACTOR_NAME,
-        type = EventSelectorType.REGEX)
-    public void onAudit(final Event<? extends SocialEvent> socialEvent) {
-        SocialEvent event = socialEvent.getData();
+    @EventListener(condition = "#event.type.name == '" + SecurityActionNames.UGC_UPDATE + "'")
+    public void onAudit(final SocialEvent event) {
         UGC ugc = event.getSource();
         boolean moderateByMail = Boolean.parseBoolean(tenantConfigurationService.getProperty(event.getSource()
             .getContextId(), "moderateByMailEnable").toString());

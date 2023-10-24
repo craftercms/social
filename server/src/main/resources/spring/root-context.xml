@@ -42,10 +42,7 @@
     <import resource="security-context.xml"/>
     <import resource="classpath:/org/craftercms/commons/audit/crafter-commons-audit-reaper.xml"/>
 
-    <bean id="socialReactor" name="socialReactor" factory-bean="reactorFactory" factory-method="createReactor"/>
-
     <bean id="socialAuditProxy" name="socialAuditProxy" class="org.craftercms.social.util.ebus.AuditListener">
-        <property name="auditReactor" ref="AuditReactor"/>
     </bean>
 
     <bean class="org.craftercms.social.services.ugc.impl.UGCServiceImpl" id="social.ugc.ugcService">
@@ -54,7 +51,6 @@
         <property name="invalidQueryKeys" value="${studio.social.ugc.invalidQueryKeys}"/>
         <property name="socialUgcFactory" ref="social.ugc.factory"/>
         <property name="virusScanner" ref="social.ugc.virusScanner"/>
-        <property name="reactor" ref="socialReactor"/>
         <property name="notificationServiceImpl" ref="social.services.system.notificationService"/>
         <property name="arraySortFields" value="${studio.social.ugc.arraySortFields}"/>
         <property name="tenantConfigurationService" ref="social.services.system.tenantConfiguration"/>
@@ -80,7 +76,6 @@
 
     <bean class="org.craftercms.social.services.social.impl.SocialServicesImpl" id="social.ugc.socialServices">
         <property name="ugcRepository" ref="social.repository.ugcRepository"/>
-        <property name="reactor" ref="socialReactor"/>
         <property name="ugcPipeline" ref="social.services.pipeline"/>
         <property name="tenantConfigurationServiceImpl" ref="social.services.system.tenantConfiguration"/>
         <property name="profileServiceRestClient" ref="crafter.profileServiceRestClient"/>
