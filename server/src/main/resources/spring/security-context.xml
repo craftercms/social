@@ -36,12 +36,13 @@
 
     <bean id="crafter.hasPermissionAnnotationHandler"
           class="org.craftercms.commons.security.permissions.annotations.HasPermissionAnnotationHandler">
-        <property name="permissionEvaluators">
+        <constructor-arg name="permissionEvaluators">
             <map>
                 <entry key="org.craftercms.social.security.SocialPermission"
                        value-ref="crafter.permissionEvaluator"/>
             </map>
-        </property>
+        </constructor-arg>
+        <constructor-arg name="managementToken" value="${crafter.social.management.authorizationToken}"/>
     </bean>
 
 </beans>
