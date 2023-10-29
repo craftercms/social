@@ -16,37 +16,31 @@
 
 package org.craftercms.social.util.ebus;
 
-import org.craftercms.commons.audit.Audit;
-import org.craftercms.commons.audit.AuditModel;
-import org.craftercms.commons.ebus.annotations.EListener;
-import org.craftercms.commons.ebus.annotations.EventHandler;
-import org.craftercms.commons.ebus.annotations.EventSelectorType;
 import org.craftercms.social.domain.audit.AuditLog;
-import reactor.core.Reactor;
-import reactor.event.Event;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.event.EventListener;
+import org.springframework.lang.NonNull;
 
 /**
  *
  */
-@EListener
-public class AuditListener {
+public class AuditListener implements ApplicationContextAware {
 
-    private Reactor auditReactor;
+    private ApplicationContext applicationContext;
 
-    @EventHandler(
-        event = ".*",
-        ebus = SocialEventConstants.SOCIAL_REACTOR_NAME,
-        type = EventSelectorType.REGEX)
-    public void onAudit(final Event<? extends SocialEvent> socialEvent) {
-        SocialEvent event=socialEvent.getData();
-        AuditLog auditLog=new AuditLog(event.getSource());
+    @EventListener
+    public void onAudit(final SocialEvent event) {
+        AuditLog auditLog = new AuditLog(event.getSource());
         auditLog.setContextId(event.getSource().getContextId());
         auditLog.setUserId(event.getUserId());
-        auditLog.setActionName(socialEvent.getKey().toString());
-        auditReactor.notify(Audit.AUDIT_EVENT,Event.wrap(auditLog));
+        auditLog.setActionName(event.getType().getName());
+        applicationContext.publishEvent(auditLog);
     }
 
-    public void setAuditReactor(final Reactor auditReactor) {
-        this.auditReactor = auditReactor;
+    @Override
+    public void setApplicationContext(@NonNull final ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

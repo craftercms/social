@@ -31,7 +31,7 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-social-parent</artifactId>
-        <version>4.1.1</version><!-- craftercms version flag -->
+        <version>4.1.2</version><!-- craftercms version flag -->
     </parent>
 
     <scm>
@@ -55,11 +55,6 @@
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-commons-utilities</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.craftercms</groupId>
-            <artifactId>crafter-commons-ebus</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 

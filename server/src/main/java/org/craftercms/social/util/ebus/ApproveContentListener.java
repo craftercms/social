@@ -21,9 +21,6 @@ import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.craftercms.commons.ebus.annotations.EListener;
-import org.craftercms.commons.ebus.annotations.EventHandler;
-import org.craftercms.commons.ebus.annotations.EventSelectorType;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.VerificationToken;
@@ -31,11 +28,12 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.social.domain.UGC;
 import org.craftercms.social.exceptions.SocialException;
+import org.craftercms.social.security.SecurityActionNames;
 import org.craftercms.social.services.system.ContextPreferencesService;
 import org.craftercms.social.services.system.EmailService;
 import org.craftercms.social.services.system.TenantConfigurationService;
 import org.slf4j.Logger;
-import reactor.event.Event;
+import org.springframework.context.event.EventListener;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -44,7 +42,6 @@ import java.util.*;
 /**
  *
  */
-@EListener
 public class ApproveContentListener {
 
     private static final String APPROVER_EMAIL_TEMPLATE_NAME = "APPROVEREMAIL";
@@ -58,16 +55,11 @@ public class ApproveContentListener {
     private EmailService emailService;
     private ContextPreferencesService contextPreferencesService;
 
-    @EventHandler(
-        event = "ugc.create",
-        ebus = SocialEventConstants.SOCIAL_REACTOR_NAME,
-        type = EventSelectorType.REGEX)
-    public void onAudit(final Event<? extends SocialEvent> socialEvent) {
-        SocialEvent event = socialEvent.getData();
-
+    @EventListener(condition = "#event.type.name == '" + SecurityActionNames.UGC_CREATE + "'")
+    public void onAudit(final SocialEvent event) {
         UGC ugc = event.getSource();
         boolean moderateByMail = Boolean.parseBoolean(tenantConfigurationService.getProperty(event.getSource()
-            .getContextId(), "moderateByMailEnable").toString());
+                .getContextId(), "moderateByMailEnable").toString());
         String moderateRole = tenantConfigurationService.getProperty(event.getSource().getContextId(),
             "moderateByMailRole");
         String emailSubject  = tenantConfigurationService.getProperty(event.getSource().getContextId(),
@@ -79,7 +71,7 @@ public class ApproveContentListener {
                 if (profile != null) {
                     final List<Profile> toSendEmail = profileService.getProfilesByQuery(profile.getTenant(),
                         "{\"attributes" + ".socialContexts" + ".id\":\"" + ugc.getContextId() + "\",\"attributes" +
-                            "" + ".socialContexts" + ".roles\":{$in:[\""+moderateRole+"\"]},enabled:true,\"attributes"
+                            ".socialContexts" + ".roles\":{$in:[\""+moderateRole+"\"]},enabled:true,\"attributes"
                             + ".socialContexts.id\":\""+ugc.getContextId()+"\"}",
                         "createdOn", SortOrder.ASC, 0, 999);
                     logger.debug("To Send emails {}", toSendEmail);
