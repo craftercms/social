@@ -16,8 +16,8 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <artifactId>crafter-social-sui-alt</artifactId>
     <name>Crafter Social UI</name>
@@ -89,7 +89,6 @@
             <plugin>
                 <groupId>pl.allegro</groupId>
                 <artifactId>grunt-maven-plugin</artifactId>
-                <version>${grunt.maven.version}</version>
                 <configuration>
                     <!-- relative to src/main/webapp/, default: static -->
                     <jsSourceDirectory>META-INF/resources/</jsSourceDirectory>
@@ -112,20 +111,20 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                    <id>copy-resources</id>
-                    <phase>process-resources</phase>
-                    <goals>
-                        <goal>copy-resources</goal>
-                    </goals>
-                    <configuration>
-                        <outputDirectory>${basedir}/target/extra-resources</outputDirectory>
-                        <resources>          
-                        <resource>
-                            <directory>src/non-packaged-resources</directory>
-                            <filtering>true</filtering>
-                        </resource>
-                        </resources>              
-                    </configuration>            
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/extra-resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/non-packaged-resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
