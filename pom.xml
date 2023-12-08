@@ -16,51 +16,51 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.craftercms</groupId>
-    <artifactId>crafter-social-parent</artifactId>
-    
-    <name>Crafter Social</name>
-    <description>Crafter Social</description>
-    <url>https://github.com/craftercms/social</url>
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <packaging>pom</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.craftercms</groupId>
+	<artifactId>crafter-social-parent</artifactId>
 
-    <scm>
-        <connection>scm:git:git://github.com/craftercms/social</connection>
-        <developerConnection>scm:git:git://github.com/craftercms/social</developerConnection>
-        <url>scm:git:git://github.com/craftercms/social</url>
-    </scm>
+	<name>Crafter Social</name>
+	<description>Crafter Social</description>
+	<url>https://github.com/craftercms/social</url>
 
-    <parent>
-        <groupId>org.craftercms</groupId>
-        <artifactId>craftercms</artifactId>
-        <version>4.2.0-SNAPSHOT</version><!-- craftercms version flag -->
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+	<packaging>pom</packaging>
 
-    <modules>
-        <module>virus-scanner</module>
-        <module>server</module>
-        <module>admin</module>
-    </modules>
+	<scm>
+		<connection>scm:git:git://github.com/craftercms/social</connection>
+		<developerConnection>scm:git:git://github.com/craftercms/social</developerConnection>
+		<url>scm:git:git://github.com/craftercms/social</url>
+	</scm>
 
-    <profiles>
-        <profile>
-            <id>migrationTool</id>
-            <activation>
-                <property>
-                    <name>with-migration-tool</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <modules>
-                <module>migration</module>
-            </modules>
-        </profile>
-    </profiles>
+	<parent>
+		<groupId>org.craftercms</groupId>
+		<artifactId>craftercms</artifactId>
+		<version>4.2.0-SNAPSHOT</version><!-- craftercms version flag -->
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<modules>
+		<module>virus-scanner</module>
+		<module>server</module>
+		<module>admin</module>
+	</modules>
+
+	<profiles>
+		<profile>
+			<id>migrationTool</id>
+			<activation>
+				<property>
+					<name>with-migration-tool</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<modules>
+				<module>migration</module>
+			</modules>
+		</profile>
+	</profiles>
 
 	<repositories>
 		<repository>
