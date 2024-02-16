@@ -9,7 +9,7 @@ branches:
   only:
   - develop
   - master
-  - support/.*
+  - support/4.0.x
 cache:
   directories:
   - "$HOME/.m2"
