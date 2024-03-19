@@ -83,16 +83,16 @@
     <bean id="crafter.exceptionHandlers" class="org.craftercms.social.management.web.controllers.ExceptionHandlers"/>
 
     <bean id="crafter.mainController" class="org.craftercms.social.management.web.controllers.MainController">
-        <property name="socialAppRootUrl" value="${crafter.social.app.rootUrl}"/>
-        <property name="socialAppName" value="${crafter.social.app.name}"/>
+        <constructor-arg name="socialAppRootUrl" value="${crafter.social.app.rootUrl}"/>
+        <constructor-arg name="socialAppName" value="${crafter.social.app.name}"/>
     </bean>
 
     <bean id="crafter.profileController" class="org.craftercms.social.management.web.controllers.ProfileController">
-        <property name="profileService" ref="crafter.profileServiceRestClient"/>
+        <constructor-arg name="profileService" ref="crafter.profileServiceRestClient"/>
     </bean>
 
     <bean id="crafter.tenantController" class="org.craftercms.social.management.web.controllers.TenantController">
-        <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
+        <constructor-arg name="tenantService" ref="crafter.tenantServiceRestClient"/>
     </bean>
 
     <bean id="crafter.contextController" class="org.craftercms.social.management.web.controllers.ContextController"/>

@@ -54,8 +54,8 @@
 
     <bean id="social.mongodb.socialRepository" class="org.craftercms.social.repositories.SocialJongoRepository"
           abstract="true" init-method="init">
+        <constructor-arg name="jongo" ref="social.mongodb.jongoFactory"/>
         <property name="queries" ref="social.mongodb.queries"/>
-        <property name="jongo" ref="social.mongodb.jongoFactory"/>
         <property name="ugcFactory" ref="social.ugc.factory"/>
     </bean>
 

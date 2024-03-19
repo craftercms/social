@@ -2,7 +2,7 @@ package org.craftercms.social.client.filters.support;
 
 import java.io.IOException;
 import java.io.InputStream;
-import javax.servlet.ServletInputStream;
+import jakarta.servlet.ServletInputStream;
 
 /**
  *

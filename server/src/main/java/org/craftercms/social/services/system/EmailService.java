@@ -19,8 +19,8 @@ package org.craftercms.social.services.system;
 import java.io.StringWriter;
 import java.util.Map;
 import java.util.Properties;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 import com.google.common.cache.Cache;
 import org.apache.commons.lang3.RandomStringUtils;
