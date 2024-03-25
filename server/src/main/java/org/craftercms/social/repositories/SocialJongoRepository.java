@@ -18,6 +18,7 @@ package org.craftercms.social.repositories;
 
 import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.social.domain.UGC;
+import org.jongo.Jongo;
 
 /**
  *
@@ -34,7 +35,7 @@ public class SocialJongoRepository<T extends UGC> extends AbstractJongoRepositor
     }
 
     @Override
-    public void init() throws Exception {
+    public void init(Jongo jongo) throws Exception {
         collectionName = UGC.COLLECTION_NAME; //Make sure it is always the same collection.
         clazz = (Class<? extends T>)ugcFactory.getMainClass();
     }

@@ -32,7 +32,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.activation.MimetypesFileTypeMap;
+import jakarta.activation.MimetypesFileTypeMap;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

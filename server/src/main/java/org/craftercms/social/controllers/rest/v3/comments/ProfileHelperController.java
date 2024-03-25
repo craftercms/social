@@ -19,8 +19,8 @@ package org.craftercms.social.controllers.rest.v3.comments;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;

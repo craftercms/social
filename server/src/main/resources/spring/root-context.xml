@@ -194,8 +194,8 @@
 
     <!-- Entitlements -->
     <bean id="crafter.entitlementsProvider" class="org.craftercms.social.entitlement.SocialEntitlementUsageProvider">
-        <property name="ugcRepository" ref="social.repository.ugcRepository"/>
-        <property name="socialContextRepository" ref="social.repository.socialContextRepository"/>
+        <constructor-arg name="socialContextRepository" ref="social.repository.socialContextRepository"/>
+        <constructor-arg name="ugcRepository" ref="social.repository.ugcRepository"/>
     </bean>
 
     <import resource="scheduler-context.xml"/>

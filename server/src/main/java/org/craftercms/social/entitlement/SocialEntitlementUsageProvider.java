@@ -25,7 +25,6 @@ import org.craftercms.commons.entitlements.model.Module;
 import org.craftercms.commons.entitlements.usage.EntitlementUsageProvider;
 import org.craftercms.social.repositories.SocialContextRepository;
 import org.craftercms.social.repositories.ugc.UGCRepository;
-import org.springframework.beans.factory.annotation.Required;
 
 import static org.craftercms.commons.entitlements.model.Module.SOCIAL;
 
@@ -46,13 +45,9 @@ public class SocialEntitlementUsageProvider implements EntitlementUsageProvider 
      */
     protected UGCRepository ugcRepository;
 
-    @Required
-    public void setSocialContextRepository(final SocialContextRepository socialContextRepository) {
+    public SocialEntitlementUsageProvider(final SocialContextRepository socialContextRepository,
+                                          final UGCRepository ugcRepository) {
         this.socialContextRepository = socialContextRepository;
-    }
-
-    @Required
-    public void setUgcRepository(final UGCRepository ugcRepository) {
         this.ugcRepository = ugcRepository;
     }
 

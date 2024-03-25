@@ -15,14 +15,11 @@
  */
 package org.craftercms.social.management.web.controllers;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
-import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

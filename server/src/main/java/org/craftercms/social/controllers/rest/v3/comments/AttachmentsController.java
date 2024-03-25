@@ -18,8 +18,8 @@ package org.craftercms.social.controllers.rest.v3.comments;
 
 import java.io.File;
 import java.io.IOException;
-import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.activation.MimetypesFileTypeMap;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.craftercms.commons.mongo.FileInfo;
