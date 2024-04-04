@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class PermissionRepositoryImpl extends AbstractJongoRepository<SocialSecurityAction> implements
-    PermissionRepository {
+        PermissionRepository {
 
     private Logger log = LoggerFactory.getLogger(PermissionRepositoryImpl.class);
 

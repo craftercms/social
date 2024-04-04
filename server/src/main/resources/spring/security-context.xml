@@ -30,8 +30,8 @@
 
     <bean id="crafter.permissionEvaluator"
           class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
-        <property name="subjectResolver" ref="crafter.socialSubjectResolver"/>
-        <property name="permissionResolver" ref="crafter.socialPermissionResolver"/>
+        <constructor-arg name="subjectResolver" ref="crafter.socialSubjectResolver"/>
+        <constructor-arg name="permissionResolver" ref="crafter.socialPermissionResolver"/>
     </bean>
 
     <bean id="crafter.hasPermissionAnnotationHandler"

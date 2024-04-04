@@ -25,7 +25,7 @@ import org.craftercms.social.repositories.SocialContextRepository;
  *
  */
 public class SocialContextRepositoryImpl extends AbstractJongoRepository<SocialContext> implements
-    SocialContextRepository {
+        SocialContextRepository {
 
     public SocialContextRepositoryImpl() {
         super();

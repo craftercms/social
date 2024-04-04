@@ -21,23 +21,23 @@
 	   		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
     <bean id="social.mongoClient" class="org.craftercms.commons.mongo.MongoClientFromUriFactoryBean">
-        <property name="uri" value="${studio.social.mongodb.connection.connectionStr}"/>
+        <constructor-arg name="uri" value="${studio.social.mongodb.connection.connectionStr}"/>
     </bean>
 
     <bean id="social.mongodb.jongoFactory" class="org.craftercms.commons.mongo.JongoFactoryBean">
-        <property name="mongo" ref="social.mongoClient"/>
+        <constructor-arg name="dbName" value="${studio.social.mongodb.connection.db}"/>
+        <constructor-arg name="mongo" ref="social.mongoClient"/>
         <property name="username" value="${studio.social.mongodb.connection.dbUser}"/>
         <property name="password" value="${studio.social.mongodb.connection.dbPassword}"/>
-        <property name="dbName" value="${studio.social.mongodb.connection.db}"/>
     </bean>
 
     <bean id="crafter.mongoInitScriptRunner" class="org.craftercms.commons.mongo.MongoScriptRunner">
-        <property name="mongo" ref="social.mongoClient"/>
-        <property name="dbName" value="${studio.social.mongodb.connection.db}"/>
+        <constructor-arg name="dbName" value="${studio.social.mongodb.connection.db}"/>
+        <constructor-arg name="mongo" ref="social.mongoClient"/>
+        <constructor-arg name="scriptPaths" value="${studio.social.mongodb.scripts.paths}"/>
         <property name="username" value="${studio.social.mongodb.connection.dbUser}"/>
         <property name="password" value="${studio.social.mongodb.connection.dbPassword}"/>
         <property name="runOnInit" value="${studio.social.mongodb.scripts.runOnInit}"/>
-        <property name="scriptPaths" value="${studio.social.mongodb.scripts.paths}"/>
         <property name="connectionStr" value="${studio.social.mongodb.connection.connectionStr}"/>
     </bean>
 
@@ -54,7 +54,7 @@
 
     <bean id="social.mongodb.socialRepository" class="org.craftercms.social.repositories.SocialJongoRepository"
           abstract="true" init-method="init">
-        <constructor-arg name="jongo" ref="social.mongodb.jongoFactory"/>
+        <property name="jongo" ref="social.mongodb.jongoFactory"/>
         <property name="queries" ref="social.mongodb.queries"/>
         <property name="ugcFactory" ref="social.ugc.factory"/>
     </bean>
