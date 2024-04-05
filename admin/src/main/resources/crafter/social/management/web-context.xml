@@ -108,7 +108,7 @@
       View resolvers can also be configured with ResourceBundles or XML files. If you need
       different view resolving based on Locale, you have to use the resource bundle resolver.
     -->
-    <bean id="crafter.viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+    <bean id="crafter.viewResolver" class="org.craftercms.commons.freemarker.CrafterFreeMarkerViewResolver">
         <property name="contentType" value="text/html;charset=UTF-8"/>
         <property name="cache" value="true"/>
         <property name="prefix" value=""/>

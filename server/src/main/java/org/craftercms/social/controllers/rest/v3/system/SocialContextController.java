@@ -16,14 +16,11 @@
 
 package org.craftercms.social.controllers.rest.v3.system;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.exception.AuthenticationRequiredException;
 import org.craftercms.social.domain.social.system.SocialContext;
@@ -34,24 +31,19 @@ import org.craftercms.social.services.system.ContextPreferencesService;
 import org.craftercms.social.services.system.SocialContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
  */
-@RequestMapping("/api/3/system/context")
 @Controller
+@RequestMapping("/api/3/system/context")
 public class SocialContextController {
 
     @Autowired
     private SocialContextService socialContextService;
     @Autowired
     private ContextPreferencesService contextPreferencesService;
-
 
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     @ResponseBody
