@@ -20,7 +20,6 @@ package org.craftercms.social.repositories.system.notifications.impl;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,7 @@ public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<Watche
 
     @Override
     public void addWatcher(final String thread, final String userId, final String frequency) throws
-        NotificationException {
+            NotificationException {
         try {
             final String addQuery = getQueryFor("social.notifications.addUserWatch");
             final String find = getQueryFor("social.notifications.findById");
@@ -82,7 +81,7 @@ public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<Watche
 
     @Override
     public List<ThreadsToNotify> findProfilesToSend(final String type) throws
-        NotificationException {
+            NotificationException {
         try{
             String aggregationQuerypt1 = getQueryFor("social.notification.getProfilePt1");
             String aggregationQuerypt2 = getQueryFor("social.notification.getProfilePt2");
@@ -103,15 +102,15 @@ public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<Watche
         String query3=getQueryFor("social.notification.byWatcherId3");
         try{
 
-           return IterableUtils.toList(getCollection().aggregate(query).and(query2,profileId).and(query3).map(new ResultHandler<Map>() {
-               @Override
-               public Map map(final DBObject result) {
-                   HashMap<String,String> map= new HashMap<String, String>();
-                   map.put("thread",((String)result.get("_id")).split("/")[1]);
-                   map.put("frequency",result.get("frequency").toString());
-                   return map;
-               }
-           }));
+            return IterableUtils.toList(getCollection().aggregate(query).and(query2,profileId).and(query3).map(new ResultHandler<Map>() {
+                @Override
+                public Map map(final DBObject result) {
+                    HashMap<String,String> map= new HashMap<String, String>();
+                    map.put("thread",((String)result.get("_id")).split("/")[1]);
+                    map.put("frequency",result.get("frequency").toString());
+                    return map;
+                }
+            }));
         }catch (MongoException ex){
             throw new SocialException("Unable to read watched threads for user",ex);
         }

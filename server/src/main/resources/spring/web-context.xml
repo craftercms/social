@@ -50,15 +50,11 @@
     </beans:bean>
 
     <annotation-driven content-negotiation-manager="contentNegotiationManager">
-        <path-matching suffix-pattern="true"/>
+        <path-matching suffix-pattern="true" trailing-slash="true"/>
         <message-converters>
             <beans:bean id="jacksonMessageConverter"
                         class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
-                <beans:property name="supportedMediaTypes" value="application/json"/>
-                <beans:property name="prettyPrint" value="false"/>
-                <beans:property name="injectValueFactory" ref="social.InjectValueHandler"/>
-                <beans:property name="securePropertyHandler" ref="social.utils.securePropertyHandler"/>
-                <beans:property name="filter">
+                <beans:constructor-arg name="filter">
                     <beans:bean class="org.craftercms.commons.jackson.mvc.SelectorFilterFactory">
                         <beans:property name="filters">
                             <beans:list>
@@ -66,7 +62,11 @@
                             </beans:list>
                         </beans:property>
                     </beans:bean>
-                </beans:property>
+                </beans:constructor-arg>
+                <beans:property name="supportedMediaTypes" value="application/json"/>
+                <beans:property name="prettyPrint" value="false"/>
+                <beans:property name="injectValueFactory" ref="social.InjectValueHandler"/>
+                <beans:property name="securePropertyHandler" ref="social.utils.securePropertyHandler"/>
 
 
                 <beans:property name="objectMapper">
@@ -78,7 +78,7 @@
                         </beans:property>
                         <beans:property name="annotationIntrospector">
                             <beans:bean class="org.craftercms.commons.jackson.mvc.CrafterJacksonAnnotationIntrospector">
-                                <beans:property name="defaultFilter" value="gdata"/>
+                                <beans:constructor-arg name="defaultFilter" value="gdata"/>
                             </beans:bean>
                         </beans:property>
                         <beans:constructor-arg name="serializerList">
@@ -128,10 +128,10 @@
         </beans:property>
     </beans:bean>
 
-    <beans:bean id="multipartResolver"
-                class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <beans:property name="maxUploadSize" value="${studio.social.web.maxUpload}"/>
-    </beans:bean>
+<!--    <beans:bean id="multipartResolver"-->
+<!--                class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+<!--        <beans:property name="maxUploadSize" value="${studio.social.web.maxUpload}"/>-->
+<!--    </beans:bean>-->
 
     <!-- freemarker config -->
     <beans:bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">

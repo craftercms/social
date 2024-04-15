@@ -85,7 +85,7 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
 
     @Override
     public Iterable<AuditLog> getNotificationsToSend(final String threadId, final Date from, final Date to) throws
-        SocialException {
+            SocialException {
         String query = getQueryFor("social.system.audit.byDateRange");
         log.debug("social.notification.notificationToSend", threadId, from, to);
         try {
@@ -98,18 +98,18 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
 
     @Override
     public List<HashMap> getNotificationDigest(final String id, final Date from, final Date to, List<String>
-        profilesToExclude) throws SocialException {
+            profilesToExclude) throws SocialException {
         try {
             final String querypt1 = getQueryFor("social.notification.audit.getNotificationDigestPt1");
             final String querypt2 = getQueryFor("social.notification.audit.getNotificationDigestPt2");
             final String[] idParts = id.split("/");
             Map<String,Object> preferences=contextPreferencesService.getContextPreferences(idParts[0]);
             final String unwantedStatus=  ((HashMap<String,Object>)preferences.get("preferences"))
-                .get("hiddenUgcStatus").toString();
+                    .get("hiddenUgcStatus").toString();
             final Aggregate agregation = getCollection().aggregate(querypt1, idParts[1], idParts[0],
-                Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
+                    Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
             logger.debug("NotificationQ\n\r {} {} {} {} {} {} {}",querypt1, idParts[1], idParts[0],
-                Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
+                    Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
             logger.debug("NotificationQ2\n\r {}",querypt2);
             final List<HashMap> preResults = IterableUtils.toList(agregation.and(querypt2).as(HashMap.class));
             logger.debug("PreResults size {}",preResults.size());
@@ -124,7 +124,7 @@ public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> imple
                         if (ugc.containsKey("lastModifiedBy") && ugc.containsKey("createdBy")) {
                             ugc.put("createdBy", profileAggregator.getProfile(ugc.get("createdBy").toString()));
                             ugc.put("lastModifiedBy", profileAggregator.getProfile(ugc.get("lastModifiedBy").toString
-                                ()));
+                                    ()));
                         }
                     }
                 }
