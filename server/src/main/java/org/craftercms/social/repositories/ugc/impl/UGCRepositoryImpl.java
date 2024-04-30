@@ -116,7 +116,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
 
     @Override
     public void deleteAttribute(final String ugcId, final String contextId, final String[] attributesName) throws
-        MongoDataException {
+            MongoDataException {
         String query = getQueryFor("social.ugc.byContextAndId");
         String delete = getQueryFor("social.ugc.deleteAttribute");
         try {
@@ -130,7 +130,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             getCollection().update(query, new ObjectId(ugcId), contextId).with(delete, map);
         } catch (MongoException ex) {
             log.error("Unable to delete attribute " + attributesName + " for UGC " + ugcId + "of contextId " +
-                contextId, ex);
+                    contextId, ex);
             throw new MongoDataException("Unable to delete attribute of a ugc", ex);
         }
 
@@ -173,12 +173,12 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
         }
         //Good Candidate for java8
         Collection<ObjectId> toDelete = CollectionUtils.collect(findChildrenOf(ugcId, Integer.MAX_VALUE, contextId),
-            new Transformer<UGC, ObjectId>() {
-                @Override
-                public ObjectId transform(final UGC input) {
-                    return input.getId();
+                new Transformer<UGC, ObjectId>() {
+                    @Override
+                    public ObjectId transform(final UGC input) {
+                        return input.getId();
+                    }
                 }
-            }
         );
         log.debug("Deleting UGC's {}", toDelete);
         remove(delete, toDelete);
@@ -220,7 +220,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
             ancestors.addLast(parent.getId());
             String query = getQueryFor("social.ugc.byContextTargetAncestorsExact");
             String hiddenStatus=tenantConfigurationService.getProperty(contextId, TenantConfigurationService
-                .HIDDEN_UGC_STATUS);
+                    .HIDDEN_UGC_STATUS);
             Find find = getCollection().find(query, contextId, targetId, ancestors,ModerationStatus.listOfModerationStatus(hiddenStatus));
             return getUgcsToFind(find, targetId, contextId, start, limit, sortOrder, (ancestors.size()+upToLevel));
         } catch (MongoException ex) {
@@ -235,10 +235,10 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
         try {
             String query = getQueryFor("social.ugc.byTargetIdRootLvl");
             String hiddenStatus=tenantConfigurationService.getProperty(contextId, TenantConfigurationService
-                .HIDDEN_UGC_STATUS);
+                    .HIDDEN_UGC_STATUS);
 
             Find find = getCollection().find(query, contextId, targetId
-                ,ModerationStatus.listOfModerationStatus(hiddenStatus));
+                    ,ModerationStatus.listOfModerationStatus(hiddenStatus));
 
             return getUgcsToFind(find, targetId, contextId, start, limit, sortOrder, upToLevel);
         } catch (MongoException ex) {
@@ -267,7 +267,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
 
         finalQuery = finalQuery.replaceAll("%@", String.valueOf(upToLevel));
         String hiddenStatus=tenantConfigurationService.getProperty(contextId, TenantConfigurationService
-            .HIDDEN_UGC_STATUS);
+                .HIDDEN_UGC_STATUS);
 
         final Find finalMongoQuery = getCollection().find(finalQuery, targetId, contextId, ModerationStatus.listOfModerationStatus(hiddenStatus),listOfIds, listOfIds);
         if (CollectionUtils.isEmpty(sortOrder)) {
@@ -283,7 +283,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
                                 final int levels) throws MongoDataException {
         try {
             String hiddenStatus=tenantConfigurationService.getProperty(contextId, TenantConfigurationService
-                .HIDDEN_UGC_STATUS);
+                    .HIDDEN_UGC_STATUS);
             return count(getQueryFor("social.ugc.byTargetIdWithFixLvl"), contextId, threadId, levels, ModerationStatus.listOfModerationStatus(hiddenStatus));
         } catch (MongoException ex) {
             log.error("Unable to count ugc for context " + contextId + "and target " + threadId, ex);
@@ -335,7 +335,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
 
     @Override
     public Iterable<T> findAllFlagged(final String context, final int start, final int pageSize, final List
-        sortOrder) {
+            sortOrder) {
         String query = getQueryFor("social.ugc.byFlaggedStatus");
         Find f = getCollection().find(query,context, ModerationStatus.TRASH);
         if (CollectionUtils.isEmpty(sortOrder)) {
@@ -349,7 +349,7 @@ public class UGCRepositoryImpl<T extends UGC> extends SocialJongoRepository impl
 
     @Override
     public long countAllFlagged(final String context, final int start, final int pageSize, final List
-        sortOrder) {
+            sortOrder) {
         String query = getQueryFor("social.ugc.byFlaggedStatus");
         return  getCollection().count(query, context, ModerationStatus.TRASH);
 

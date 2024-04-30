@@ -17,7 +17,7 @@ package org.craftercms.social.management.web.controllers;
 
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
@@ -27,7 +27,6 @@ import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.social.management.exceptions.InvalidRequestParameterException;
 import org.craftercms.social.management.exceptions.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,8 +63,7 @@ public class ProfileController {
 
     private ProfileService profileService;
 
-    @Required
-    public void setProfileService(ProfileService profileService) {
+    public ProfileController(ProfileService profileService) {
         this.profileService = profileService;
     }
 

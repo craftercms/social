@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.Map;
 
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.AbstractJongoRepository;
-import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.social.domain.system.ContextPreferences;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.repositories.system.ContextPreferencesRepository;
@@ -38,7 +36,7 @@ import org.craftercms.social.util.LoggerFactory;
  *
  */
 public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<ContextPreferences> implements
-    ContextPreferencesRepository {
+        ContextPreferencesRepository {
 
     private I10nLogger logger = LoggerFactory.getLogger(ContextPreferencesRepositoryImpl.class);
 
@@ -47,7 +45,7 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
         try {
             String query = getQueryFor("social.system.preferences.emailPreferencesByContextId");
             final HashMap tmp = getCollection().findOne(query, contextId).projection("{email:1,_id:0}").as(HashMap
-                .class);
+                    .class);
             if (tmp == null || !tmp.containsKey("email")) {
                 throw new SocialException("Current context " + contextId + "is missing email configuration");
             }
@@ -61,21 +59,21 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
 
     @Override
     public Map<String,Object> saveEmailConfig(final String contextId, Map<String, Object> emailPref) throws
-        SocialException {
+            SocialException {
         try {
-                String fQuery=getQueryFor("social.system.preferences.emailPreferencesByContextId");
-                String uQuery=getQueryFor("social.system.preferences.updateContextEmailPref");
+            String fQuery=getQueryFor("social.system.preferences.emailPreferencesByContextId");
+            String uQuery=getQueryFor("social.system.preferences.updateContextEmailPref");
             getCollection().update(fQuery, contextId).with(uQuery,emailPref.get("host"),
-                emailPref.get("encoding"),
-                emailPref.get("port"),
-                emailPref.get("auth"),
-                emailPref.get("username"),
-                emailPref.get("password"),
-                emailPref.get("tls"),
-                emailPref.get("replyTo"),
-                emailPref.get("from"),
-                emailPref.get("priority"),
-                emailPref.get("subject")
+                    emailPref.get("encoding"),
+                    emailPref.get("port"),
+                    emailPref.get("auth"),
+                    emailPref.get("username"),
+                    emailPref.get("password"),
+                    emailPref.get("tls"),
+                    emailPref.get("replyTo"),
+                    emailPref.get("from"),
+                    emailPref.get("priority"),
+                    emailPref.get("subject")
             );
             return emailPref;
         } catch (MongoException ex) {
@@ -85,11 +83,11 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
 
     @Override
     public String findNotificationTemplate(final String contextId, final String notificationType) throws
-        SocialException {
+            SocialException {
         try {
             String query = getQueryFor("social.system.preferences.notificationEmailByType");
             Map qResult = getCollection().findOne(query, contextId, notificationType.toUpperCase()).projection
-                ("{\"templates.$\":1,_id:0}").as(Map.class);
+                    ("{\"templates.$\":1,_id:0}").as(Map.class);
             if (qResult == null) {
                 return null;
             }
@@ -99,7 +97,7 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
             }
             if (templates.isEmpty()) {
                 throw new SocialException("No template for type" + notificationType + " has been define for context "
-                    + "" + contextId);
+                        + "" + contextId);
             } else {
                 if (templates.size() > 1) {
                     logger.warn("logging.system.notification.multipleTemplatesForType", notificationType, contextId);
@@ -108,7 +106,7 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
             }
         } catch (MongoException ex) {
             throw new SocialException("Unable to get Notification Template for " + contextId + " of type" +
-                notificationType);
+                    notificationType);
         }
     }
 
@@ -167,15 +165,15 @@ public class ContextPreferencesRepositoryImpl extends AbstractJongoRepository<Co
     }
 
     public void saveEmailPreference(final String contextId, Map<String, Object> emailPreferences) throws
-        SocialException {
+            SocialException {
         try {
             String query = getQueryFor("social.system.preferences.savePreferencesByContextId");
             String findQ = getQueryFor("social.system.preferences.emailPreferencesByContextId");
             getCollection().update(findQ, contextId).upsert().with(query, emailPreferences.get("host"),
-                emailPreferences.get("encoding"), emailPreferences.get("port"), emailPreferences.get("auth"),
-                emailPreferences.get("username"), emailPreferences.get("password"), emailPreferences.get("tls"),
-                emailPreferences.get("replyTo"), emailPreferences.get("from"), emailPreferences.get("priority"),
-                emailPreferences.get("subject"));
+                    emailPreferences.get("encoding"), emailPreferences.get("port"), emailPreferences.get("auth"),
+                    emailPreferences.get("username"), emailPreferences.get("password"), emailPreferences.get("tls"),
+                    emailPreferences.get("replyTo"), emailPreferences.get("from"), emailPreferences.get("priority"),
+                    emailPreferences.get("subject"));
         } catch (MongoException ex) {
             throw new SocialException("Unable to read email preferences for " + contextId);
         }

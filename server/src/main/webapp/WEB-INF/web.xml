@@ -65,8 +65,8 @@
     </filter>
 
     <filter>
-        <filter-name>httpPutFormContentFilter</filter-name>
-        <filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
+        <filter-name>formContentFilter</filter-name>
+        <filter-class>org.springframework.web.filter.FormContentFilter</filter-class>
     </filter>
 
     <servlet-mapping>
@@ -91,7 +91,7 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>httpPutFormContentFilter</filter-name>
+        <filter-name>formContentFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

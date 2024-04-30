@@ -24,10 +24,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileUploadBase;
+import org.apache.commons.fileupload2.core.FileUploadSizeException;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.exceptions.InvalidManagementTokenException;
@@ -115,8 +115,8 @@ public class GlobalDefaultExceptionHandler {
     public void sizeLimitExceededException(HttpServletRequest req, HttpServletResponse response,
                                            Exception ex) throws Exception {
         log.error("Request: " + req.getRequestURL() + " raised and error {}", ex.toString());
-        FileUploadBase.SizeLimitExceededException realEx = (FileUploadBase.SizeLimitExceededException)ex.getCause();
-        String maxSize = FileUtils.readableFileSize(realEx.getPermittedSize());
+        FileUploadSizeException realEx = (FileUploadSizeException)ex.getCause();
+        String maxSize = FileUtils.readableFileSize(realEx.getPermitted());
         String fileSize = FileUtils.readableFileSize(realEx.getActualSize());
         Map<String, Object> error = new HashMap<>();
         error.put("message", String.format("Unable to upload file due size limit is %s and upload size is %s",
