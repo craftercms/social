@@ -9,9 +9,8 @@ Project Setup
 1. Download & install [node](https://nodejs.org/).
 2. Install compass.
 3. Execute: `npm install -g bower`
-4. On the ui project folder, execute: `npm install grunt —save-dev`
-5. Execute: `npm install`
-6. Execute: `bower install`
+4. Execute: `npm install`
+5. Execute: `bower install`
 
 Other Tasks
 -----------
