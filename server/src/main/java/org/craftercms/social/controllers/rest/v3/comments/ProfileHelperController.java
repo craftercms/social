@@ -89,8 +89,10 @@ public class ProfileHelperController {
                         response.setHeader("Cache-Control","max-age=3600");
                         response.setStatus(HttpServletResponse.SC_OK);
                         input = profileService.getProfileAttachment(AVATAR, profileId);
-                        IOUtils.copy(input, response.getOutputStream());
-                        imageFound = true;
+                        if (input != null) {
+                            IOUtils.copy(input, response.getOutputStream());
+                            imageFound = true;
+                        }
                     }
                 }
             } catch (ProfileException ex) {
