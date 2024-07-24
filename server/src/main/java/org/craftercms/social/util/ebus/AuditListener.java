@@ -33,7 +33,7 @@ public class AuditListener implements ApplicationContextAware {
     @EventListener
     public void onAudit(final SocialEvent event) {
         AuditLog auditLog = new AuditLog(event.getSource());
-        auditLog.setContextId(event.getSource().getContextId());
+        auditLog.setContextId(event.getSource() != null ? event.getSource().getContextId() : "");
         auditLog.setUserId(event.getUserId());
         auditLog.setActionName(event.getType().getName());
         applicationContext.publishEvent(auditLog);

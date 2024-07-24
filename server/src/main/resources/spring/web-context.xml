@@ -128,10 +128,9 @@
         </beans:property>
     </beans:bean>
 
-<!--    <beans:bean id="multipartResolver"-->
-<!--                class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
-<!--        <beans:property name="maxUploadSize" value="${studio.social.web.maxUpload}"/>-->
-<!--    </beans:bean>-->
+    <beans:bean id="multipartResolver"
+                class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+    </beans:bean>
 
     <!-- freemarker config -->
     <beans:bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
