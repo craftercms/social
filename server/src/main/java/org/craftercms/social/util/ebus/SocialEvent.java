@@ -67,6 +67,13 @@ public class SocialEvent<T extends UGC> {
         this.attributes = new HashMap<>();
     }
 
+    public SocialEvent(final T source, final InputStream[] attachments, UGCEvent type) {
+        this.source = source;
+        this.ugcId = source.getId().toString();;
+        this.attachments = attachments;
+        this.type = type;
+    }
+
     public SocialEvent(final String ugcId, final InputStream[] attachments, UGCEvent type) {
         this.ugcId = ugcId;
         this.attachments = attachments;
