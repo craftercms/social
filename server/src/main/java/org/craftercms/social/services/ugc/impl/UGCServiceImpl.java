@@ -354,7 +354,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService, ApplicationCon
             info.setAttribute("owner", ugcId);
             ugc.getAttachments().add(info);
             ugcRepository.update(ugcId, ugc);
-            applicationContext.publishEvent(new SocialEvent<>(ugcId, new InputStream[]
+            applicationContext.publishEvent(new SocialEvent<>(ugc, new InputStream[]
                     {new CloseShieldInputStream(attachment)}, UGCEvent.ADD_ATTACHMENT));
             return info;
         } catch (MongoDataException e) {
@@ -418,7 +418,7 @@ public class UGCServiceImpl<T extends UGC> implements UGCService, ApplicationCon
             ugcRepository.update(ugcId, ugc);
             applicationContext.publishEvent(new SocialEvent<>(ugcId, attachmentId,
                     UGCEvent.DELETE_ATTACHMENT));
-            applicationContext.publishEvent(new SocialEvent<>(ugcId, new InputStream[]
+            applicationContext.publishEvent(new SocialEvent<>(ugc, new InputStream[]
                     {new CloseShieldInputStream(newAttachment)}, UGCEvent.ADD_ATTACHMENT));
             return newInfo;
         } catch (MongoDataException e) {

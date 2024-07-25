@@ -47,6 +47,9 @@
             <param-value>classpath:/spring/web-context.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
+        <multipart-config>
+            <max-file-size>10485760</max-file-size>
+        </multipart-config>
     </servlet>
 
     <filter>
