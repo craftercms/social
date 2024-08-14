@@ -161,6 +161,7 @@
                                         ugc.set("reloadAvatar",new Date().getTime());
                                     }
                                 });
+                                me.collection.fetch();
                             },
                             error: function () {
                                 modal.$('.modal-body')
@@ -394,7 +395,7 @@
                             return data.files || [];
                         }
                     }).attr('action', URL).bind('fileuploadfinished', function (/* e, data */) {
-                        me.model.fetch(fetchOptions);
+                        me.collection.fetch();
                     });
 
                 });
