@@ -15,7 +15,7 @@ Manage and moderate comments
 
 ### Bundle Installation
 
-Per the requirements, this project is made up of different software components. You may speed up installation by installing the [Crafter Social bundle](http://craftercms.org/downloads) which includes all the necessary software components.
+Per the requirements, this project is made up of different software components. You may speed up installation by installing the [Crafter Social bundle](http://craftercms.com/download) which includes all the necessary software components.
 
 After installing the bundle, you may then replace the wars that come by default with the application by following steps 2, 3, 6 and 7 in the 'Full Installation' section.
 
@@ -51,14 +51,14 @@ If you're comfortable setting up Tomcat and MongoDB by yourself, please follow
 6) Build wars for:
 
 6.1) Profile client
-    
+
     cd ~/moderation-dashboard/src/profile/client
     mvn clean install
 
 6.2) Profile crafter security provider
-    
+
     cd ~/moderation-dashboard/src/profile/crafter-security-provider
-    mvn clean install   
+    mvn clean install
 
 6.3) Profile server
 
@@ -91,9 +91,9 @@ Change the property to:
 
     shared.loader=${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar
 
-9) Add folders (profile, security, social) with properties files inside of ~/moderation-dashboard/deploy/tomcat/shared/classes/crafter 
+9) Add folders (profile, security, social) with properties files inside of ~/moderation-dashboard/deploy/tomcat/shared/classes/crafter
 
-Note*: To ask Tomcat for more memory than the value provided by default, create a setenv.sh file in: ~/moderation-dashboard/deploy/tomcat/bin and add the following line: 
+Note*: To ask Tomcat for more memory than the value provided by default, create a setenv.sh file in: ~/moderation-dashboard/deploy/tomcat/bin and add the following line:
 
     export JAVA_OPTS="-Xms1024m -Xmx10246m -XX:NewSize=256m -XX:MaxNewSize=356m -XX:PermSize=256m -XX:MaxPermSize=356m"
 
@@ -157,7 +157,7 @@ Step 3: Post new content
     Request Header:
     Content-Type application/json
 
-    Request Body (sample): 
+    Request Body (sample):
     {
         "tenant": "craftercms",
         "targetId": "test-123323TI",
@@ -166,5 +166,5 @@ Step 3: Post new content
         "body": "Quieren decir que tenía el sobrenombre de Quijada, o Quesada, que en esto hay alguna diferencia en los autores que deste caso escriben; aunque, por conjeturas verosímiles, se deja entender que se llamaba Quejana. Pero esto importa poco a nuestro cuento; basta que en la narración dél no se salga un punto de la verdad.",
         "subject": "Ingenioso Hidalgo"
     }
-   
+
     *Replace <TicketValue> with Ticket value from step 2.
