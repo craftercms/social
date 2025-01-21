@@ -44,103 +44,103 @@ import org.slf4j.Logger;
  */
 public class AuditRepositoryImpl extends AbstractJongoRepository<AuditLog> implements AuditRepository {
 
-    private I10nLogger log = LoggerFactory.getLogger(AuditServiceImpl.class);
-    private Logger logger = org.slf4j.LoggerFactory.getLogger(AuditRepositoryImpl.class);
-    private ProfileAggregator profileAggregator;
-    private ContextPreferencesService contextPreferencesService;
+	private I10nLogger log = LoggerFactory.getLogger(AuditServiceImpl.class);
+	private Logger logger = org.slf4j.LoggerFactory.getLogger(AuditRepositoryImpl.class);
+	private ProfileAggregator profileAggregator;
+	private ContextPreferencesService contextPreferencesService;
 
-    @Override
-    public void deleteByIds(final List<String> ids) throws SocialException {
+	@Override
+	public void deleteByIds(final List<String> ids) throws SocialException {
 
-        String query = getQueryFor("social.system.audit.deleteByIds");
-        log.debug("logging.system.auditAboutToDelete", ids);
-        try {
-            remove(query, ids);
-        } catch (MongoDataException e) {
-            throw new SocialException("Unable to delete Audits", e);
-        }
-    }
+		String query = getQueryFor("social.system.audit.deleteByIds");
+		log.debug("logging.system.auditAboutToDelete", ids);
+		try {
+			remove(query, ids);
+		} catch (MongoDataException e) {
+			throw new SocialException("Unable to delete Audits", e);
+		}
+	}
 
-    @Override
-    public List<AuditLog> getByDate(final String context, final Date from, final Date to) throws SocialException {
-        String query = getQueryFor("social.system.audit.byDateRangeCTX");
-        log.debug("logging.system.findingAuditsByCTX", context, from, to);
-        try {
-            return IterableUtils.toList(find(query, context, from, to));
-        } catch (MongoDataException e) {
-            throw new SocialException("Unable to find Log Audits", e);
-        }
-    }
+	@Override
+	public List<AuditLog> getByDate(final String context, final Date from, final Date to) throws SocialException {
+		String query = getQueryFor("social.system.audit.byDateRangeCTX");
+		log.debug("logging.system.findingAuditsByCTX", context, from, to);
+		try {
+			return IterableUtils.toList(find(query, context, from, to));
+		} catch (MongoDataException e) {
+			throw new SocialException("Unable to find Log Audits", e);
+		}
+	}
 
-    @Override
-    public List<AuditLog> getByDate(final Date from, final Date to) throws SocialException {
-        String query = getQueryFor("social.system.audit.byDateRange");
-        log.debug("logging.system.findingAuditsBy", from, to);
-        try {
-            return IterableUtils.toList(find(query, from, to));
-        } catch (MongoDataException e) {
-            throw new SocialException("Unable to find Log Audits", e);
-        }
-    }
+	@Override
+	public List<AuditLog> getByDate(final Date from, final Date to) throws SocialException {
+		String query = getQueryFor("social.system.audit.byDateRange");
+		log.debug("logging.system.findingAuditsBy", from, to);
+		try {
+			return IterableUtils.toList(find(query, from, to));
+		} catch (MongoDataException e) {
+			throw new SocialException("Unable to find Log Audits", e);
+		}
+	}
 
-    @Override
-    public Iterable<AuditLog> getNotificationsToSend(final String threadId, final Date from, final Date to) throws
-            SocialException {
-        String query = getQueryFor("social.system.audit.byDateRange");
-        log.debug("social.notification.notificationToSend", threadId, from, to);
-        try {
-            return IterableUtils.toList(find(query, from, to));
-        } catch (MongoDataException e) {
-            throw new SocialException("Unable to find Log Audits", e);
-        }
+	@Override
+	public Iterable<AuditLog> getNotificationsToSend(final String threadId, final Date from, final Date to) throws
+		SocialException {
+		String query = getQueryFor("social.system.audit.byDateRange");
+		log.debug("social.notification.notificationToSend", threadId, from, to);
+		try {
+			return IterableUtils.toList(find(query, from, to));
+		} catch (MongoDataException e) {
+			throw new SocialException("Unable to find Log Audits", e);
+		}
 
-    }
+	}
 
-    @Override
-    public List<HashMap> getNotificationDigest(final String id, final Date from, final Date to, List<String>
-            profilesToExclude) throws SocialException {
-        try {
-            final String querypt1 = getQueryFor("social.notification.audit.getNotificationDigestPt1");
-            final String querypt2 = getQueryFor("social.notification.audit.getNotificationDigestPt2");
-            final String[] idParts = id.split("/");
-            Map<String,Object> preferences=contextPreferencesService.getContextPreferences(idParts[0]);
-            final String unwantedStatus=  ((HashMap<String,Object>)preferences.get("preferences"))
-                    .get("hiddenUgcStatus").toString();
-            final Aggregate agregation = getCollection().aggregate(querypt1, idParts[1], idParts[0],
-                    Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
-            logger.debug("NotificationQ\n\r {} {} {} {} {} {} {}",querypt1, idParts[1], idParts[0],
-                    Arrays.asList(unwantedStatus.split(",")),profilesToExclude, from, to);
-            logger.debug("NotificationQ2\n\r {}",querypt2);
-            final List<HashMap> preResults = IterableUtils.toList(agregation.and(querypt2).as(HashMap.class));
-            logger.debug("PreResults size {}",preResults.size());
-            for (HashMap preResult : preResults) {
-                List<HashMap> ugcList = (List<HashMap>)preResult.get("ugcList");
-                for (HashMap ugc : ugcList) {
-                    if (Boolean.parseBoolean(ugc.get("anonymousFlag").toString())) {
-                        // Make sure we don't tell!
-                        ugc.put("createdBy", ProfileUtils.getAnonymousProfile());
-                        ugc.put("lastModifiedBy", ProfileUtils.getAnonymousProfile());
-                    } else {
-                        if (ugc.containsKey("lastModifiedBy") && ugc.containsKey("createdBy")) {
-                            ugc.put("createdBy", profileAggregator.getProfile(ugc.get("createdBy").toString()));
-                            ugc.put("lastModifiedBy", profileAggregator.getProfile(ugc.get("lastModifiedBy").toString
-                                    ()));
-                        }
-                    }
-                }
-            }
-            return preResults;
-        } catch (MongoException ex) {
-            throw new SocialException("Unable to Generate Notification Digest ", ex);
-        }
+	@Override
+	public List<HashMap> getNotificationDigest(final String id, final Date from, final Date to, List<String>
+		profilesToExclude) throws SocialException {
+		try {
+			final String querypt1 = getQueryFor("social.notification.audit.getNotificationDigestPt1");
+			final String querypt2 = getQueryFor("social.notification.audit.getNotificationDigestPt2");
+			final String[] idParts = id.split("/");
+			Map<String, Object> preferences = contextPreferencesService.getContextPreferences(idParts[0]);
+			final String unwantedStatus = ((HashMap<String, Object>) preferences.get("preferences"))
+				.get("hiddenUgcStatus").toString();
+			final Aggregate agregation = getCollection().aggregate(querypt1, idParts[1], idParts[0],
+				Arrays.asList(unwantedStatus.split(",")), profilesToExclude, from, to);
+			logger.debug("NotificationQ\n\r {} {} {} {} {} {} {}", querypt1, idParts[1], idParts[0],
+				Arrays.asList(unwantedStatus.split(",")), profilesToExclude, from, to);
+			logger.debug("NotificationQ2\n\r {}", querypt2);
+			final List<HashMap> preResults = IterableUtils.toList(agregation.and(querypt2).as(HashMap.class));
+			logger.debug("PreResults size {}", preResults.size());
+			for (HashMap preResult : preResults) {
+				List<HashMap> ugcList = (List<HashMap>) preResult.get("ugcList");
+				for (HashMap ugc : ugcList) {
+					if (Boolean.parseBoolean(ugc.get("anonymousFlag").toString())) {
+						// Make sure we don't tell!
+						ugc.put("createdBy", ProfileUtils.getAnonymousProfile());
+						ugc.put("lastModifiedBy", ProfileUtils.getAnonymousProfile());
+					} else {
+						if (ugc.containsKey("lastModifiedBy") && ugc.containsKey("createdBy")) {
+							ugc.put("createdBy", profileAggregator.getProfile(ugc.get("createdBy").toString()));
+							ugc.put("lastModifiedBy", profileAggregator.getProfile(ugc.get("lastModifiedBy").toString
+								()));
+						}
+					}
+				}
+			}
+			return preResults;
+		} catch (MongoException ex) {
+			throw new SocialException("Unable to Generate Notification Digest ", ex);
+		}
 
-    }
+	}
 
-    public void setProfileAggregatorImpl(ProfileAggregator profileAggregator) {
-        this.profileAggregator = profileAggregator;
-    }
+	public void setProfileAggregatorImpl(ProfileAggregator profileAggregator) {
+		this.profileAggregator = profileAggregator;
+	}
 
-    public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
-        this.contextPreferencesService = contextPreferencesService;
-    }
+	public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
+		this.contextPreferencesService = contextPreferencesService;
+	}
 }

@@ -34,34 +34,34 @@ import org.craftercms.social.security.SocialSecurityUtils;
  */
 public class ProfileUtils {
 
-    public static Profile getCurrentProfile() {
-        Authentication auth = SecurityUtils.getCurrentAuthentication();
-        if (auth != null) {
-            return auth.getProfile();
-        }
-        return null;
-    }
+	public static Profile getCurrentProfile() {
+		Authentication auth = SecurityUtils.getCurrentAuthentication();
+		if (auth != null) {
+			return auth.getProfile();
+		}
+		return null;
+	}
 
-    public static String getCurrentProfileId() {
-        Profile profile = getCurrentProfile();
-        if (profile != null) {
-            return profile.getId().toString();
-        } else {
-            return null;
-        }
-    }
+	public static String getCurrentProfileId() {
+		Profile profile = getCurrentProfile();
+		if (profile != null) {
+			return profile.getId().toString();
+		} else {
+			return null;
+		}
+	}
 
-    public static Profile getAnonymousProfile() {
-        Profile anonymous = new Profile();
-        anonymous.setEmail(SocialSecurityUtils.ANONYMOUS);
-        anonymous.setUsername(SocialSecurityUtils.ANONYMOUS.toLowerCase());
-        anonymous.setRoles(new LinkedHashSet<>(Arrays.asList(SocialSecurityUtils.ANONYMOUS)));
-        anonymous.setAttributes(new HashMap<String, Object>());
-        anonymous.setAttribute("displayName",SocialSecurityUtils.ANONYMOUS.toLowerCase());
-        anonymous.setAttribute("avatarLink","");
-        anonymous.setAttribute("anonymized",true);
-        anonymous.setTenant("");
-        return anonymous;
+	public static Profile getAnonymousProfile() {
+		Profile anonymous = new Profile();
+		anonymous.setEmail(SocialSecurityUtils.ANONYMOUS);
+		anonymous.setUsername(SocialSecurityUtils.ANONYMOUS.toLowerCase());
+		anonymous.setRoles(new LinkedHashSet<>(Arrays.asList(SocialSecurityUtils.ANONYMOUS)));
+		anonymous.setAttributes(new HashMap<String, Object>());
+		anonymous.setAttribute("displayName", SocialSecurityUtils.ANONYMOUS.toLowerCase());
+		anonymous.setAttribute("avatarLink", "");
+		anonymous.setAttribute("anonymized", true);
+		anonymous.setTenant("");
+		return anonymous;
 
-    }
+	}
 }

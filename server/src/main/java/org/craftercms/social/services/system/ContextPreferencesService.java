@@ -27,22 +27,24 @@ import org.craftercms.social.exceptions.SocialException;
  */
 public interface ContextPreferencesService {
 
-    Map findEmailPreference(final String contextId) throws SocialException;
-    Map<String,Object> saveEmailConfig(final String contextId,final Map<String,Object> newConfiguration) throws
-        SocialException;
-    String getNotificationEmailTemplate(final String contextId,final String notificationType) throws SocialException;
+	Map findEmailPreference(final String contextId) throws SocialException;
 
-    Map<String, Object> getContextPreferences(String contextId);
+	Map<String, Object> saveEmailConfig(final String contextId, final Map<String, Object> newConfiguration) throws
+		SocialException;
 
-    boolean saveContextPreference(String contextId,Map<String,Object> preferences);
+	String getNotificationEmailTemplate(final String contextId, final String notificationType) throws SocialException;
 
-    boolean saveEmailTemplate(String context, String type, final String template) throws SocialException;
+	Map<String, Object> getContextPreferences(String contextId);
 
-    String getEmailTemplate(String context, String emailTemplateType) throws  SocialException;
+	boolean saveContextPreference(String contextId, Map<String, Object> preferences);
 
-    boolean deleteContextPreference(String context, List<String> strings);
+	boolean saveEmailTemplate(String context, String type, final String template) throws SocialException;
 
-    Map<String,Object> getAllPreferences(String context);
+	String getEmailTemplate(String context, String emailTemplateType) throws SocialException;
 
-    void saveAllContextPreferences(String contextId, Map<String, Object> newPreferences) throws SocialException;
+	boolean deleteContextPreference(String context, List<String> strings);
+
+	Map<String, Object> getAllPreferences(String context);
+
+	void saveAllContextPreferences(String contextId, Map<String, Object> newPreferences) throws SocialException;
 }

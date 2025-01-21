@@ -15,23 +15,23 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <Configuration status="warn" monitorInterval="30">
-    <!-- Appenders -->
-    <Appenders>
-        <Console name="consoleAppender" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd_HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
-        </Console>
-    </Appenders>
+		<!-- Appenders -->
+		<Appenders>
+				<Console name="consoleAppender" target="SYSTEM_OUT">
+						<PatternLayout pattern="%d{yyyy-MM-dd_HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+				</Console>
+		</Appenders>
 
-    <Loggers>
-        <!-- Application Loggers -->
-        <Logger name="org.craftercms" level="info"/>
+		<Loggers>
+				<!-- Application Loggers -->
+				<Logger name="org.craftercms" level="info"/>
 
-        <!-- 3rdparty Loggers -->
-        <Logger name="org.springframework" level="info"/>
+				<!-- 3rdparty Loggers -->
+				<Logger name="org.springframework" level="info"/>
 
-        <!-- Root Logger -->
-        <Root level="info">
-            <AppenderRef ref="consoleAppender"/>
-        </Root>
-    </Loggers>
+				<!-- Root Logger -->
+				<Root level="info">
+						<AppenderRef ref="consoleAppender"/>
+				</Root>
+		</Loggers>
 </Configuration>

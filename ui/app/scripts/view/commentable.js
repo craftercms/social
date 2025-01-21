@@ -1,289 +1,295 @@
 (function (S) {
-    'use strict';
+	'use strict';
 
-    var REVEAL_CLASS = 'reveal';
+	var REVEAL_CLASS = 'reveal';
 
-    var Commentable,
-        Base = S.view.Base,
-        C = S.Constants,
-        Director = S.getDirector(),
-        U = S.util,
-        $ = S.$;
+	var Commentable,
+		Base = S.view.Base,
+		C = S.Constants,
+		Director = S.getDirector(),
+		U = S.util,
+		$ = S.$;
 
-    var setTimeout = S.window.setTimeout,
-        clearTimeout = S.window.clearTimeout;
+	var setTimeout = S.window.setTimeout,
+		clearTimeout = S.window.clearTimeout;
 
-    Commentable = Base.extend({
+	Commentable = Base.extend({
 
-        hide: false,
-        reveal: true,
-        timeout: null,
-        className: 'crafter-social-commentable',
-        revealed: false,
-        events: {
-            'mouseenter' : 'mouseenter',
-            'mouseleave' : 'mouseleave'
-        },
+		hide: false,
+		reveal: true,
+		timeout: null,
+		className: 'crafter-social-commentable',
+		revealed: false,
+		events: {
+			'mouseenter': 'mouseenter',
+			'mouseleave': 'mouseleave'
+		},
 
-        initialize: function (config) {
+		initialize: function (config) {
 
-            this.setElement(config.target);
-            Base.prototype.initialize.apply(this, arguments);
-            this.delegateActions(this, this.$options);
+			this.setElement(config.target);
+			Base.prototype.initialize.apply(this, arguments);
+			this.delegateActions(this, this.$options);
 
-            this.collection.fetch({
-                data : { id: this.cfg.target,sortBy:config.sortBy,sortOrder:config.sortOrder }
-            });
+			this.collection.fetch({
+				data: {id: this.cfg.target, sortBy: config.sortBy, sortOrder: config.sortOrder}
+			});
 
-        },
-        listen: function () {
+		},
+		listen: function () {
 
-            var me = this;
-            $(S.window).resize(function () {
-                if ( me.revealed ) {
-                    me.mouseenter();
-                }
-            });
+			var me = this;
+			$(S.window).resize(function () {
+				if (me.revealed) {
+					me.mouseenter();
+				}
+			});
 
-            this.listenTo(this.collection, 'sync', this.render);
-            this.listenTo(this.collection, C.get('EVENT_DISCUSSION_WATCHED', this.cfg), this.setWatched);
+			this.listenTo(this.collection, 'sync', this.render);
+			this.listenTo(this.collection, C.get('EVENT_DISCUSSION_WATCHED', this.cfg), this.setWatched);
 
-            this.listenTo(Director, C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
-            this.listenTo(Director, C.get('EVENT_REVEAL_DISCUSSIONS', this.cfg), this.revealDiscussion);
+			this.listenTo(Director, C.get('EVENT_AREAS_VISIBILITY_CHANGE'), this.visibilityModeChanged);
+			this.listenTo(Director, C.get('EVENT_REVEAL_DISCUSSIONS', this.cfg), this.revealDiscussion);
 
-        },
-        createUI: function () {
+		},
+		createUI: function () {
 
-            var me = this, $elem = this.element();
-            $elem.addClass('crafter-social-commentable');
+			var me = this, $elem = this.element();
+			$elem.addClass('crafter-social-commentable');
 
-            var $options = $(U.template(this.getTemplate('main'), { count: '' }));
-            $options.find('a.action').tooltip();
-            $options.mouseenter(function () { clearTimeout(me.timeout);  });
-            $options.mouseleave(function () { me.timeout = setTimeout(function () { me.mouseleave(); }); });
+			var $options = $(U.template(this.getTemplate('main'), {count: ''}));
+			$options.find('a.action').tooltip();
+			$options.mouseenter(function () {
+				clearTimeout(me.timeout);
+			});
+			$options.mouseleave(function () {
+				me.timeout = setTimeout(function () {
+					me.mouseleave();
+				});
+			});
 
-            this.$options = $options;
+			this.$options = $options;
 
-        },
-        render: function () {
+		},
+		render: function () {
 
-            var $badge = this.$options.find('.badge'),
-                length = this.collection.length;
-            var targetId = this.cfg.target;
-            this.$options.find('#socialCommentBadge').attr('href','#'+targetId.substring(1,targetId.length)+'-comments');
-            if (length === 0) {
-                $badge.text('');
-            } else {
-                $badge.text(length);
-            }
+			var $badge = this.$options.find('.badge'),
+				length = this.collection.length;
+			var targetId = this.cfg.target;
+			this.$options.find('#socialCommentBadge').attr('href', '#' + targetId.substring(1, targetId.length) + '-comments');
+			if (length === 0) {
+				$badge.text('');
+			} else {
+				$badge.text(length);
+			}
 
-            var isWatched = this.collection.getIsWatched();
-            this.setWatched(isWatched);
+			var isWatched = this.collection.getIsWatched();
+			this.setWatched(isWatched);
 
-            return this;
+			return this;
 
-        },
+		},
 
-        /* jshint -W015 */
-        visibilityModeChanged: function (mode) {
-            switch (mode) {
-                case C.get('AREA_VISIBILITY_MODE_REVEAL'):
-                    this.hide = false;
-                    this.reveal = true;
-                    this.$el.is(':visible') && this.mouseenter();
-                    break;
-                case C.get('AREA_VISIBILITY_MODE_HOVER'):
-                    this.hide = false;
-                    this.reveal = false;
-                    this.$el.is(':visible') && this.mouseleave();
-                    break;
-                case C.get('AREA_VISIBILITY_MODE_HIDE'):
-                    this.hide = true;
-                    this.reveal = false;
-                    this.$el.is(':visible') && this.mouseleave();
-                    break;
-            }
-        },
+		/* jshint -W015 */
+		visibilityModeChanged: function (mode) {
+			switch (mode) {
+				case C.get('AREA_VISIBILITY_MODE_REVEAL'):
+					this.hide = false;
+					this.reveal = true;
+					this.$el.is(':visible') && this.mouseenter();
+					break;
+				case C.get('AREA_VISIBILITY_MODE_HOVER'):
+					this.hide = false;
+					this.reveal = false;
+					this.$el.is(':visible') && this.mouseleave();
+					break;
+				case C.get('AREA_VISIBILITY_MODE_HIDE'):
+					this.hide = true;
+					this.reveal = false;
+					this.$el.is(':visible') && this.mouseleave();
+					break;
+			}
+		},
 
-        inline: function () {
-            var view = this.cache('view.Inline');
-            if (!view) {
-                view = new S.view.Inline({
-                    target: this.cfg.target,
-                    context: this.cfg.context,
-                    collection: this.collection
-                });
-                this.cache('view.Inline', view);
-                this.listenTo(view, 'view.change.request', this.viewChangeRequest);
-                view.render();
-            }
-            view.show();
-            this.setActiveView(view);
-        },
-        lightbox: function () {
-            var view = this.cache('view.Lightbox');
-            if (!view) {
-                view = new S.view.Lightbox({
-                    target: this.cfg.target,
-                    context: this.cfg.context,
-                    collection: this.collection
-                });
-                this.cache('view.Lightbox', view);
-                this.listenTo(view, 'view.change.request', this.viewChangeRequest);
-                view.render();
-            }
-            view.show();
-            this.setActiveView(view);
-        },
-        popover: function () {
-            var view = this.cache('view.Popover');
-            if (!view) {
-                view = new S.view.Popover({
-                    target: this.cfg.target,
-                    context: this.cfg.context,
-                    collection: this.collection
-                });
-                this.cache('view.Popover', view);
-                this.listenTo(view, 'visibility.change', this.popoverVisibilityDidChange);
-                this.listenTo(view, 'view.change.request', this.viewChangeRequest);
-                view.render();
-            }
-            view.show();
-            this.setActiveView(view);
-        },
-        setActiveView: function ( view ) {
-            this.activeView = view;
-        },
+		inline: function () {
+			var view = this.cache('view.Inline');
+			if (!view) {
+				view = new S.view.Inline({
+					target: this.cfg.target,
+					context: this.cfg.context,
+					collection: this.collection
+				});
+				this.cache('view.Inline', view);
+				this.listenTo(view, 'view.change.request', this.viewChangeRequest);
+				view.render();
+			}
+			view.show();
+			this.setActiveView(view);
+		},
+		lightbox: function () {
+			var view = this.cache('view.Lightbox');
+			if (!view) {
+				view = new S.view.Lightbox({
+					target: this.cfg.target,
+					context: this.cfg.context,
+					collection: this.collection
+				});
+				this.cache('view.Lightbox', view);
+				this.listenTo(view, 'view.change.request', this.viewChangeRequest);
+				view.render();
+			}
+			view.show();
+			this.setActiveView(view);
+		},
+		popover: function () {
+			var view = this.cache('view.Popover');
+			if (!view) {
+				view = new S.view.Popover({
+					target: this.cfg.target,
+					context: this.cfg.context,
+					collection: this.collection
+				});
+				this.cache('view.Popover', view);
+				this.listenTo(view, 'visibility.change', this.popoverVisibilityDidChange);
+				this.listenTo(view, 'view.change.request', this.viewChangeRequest);
+				view.render();
+			}
+			view.show();
+			this.setActiveView(view);
+		},
+		setActiveView: function (view) {
+			this.activeView = view;
+		},
 
-        popoverVisibilityDidChange: function ( visible ) {
-            this.$el[visible ? 'addClass' : 'removeClass']('revealed-by-view');
-        },
+		popoverVisibilityDidChange: function (visible) {
+			this.$el[visible ? 'addClass' : 'removeClass']('revealed-by-view');
+		},
 
-        revealDiscussion: function ( e ) {
+		revealDiscussion: function (e) {
 
-            if ( !(e instanceof $.Event) && (typeof arguments[0] === 'object') ) {
-                var cfg = arguments[0];
-                (cfg.view) && (this.cfg.discussionView = cfg.view);
-            }
+			if (!(e instanceof $.Event) && (typeof arguments[0] === 'object')) {
+				var cfg = arguments[0];
+				(cfg.view) && (this.cfg.discussionView = cfg.view);
+			}
 
-            this.viewChangeRequest(this.cfg.discussionView);
-            if(e) {
-                $('html, body').animate({
-                    scrollTop: $($(e.currentTarget).attr('href')).offset().top
-                }, 500);
-            }
-        },
-        viewChangeRequest: function ( requested ) {
+			this.viewChangeRequest(this.cfg.discussionView);
+			if (e) {
+				$('html, body').animate({
+					scrollTop: $($(e.currentTarget).attr('href')).offset().top
+				}, 500);
+			}
+		},
+		viewChangeRequest: function (requested) {
 
-            var me = this;
-            $.each(['view.Popover','view.Lightbox','view.Inline'], function (i, v) {
-                var view = me.cache(v);
-                (view) && view.hide();
-            });
+			var me = this;
+			$.each(['view.Popover', 'view.Lightbox', 'view.Inline'], function (i, v) {
+				var view = me.cache(v);
+				(view) && view.hide();
+			});
 
-            /* jshint -W086 */
-            switch (requested) {
-                case 'view.Popover': {
-                    this.popover();
-                    $('body, html').animate({
-                        scrollTop: this.$el.offset().top + this.$el.height()
-                    }, 1000);
-                    break;
-                }
-                case 'view.Lightbox': {
-                    this.lightbox();
-                    break;
-                }
-                case 'view.Inline': {
-                    this.inline();
-                    break;
-                }
-            }
+			/* jshint -W086 */
+			switch (requested) {
+				case 'view.Popover': {
+					this.popover();
+					$('body, html').animate({
+						scrollTop: this.$el.offset().top + this.$el.height()
+					}, 1000);
+					break;
+				}
+				case 'view.Lightbox': {
+					this.lightbox();
+					break;
+				}
+				case 'view.Inline': {
+					this.inline();
+					break;
+				}
+			}
 
-            this.cfg.discussionView = requested;
+			this.cfg.discussionView = requested;
 
-        },
+		},
 
-        watch: function (/*e*/) {
-            var collection = this.collection;
-            var watched = collection.getIsWatched();
-            // TODO: what's backend like?
-            S.request({
-                type: 'POST',
-                context: this,
-                data:{frequency: 'INSTANT'},
-                url: S.url((watched ? 'threads.{_id}.unsubscribe' : 'threads.{_id}.subscribe'), {
-                    _id: this.cfg.target,
-                    context: this.cfg.context
-                }),
-                success: function () {
-                    collection.setIsWatched(!watched);
-                },
-                error: function () {
+		watch: function (/*e*/) {
+			var collection = this.collection;
+			var watched = collection.getIsWatched();
+			// TODO: what's backend like?
+			S.request({
+				type: 'POST',
+				context: this,
+				data: {frequency: 'INSTANT'},
+				url: S.url((watched ? 'threads.{_id}.unsubscribe' : 'threads.{_id}.subscribe'), {
+					_id: this.cfg.target,
+					context: this.cfg.context
+				}),
+				success: function () {
+					collection.setIsWatched(!watched);
+				},
+				error: function () {
 
-                }
-            });
-        },
-        setWatched: function ( isWatched ) {
-            var $elem = this.$options.find('[data-action="watch"]');
-            $elem.parents('li:first')[ (isWatched === null) ? 'addClass' : 'removeClass' ]('hide');
-            $elem.show().css('color', isWatched ? 'green' : '');
-        },
+				}
+			});
+		},
+		setWatched: function (isWatched) {
+			var $elem = this.$options.find('[data-action="watch"]');
+			$elem.parents('li:first')[(isWatched === null) ? 'addClass' : 'removeClass']('hide');
+			$elem.show().css('color', isWatched ? 'green' : '');
+		},
 
-        mouseenter: function (  ) {
+		mouseenter: function () {
 
-            if (!this.hide) {
+			if (!this.hide) {
 
-                clearTimeout(this.timeout);
+				clearTimeout(this.timeout);
 
-                var $elem = this.element(),
-                    $options = this.$options;
+				var $elem = this.element(),
+					$options = this.$options;
 
-                $elem.addClass(REVEAL_CLASS);
+				$elem.addClass(REVEAL_CLASS);
 
-                var offset = $elem.offset(),
-                    width = $elem.outerWidth();
+				var offset = $elem.offset(),
+					width = $elem.outerWidth();
 
-                $options.appendTo('body').show();
-                var optsWidth = $options.outerWidth();
-                $options.hide();
+				$options.appendTo('body').show();
+				var optsWidth = $options.outerWidth();
+				$options.hide();
 
-                $options.css({
-                    left: (offset.left + width - optsWidth),
-                    top: offset.top
-                }).show();
+				$options.css({
+					left: (offset.left + width - optsWidth),
+					top: offset.top
+				}).show();
 
-                this.revealed = true;
+				this.revealed = true;
 
-            }
+			}
 
-        },
-        mouseleave: function (  ) {
+		},
+		mouseleave: function () {
 
-            if ( !(this.reveal) ) {
+			if (!(this.reveal)) {
 
-                var me = this;
-                me.timeout = setTimeout(function () {
-                    me.element().removeClass(REVEAL_CLASS);
-                    me.$options.hide().detach();
-                    me.revealed = false;
-                }, 10);
+				var me = this;
+				me.timeout = setTimeout(function () {
+					me.element().removeClass(REVEAL_CLASS);
+					me.$options.hide().detach();
+					me.revealed = false;
+				}, 10);
 
-            }
+			}
 
-        }
+		}
 
-    });
+	});
 
-    Commentable.DEFAULTS = {
-        templates: {
-            main: function () {
-                return S.string.fmt('%@commentable.hbs', S.Cfg('url.templates'));
-            }
-        },
-        discussionView: 'view.Popover'
-    };
+	Commentable.DEFAULTS = {
+		templates: {
+			main: function () {
+				return S.string.fmt('%@commentable.hbs', S.Cfg('url.templates'));
+			}
+		},
+		discussionView: 'view.Popover'
+	};
 
-    S.define('view.Commentable', Commentable);
+	S.define('view.Commentable', Commentable);
 
-}) (crafter.social);
+})(crafter.social);

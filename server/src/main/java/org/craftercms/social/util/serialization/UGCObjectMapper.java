@@ -32,52 +32,52 @@ import java.util.Map;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class UGCObjectMapper extends ObjectMapper {
-    private static final long serialVersionUID = 1669827811287238948L;
-    private List<JsonSerializer> serializerList = new ArrayList();
-    private Map<Class, JsonDeserializer> deserializerMap = new HashMap<>();
+	private static final long serialVersionUID = 1669827811287238948L;
+	private List<JsonSerializer> serializerList = new ArrayList();
+	private Map<Class, JsonDeserializer> deserializerMap = new HashMap<>();
 
 
-    @ConstructorProperties({"serializerList", "deserializerMap"})
-    public UGCObjectMapper(List<JsonSerializer> serializerList, Map<Class, JsonDeserializer> deserializerMap) {
-        super();
-        super.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        super.getSerializationConfig().without(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        super.getSerializationConfig().with(SerializationFeature.WRITE_NULL_MAP_VALUES);
+	@ConstructorProperties({"serializerList", "deserializerMap"})
+	public UGCObjectMapper(List<JsonSerializer> serializerList, Map<Class, JsonDeserializer> deserializerMap) {
+		super();
+		super.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+		super.getSerializationConfig().without(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+		super.getSerializationConfig().with(SerializationFeature.WRITE_NULL_MAP_VALUES);
 
-        this.serializerList = serializerList;
-        this.deserializerMap = deserializerMap;
-        registerSerializationModule();
-    }
+		this.serializerList = serializerList;
+		this.deserializerMap = deserializerMap;
+		registerSerializationModule();
+	}
 
-    protected void registerSerializationModule() {
-        SimpleModule module = new SimpleModule("UGCSerializationModule", new Version(1, 0, 0, null, null, null));
+	protected void registerSerializationModule() {
+		SimpleModule module = new SimpleModule("UGCSerializationModule", new Version(1, 0, 0, null, null, null));
 
-        for (JsonSerializer ser : serializerList) {
-            module.addSerializer(ser);
-        }
+		for (JsonSerializer ser : serializerList) {
+			module.addSerializer(ser);
+		}
 
-        for (Class key : deserializerMap.keySet()) {
-            JsonDeserializer deser = deserializerMap.get(key);
-            module.addDeserializer(key, deser);
-        }
+		for (Class key : deserializerMap.keySet()) {
+			JsonDeserializer deser = deserializerMap.get(key);
+			module.addDeserializer(key, deser);
+		}
 
-        registerModule(module);
+		registerModule(module);
 
-    }
+	}
 
-    public List<JsonSerializer> getSerializerList() {
-        return serializerList;
-    }
+	public List<JsonSerializer> getSerializerList() {
+		return serializerList;
+	}
 
-    public void setSerializerList(List<JsonSerializer> serializerList) {
-        this.serializerList = serializerList;
-    }
+	public void setSerializerList(List<JsonSerializer> serializerList) {
+		this.serializerList = serializerList;
+	}
 
-    public Map<Class, JsonDeserializer> getDeserializerMap() {
-        return deserializerMap;
-    }
+	public Map<Class, JsonDeserializer> getDeserializerMap() {
+		return deserializerMap;
+	}
 
-    public void setDeserializerMap(Map<Class, JsonDeserializer> deserializerMap) {
-        this.deserializerMap = deserializerMap;
-    }
+	public void setDeserializerMap(Map<Class, JsonDeserializer> deserializerMap) {
+		this.deserializerMap = deserializerMap;
+	}
 }

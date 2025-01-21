@@ -1,11 +1,11 @@
 /*! Bootstrap Growl - v1.0.6 - 2014-01-29
 * https://github.com/mouse0270/bootstrap-growl
 * Copyright (c) 2014 Remable Designs; Licensed MIT */
-;(function($, window, document, undefined) {
+;(function ($, window, document, undefined) {
 	"use strict";
 	var bootstrap_growl_remove = [];
 
-	$.growl = function(content, options) {
+	$.growl = function (content, options) {
 		var message = null,
 			title = null,
 			icon = null,
@@ -13,10 +13,10 @@
 
 		if (typeof content == "object") {
 			message = content.message;
-			title = content.title ? " "+content.title+" " : null;
+			title = content.title ? " " + content.title + " " : null;
 			icon = content.icon ? content.icon : null;
 			options = content;
-		}else{
+		} else {
 			message = content;
 		}
 
@@ -26,7 +26,7 @@
 		// Set the template icon to be either a span or an image depending on icon_type
 		if (options.template.icon_type === 'class') {
 			options.template.icon = '<span class="">';
-		}else{
+		} else {
 			options.template.icon = '<img src="" />';
 		}
 
@@ -49,10 +49,10 @@
 			if (options.template.icon) {
 				if (options.template.icon_type == "class") {
 					$growl.append($(options.template.icon).addClass(icon));
-				}else{
-					$growl.append($(options.template.icon).attr('src',icon));
+				} else {
+					$growl.append($(options.template.icon).attr('src', icon));
 				}
-			}else{
+			} else {
 				$growl.append(icon);
 			}
 		}
@@ -60,7 +60,7 @@
 		if (title) {
 			if (options.template.title) {
 				$growl.append($(options.template.title).html(title));
-			}else{
+			} else {
 				$growl.append(title);
 			}
 			$growl.append(options.template.title_divider);
@@ -68,14 +68,14 @@
 
 		if (options.template.message) {
 			$growl.append($(options.template.message).html(message));
-		}else{
+		} else {
 			$growl.append(message);
 		}
 
 		/* ===== DETERMINE GROWL POSITION ===== */
 		offsetAmount = options.offset;
 
-		$("."+growlClass).each(function() {
+		$("." + growlClass).each(function () {
 			return offsetAmount = Math.max(offsetAmount, parseInt($(this).css(options.position.from)) + $(this).outerHeight() + options.spacing);
 		});
 
@@ -110,7 +110,7 @@
 			options.onGrowlShow(event);
 		}
 
-		var fadeIn = $growl.fadeIn(options.fade_in, function(event) {
+		var fadeIn = $growl.fadeIn(options.fade_in, function (event) {
 			if (options.onGrowlShown) {
 				options.onGrowlShown(event);
 			}
@@ -118,16 +118,16 @@
 			/* ===== HANDEL DELAY AND PAUSE ON MOUSE OVER ===== */
 			if (options.delay > 0) {
 				if (options.pause_on_mouseover == true) {
-					$growl.on('mouseover', function() {
+					$growl.on('mouseover', function () {
 						clearTimeout(bootstrap_growl_remove[$growl.index()]);
-					}).on('mouseleave', function() {
-						bootstrap_growl_remove[$growl.index()] = setTimeout(function() {
+					}).on('mouseleave', function () {
+						bootstrap_growl_remove[$growl.index()] = setTimeout(function () {
 							return $growl.alert("close");
 						}, options.delay);
 					});
 				}
 
-				bootstrap_growl_remove[$growl.index()] = setTimeout(function() {
+				bootstrap_growl_remove[$growl.index()] = setTimeout(function () {
 					return $growl.alert("close");
 				}, options.delay);
 			}
@@ -145,9 +145,9 @@
 			}
 
 			var pos = $(this).css(options.position.from);
-			$(this).nextAll('.'+growlClass).each(function() {
-				$(this).css(options.position.from , pos);
-				pos = (parseInt(pos)+(options.spacing)) + $(this).outerHeight();
+			$(this).nextAll('.' + growlClass).each(function () {
+				$(this).css(options.position.from, pos);
+				pos = (parseInt(pos) + (options.spacing)) + $(this).outerHeight();
 			});
 		});
 

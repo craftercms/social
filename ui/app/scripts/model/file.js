@@ -1,45 +1,45 @@
 (function (S) {
-    'use strict';
+	'use strict';
 
-    var File = S.Backbone.Model.extend({
-        
-        idAttribute: 'attachmentId',
+	var File = S.Backbone.Model.extend({
 
-        downloadUrl: function () {
-            return '/';
-        },
+		idAttribute: 'attachmentId',
 
-        url: function () {
-            if (this.isNew()) {
-                return S.url('comments.{_id}.attachments');
-            } else {
-                // TODO ... update?
-            }
-        },
+		downloadUrl: function () {
+			return '/';
+		},
 
-        parse: function (modelData) {
-            try {
-                modelData.url = S.url('comments.{_id}.attachments.{fileId}', {
-                    _id: modelData.attributes.owner,
-                    fileId: modelData.fileId,
-                    context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'
-                });
-            } catch (ex) {
-                console && console.log('crafter.social.model.File: ', ex);
-            }
-            return modelData;
-        },
+		url: function () {
+			if (this.isNew()) {
+				return S.url('comments.{_id}.attachments');
+			} else {
+				// TODO ... update?
+			}
+		},
 
-        detach: function () {
+		parse: function (modelData) {
+			try {
+				modelData.url = S.url('comments.{_id}.attachments.{fileId}', {
+					_id: modelData.attributes.owner,
+					fileId: modelData.fileId,
+					context: 'f5b143c2-f1c0-4a10-b56e-f485f00d3fe9'
+				});
+			} catch (ex) {
+				console && console.log('crafter.social.model.File: ', ex);
+			}
+			return modelData;
+		},
 
-        },
+		detach: function () {
 
-        open: function () {
+		},
 
-        }
+		open: function () {
 
-    });
+		}
 
-    S.define('model.File', File);
+	});
 
-}) (crafter.social);
+	S.define('model.File', File);
+
+})(crafter.social);

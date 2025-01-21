@@ -24,9 +24,9 @@ import org.craftercms.profile.api.Profile;
  *
  */
 public interface ProfileAggregator {
-    void clearProfileCache(List<String> profileIds);
+	void clearProfileCache(List<String> profileIds);
 
-    void clearProfileCache();
+	void clearProfileCache();
 
-    Profile getProfile(String profileId);
+	Profile getProfile(String profileId);
 }

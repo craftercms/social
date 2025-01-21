@@ -37,21 +37,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/api/3/system/actions")
 public class ActionsController {
 
-    @Autowired
-    private SecurityActionsService actionsService;
+	@Autowired
+	private SecurityActionsService actionsService;
 
-    @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
-    public Iterable<SocialSecurityAction> getCurrentActions() {
-        return IterableUtils.toList(actionsService.get(SocialSecurityUtils.getContext()));
-    }
+	@RequestMapping(method = RequestMethod.GET)
+	@ResponseBody
+	public Iterable<SocialSecurityAction> getCurrentActions() {
+		return IterableUtils.toList(actionsService.get(SocialSecurityUtils.getContext()));
+	}
 
-    @RequestMapping(method = {RequestMethod.PUT,RequestMethod.POST})
-    @ResponseBody
-    public SocialSecurityAction update(@RequestParam("actionName") final String actionName,
-                                       @RequestParam() final String roles) throws SocialException {
-        return actionsService.update(SocialSecurityUtils.getContext(), actionName, Arrays.asList(roles.split(",")));
-    }
+	@RequestMapping(method = {RequestMethod.PUT, RequestMethod.POST})
+	@ResponseBody
+	public SocialSecurityAction update(@RequestParam("actionName") final String actionName,
+					   @RequestParam() final String roles) throws SocialException {
+		return actionsService.update(SocialSecurityUtils.getContext(), actionName, Arrays.asList(roles.split(",")));
+	}
 
 
 }

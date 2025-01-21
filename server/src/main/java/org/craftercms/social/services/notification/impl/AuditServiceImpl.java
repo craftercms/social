@@ -33,48 +33,48 @@ import org.craftercms.social.util.LoggerFactory;
  */
 public class AuditServiceImpl extends AuditService<AuditLog> {
 
-    private AuditRepository auditRepository;
-    private I10nLogger log = LoggerFactory.getLogger(AuditServiceImpl.class);
+	private AuditRepository auditRepository;
+	private I10nLogger log = LoggerFactory.getLogger(AuditServiceImpl.class);
 
-    @Override
-    public AuditLog getAuditLog(final String id) {
-        return null;
-    }
+	@Override
+	public AuditLog getAuditLog(final String id) {
+		return null;
+	}
 
-    @Override
-    protected void persistAudit(final AuditLog auditModel) {
-        try {
-            auditRepository.save(auditModel);
-        } catch (MongoDataException e) {
-            log.error("logging.system.auditErrorSaving", e, auditModel);
-        }
-    }
+	@Override
+	protected void persistAudit(final AuditLog auditModel) {
+		try {
+			auditRepository.save(auditModel);
+		} catch (MongoDataException e) {
+			log.error("logging.system.auditErrorSaving", e, auditModel);
+		}
+	}
 
-    @Override
-    protected void deleteAudits(final List<String> auditId) {
-        try {
-            auditRepository.deleteByIds(auditId);
-        } catch (SocialException e) {
-            log.error("logging.system.unableToDeleteAudit", e, auditId);
-        }
-    }
+	@Override
+	protected void deleteAudits(final List<String> auditId) {
+		try {
+			auditRepository.deleteByIds(auditId);
+		} catch (SocialException e) {
+			log.error("logging.system.unableToDeleteAudit", e, auditId);
+		}
+	}
 
-    @Override
-    public List<AuditLog> getAuditLogs(final Date from) {
-        return getAuditLogs(from, new Date());
-    }
+	@Override
+	public List<AuditLog> getAuditLogs(final Date from) {
+		return getAuditLogs(from, new Date());
+	}
 
-    @Override
-    public List<AuditLog> getAuditLogs(final Date from, final Date to) {
-        try {
-            return auditRepository.getByDate(from,to);
-        } catch (SocialException ex) {
-            log.error("logging.system.unableToFindAudits", ex, from, to);
-        }
-        return null;
-    }
+	@Override
+	public List<AuditLog> getAuditLogs(final Date from, final Date to) {
+		try {
+			return auditRepository.getByDate(from, to);
+		} catch (SocialException ex) {
+			log.error("logging.system.unableToFindAudits", ex, from, to);
+		}
+		return null;
+	}
 
-    public void setAuditRepository(final AuditRepository auditRepository) {
-        this.auditRepository = auditRepository;
-    }
+	public void setAuditRepository(final AuditRepository auditRepository) {
+		this.auditRepository = auditRepository;
+	}
 }

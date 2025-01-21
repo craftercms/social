@@ -24,10 +24,10 @@ public class CommunityModeration implements ModerationFilter {
 
 	@Override
 	public boolean needModeration(SocialUgc ugc) {
-		    //To prevent division by 0
-		    int likes = (ugc.getVotesUp().size() == 0)?1:ugc.getVotesUp().size();
-			int percentage = ((ugc.getVotesDown().size() * 100) / (likes + ugc.getVotesDown().size()));
-			return percentage >= comunityOffenceMaxPercentage;
+		//To prevent division by 0
+		int likes = (ugc.getVotesUp().size() == 0) ? 1 : ugc.getVotesUp().size();
+		int percentage = ((ugc.getVotesDown().size() * 100) / (likes + ugc.getVotesDown().size()));
+		return percentage >= comunityOffenceMaxPercentage;
 	}
 
 	@Override

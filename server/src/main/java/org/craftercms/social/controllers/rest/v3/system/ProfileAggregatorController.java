@@ -36,23 +36,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/api/3/system/profile")
 public class ProfileAggregatorController {
 
-    @Autowired
-    private ProfileAggregator profileAggregator;
+	@Autowired
+	private ProfileAggregator profileAggregator;
 
-    @RequestMapping(value = "/clear", method = {RequestMethod.DELETE,RequestMethod.GET})
-    @ResponseBody
-    @HasPermission(action = "ClearCache",type = SocialPermission.class)
-    public boolean clearProfileCache(@RequestParam(required = false, defaultValue = "") final String profileIds) {
-        if (StringUtils.isBlank(profileIds)) {
-            profileAggregator.clearProfileCache();
-        } else {
-            String[] ids = profileIds.split(",");
-            if (ids.length != 0) {
-               profileAggregator.clearProfileCache(Arrays.asList(ids));
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
+	@RequestMapping(value = "/clear", method = {RequestMethod.DELETE, RequestMethod.GET})
+	@ResponseBody
+	@HasPermission(action = "ClearCache", type = SocialPermission.class)
+	public boolean clearProfileCache(@RequestParam(required = false, defaultValue = "") final String profileIds) {
+		if (StringUtils.isBlank(profileIds)) {
+			profileAggregator.clearProfileCache();
+		} else {
+			String[] ids = profileIds.split(",");
+			if (ids.length != 0) {
+				profileAggregator.clearProfileCache(Arrays.asList(ids));
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
 }

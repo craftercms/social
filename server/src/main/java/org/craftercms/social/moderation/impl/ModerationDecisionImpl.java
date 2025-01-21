@@ -27,14 +27,13 @@ import org.craftercms.social.moderation.ModerationFilter;
  * Using the ModerationFilters decides if a UGC have to be moderate or not <br/>
  * The neither ModerationDecisionImpl or the Filters modified the UGC <br/>
  * The decision is taken base on the first
- * 
+ *
  * @author cortiz
- * 
  */
 public class ModerationDecisionImpl implements ModerationDecision {
 
 	private List<ModerationFilter> filters;
-	
+
 	private int maxFlagsBeforeTrash = 10;
 
 	@ConstructorProperties({"filters"})
@@ -42,7 +41,7 @@ public class ModerationDecisionImpl implements ModerationDecision {
 		super();
 		this.filters = filters;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.craftercms.comments.moderation.ModerationDecision#needModeration(org.craftercms.comments.domain.UGC)
 	 */
@@ -62,7 +61,7 @@ public class ModerationDecisionImpl implements ModerationDecision {
 	public boolean isTrash(SocialUgc ugc) {
 		return ugc.getFlags().size() >= maxFlagsBeforeTrash;
 	}
-	
+
 	@Override
 	public void setMaxFlagsBeforeTrash(int maxFlags) {
 		maxFlagsBeforeTrash = maxFlags;

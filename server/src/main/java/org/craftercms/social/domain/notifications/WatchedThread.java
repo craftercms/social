@@ -31,55 +31,55 @@ import org.jongo.marshall.jackson.oid.Id;
  */
 @Document(collectionName = "watchList")
 public class WatchedThread {
-    @Id
-    private String threadId;
-    private Set<ProfileWatchOptions> watchers;
-    @JsonIgnore
-    private I10nLogger log = LoggerFactory.getLogger(WatchedThread.class);
+	@Id
+	private String threadId;
+	private Set<ProfileWatchOptions> watchers;
+	@JsonIgnore
+	private I10nLogger log = LoggerFactory.getLogger(WatchedThread.class);
 
-    public WatchedThread() {
-        watchers = new HashSet<>();
-    }
+	public WatchedThread() {
+		watchers = new HashSet<>();
+	}
 
-    public void addWatcher(final String profileId, final String frequency) {
-        final ProfileWatchOptions toAdd = new ProfileWatchOptions(profileId, frequency);
-        if (!watchers.contains(toAdd)) {
-            watchers.add(toAdd);
-            log.debug("logging.system.notification.userAddedWatching", profileId, threadId, frequency);
-        } else {
-            log.debug("logging.system.notification.userAlreadyWatching", profileId, threadId, frequency);
-        }
-    }
+	public void addWatcher(final String profileId, final String frequency) {
+		final ProfileWatchOptions toAdd = new ProfileWatchOptions(profileId, frequency);
+		if (!watchers.contains(toAdd)) {
+			watchers.add(toAdd);
+			log.debug("logging.system.notification.userAddedWatching", profileId, threadId, frequency);
+		} else {
+			log.debug("logging.system.notification.userAlreadyWatching", profileId, threadId, frequency);
+		}
+	}
 
-    public void removeWatcher(final String profileId, final String frequency) {
-        if (watchers.remove(new ProfileWatchOptions(profileId, frequency))) {
-            log.debug("logging.system.notification.userRemoveWatching", profileId, threadId, frequency);
-        } else {
-            log.debug("logging.system.notification.userUnableToRemove", profileId, threadId, frequency);
-        }
-    }
+	public void removeWatcher(final String profileId, final String frequency) {
+		if (watchers.remove(new ProfileWatchOptions(profileId, frequency))) {
+			log.debug("logging.system.notification.userRemoveWatching", profileId, threadId, frequency);
+		} else {
+			log.debug("logging.system.notification.userUnableToRemove", profileId, threadId, frequency);
+		}
+	}
 
-    public String getThreadId() {
-        return threadId;
-    }
+	public String getThreadId() {
+		return threadId;
+	}
 
-    public void setThreadId(final String threadId) {
-        this.threadId = threadId;
-    }
+	public void setThreadId(final String threadId) {
+		this.threadId = threadId;
+	}
 
-    public Set<ProfileWatchOptions> getWatchers() {
-        return watchers;
-    }
+	public Set<ProfileWatchOptions> getWatchers() {
+		return watchers;
+	}
 
-    public void setWatchers(final Set<ProfileWatchOptions> watchers) {
-        this.watchers = watchers;
-    }
+	public void setWatchers(final Set<ProfileWatchOptions> watchers) {
+		this.watchers = watchers;
+	}
 
-    @Override
-    public String toString() {
-        return "WatchedThreads{" +
-            "threadId=" + threadId +
-            ", watchers=" + watchers +
-            '}';
-    }
+	@Override
+	public String toString() {
+		return "WatchedThreads{" +
+			"threadId=" + threadId +
+			", watchers=" + watchers +
+			'}';
+	}
 }

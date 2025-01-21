@@ -13,14 +13,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var contexts=db.socialContext.find();
-contexts.forEach(function(context) {
-    var  result=db.preferences.find({_id:context._id,"preferences.baseUrl":{$exists:true}}).count();
-    if(result===0){
-        db.preferences.update({_id:context._id},{$set:{"preferences.baseUrl":"http://myDomain.com"}});
-    }
+var contexts = db.socialContext.find();
+contexts.forEach(function (context) {
+	var result = db.preferences.find({_id: context._id, "preferences.baseUrl": {$exists: true}}).count();
+	if (result === 0) {
+		db.preferences.update({_id: context._id}, {$set: {"preferences.baseUrl": "http://myDomain.com"}});
+	}
 });
-var  result=db.preferences.find({_id:"TEMPLATE_CONTEXT_ACTIONS","preferences.baseUrl":{$exists:true}}).count();
-if(result===0){
-    db.preferences.update({_id:"TEMPLATE_CONTEXT_ACTIONS"},{$set:{"preferences.baseUrl":"http://myDomain.com"}});
+var result = db.preferences.find({_id: "TEMPLATE_CONTEXT_ACTIONS", "preferences.baseUrl": {$exists: true}}).count();
+if (result === 0) {
+	db.preferences.update({_id: "TEMPLATE_CONTEXT_ACTIONS"}, {$set: {"preferences.baseUrl": "http://myDomain.com"}});
 }

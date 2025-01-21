@@ -20,13 +20,13 @@ package org.craftercms.virusscanner.impl;
  * Created by cortiz on 7/15/14.
  */
 public class VirusScannerException extends RuntimeException {
-    private static final long serialVersionUID = -4890432595979626298L;
+	private static final long serialVersionUID = -4890432595979626298L;
 
-    public VirusScannerException(final String message) {
-        super(message);
-    }
+	public VirusScannerException(final String message) {
+		super(message);
+	}
 
-    public VirusScannerException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	public VirusScannerException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

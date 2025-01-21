@@ -1,20 +1,20 @@
 /* jshint -W106 */
 (function (S) {
-    'use strict';
+	'use strict';
 
-    var ready   = S.window.crafterSocial_onAppReady,
-        params  = [ S.getDirector(), S ];
+	var ready = S.window.crafterSocial_onAppReady,
+		params = [S.getDirector(), S];
 
-    if ( S.util.isArray(ready) ) {
+	if (S.util.isArray(ready)) {
 
-        ready.every(function (fn) {
-            return fn.apply(null, params);
-        });
+		ready.every(function (fn) {
+			return fn.apply(null, params);
+		});
 
-    } else if (ready) {
+	} else if (ready) {
 
-        ready.apply(null, params);
+		ready.apply(null, params);
 
-    }
+	}
 
-}) (crafter.social);
+})(crafter.social);

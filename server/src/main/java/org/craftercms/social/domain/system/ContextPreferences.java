@@ -28,40 +28,40 @@ import org.jongo.marshall.jackson.oid.Id;
 @Document(collectionName = "preferences")
 public class ContextPreferences {
 
-    @Id
-    private String contextId;
-    private Map<String,Object> preferences;
+	@Id
+	private String contextId;
+	private Map<String, Object> preferences;
 
 
-    public ContextPreferences() {
-    }
+	public ContextPreferences() {
+	}
 
-    public ContextPreferences(final String contextId, final Map<String, Object> preferences) {
-        this.contextId = contextId;
-        this.preferences = preferences;
-    }
+	public ContextPreferences(final String contextId, final Map<String, Object> preferences) {
+		this.contextId = contextId;
+		this.preferences = preferences;
+	}
 
-    public String getContextId() {
-        return contextId;
-    }
+	public String getContextId() {
+		return contextId;
+	}
 
-    public void setContextId(final String contextId) {
-        this.contextId = contextId;
-    }
+	public void setContextId(final String contextId) {
+		this.contextId = contextId;
+	}
 
-    public Map<String, Object> getPreferences() {
-        return preferences;
-    }
+	public Map<String, Object> getPreferences() {
+		return preferences;
+	}
 
-    public void setPreferences(final Map<String, Object> preferences) {
-        this.preferences = preferences;
-    }
+	public void setPreferences(final Map<String, Object> preferences) {
+		this.preferences = preferences;
+	}
 
-    @Override
-    public String toString() {
-        return "ContextPreferences{" +
-            "contextId='" + contextId + '\'' +
-            ", preferences=" + preferences +
-            '}';
-    }
+	@Override
+	public String toString() {
+		return "ContextPreferences{" +
+			"contextId='" + contextId + '\'' +
+			", preferences=" + preferences +
+			'}';
+	}
 }

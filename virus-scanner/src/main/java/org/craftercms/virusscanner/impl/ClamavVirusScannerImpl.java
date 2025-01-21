@@ -41,39 +41,40 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 	private int port;
 	private int timeout;
 
-    public ClamavVirusScannerImpl() {
-        this("localhost",3310,60000);
-    }
+	public ClamavVirusScannerImpl() {
+		this("localhost", 3310, 60000);
+	}
 
-    /**
-     *
-     * @param host the clamd server host
-     * @param port the clamd server port
-     * @param timeout milliseconds to wait for the connection
-     */
+	/**
+	 * @param host    the clamd server host
+	 * @param port    the clamd server port
+	 * @param timeout milliseconds to wait for the connection
+	 */
 	public ClamavVirusScannerImpl(String host, int port, int timeout) {
 		this.host = host;
 		this.port = port;
 		this.timeout = timeout;
 	}
 
-    /**
-     * Scans the file for virus.
-     * @param filename full path
-     */
+	/**
+	 * Scans the file for virus.
+	 *
+	 * @param filename full path
+	 */
 	public void scan(String filename) {
-        try {
-            scan(new FileInputStream(filename));
-        } catch (FileNotFoundException e) {
-            throw new VirusScannerException("Unable to read given file",e);
-        }
+		try {
+			scan(new FileInputStream(filename));
+		} catch (FileNotFoundException e) {
+			throw new VirusScannerException("Unable to read given file", e);
+		}
 
-    }
+	}
 
-    /**
-     * Scans the {@link InputStream} for viruses.
-     * @param inputStream
-     */
+	/**
+	 * Scans the {@link InputStream} for viruses.
+	 *
+	 * @param inputStream
+	 */
 	public void scan(InputStream inputStream) {
 		ClamScan clamScan;
 		ScanResult scanResult;
@@ -93,14 +94,14 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 			statusName = scanResult.getStatus().name();
 
 			if (scanResult.getStatus().compareTo(ScanResult.Status.ERROR) == 0) {
-                final String msg = "STATUS: " + statusName + " - RESULT: " + result + " - EXCEPTION: " + scanResult
-                    .getException() ;
+				final String msg = "STATUS: " + statusName + " - RESULT: " + result + " - EXCEPTION: " + scanResult
+					.getException();
 				log.error(msg);
-                throw new VirusScannerException(msg,scanResult.getException());
+				throw new VirusScannerException(msg, scanResult.getException());
 			} else if (scanResult.getStatus().compareTo(ScanResult.Status.FAILED) == 0) {
-                final String msg = "STATUS: " + statusName + " - RESULT: " + result + " - SIGNATURE " + signature +
-                    "" + " - USER ";
-                throw new VirusScannerException(msg,scanResult.getException());
+				final String msg = "STATUS: " + statusName + " - RESULT: " + result + " - SIGNATURE " + signature +
+					"" + " - USER ";
+				throw new VirusScannerException(msg, scanResult.getException());
 			} else {
 				log.debug("STATUS: " + statusName + " - RESULT: " + result);
 			}
@@ -109,53 +110,47 @@ public class ClamavVirusScannerImpl implements VirusScanner {
 		}
 	}
 
-    /**
-     *
-     * @param host the clamd server host
-     */
-    public void setHost(String host) {
-        this.host = host;
-    }
+	/**
+	 * @param host the clamd server host
+	 */
+	public void setHost(String host) {
+		this.host = host;
+	}
 
-    /**
-     *
-     * @param port the clamd server port
-     */
-    public void setPort(int port) {
-        this.port = port;
-    }
+	/**
+	 * @param port the clamd server port
+	 */
+	public void setPort(int port) {
+		this.port = port;
+	}
 
-    /**
-     *
-     * @param timeout milliseconds to wait for the connection
-     */
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
+	/**
+	 * @param timeout milliseconds to wait for the connection
+	 */
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
 
-    /**
-     *
-     * @return the clamd server host
-     */
-    public String getHost() {
-        return host;
-    }
+	/**
+	 * @return the clamd server host
+	 */
+	public String getHost() {
+		return host;
+	}
 
-    /**
-     *
-     * @return the clamd server port
-     */
-    public int getPort() {
-        return port;
-    }
+	/**
+	 * @return the clamd server port
+	 */
+	public int getPort() {
+		return port;
+	}
 
-    /**
-     *
-     * @return the milliseconds to wait for the connection
-     */
-    public int getTimeout() {
-        return timeout;
-    }
+	/**
+	 * @return the milliseconds to wait for the connection
+	 */
+	public int getTimeout() {
+		return timeout;
+	}
 
 
 }

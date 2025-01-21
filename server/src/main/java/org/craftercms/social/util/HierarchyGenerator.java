@@ -21,7 +21,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 public class HierarchyGenerator {
-	
+
 	private HierarchyGenerator() {
 	}
 

@@ -44,126 +44,126 @@ import java.util.*;
  */
 public class ApproveContentListener {
 
-    private static final String APPROVER_EMAIL_TEMPLATE_NAME = "APPROVEREMAIL";
-    private ProfileService profileService;
-    private TenantConfigurationService tenantConfigurationService;
-    private Logger logger = org.slf4j.LoggerFactory.getLogger(ApproveContentListener.class);
-    private TemplateLoader socialFreemarkerLoader;
-    private Configuration cfg;
-    private String systemDefaultLocale;
-    private HashMap<String,Object> modelExt;
-    private EmailService emailService;
-    private ContextPreferencesService contextPreferencesService;
+	private static final String APPROVER_EMAIL_TEMPLATE_NAME = "APPROVEREMAIL";
+	private ProfileService profileService;
+	private TenantConfigurationService tenantConfigurationService;
+	private Logger logger = org.slf4j.LoggerFactory.getLogger(ApproveContentListener.class);
+	private TemplateLoader socialFreemarkerLoader;
+	private Configuration cfg;
+	private String systemDefaultLocale;
+	private HashMap<String, Object> modelExt;
+	private EmailService emailService;
+	private ContextPreferencesService contextPreferencesService;
 
-    @EventListener(condition = "#event.type.name == '" + SecurityActionNames.UGC_CREATE + "'")
-    public void onAudit(final SocialEvent event) {
-        UGC ugc = event.getSource();
-        boolean moderateByMail = Boolean.parseBoolean(tenantConfigurationService.getProperty(event.getSource()
-                .getContextId(), "moderateByMailEnable").toString());
-        String moderateRole = tenantConfigurationService.getProperty(event.getSource().getContextId(),
-            "moderateByMailRole");
-        String emailSubject  = tenantConfigurationService.getProperty(event.getSource().getContextId(),
-            "moderateByMailSubject");
-        if (moderateByMail) {
-            try {
-                final Profile profile = profileService.getProfile(event.getUserId());
-                ugc.setUser(profile);
-                if (profile != null) {
-                    final List<Profile> toSendEmail = profileService.getProfilesByQuery(profile.getTenant(),
-                        "{\"attributes" + ".socialContexts" + ".id\":\"" + ugc.getContextId() + "\",\"attributes" +
-                            ".socialContexts" + ".roles\":{$in:[\""+moderateRole+"\"]},enabled:true,\"attributes"
-                            + ".socialContexts.id\":\""+ugc.getContextId()+"\"}",
-                        "createdOn", SortOrder.ASC, 0, 999);
-                    logger.debug("To Send emails {}", toSendEmail);
+	@EventListener(condition = "#event.type.name == '" + SecurityActionNames.UGC_CREATE + "'")
+	public void onAudit(final SocialEvent event) {
+		UGC ugc = event.getSource();
+		boolean moderateByMail = Boolean.parseBoolean(tenantConfigurationService.getProperty(event.getSource()
+			.getContextId(), "moderateByMailEnable").toString());
+		String moderateRole = tenantConfigurationService.getProperty(event.getSource().getContextId(),
+			"moderateByMailRole");
+		String emailSubject = tenantConfigurationService.getProperty(event.getSource().getContextId(),
+			"moderateByMailSubject");
+		if (moderateByMail) {
+			try {
+				final Profile profile = profileService.getProfile(event.getUserId());
+				ugc.setUser(profile);
+				if (profile != null) {
+					final List<Profile> toSendEmail = profileService.getProfilesByQuery(profile.getTenant(),
+						"{\"attributes" + ".socialContexts" + ".id\":\"" + ugc.getContextId() + "\",\"attributes" +
+							".socialContexts" + ".roles\":{$in:[\"" + moderateRole + "\"]},enabled:true,\"attributes"
+							+ ".socialContexts.id\":\"" + ugc.getContextId() + "\"}",
+						"createdOn", SortOrder.ASC, 0, 999);
+					logger.debug("To Send emails {}", toSendEmail);
 
-                    buildEmailToApprover(toSendEmail,ugc,emailSubject,(String)event.getAttribute("baseUrl"));
-                }// Profile Should be null , this UGC is just been created , user MUST exist!
-            } catch (ProfileException e) {
-                logger.error("Unable to get profiles information!", e);
-            }
+					buildEmailToApprover(toSendEmail, ugc, emailSubject, (String) event.getAttribute("baseUrl"));
+				}// Profile Should be null , this UGC is just been created , user MUST exist!
+			} catch (ProfileException e) {
+				logger.error("Unable to get profiles information!", e);
+			}
 
-        }
-    }
+		}
+	}
 
-    private void buildEmailToApprover(final List<Profile> toSendEmail,UGC ugc,String emailSubject,final String baseUrl
-        ) {
+	private void buildEmailToApprover(final List<Profile> toSendEmail, UGC ugc, String emailSubject, final String baseUrl
+	) {
 
-        for (Profile profile : toSendEmail) {
-            try {
-                HashMap<String,Object> dataModel = new HashMap(modelExt);
-                final VerificationToken id = profileService.createVerificationToken(profile.getId().toString());
-                dataModel.put("profile",profile);
-                dataModel.put("ugc",ugc);
-                dataModel.put("verificationToken",id);
-                dataModel.put("baseUrl",baseUrl);
-                final Map<String, Object> contextPreferences = contextPreferencesService.getContextPreferences(ugc
-                    .getContextId());
-                final TimeZone timezone = TimeZone.getTimeZone(((HashMap<String,Object>)contextPreferences.get("preferences")).get("timezone").toString());
-                cfg.setTimeZone(timezone);
-                StringWriter writer = new StringWriter();
-                Template template=cfg.getTemplate(ugc.getContextId()+"/"+APPROVER_EMAIL_TEMPLATE_NAME,
-                    getProfileLocale(profile.getAttribute("notificationLocale")));
-                final Environment env = template.createProcessingEnvironment(dataModel, writer);
-                env.process();
-                writer.flush();
-                emailService.sendEmail(profile,writer,emailSubject,ugc.getContextId());
-            }catch (ProfileException ex){
-                logger.error("Unable to generate Verification Token",ex);
-            }catch (TemplateException | IOException ex){
-                logger.error("Unable to generate email template",ex);
-            } catch (SocialException ex) {
-                logger.error("Unable to Send email ",ex);
-            }catch (Throwable ex){
-                logger.error("Unable to send email due a unknown exception",ex);
-            }
+		for (Profile profile : toSendEmail) {
+			try {
+				HashMap<String, Object> dataModel = new HashMap(modelExt);
+				final VerificationToken id = profileService.createVerificationToken(profile.getId().toString());
+				dataModel.put("profile", profile);
+				dataModel.put("ugc", ugc);
+				dataModel.put("verificationToken", id);
+				dataModel.put("baseUrl", baseUrl);
+				final Map<String, Object> contextPreferences = contextPreferencesService.getContextPreferences(ugc
+					.getContextId());
+				final TimeZone timezone = TimeZone.getTimeZone(((HashMap<String, Object>) contextPreferences.get("preferences")).get("timezone").toString());
+				cfg.setTimeZone(timezone);
+				StringWriter writer = new StringWriter();
+				Template template = cfg.getTemplate(ugc.getContextId() + "/" + APPROVER_EMAIL_TEMPLATE_NAME,
+					getProfileLocale(profile.getAttribute("notificationLocale")));
+				final Environment env = template.createProcessingEnvironment(dataModel, writer);
+				env.process();
+				writer.flush();
+				emailService.sendEmail(profile, writer, emailSubject, ugc.getContextId());
+			} catch (ProfileException ex) {
+				logger.error("Unable to generate Verification Token", ex);
+			} catch (TemplateException | IOException ex) {
+				logger.error("Unable to generate email template", ex);
+			} catch (SocialException ex) {
+				logger.error("Unable to Send email ", ex);
+			} catch (Throwable ex) {
+				logger.error("Unable to send email due a unknown exception", ex);
+			}
 
-        }
-    }
+		}
+	}
 
-    private Locale getProfileLocale(final Object notificationLocale) {
-        if(notificationLocale==null){
-            return new Locale(systemDefaultLocale);
-        }else{
-            return new Locale(notificationLocale.toString());
-        }
+	private Locale getProfileLocale(final Object notificationLocale) {
+		if (notificationLocale == null) {
+			return new Locale(systemDefaultLocale);
+		} else {
+			return new Locale(notificationLocale.toString());
+		}
 
-    }
-
-
-    public void init(){
-        cfg = new Configuration(Configuration.VERSION_2_3_21);
-        cfg.setDefaultEncoding("UTF-8");
-        cfg.setOutputEncoding("UTF-8");
-        cfg.setTemplateLoader(socialFreemarkerLoader);
-    }
-
-    public void setProfileClient(final ProfileService profileService) {
-        this.profileService = profileService;
-    }
-
-    public void setTenantConfigurationServiceImpl(TenantConfigurationService tenantConfigurationService) {
-        this.tenantConfigurationService = tenantConfigurationService;
-    }
+	}
 
 
-    public void setSocialFreemarkerLoader(TemplateLoader socialFreemarkerLoader) {
-        this.socialFreemarkerLoader=socialFreemarkerLoader;
-    }
+	public void init() {
+		cfg = new Configuration(Configuration.VERSION_2_3_21);
+		cfg.setDefaultEncoding("UTF-8");
+		cfg.setOutputEncoding("UTF-8");
+		cfg.setTemplateLoader(socialFreemarkerLoader);
+	}
 
-    public void setSystemDefaultLocale(final String systemDefaultLocale) {
-        this.systemDefaultLocale = systemDefaultLocale;
-    }
+	public void setProfileClient(final ProfileService profileService) {
+		this.profileService = profileService;
+	}
 
-    public void setModelExt(final HashMap<String, Object> modelExt) {
-        this.modelExt = modelExt;
-    }
+	public void setTenantConfigurationServiceImpl(TenantConfigurationService tenantConfigurationService) {
+		this.tenantConfigurationService = tenantConfigurationService;
+	}
 
 
-    public void setEmailService(EmailService emailService) {
-        this.emailService=emailService;
-    }
+	public void setSocialFreemarkerLoader(TemplateLoader socialFreemarkerLoader) {
+		this.socialFreemarkerLoader = socialFreemarkerLoader;
+	}
 
-    public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
-        this.contextPreferencesService = contextPreferencesService;
-    }
+	public void setSystemDefaultLocale(final String systemDefaultLocale) {
+		this.systemDefaultLocale = systemDefaultLocale;
+	}
+
+	public void setModelExt(final HashMap<String, Object> modelExt) {
+		this.modelExt = modelExt;
+	}
+
+
+	public void setEmailService(EmailService emailService) {
+		this.emailService = emailService;
+	}
+
+	public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
+		this.contextPreferencesService = contextPreferencesService;
+	}
 }

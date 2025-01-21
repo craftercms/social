@@ -11,7 +11,7 @@
     border: 0px;
     border-radius: 0px;
     box-shadow: 0 0px 0px;
-   }
+  }
 
   .panel-heading {
     padding: 0;
@@ -31,7 +31,10 @@
         line-height: 1;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        &:empty { width: 1em; }
+
+        &:empty {
+          width: 1em;
+        }
 
       }
 

@@ -27,59 +27,59 @@ import org.craftercms.social.domain.UGC;
 
 public class Thread {
 
-    private long total;
-    private int pageSize;
-    private int pageNumber;
-    private boolean watched;
-    private List<? extends UGC> comments;
+	private long total;
+	private int pageSize;
+	private int pageNumber;
+	private boolean watched;
+	private List<? extends UGC> comments;
 
 
-    public Thread() {
-        comments = new ArrayList<>();
-    }
+	public Thread() {
+		comments = new ArrayList<>();
+	}
 
-    public long getTotal() {
-        return total;
-    }
+	public long getTotal() {
+		return total;
+	}
 
-    public void setTotal(final long total) {
-        this.total = total;
-    }
+	public void setTotal(final long total) {
+		this.total = total;
+	}
 
-    public int getPageSize() {
-        return pageSize;
-    }
+	public int getPageSize() {
+		return pageSize;
+	}
 
-    public void setPageSize(final int pageSize) {
-        this.pageSize = pageSize;
-    }
+	public void setPageSize(final int pageSize) {
+		this.pageSize = pageSize;
+	}
 
-    public int getPageNumber() {
-        return pageNumber;
-    }
+	public int getPageNumber() {
+		return pageNumber;
+	}
 
-    public void setPageNumber(final int pageNumber) {
-        this.pageNumber = pageNumber;
-    }
+	public void setPageNumber(final int pageNumber) {
+		this.pageNumber = pageNumber;
+	}
 
-    public List<? extends UGC> getComments() {
-        return comments;
-    }
+	public List<? extends UGC> getComments() {
+		return comments;
+	}
 
 
-    public void setComments(final List<? extends UGC> comments) {
-        if (comments == null) {
-            this.comments = new ArrayList<>(0);
-        } else {
-            this.comments = comments;
-        }
-    }
+	public void setComments(final List<? extends UGC> comments) {
+		if (comments == null) {
+			this.comments = new ArrayList<>(0);
+		} else {
+			this.comments = comments;
+		}
+	}
 
-    public boolean isWatched() {
-        return watched;
-    }
+	public boolean isWatched() {
+		return watched;
+	}
 
-    public void setWatched(final boolean watched) {
-        this.watched = watched;
-    }
+	public void setWatched(final boolean watched) {
+		this.watched = watched;
+	}
 }

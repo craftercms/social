@@ -1,4 +1,3 @@
-
 //$controls-theme-main-colour: #FFF6C6;
 //$controls-theme-font-colour: $brand-primary;
 
@@ -7,7 +6,7 @@ $controls-theme-font-colour: #FFFFFF;
 
 .#{$app-namespace}-bar {
   z-index: 2;
-  overflow : auto;
+  overflow: auto;
   font-size: $font-size-small;
 
   background-color: $controls-theme-main-colour;
@@ -23,7 +22,7 @@ $controls-theme-font-colour: #FFFFFF;
   // Default (&)
   // bottom right
   &, &.socialbar-br {
-    border-top-left-radius:  $border-radius-base;
+    border-top-left-radius: $border-radius-base;
     border-top-right-radius: 0;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -38,7 +37,7 @@ $controls-theme-font-colour: #FFFFFF;
     border-top-left-radius: 0;
     border-top-right-radius: $border-radius-base;
     border-bottom-left-radius: 0;
-    border-bottom-right-radius:  0;
+    border-bottom-right-radius: 0;
     top: auto;
     right: auto;
     bottom: -1px;
@@ -136,6 +135,7 @@ $controls-theme-font-colour: #FFFFFF;
         > .control-element {
           // padding: 20px;
         }
+
         &.subordinate {
           display: none;
         }

@@ -40,81 +40,81 @@ import org.jongo.ResultHandler;
  */
 public class WatchedThreadsRepositoryImpl extends AbstractJongoRepository<WatchedThread> implements WatchedThreadsRepository {
 
-    @Override
-    public void removeWatcher(final String thread, final String userId) throws NotificationException {
-        try {
-            final String pullQuery = getQueryFor("social.notifications.removeUserWatch");
-            final String find = getQueryFor("social.notifications.findById");
-            getCollection().findAndModify(find, thread).with(pullQuery, userId).as(clazz);
-        } catch (MongoException ex) {
-            throw new NotificationException("Unable to removeWatcher Watched Thread", ex);
-        }
-    }
+	@Override
+	public void removeWatcher(final String thread, final String userId) throws NotificationException {
+		try {
+			final String pullQuery = getQueryFor("social.notifications.removeUserWatch");
+			final String find = getQueryFor("social.notifications.findById");
+			getCollection().findAndModify(find, thread).with(pullQuery, userId).as(clazz);
+		} catch (MongoException ex) {
+			throw new NotificationException("Unable to removeWatcher Watched Thread", ex);
+		}
+	}
 
-    @Override
-    public void addWatcher(final String thread, final String userId, final String frequency) throws
-            NotificationException {
-        try {
-            final String addQuery = getQueryFor("social.notifications.addUserWatch");
-            final String find = getQueryFor("social.notifications.findById");
-            getCollection().findAndModify(find, thread).with(addQuery, userId, frequency).as(clazz);
-        } catch (MongoException ex) {
-            throw new NotificationException("Unable to add Watcher Watched Thread", ex);
-        }
-    }
+	@Override
+	public void addWatcher(final String thread, final String userId, final String frequency) throws
+		NotificationException {
+		try {
+			final String addQuery = getQueryFor("social.notifications.addUserWatch");
+			final String find = getQueryFor("social.notifications.findById");
+			getCollection().findAndModify(find, thread).with(addQuery, userId, frequency).as(clazz);
+		} catch (MongoException ex) {
+			throw new NotificationException("Unable to add Watcher Watched Thread", ex);
+		}
+	}
 
-    @Override
-    public WatchedThread isUserSubscribe(final String threadId, final String profileId) throws MongoDataException {
-        final String query = getQueryFor("social.notifications.isBeenWatched");
-        return findOne(query, threadId, profileId);
-    }
+	@Override
+	public WatchedThread isUserSubscribe(final String threadId, final String profileId) throws MongoDataException {
+		final String query = getQueryFor("social.notifications.isBeenWatched");
+		return findOne(query, threadId, profileId);
+	}
 
-    @Override
-    public Iterable<WatchedThread> findAllWithWatchers() throws NotificationException {
-        try {
-            final String query = getQueryFor("social.notifications.byWatchersNotEmpty");
-            return find(query);
-        } catch (MongoDataException ex) {
-            throw new NotificationException("Unable to find threads with watchers", ex);
-        }
-    }
+	@Override
+	public Iterable<WatchedThread> findAllWithWatchers() throws NotificationException {
+		try {
+			final String query = getQueryFor("social.notifications.byWatchersNotEmpty");
+			return find(query);
+		} catch (MongoDataException ex) {
+			throw new NotificationException("Unable to find threads with watchers", ex);
+		}
+	}
 
-    @Override
-    public List<ThreadsToNotify> findProfilesToSend(final String type) throws
-            NotificationException {
-        try{
-            String aggregationQuerypt1 = getQueryFor("social.notification.getProfilePt1");
-            String aggregationQuerypt2 = getQueryFor("social.notification.getProfilePt2");
-            String aggregationQuerypt3 = getQueryFor("social.notification.getProfilePt3");
-            String aggregationQuerypt4 = getQueryFor("social.notification.getProfilePt4");
-            final Aggregate aggregation = getCollection().aggregate(aggregationQuerypt1);
-            aggregation.and(aggregationQuerypt2).and(aggregationQuerypt3,type).and(aggregationQuerypt4);
-            return IterableUtils.toList(aggregation.as(ThreadsToNotify.class));
-        }catch (MongoException ex){
-            throw new NotificationException("Unable to find Profiles to notify", ex);
-        }
-    }
+	@Override
+	public List<ThreadsToNotify> findProfilesToSend(final String type) throws
+		NotificationException {
+		try {
+			String aggregationQuerypt1 = getQueryFor("social.notification.getProfilePt1");
+			String aggregationQuerypt2 = getQueryFor("social.notification.getProfilePt2");
+			String aggregationQuerypt3 = getQueryFor("social.notification.getProfilePt3");
+			String aggregationQuerypt4 = getQueryFor("social.notification.getProfilePt4");
+			final Aggregate aggregation = getCollection().aggregate(aggregationQuerypt1);
+			aggregation.and(aggregationQuerypt2).and(aggregationQuerypt3, type).and(aggregationQuerypt4);
+			return IterableUtils.toList(aggregation.as(ThreadsToNotify.class));
+		} catch (MongoException ex) {
+			throw new NotificationException("Unable to find Profiles to notify", ex);
+		}
+	}
 
-    @Override
-    public List<Map> findUserWatchedThreads(final String profileId) throws SocialException {
-        String query=getQueryFor("social.notification.byWatcherId1");
-        String query2=getQueryFor("social.notification.byWatcherId2");
-        String query3=getQueryFor("social.notification.byWatcherId3");
-        try{
+	@Override
+	public List<Map> findUserWatchedThreads(final String profileId) throws SocialException {
+		String query = getQueryFor("social.notification.byWatcherId1");
+		String query2 = getQueryFor("social.notification.byWatcherId2");
+		String query3 = getQueryFor("social.notification.byWatcherId3");
+		try {
 
-            return IterableUtils.toList(getCollection().aggregate(query).and(query2,profileId).and(query3).map(new ResultHandler<Map>() {
-                @Override
-                public Map map(final DBObject result) {
-                    HashMap<String,String> map= new HashMap<String, String>();
-                    map.put("thread",((String)result.get("_id")).split("/")[1]);
-                    map.put("frequency",result.get("frequency").toString());
-                    return map;
-                }
-            }));
-        }catch (MongoException ex){
-            throw new SocialException("Unable to read watched threads for user",ex);
-        }
-    }
+			return IterableUtils.toList(getCollection().aggregate(query).and(query2, profileId).and(query3).map(new ResultHandler<Map>() {
+				@Override
+				public Map map(final DBObject result) {
+					HashMap<String, String> map = new HashMap<String, String>();
+					map.put("thread", ((String) result.get("_id")).split("/")[1]);
+					map.put("frequency", result.get("frequency").toString());
+					return map;
+				}
+			}));
+		} catch (MongoException ex) {
+			throw new SocialException("Unable to read watched threads for user", ex);
+		}
+	}
 
 
 }

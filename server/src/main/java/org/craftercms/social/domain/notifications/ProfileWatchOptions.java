@@ -23,67 +23,67 @@ import org.jongo.marshall.jackson.oid.Id;
  */
 public class ProfileWatchOptions {
 
-    @Id
-    private String profileId;
-    private String frequency;
+	@Id
+	private String profileId;
+	private String frequency;
 
-    public ProfileWatchOptions() {
-    }
+	public ProfileWatchOptions() {
+	}
 
-    public ProfileWatchOptions(final String profileId, final String frequency) {
-        this.profileId = profileId;
-        this.frequency = frequency;
-    }
+	public ProfileWatchOptions(final String profileId, final String frequency) {
+		this.profileId = profileId;
+		this.frequency = frequency;
+	}
 
-    public ProfileWatchOptions(final String profileId) {
-        this.profileId = profileId;
-    }
+	public ProfileWatchOptions(final String profileId) {
+		this.profileId = profileId;
+	}
 
-    public String getProfileId() {
-        return profileId;
-    }
+	public String getProfileId() {
+		return profileId;
+	}
 
-    public void setProfileId(final String profileId) {
-        this.profileId = profileId;
-    }
+	public void setProfileId(final String profileId) {
+		this.profileId = profileId;
+	}
 
-    public String getFrequency() {
-        return frequency;
-    }
+	public String getFrequency() {
+		return frequency;
+	}
 
-    public void setFrequency(final String frequency) {
-        this.frequency = frequency;
-    }
+	public void setFrequency(final String frequency) {
+		this.frequency = frequency;
+	}
 
-    @Override
-    public String toString() {
-        return "ProfileWatchOptions{" +
-            "profileId='" + profileId + '\'' +
-            ", frequency='" + frequency + '\'' +
-            '}';
-    }
+	@Override
+	public String toString() {
+		return "ProfileWatchOptions{" +
+			"profileId='" + profileId + '\'' +
+			", frequency='" + frequency + '\'' +
+			'}';
+	}
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        final ProfileWatchOptions that = (ProfileWatchOptions)o;
+		final ProfileWatchOptions that = (ProfileWatchOptions) o;
 
-        if (!profileId.equals(that.profileId)) {
-            return false;
-        }
-        return true;
-    }
+		if (!profileId.equals(that.profileId)) {
+			return false;
+		}
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        int result = profileId != null? profileId.hashCode(): 0;
-        result = 31 * result + (frequency != null? frequency.hashCode(): 0);
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		int result = profileId != null ? profileId.hashCode() : 0;
+		result = 31 * result + (frequency != null ? frequency.hashCode() : 0);
+		return result;
+	}
 }

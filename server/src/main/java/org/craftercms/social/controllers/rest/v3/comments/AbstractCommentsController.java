@@ -33,6 +33,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.activation.MimetypesFileTypeMap;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,77 +45,77 @@ import java.util.Map;
 @RequestMapping("/api/3/comments")
 public class AbstractCommentsController<T extends SocialUgc> {
 
-    @Autowired
-    protected SocialServices socialServices;
+	@Autowired
+	protected SocialServices socialServices;
 
-    @Autowired
-    protected NotificationService notificationService;
+	@Autowired
+	protected NotificationService notificationService;
 
-    @Autowired
-    protected UGCService ugcService;
-
-
-    /**
-     * Parse the json String to a map.
-     *
-     * @param attributes Json String to parse.
-     * @return A map with the values of the JSON String
-     * @throws org.springframework.web.bind.MissingServletRequestParameterException If String can't be parsed.
-     */
-    protected Map<String, Object> parseAttributes(final String attributes) throws
-
-        MissingServletRequestParameterException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonFactory factory = mapper.getFactory(); // since 2.1 use mapper.getFactory() instead
+	@Autowired
+	protected UGCService ugcService;
 
 
-        try {
-            JsonParser jp = factory.createParser(attributes);
-            return mapper.readValue(jp, HashMap.class);
-        } catch (IOException e) {
-            throw new MissingServletRequestParameterException("attributes", "Json");
-        }
-    }
+	/**
+	 * Parse the json String to a map.
+	 *
+	 * @param attributes Json String to parse.
+	 * @return A map with the values of the JSON String
+	 * @throws org.springframework.web.bind.MissingServletRequestParameterException If String can't be parsed.
+	 */
+	protected Map<String, Object> parseAttributes(final String attributes) throws
 
-    /**
-     * Gets current context.
-     *
-     * @return current context, never null.
-     */
-    protected String context() {
-        return SocialSecurityUtils.getContext();
-    }
+		MissingServletRequestParameterException {
+		ObjectMapper mapper = new ObjectMapper();
+		JsonFactory factory = mapper.getFactory(); // since 2.1 use mapper.getFactory() instead
 
-    /**
-     * Current user id.
-     *
-     * @return Current User Id, Empty if a user is not logged.
-     */
-    protected String userId() {
-        ObjectId id = getCurrentProfile().getId();
-        if (id == null) {
-            // This is if user is not there or anonymous.
-            throw new AuthenticationRequiredException("Missing or expired auth token");
-        }
-        return id.toString();
-    }
 
-    /**
-     * Gets Current User profile.
-     *
-     * @return Profile of current Logged User.
-     */
-    protected Profile getCurrentProfile() {
-        return SocialSecurityUtils.getCurrentProfile();
-    }
+		try {
+			JsonParser jp = factory.createParser(attributes);
+			return mapper.readValue(jp, HashMap.class);
+		} catch (IOException e) {
+			throw new MissingServletRequestParameterException("attributes", "Json");
+		}
+	}
 
-    /**
-     * Gets the content type of the file based on the file extension.
-     *
-     * @param filename File name to check.
-     * @return Content Type of the file based on filename.
-     */
-    protected String getContentType(String filename) {
-        return new MimetypesFileTypeMap().getContentType(filename);
-    }
+	/**
+	 * Gets current context.
+	 *
+	 * @return current context, never null.
+	 */
+	protected String context() {
+		return SocialSecurityUtils.getContext();
+	}
+
+	/**
+	 * Current user id.
+	 *
+	 * @return Current User Id, Empty if a user is not logged.
+	 */
+	protected String userId() {
+		ObjectId id = getCurrentProfile().getId();
+		if (id == null) {
+			// This is if user is not there or anonymous.
+			throw new AuthenticationRequiredException("Missing or expired auth token");
+		}
+		return id.toString();
+	}
+
+	/**
+	 * Gets Current User profile.
+	 *
+	 * @return Profile of current Logged User.
+	 */
+	protected Profile getCurrentProfile() {
+		return SocialSecurityUtils.getCurrentProfile();
+	}
+
+	/**
+	 * Gets the content type of the file based on the file extension.
+	 *
+	 * @param filename File name to check.
+	 * @return Content Type of the file based on filename.
+	 */
+	protected String getContentType(String filename) {
+		return new MimetypesFileTypeMap().getContentType(filename);
+	}
 }

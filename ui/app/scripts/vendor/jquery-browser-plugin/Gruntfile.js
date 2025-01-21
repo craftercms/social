@@ -1,4 +1,4 @@
-module.exports = function(grunt) { 
+module.exports = function (grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		jshint: {
@@ -23,7 +23,7 @@ module.exports = function(grunt) {
 			}
 		},
 		copy: {
-			main:{
+			main: {
 				src: "dist/<%= pkg.name %>.js",
 				dest: "test/src/<%= pkg.name %>.js"
 			}

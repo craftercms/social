@@ -31,45 +31,45 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class PermissionRepositoryImpl extends AbstractJongoRepository<SocialSecurityAction> implements
-        PermissionRepository {
+	PermissionRepository {
 
-    private Logger log = LoggerFactory.getLogger(PermissionRepositoryImpl.class);
+	private Logger log = LoggerFactory.getLogger(PermissionRepositoryImpl.class);
 
 
-    public PermissionRepositoryImpl() {
-        super();
-    }
+	public PermissionRepositoryImpl() {
+		super();
+	}
 
-    @Override
-    public boolean isAllowed(final String action, final Set<String> profileRoles,
-                             String context) throws MongoDataException {
-        try {
-            String query = getQueryFor("social.permissions.isAllowed");
-            return findOne(query, action, profileRoles, context) != null;
-        } catch (MongoDataException ex) {
-            log.error("Unable to check if action belongs to given profile", ex);
-            throw new MongoDataException("Unable to check action for given profile roles");
-        }
-    }
+	@Override
+	public boolean isAllowed(final String action, final Set<String> profileRoles,
+				 String context) throws MongoDataException {
+		try {
+			String query = getQueryFor("social.permissions.isAllowed");
+			return findOne(query, action, profileRoles, context) != null;
+		} catch (MongoDataException ex) {
+			log.error("Unable to check if action belongs to given profile", ex);
+			throw new MongoDataException("Unable to check action for given profile roles");
+		}
+	}
 
-    @Override
-    public Iterable<SocialSecurityAction> findActions(final String context) throws MongoDataException {
-        String query = getQueryFor("social.permissions.byContextId");
-        return find(query, context);
-    }
+	@Override
+	public Iterable<SocialSecurityAction> findActions(final String context) throws MongoDataException {
+		String query = getQueryFor("social.permissions.byContextId");
+		return find(query, context);
+	}
 
-    @Override
-    public SocialSecurityAction updateSecurityAction(final String context, final String actionName,
-                                                     final List<String> roles) throws MongoDataException {
-        String query = getQueryFor("social.permissions.byContextIdAndActionName");
-        String update = getQueryFor("social.permissions.updateRoles");
-        SocialSecurityAction securityAction = findOne(query, context, actionName);
-        if (securityAction == null) {
-            return null;
-        }
-        update(securityAction.getId().toString(), update, false, false, roles);
+	@Override
+	public SocialSecurityAction updateSecurityAction(final String context, final String actionName,
+							 final List<String> roles) throws MongoDataException {
+		String query = getQueryFor("social.permissions.byContextIdAndActionName");
+		String update = getQueryFor("social.permissions.updateRoles");
+		SocialSecurityAction securityAction = findOne(query, context, actionName);
+		if (securityAction == null) {
+			return null;
+		}
+		update(securityAction.getId().toString(), update, false, false, roles);
 
-        return findOne(query, context, actionName);
-    }
+		return findOne(query, context, actionName);
+	}
 
 }

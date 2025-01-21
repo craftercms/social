@@ -37,12 +37,12 @@ import static org.junit.Assert.assertTrue;
 
 public class TestOfStuff {
 
-    @Test
-    public void Test() throws Exception {
-        assertEquals(NumberUtils.toInt("25"),25);
+	@Test
+	public void Test() throws Exception {
+		assertEquals(NumberUtils.toInt("25"), 25);
 
 
-    }
+	}
 
 
 }

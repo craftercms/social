@@ -16,96 +16,96 @@
   -->
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         version="3.0">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+		 version="3.0">
 
-    <display-name>Social Admin Console</display-name>
+		<display-name>Social Admin Console</display-name>
 
-    <!-- Tell Spring to escape HTML characters in form inputs -->
-    <context-param>
-        <param-name>defaultHtmlEscape</param-name>
-        <param-value>true</param-value>
-    </context-param>
+		<!-- Tell Spring to escape HTML characters in form inputs -->
+		<context-param>
+				<param-name>defaultHtmlEscape</param-name>
+				<param-value>true</param-value>
+		</context-param>
 
-    <context-param>
-        <param-name>log4jConfiguration</param-name>
-        <param-value>classpath:crafter/social/management/extension/logging.xml</param-value>
-    </context-param>
+		<context-param>
+				<param-name>log4jConfiguration</param-name>
+				<param-value>classpath:crafter/social/management/extension/logging.xml</param-value>
+		</context-param>
 
-    <filter>
-        <filter-name>characterEncodingFilter</filter-name>
-        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-        <init-param>
-            <param-name>encoding</param-name>
-            <param-value>UTF-8</param-value>
-        </init-param>
-        <init-param>
-            <param-name>forceEncoding</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </filter>
+		<filter>
+				<filter-name>characterEncodingFilter</filter-name>
+				<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+				<init-param>
+						<param-name>encoding</param-name>
+						<param-value>UTF-8</param-value>
+				</init-param>
+				<init-param>
+						<param-name>forceEncoding</param-name>
+						<param-value>true</param-value>
+				</init-param>
+		</filter>
 
-    <filter>
-        <filter-name>crafter.requestContextBindingFilter</filter-name>
-        <filter-class>org.craftercms.commons.http.RequestContextBindingFilter</filter-class>
-    </filter>
+		<filter>
+				<filter-name>crafter.requestContextBindingFilter</filter-name>
+				<filter-class>org.craftercms.commons.http.RequestContextBindingFilter</filter-class>
+		</filter>
 
-    <filter>
-        <filter-name>crafter.securityFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    </filter>
+		<filter>
+				<filter-name>crafter.securityFilter</filter-name>
+				<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		</filter>
 
-    <filter-mapping>
-        <filter-name>characterEncodingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+		<filter-mapping>
+				<filter-name>characterEncodingFilter</filter-name>
+				<url-pattern>/*</url-pattern>
+		</filter-mapping>
 
-    <filter-mapping>
-        <filter-name>crafter.requestContextBindingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-    </filter-mapping>
+		<filter-mapping>
+				<filter-name>crafter.requestContextBindingFilter</filter-name>
+				<url-pattern>/*</url-pattern>
+				<dispatcher>REQUEST</dispatcher>
+		</filter-mapping>
 
-    <filter-mapping>
-        <filter-name>crafter.securityFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+		<filter-mapping>
+				<filter-name>crafter.securityFilter</filter-name>
+				<url-pattern>/*</url-pattern>
+		</filter-mapping>
 
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:crafter/social/management/services-context.xml</param-value>
-    </context-param>
+		<context-param>
+				<param-name>contextConfigLocation</param-name>
+				<param-value>classpath:crafter/social/management/services-context.xml</param-value>
+		</context-param>
 
-    <servlet>
-        <servlet-name>spring</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>classpath:crafter/social/management/web-context.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
+		<servlet>
+				<servlet-name>spring</servlet-name>
+				<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+				<init-param>
+						<param-name>contextConfigLocation</param-name>
+						<param-value>classpath:crafter/social/management/web-context.xml</param-value>
+				</init-param>
+				<load-on-startup>1</load-on-startup>
+		</servlet>
 
-    <servlet-mapping>
-        <servlet-name>spring</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
+		<servlet-mapping>
+				<servlet-name>spring</servlet-name>
+				<url-pattern>/</url-pattern>
+		</servlet-mapping>
 
-    <listener>
-        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
-    </listener>
+		<listener>
+				<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+		</listener>
 
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
+		<listener>
+				<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+		</listener>
 
-    <session-config>
-        <cookie-config>
-            <http-only>true</http-only>
-            <secure>true</secure>
-        </cookie-config>
-        <tracking-mode>COOKIE</tracking-mode>
-    </session-config>
+		<session-config>
+				<cookie-config>
+						<http-only>true</http-only>
+						<secure>true</secure>
+				</cookie-config>
+				<tracking-mode>COOKIE</tracking-mode>
+		</session-config>
 
 </web-app> 

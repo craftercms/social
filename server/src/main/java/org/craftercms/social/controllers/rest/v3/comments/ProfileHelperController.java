@@ -19,6 +19,7 @@ package org.craftercms.social.controllers.rest.v3.comments;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -45,66 +46,66 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 @RequestMapping("/api/3/profile")
 public class ProfileHelperController {
 
-    public static final String AVATAR = "avatar";
-    @Autowired
-    protected ProfileService profileService;
+	public static final String AVATAR = "avatar";
+	@Autowired
+	protected ProfileService profileService;
 
-    @RequestMapping(value = "/avatar/{profileId}", method = RequestMethod.POST)
-    @ResponseBody
-    public Profile getProfileAvatar(MultipartHttpServletRequest request, HttpServletResponse response,
-                                    @PathVariable("profileId") String profileId) throws IOException,
-        ProfileException {
-        final Profile profile = SocialSecurityUtils.getCurrentProfile();
-        if (profile != null && !profile.getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
-            final Iterator<String> files = request.getFileNames();
-            String fileName = null;
-            if (files.hasNext()) {
-                fileName = files.next();
-            }
-            if (!StringUtils.isBlank(fileName)) {
-                final MultipartFile avatar = request.getFile(fileName);
-                profileService.addProfileAttachment(profile.getId().toString(), AVATAR + "." + FilenameUtils
-                    .getExtension(avatar.getOriginalFilename()).toLowerCase(), avatar.getInputStream());
-            }
-            return profile;
-        } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
-        }
-    }
+	@RequestMapping(value = "/avatar/{profileId}", method = RequestMethod.POST)
+	@ResponseBody
+	public Profile getProfileAvatar(MultipartHttpServletRequest request, HttpServletResponse response,
+					@PathVariable("profileId") String profileId) throws IOException,
+		ProfileException {
+		final Profile profile = SocialSecurityUtils.getCurrentProfile();
+		if (profile != null && !profile.getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
+			final Iterator<String> files = request.getFileNames();
+			String fileName = null;
+			if (files.hasNext()) {
+				fileName = files.next();
+			}
+			if (!StringUtils.isBlank(fileName)) {
+				final MultipartFile avatar = request.getFile(fileName);
+				profileService.addProfileAttachment(profile.getId().toString(), AVATAR + "." + FilenameUtils
+					.getExtension(avatar.getOriginalFilename()).toLowerCase(), avatar.getInputStream());
+			}
+			return profile;
+		} else {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return null;
+		}
+	}
 
-    @RequestMapping(value = "/avatar/{profileId}", method = RequestMethod.GET)
-    public void getProfileAvatar(HttpServletResponse response, @PathVariable("profileId") String profileId,
-                                 HttpServletRequest request) throws IOException, SocialException {
-        InputStream input = null;
-        boolean imageFound = false;
-        try {
-            try {
-                if (ObjectId.isValid(profileId)) {
-                    final ProfileAttachment information = profileService.getProfileAttachmentInformation(profileId,
-                        AVATAR);
-                    if (information != null) {
-                        response.setContentType(information.getContentType());
-                        response.setContentLength((int)information.getFileSizeBytes());
-                        response.setHeader("Cache-Control","max-age=3600");
-                        response.setStatus(HttpServletResponse.SC_OK);
-                        input = profileService.getProfileAttachment(AVATAR, profileId);
-                        if (input != null) {
-                            IOUtils.copy(input, response.getOutputStream());
-                            imageFound = true;
-                        }
-                    }
-                }
-            } catch (ProfileException ex) {
-                imageFound=false;
-            }
-            if (!imageFound) {
-                response.sendRedirect(request.getContextPath()+"/resources/silhouette.png");
-                }
-        } finally {
-            if (input != null) {
-                input.close();
-            }
-        }
-    }
+	@RequestMapping(value = "/avatar/{profileId}", method = RequestMethod.GET)
+	public void getProfileAvatar(HttpServletResponse response, @PathVariable("profileId") String profileId,
+				     HttpServletRequest request) throws IOException, SocialException {
+		InputStream input = null;
+		boolean imageFound = false;
+		try {
+			try {
+				if (ObjectId.isValid(profileId)) {
+					final ProfileAttachment information = profileService.getProfileAttachmentInformation(profileId,
+						AVATAR);
+					if (information != null) {
+						response.setContentType(information.getContentType());
+						response.setContentLength((int) information.getFileSizeBytes());
+						response.setHeader("Cache-Control", "max-age=3600");
+						response.setStatus(HttpServletResponse.SC_OK);
+						input = profileService.getProfileAttachment(AVATAR, profileId);
+						if (input != null) {
+							IOUtils.copy(input, response.getOutputStream());
+							imageFound = true;
+						}
+					}
+				}
+			} catch (ProfileException ex) {
+				imageFound = false;
+			}
+			if (!imageFound) {
+				response.sendRedirect(request.getContextPath() + "/resources/silhouette.png");
+			}
+		} finally {
+			if (input != null) {
+				input.close();
+			}
+		}
+	}
 }

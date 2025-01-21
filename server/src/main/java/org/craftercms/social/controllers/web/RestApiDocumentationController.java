@@ -29,10 +29,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping(value = "/docs")
 public class RestApiDocumentationController {
 
-    private static final String DOCUMENTATION_VIEW = "rest-api-doc";
+	private static final String DOCUMENTATION_VIEW = "rest-api-doc";
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String documentation() {
-        return DOCUMENTATION_VIEW;
-    }
+	@RequestMapping(method = RequestMethod.GET)
+	public String documentation() {
+		return DOCUMENTATION_VIEW;
+	}
 }

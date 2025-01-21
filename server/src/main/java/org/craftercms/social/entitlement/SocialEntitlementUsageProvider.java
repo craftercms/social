@@ -35,51 +35,51 @@ import static org.craftercms.commons.entitlements.model.Module.SOCIAL;
  */
 public class SocialEntitlementUsageProvider implements EntitlementUsageProvider {
 
-    /**
-     * Current instance of {@link SocialContextRepository}.
-     */
-    protected SocialContextRepository socialContextRepository;
+	/**
+	 * Current instance of {@link SocialContextRepository}.
+	 */
+	protected SocialContextRepository socialContextRepository;
 
-    /**
-     * Current instance of {@link UGCRepository}.
-     */
-    protected UGCRepository ugcRepository;
+	/**
+	 * Current instance of {@link UGCRepository}.
+	 */
+	protected UGCRepository ugcRepository;
 
-    public SocialEntitlementUsageProvider(final SocialContextRepository socialContextRepository,
-                                          final UGCRepository ugcRepository) {
-        this.socialContextRepository = socialContextRepository;
-        this.ugcRepository = ugcRepository;
-    }
+	public SocialEntitlementUsageProvider(final SocialContextRepository socialContextRepository,
+					      final UGCRepository ugcRepository) {
+		this.socialContextRepository = socialContextRepository;
+		this.ugcRepository = ugcRepository;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Module getModule() {
-        return SOCIAL;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Module getModule() {
+		return SOCIAL;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<EntitlementType> getSupportedEntitlements() {
-        return Arrays.asList(EntitlementType.SITE, EntitlementType.ITEM);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<EntitlementType> getSupportedEntitlements() {
+		return Arrays.asList(EntitlementType.SITE, EntitlementType.ITEM);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int doGetEntitlementUsage(final EntitlementType type) throws Exception {
-        switch (type) {
-            case SITE:
-                return (int) socialContextRepository.count();
-            case ITEM:
-                return (int) ugcRepository.count();
-            default:
-                throw new UnsupportedEntitlementException(SOCIAL, type);
-        }
-    }
-    
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int doGetEntitlementUsage(final EntitlementType type) throws Exception {
+		switch (type) {
+			case SITE:
+				return (int) socialContextRepository.count();
+			case ITEM:
+				return (int) ugcRepository.count();
+			default:
+				throw new UnsupportedEntitlementException(SOCIAL, type);
+		}
+	}
+
 }

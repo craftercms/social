@@ -23,16 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Rest controller to provide monitoring information
+ *
  * @author joseross
  */
 @RestController
 @RequestMapping(MonitoringController.URL_ROOT)
 public class MonitoringController extends MonitoringRestControllerBase {
 
-    public static final String URL_ROOT = "/api/3";
+	public static final String URL_ROOT = "/api/3";
 
-    public MonitoringController(@Value("${crafter.social.management.authorizationToken}") String authorizationToken) {
-        super(authorizationToken);
-    }
+	public MonitoringController(@Value("${crafter.social.management.authorizationToken}") String authorizationToken) {
+		super(authorizationToken);
+	}
 
 }

@@ -25,23 +25,23 @@ import org.jongo.marshall.jackson.oid.Id;
  */
 public class ThreadsToNotify {
 
-    @Id
-    private String threadId;
-    private List<String> profiles;
+	@Id
+	private String threadId;
+	private List<String> profiles;
 
-    public String getThreadId() {
-        return threadId;
-    }
+	public String getThreadId() {
+		return threadId;
+	}
 
-    public void setThreadId(final String threadId) {
-        this.threadId = threadId;
-    }
+	public void setThreadId(final String threadId) {
+		this.threadId = threadId;
+	}
 
-    public List<String> getProfiles() {
-        return profiles;
-    }
+	public List<String> getProfiles() {
+		return profiles;
+	}
 
-    public void setProfiles(final List<String> profiles) {
-        this.profiles = profiles;
-    }
+	public void setProfiles(final List<String> profiles) {
+		this.profiles = profiles;
+	}
 }

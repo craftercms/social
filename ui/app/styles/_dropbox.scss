@@ -1,4 +1,3 @@
-
 // TODO MOVE THIS OUT OF HERE!
 .#{$app-namespace}-view.#{$app-namespace}-file-view {
 
@@ -16,6 +15,7 @@
 
   .cs-file-upload {
     margin: 5px 0 0 0;
+
     .progress {
       margin-bottom: 0;
     }
@@ -187,7 +187,8 @@
 }
 
 /* Fixes for IE < 8 */
-@media screen\9 {
+@media screen \9
+{
   .fileinput-button input {
     filter: alpha(opacity=0);
     font-size: 100%;

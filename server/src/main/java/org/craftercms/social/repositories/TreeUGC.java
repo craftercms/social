@@ -21,5 +21,5 @@ package org.craftercms.social.repositories;
  */
 public interface TreeUGC<T> {
 
-    T getUGC();
+	T getUGC();
 }

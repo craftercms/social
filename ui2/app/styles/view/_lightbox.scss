@@ -1,4 +1,3 @@
-
 // TODO find a way of embeding this into the lightbox view instead of the CSS "global scope"
 
 .#{$app-namespace}-lightbox-view {
@@ -80,7 +79,12 @@
   z-index: ($zindex-modal-background - 10);
   background-color: $modal-backdrop-bg;
   // Fade for backdrop
-  &.fade { @include opacity(0); }
-  &.in { @include opacity(.5); }
+  &.fade {
+    @include opacity(0);
+  }
+
+  &.in {
+    @include opacity(.5);
+  }
 
 }

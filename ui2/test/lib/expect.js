@@ -5,8 +5,8 @@
  */
 
 module.exports = function (chai, util) {
-  chai.expect = function (val, message) {
-    return new chai.Assertion(val, message);
-  };
+	chai.expect = function (val, message) {
+		return new chai.Assertion(val, message);
+	};
 };
 

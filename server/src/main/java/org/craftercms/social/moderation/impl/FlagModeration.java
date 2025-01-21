@@ -24,7 +24,7 @@ public class FlagModeration implements ModerationFilter {
 	public boolean needModeration(SocialUgc ugc) {
 		return ugc.getFlags().size() > 0;
 	}
-	
+
 	@Override
 	public String getName() {
 		return "Flag Count Moderation";

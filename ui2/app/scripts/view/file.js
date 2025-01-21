@@ -1,47 +1,47 @@
 (function (S) {
-    'use strict';
+	'use strict';
 
-    var FileView                ,
-        Base    = S.view.Base   ,
-        U       = S.util,
-        $       = S.$           ;
+	var FileView,
+		Base = S.view.Base,
+		U = S.util,
+		$ = S.$;
 
-    FileView = Base.extend({
+	FileView = Base.extend({
 
-        createUI: null,
+		createUI: null,
 
-        className: [
-            Base.prototype.className,
-            'crafter-social-file-view'
-        ].join(' '),
+		className: [
+			Base.prototype.className,
+			'crafter-social-file-view'
+		].join(' '),
 
-        open: function () {
+		open: function () {
 
-        },
+		},
 
-        detach: function () {
+		detach: function () {
 
-        },
+		},
 
-        render: function () {
+		render: function () {
 
-            var tpl = this.getTemplate('main');
-            this.$el.html(U.template(tpl, this.model.toJSON()));
+			var tpl = this.getTemplate('main');
+			this.$el.html(U.template(tpl, this.model.toJSON()));
 
-            return this;
+			return this;
 
-        }
+		}
 
-    });
+	});
 
-    FileView.DEFAULTS = $.extend(true, {}, Base.DEFAULTS, {
-        templates: {
-            main: function () {
-                return S.string.fmt('%@file.hbs', S.Cfg('url.templates'));
-            }
-        }
-    });
+	FileView.DEFAULTS = $.extend(true, {}, Base.DEFAULTS, {
+		templates: {
+			main: function () {
+				return S.string.fmt('%@file.hbs', S.Cfg('url.templates'));
+			}
+		}
+	});
 
-    S.define('view.File', FileView);
+	S.define('view.File', FileView);
 
-}) (crafter.social);
+})(crafter.social);

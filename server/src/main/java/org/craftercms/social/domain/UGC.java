@@ -35,215 +35,215 @@ import org.springframework.beans.BeanUtils;
 @Document(collectionName = UGC.COLLECTION_NAME)
 public class UGC<T extends UGC> {
 
-    public static final String COLLECTION_NAME = "ugc";
+	public static final String COLLECTION_NAME = "ugc";
 
-    @Id
-    private ObjectId id;
-    private ArrayDeque<ObjectId> ancestors;
-    private String targetId;
-    @Exclude
-    private String contextId;
-    private String subject;
-    private String body;
-    private ObjectId[] attachmentId;
-    private String createdBy;
-    private String lastModifiedBy;
-    private Date createdDate;
-    private Date lastModifiedDate;
-    private boolean anonymousFlag;
-    private Map<String, Object> attributes;
-    private ArrayDeque<T> children;
-    private List<FileInfo> attachments;
-    @InjectValue(useProperty = "createdBy")
-    private Profile user;
+	@Id
+	private ObjectId id;
+	private ArrayDeque<ObjectId> ancestors;
+	private String targetId;
+	@Exclude
+	private String contextId;
+	private String subject;
+	private String body;
+	private ObjectId[] attachmentId;
+	private String createdBy;
+	private String lastModifiedBy;
+	private Date createdDate;
+	private Date lastModifiedDate;
+	private boolean anonymousFlag;
+	private Map<String, Object> attributes;
+	private ArrayDeque<T> children;
+	private List<FileInfo> attachments;
+	@InjectValue(useProperty = "createdBy")
+	private Profile user;
 
-    public UGC() {
-        ancestors = new ArrayDeque<>();
-        children = new ArrayDeque<>();
-        attachments = new ArrayList<>();
-        user = null;
-    }
+	public UGC() {
+		ancestors = new ArrayDeque<>();
+		children = new ArrayDeque<>();
+		attachments = new ArrayList<>();
+		user = null;
+	}
 
-    public UGC(T base) {
-        this();
-        BeanUtils.copyProperties(base, this);
-}
+	public UGC(T base) {
+		this();
+		BeanUtils.copyProperties(base, this);
+	}
 
-    public UGC(final String subject, final String body, final String targetId) {
-        this();
-        this.subject = subject;
-        this.body = body;
-        this.targetId = targetId;
-    }
+	public UGC(final String subject, final String body, final String targetId) {
+		this();
+		this.subject = subject;
+		this.body = body;
+		this.targetId = targetId;
+	}
 
-    public UGC(final String subject, final String body, final String targetId, final ArrayDeque<ObjectId> ancestors) {
-        this();
-        this.subject = subject;
-        this.body = body;
-        this.targetId = targetId;
-        this.ancestors = ancestors;
-    }
+	public UGC(final String subject, final String body, final String targetId, final ArrayDeque<ObjectId> ancestors) {
+		this();
+		this.subject = subject;
+		this.body = body;
+		this.targetId = targetId;
+		this.ancestors = ancestors;
+	}
 
 
-    public ObjectId getId() {
-        return id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setId(final ObjectId id) {
-        this.id = id;
-    }
+	public void setId(final ObjectId id) {
+		this.id = id;
+	}
 
-    public ArrayDeque<ObjectId> getAncestors() {
-        return ancestors;
-    }
+	public ArrayDeque<ObjectId> getAncestors() {
+		return ancestors;
+	}
 
-    public void setAncestors(final ArrayDeque<ObjectId> ancestors) {
-        this.ancestors = ancestors;
-    }
+	public void setAncestors(final ArrayDeque<ObjectId> ancestors) {
+		this.ancestors = ancestors;
+	}
 
-    public String getTargetId() {
-        return targetId;
-    }
+	public String getTargetId() {
+		return targetId;
+	}
 
-    public void setTargetId(final String targetId) {
-        this.targetId = targetId;
-    }
+	public void setTargetId(final String targetId) {
+		this.targetId = targetId;
+	}
 
-    public String getContextId() {
-        return contextId;
-    }
+	public String getContextId() {
+		return contextId;
+	}
 
-    public void setContextId(final String contextId) {
-        this.contextId = contextId;
-    }
+	public void setContextId(final String contextId) {
+		this.contextId = contextId;
+	}
 
-    public String getSubject() {
-        return subject;
-    }
+	public String getSubject() {
+		return subject;
+	}
 
-    public void setSubject(final String subject) {
-        this.subject = subject;
-    }
+	public void setSubject(final String subject) {
+		this.subject = subject;
+	}
 
-    public String getBody() {
-        return body;
-    }
+	public String getBody() {
+		return body;
+	}
 
-    public void setBody(final String body) {
-        this.body = body;
-    }
+	public void setBody(final String body) {
+		this.body = body;
+	}
 
-    public ObjectId[] getAttachmentId() {
-        return attachmentId;
-    }
+	public ObjectId[] getAttachmentId() {
+		return attachmentId;
+	}
 
-    public void setAttachmentId(final ObjectId[] attachmentId) {
-        this.attachmentId = attachmentId;
-    }
+	public void setAttachmentId(final ObjectId[] attachmentId) {
+		this.attachmentId = attachmentId;
+	}
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+	public String getCreatedBy() {
+		return createdBy;
+	}
 
-    public void setCreatedBy(final String createdBy) {
-        this.createdBy = createdBy;
-    }
+	public void setCreatedBy(final String createdBy) {
+		this.createdBy = createdBy;
+	}
 
-    public String getLastModifiedBy() {
-        return lastModifiedBy;
-    }
+	public String getLastModifiedBy() {
+		return lastModifiedBy;
+	}
 
-    public void setLastModifiedBy(final String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
+	public void setLastModifiedBy(final String lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
+	}
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
+	public Date getCreatedDate() {
+		return createdDate;
+	}
 
-    public void setCreatedDate(final Date createdDate) {
-        this.createdDate = createdDate;
-    }
+	public void setCreatedDate(final Date createdDate) {
+		this.createdDate = createdDate;
+	}
 
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
 
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
+	public void setLastModifiedDate(final Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
 
-    public boolean isAnonymousFlag() {
-        return anonymousFlag;
-    }
+	public boolean isAnonymousFlag() {
+		return anonymousFlag;
+	}
 
-    public void setAnonymousFlag(final boolean anonymousFlag) {
-        this.anonymousFlag = anonymousFlag;
-    }
+	public void setAnonymousFlag(final boolean anonymousFlag) {
+		this.anonymousFlag = anonymousFlag;
+	}
 
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
+	public Map<String, Object> getAttributes() {
+		return attributes;
+	}
 
-    public void setAttributes(final Map<String, Object> attributes) {
-        this.attributes = attributes;
-    }
+	public void setAttributes(final Map<String, Object> attributes) {
+		this.attributes = attributes;
+	}
 
-    public ArrayDeque<T> getChildren() {
-        return children;
-    }
+	public ArrayDeque<T> getChildren() {
+		return children;
+	}
 
-    public void setChildren(final ArrayDeque<T> children) {
-        this.children = children;
-    }
+	public void setChildren(final ArrayDeque<T> children) {
+		this.children = children;
+	}
 
-    public List<FileInfo> getAttachments() {
-        return attachments;
-    }
+	public List<FileInfo> getAttachments() {
+		return attachments;
+	}
 
-    public void setAttachments(final List<FileInfo> attachments) {
-        this.attachments = attachments;
-    }
+	public void setAttachments(final List<FileInfo> attachments) {
+		this.attachments = attachments;
+	}
 
-    public Profile getUser() {
-        return user;
-    }
+	public Profile getUser() {
+		return user;
+	}
 
-    public void setUser(final Profile user) {
-        this.user = user;
-    }
+	public void setUser(final Profile user) {
+		this.user = user;
+	}
 
-    public boolean isMyParent(final T ugc) {
-        if (ancestors.isEmpty()) {
-            return false;
-        } else {
-            return ancestors.getLast().equals(ugc.getId());
-        }
-    }
+	public boolean isMyParent(final T ugc) {
+		if (ancestors.isEmpty()) {
+			return false;
+		} else {
+			return ancestors.getLast().equals(ugc.getId());
+		}
+	}
 
-    public <T extends UGC> boolean isMyChild(final T ug) {
-        if (ug.getAncestors().isEmpty()) {
-            return false;
-        }
-        return ug.getAncestors().getLast().equals(this.id);
-    }
+	public <T extends UGC> boolean isMyChild(final T ug) {
+		if (ug.getAncestors().isEmpty()) {
+			return false;
+		}
+		return ug.getAncestors().getLast().equals(this.id);
+	}
 
-    @Override
-    public String toString() {
+	@Override
+	public String toString() {
 
-        return "UGC{" +
-            "id=" + id +
-            ", ancestors=" + StringUtils.join(ancestors) +
-            ", targetId='" + targetId + '\'' +
-            ", subject='" + subject + '\'' +
-            ", createdBy='" + createdBy + '\'' +
-            ", lastModifiedBy='" + lastModifiedBy + '\'' +
-            ", createdDate=" + createdDate +
-            ", lastModifiedDate=" + lastModifiedDate +
-            ", anonymousFlag=" + anonymousFlag +
-            ", attributes=" + attributes +
-            '}';
-    }
+		return "UGC{" +
+			"id=" + id +
+			", ancestors=" + StringUtils.join(ancestors) +
+			", targetId='" + targetId + '\'' +
+			", subject='" + subject + '\'' +
+			", createdBy='" + createdBy + '\'' +
+			", lastModifiedBy='" + lastModifiedBy + '\'' +
+			", createdDate=" + createdDate +
+			", lastModifiedDate=" + lastModifiedDate +
+			", anonymousFlag=" + anonymousFlag +
+			", attributes=" + attributes +
+			'}';
+	}
 
 
 }

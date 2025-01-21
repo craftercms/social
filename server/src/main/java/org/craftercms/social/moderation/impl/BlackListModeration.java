@@ -45,9 +45,8 @@ import org.xml.sax.SAXException;
 
 /**
  * Uses File to get Blacklist word
- * 
+ *
  * @author cortiz
- * 
  */
 public class BlackListModeration implements ModerationFilter {
 
@@ -57,7 +56,7 @@ public class BlackListModeration implements ModerationFilter {
 
 	@ConstructorProperties({"blackListFile"})
 	public BlackListModeration(String blackListFile) throws SAXException,
-			IOException, ParserConfigurationException, XPathException {
+		IOException, ParserConfigurationException, XPathException {
 		loadBlackList(blackListFile);
 		registerPatterns = new ArrayList<Pattern>();
 		registerWords = new ArrayList<String>();
@@ -80,7 +79,7 @@ public class BlackListModeration implements ModerationFilter {
 			Matcher matcher = pattern.matcher(textContent);
 			if (matcher.find()) {
 				log.debug("{} matches blacklist word {1}", textContent,
-						pattern.toString());
+					pattern.toString());
 				matchRegex = true;
 				break;
 			}
@@ -106,12 +105,12 @@ public class BlackListModeration implements ModerationFilter {
 	}
 
 	private void loadBlackList(String blackListFile) throws SAXException,
-			IOException, ParserConfigurationException, XPathException {
-		InputStream xmlFile=null;
-		if(blackListFile.startsWith("classpath:")){
-			xmlFile=BlackListModeration.class.getResourceAsStream(blackListFile.split("classpath:")[1]);
-		}else{
-			xmlFile=new FileInputStream(blackListFile); 
+		IOException, ParserConfigurationException, XPathException {
+		InputStream xmlFile = null;
+		if (blackListFile.startsWith("classpath:")) {
+			xmlFile = BlackListModeration.class.getResourceAsStream(blackListFile.split("classpath:")[1]);
+		} else {
+			xmlFile = new FileInputStream(blackListFile);
 		}
 		log.debug("Loading File {} as blacklist file", blackListFile);
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -123,7 +122,7 @@ public class BlackListModeration implements ModerationFilter {
 		Document doc = dbf.newDocumentBuilder().parse(xmlFile);
 		addRegexRules(doc);
 		addWordRules(doc);
-		doc=null;
+		doc = null;
 		xmlFile.close();
 	}
 
@@ -138,7 +137,7 @@ public class BlackListModeration implements ModerationFilter {
 				for (int i = 0; i < nodes.getLength(); i++) {
 					if (nodes.item(i).getNodeType() == Node.TEXT_NODE) {
 						String word = nodes.item(i).getTextContent()
-								.toLowerCase();
+							.toLowerCase();
 						registerWords.add(word);
 						log.debug("Added {} as a blacklist word", word);
 					}

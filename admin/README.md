@@ -25,38 +25,38 @@ If you're comfortable setting up Tomcat and MongoDB by yourself, please follow
 
 1) Create a root folder for your project:
 
-    mkdir ~/moderation-dashboard
+   mkdir ~/moderation-dashboard
 
 2) Create a folder in which to store all the source code:
 
-    cd ~/moderation-dashboard
-    mkdir src
+   cd ~/moderation-dashboard
+   mkdir src
 
 3) Clone the source code from their repos : [Crafter Social](https://github.com/craftercms/social) & [Crafter Profile](https://github.com/craftercms/profile)
 
-    cd src
-    git clone https://github.com/craftercms/social.git
-    git clone https://github.com/craftercms/profile.git
+   cd src
+   git clone https://github.com/craftercms/social.git
+   git clone https://github.com/craftercms/profile.git
 
 4) Create a folder for your deployed app:
 
-    mkdir ~/moderation-dashboard/deploy
+   mkdir ~/moderation-dashboard/deploy
 
 
 5) Put your uncompressed Tomcat and MongoDB folders in the deploy folder
 
-    mv tomcat-x.x ~/moderation-dashboard/deploy/tomcat
-    mv mongodb-x.x ~/moderation-dashboard/deploy/mongodb
+   mv tomcat-x.x ~/moderation-dashboard/deploy/tomcat
+   mv mongodb-x.x ~/moderation-dashboard/deploy/mongodb
 
 6) Build wars for:
 
 6.1) Profile client
-    
+
     cd ~/moderation-dashboard/src/profile/client
     mvn clean install
 
 6.2) Profile crafter security provider
-    
+
     cd ~/moderation-dashboard/src/profile/crafter-security-provider
     mvn clean install   
 
@@ -77,23 +77,23 @@ If you're comfortable setting up Tomcat and MongoDB by yourself, please follow
 
 7) Move war files to Tomcat's webapps folder:
 
-    cd ~/moderation-dashboard
-    mv src/profile/server/target/crafter-profile.war deploy/tomcat/webapps/crafter-profile.war
-    mv src/social/server/target/crafter-social.war deploy/tomcat/webapps/crafter-social.war
-    mv src/social/admin/target/crafter-social-admin.war deploy/tomcat/webapps/crafter-social-admin.war
+   cd ~/moderation-dashboard
+   mv src/profile/server/target/crafter-profile.war deploy/tomcat/webapps/crafter-profile.war
+   mv src/social/server/target/crafter-social.war deploy/tomcat/webapps/crafter-social.war
+   mv src/social/admin/target/crafter-social-admin.war deploy/tomcat/webapps/crafter-social-admin.war
 
 8) Edit the shared.loader property in catalina.properties:
 
-    cd ~/moderation-dashboard/deploy/tomcat/conf
-    vim catalina.properties
+   cd ~/moderation-dashboard/deploy/tomcat/conf
+   vim catalina.properties
 
 Change the property to:
 
     shared.loader=${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar
 
-9) Add folders (profile, security, social) with properties files inside of ~/moderation-dashboard/deploy/tomcat/shared/classes/crafter 
+9) Add folders (profile, security, social) with properties files inside of ~/moderation-dashboard/deploy/tomcat/shared/classes/crafter
 
-Note*: To ask Tomcat for more memory than the value provided by default, create a setenv.sh file in: ~/moderation-dashboard/deploy/tomcat/bin and add the following line: 
+Note*: To ask Tomcat for more memory than the value provided by default, create a setenv.sh file in: ~/moderation-dashboard/deploy/tomcat/bin and add the following line:
 
     export JAVA_OPTS="-Xms1024m -Xmx10246m -XX:NewSize=256m -XX:MaxNewSize=356m -XX:PermSize=256m -XX:MaxPermSize=356m"
 
@@ -117,7 +117,6 @@ Config Options:
 * __pagination.maxPageNumber__: Number of pagination options that will display in the pagination menu
 * __targetUrl.pattern__: Look for a regex pattern to replace in the target URLs
 * __targetUrl.replace__: Text used to replace the contents of _targetUrl.pattern_
-
 
 ## Usage
 

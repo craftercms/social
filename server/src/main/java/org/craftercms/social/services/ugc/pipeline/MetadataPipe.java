@@ -30,22 +30,22 @@ import org.craftercms.social.services.ugc.UgcPipe;
  */
 public class MetadataPipe implements UgcPipe {
 
-    @Override
-    public <T extends UGC> void process(final T ugc,Map<String,Object> params) throws SocialException {
-        if(ugc.getCreatedBy()==null){
-            ugc.setCreatedBy(SocialSecurityUtils.getCurrentProfile().getId().toString());
-        }
-        if (ugc.getCreatedDate() == null) {
-            ugc.setCreatedDate(new Date());
-        }
-        ugc.setLastModifiedDate(new Date());
-        if(params!=null && params.containsKey("modifierProfile")){
-            Profile profile = (Profile)params.get("modifierProfile");
-            ugc.setLastModifiedBy(profile.getId().toString());
-        }else {
-            ugc.setLastModifiedBy(SocialSecurityUtils.getCurrentProfile().getId().toString());
-        }
-        ugc.setContextId(SocialSecurityUtils.getContext());
-        ugc.setChildren(null);
-    }
+	@Override
+	public <T extends UGC> void process(final T ugc, Map<String, Object> params) throws SocialException {
+		if (ugc.getCreatedBy() == null) {
+			ugc.setCreatedBy(SocialSecurityUtils.getCurrentProfile().getId().toString());
+		}
+		if (ugc.getCreatedDate() == null) {
+			ugc.setCreatedDate(new Date());
+		}
+		ugc.setLastModifiedDate(new Date());
+		if (params != null && params.containsKey("modifierProfile")) {
+			Profile profile = (Profile) params.get("modifierProfile");
+			ugc.setLastModifiedBy(profile.getId().toString());
+		} else {
+			ugc.setLastModifiedBy(SocialSecurityUtils.getCurrentProfile().getId().toString());
+		}
+		ugc.setContextId(SocialSecurityUtils.getContext());
+		ugc.setChildren(null);
+	}
 }

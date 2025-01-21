@@ -21,13 +21,14 @@ package org.craftercms.social.util.ebus;
  */
 public final class SocialEventConstants {
 
-    /**
-     * Reactor name for all social Events.
-     */
-    public static final String SOCIAL_REACTOR_NAME="@socialReactor";
+	/**
+	 * Reactor name for all social Events.
+	 */
+	public static final String SOCIAL_REACTOR_NAME = "@socialReactor";
 
-    /**
-     * Avoid Instances of this class.
-     */
-    private SocialEventConstants(){}
+	/**
+	 * Avoid Instances of this class.
+	 */
+	private SocialEventConstants() {
+	}
 }

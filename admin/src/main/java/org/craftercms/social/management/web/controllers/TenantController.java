@@ -37,41 +37,41 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(TenantController.BASE_URL_TENANT)
 public class TenantController {
 
-    public static final String BASE_URL_TENANT = "/tenant";
+	public static final String BASE_URL_TENANT = "/tenant";
 
-    public static final String URL_GET_TENANT_NAMES = "/names";
+	public static final String URL_GET_TENANT_NAMES = "/names";
 
-    private TenantService tenantService;
-    private List<String> allTenants;
+	private TenantService tenantService;
+	private List<String> allTenants;
 
-    public TenantController(TenantService tenantService) {
-        this.tenantService = tenantService;
-    }
+	public TenantController(TenantService tenantService) {
+		this.tenantService = tenantService;
+	}
 
-    @RequestMapping(value = URL_GET_TENANT_NAMES, method = RequestMethod.GET)
-    @ResponseBody
-    public List<String> getTenantNames() throws ProfileException {
-        List<String> tenantNames = new ArrayList<>(1);
-        final Profile profile = SecurityUtils.getCurrentProfile();
+	@RequestMapping(value = URL_GET_TENANT_NAMES, method = RequestMethod.GET)
+	@ResponseBody
+	public List<String> getTenantNames() throws ProfileException {
+		List<String> tenantNames = new ArrayList<>(1);
+		final Profile profile = SecurityUtils.getCurrentProfile();
 
-        if (profile != null) {
-            if (profile.hasRole("PROFILE_SUPERADMIN")) {
-                tenantNames = getAllTenants();
-            } else {
-                tenantNames.add(profile.getTenant());
-            }
-        }
-        return tenantNames;
-    }
+		if (profile != null) {
+			if (profile.hasRole("PROFILE_SUPERADMIN")) {
+				tenantNames = getAllTenants();
+			} else {
+				tenantNames.add(profile.getTenant());
+			}
+		}
+		return tenantNames;
+	}
 
-    public List<String> getAllTenants() throws ProfileException {
-        List<Tenant> tenants = tenantService.getAllTenants();
-        List<String> tenantNames = new ArrayList<>(tenants.size());
+	public List<String> getAllTenants() throws ProfileException {
+		List<Tenant> tenants = tenantService.getAllTenants();
+		List<String> tenantNames = new ArrayList<>(tenants.size());
 
-        for (Tenant tenant : tenants) {
-            tenantNames.add(tenant.getName());
-        }
+		for (Tenant tenant : tenants) {
+			tenantNames.add(tenant.getName());
+		}
 
-        return tenantNames;
-    }
+		return tenantNames;
+	}
 }

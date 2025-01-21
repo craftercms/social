@@ -16,6 +16,7 @@
 package org.craftercms.social.util.web;
 
 import java.util.HashMap;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -25,17 +26,18 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 /**
  * Overrides the {@link SimpleMappingExceptionResolver} <br/><br/>
- *  {@link #doResolveException(HttpServletRequest, HttpServletResponse, Object, Exception)} removes the 
- *  StackTrace of the exception <br/><br/>
- *  {@link #determineViewName(Exception, HttpServletRequest)} Retunrs the Canotical name of the Excetion
- *  <br/>
- *  <br/>
- *  now {@link #determineStatusCode(HttpServletRequest, String)} Will use the exction canotical name to 
- *  resolve the status
+ * {@link #doResolveException(HttpServletRequest, HttpServletResponse, Object, Exception)} removes the
+ * StackTrace of the exception <br/><br/>
+ * {@link #determineViewName(Exception, HttpServletRequest)} Retunrs the Canotical name of the Excetion
+ * <br/>
+ * <br/>
+ * now {@link #determineStatusCode(HttpServletRequest, String)} Will use the exction canotical name to
+ * resolve the status
+ *
  * @author cortiz
  */
 public class RestMappingExceptionResolver extends
-		SimpleMappingExceptionResolver {
+	SimpleMappingExceptionResolver {
 
 	@Override
 	protected String determineViewName(Exception ex, HttpServletRequest request) {
@@ -45,13 +47,12 @@ public class RestMappingExceptionResolver extends
 	@Override
 	protected ModelAndView getModelAndView(String viewName, Exception ex) {
 		ModelAndView mv = new ModelAndView(viewName);
-		HashMap<String,Object> map=new HashMap<>();
+		HashMap<String, Object> map = new HashMap<>();
 		map.put("message", ex.getMessage());
 		map.put("localizedMessage", ex.getLocalizedMessage());
 		mv.addAllObjects(map);
 		return mv;
 	}
-	
-	
-	
+
+
 }

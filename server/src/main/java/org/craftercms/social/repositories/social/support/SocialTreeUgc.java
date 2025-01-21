@@ -20,14 +20,14 @@ import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.repositories.TreeUGC;
 
 /**
-*
-*/
-public class SocialTreeUgc implements TreeUGC<SocialUgc>{
+ *
+ */
+public class SocialTreeUgc implements TreeUGC<SocialUgc> {
 
-    private SocialUgc ugc;
+	private SocialUgc ugc;
 
-    @Override
-    public SocialUgc getUGC() {
-        return ugc;
-    }
+	@Override
+	public SocialUgc getUGC() {
+		return ugc;
+	}
 }

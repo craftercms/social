@@ -25,5 +25,4 @@ import org.craftercms.social.domain.social.system.SocialContext;
 public interface SocialContextRepository extends CrudRepository<SocialContext> {
 
 
-
 }

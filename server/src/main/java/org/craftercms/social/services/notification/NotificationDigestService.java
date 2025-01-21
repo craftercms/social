@@ -26,5 +26,5 @@ import org.craftercms.social.domain.audit.AuditLog;
  */
 public interface NotificationDigestService {
 
-    void digest(List<HashMap> auditDigest, String profileId, final String type);
+	void digest(List<HashMap> auditDigest, String profileId, final String type);
 }

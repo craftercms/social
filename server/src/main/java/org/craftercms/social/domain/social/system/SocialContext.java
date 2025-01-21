@@ -27,31 +27,31 @@ import org.jongo.marshall.jackson.oid.Id;
 @Document(collectionName = "socialContext")
 public class SocialContext {
 
-    @Id
-    private String id;
-    private String contextName;
+	@Id
+	private String id;
+	private String contextName;
 
-    public SocialContext(final String contextName) {
-        this.contextName = contextName;
-        this.id= UUID.randomUUID().toString();
-    }
+	public SocialContext(final String contextName) {
+		this.contextName = contextName;
+		this.id = UUID.randomUUID().toString();
+	}
 
-    public SocialContext() {
-    }
+	public SocialContext() {
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(final String id) {
-        this.id = id;
-    }
+	public void setId(final String id) {
+		this.id = id;
+	}
 
-    public String getContextName() {
-        return contextName;
-    }
+	public String getContextName() {
+		return contextName;
+	}
 
-    public void setContextName(final String contextName) {
-        this.contextName = contextName;
-    }
+	public void setContextName(final String contextName) {
+		this.contextName = contextName;
+	}
 }

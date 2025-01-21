@@ -53,169 +53,169 @@ import static org.craftercms.social.security.SecurityActionNames.UGC_READ;
  */
 public class NotificationServiceImpl implements NotificationService {
 
-    private AuditRepository auditRepository;
-    private WatchedThreadsRepository watchedThreadsRepository;
-    private I10nLogger log = LoggerFactory.getLogger(NotificationServiceImpl.class);
-    private SimpleTrigger instantTrigger;
-    private ProfileAggregator profileAggregator;
-    private NotificationDigestService notificationDigestService;
-    private Date lastInstantFire;
-    private Logger logger = org.slf4j.LoggerFactory.getLogger(NotificationDigestServiceImpl.class);
-    private boolean disableNotifications;
+	private AuditRepository auditRepository;
+	private WatchedThreadsRepository watchedThreadsRepository;
+	private I10nLogger log = LoggerFactory.getLogger(NotificationServiceImpl.class);
+	private SimpleTrigger instantTrigger;
+	private ProfileAggregator profileAggregator;
+	private NotificationDigestService notificationDigestService;
+	private Date lastInstantFire;
+	private Logger logger = org.slf4j.LoggerFactory.getLogger(NotificationDigestServiceImpl.class);
+	private boolean disableNotifications;
 
-    public NotificationServiceImpl() {
-        lastInstantFire=new Date();
-    }
+	public NotificationServiceImpl() {
+		lastInstantFire = new Date();
+	}
 
-    @Override
-    @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public void subscribeUser(final Profile profile, final String threadId, final String frequency) throws
-        NotificationException {
-        String frequencyToUse=frequency;
-        try {
-            WatchedThread thread = watchedThreadsRepository.findByStringId(threadId);
-            if (thread == null) {
-                log.debug("logging.system.notification.creatingSubscription", threadId);
-                thread = new WatchedThread();
-                thread.setThreadId(threadId);
-                watchedThreadsRepository.save(thread);
-            }
-            log.debug("logging.system.notification.adding", profile, threadId, frequency);
-            if(StringUtils.isBlank(frequency)){
-                if(profile.getAttributes().containsKey("defaultFrequency")){
-                    frequencyToUse=profile.getAttribute("defaultFrequency");
-                    if(StringUtils.isBlank(frequencyToUse)){
-                        throw new IllegalArgumentException("Profile defaultFrequency can't be empty");
-                    }
-                }else{
-                    throw new IllegalArgumentException("Profile defaultFrequency must be set or send a valid "
-                        + "frequency");
-                }
-            }
-            watchedThreadsRepository.addWatcher(thread.getThreadId(), profile.getId().toString(), frequencyToUse);
-        } catch (MongoDataException e) {
-            throw new NotificationException("Unable to subscribe User", e);
-        }
-    }
-
-
-    @Override
-    @HasPermission(action = UGC_READ, type = SocialPermission.class)
-    public void unSubscribeUser(final String userId, final String threadId) throws NotificationException {
-        try {
-            WatchedThread thread = watchedThreadsRepository.findByStringId(threadId);
-            if (thread != null) {
-                watchedThreadsRepository.removeWatcher(thread.getThreadId(), userId);
-            }
-            log.debug("logging.system.notification.remove", userId, threadId);
-        } catch (MongoDataException e) {
-            throw new NotificationException("Unable to subscribe User", e);
-        }
-    }
-
-    @Override
-    public boolean isBeenWatch(final String threadId, final String profileId) throws NotificationException {
-        try {
-            WatchedThread thread = watchedThreadsRepository.isUserSubscribe(threadId, profileId);
-            return thread != null;
-        } catch (MongoDataException e) {
-            throw new NotificationException("Unable to Check if user is subscribed", e);
-        }
-    }
-
-    @Override
-    public void notify(final String type) {
-        if(!disableNotifications) {
-            Date from = getStartDateByType(type);
-            lastInstantFire = new Date();
-            final Date to = new Date();
-            try {
-                final List<ThreadsToNotify> toBeSend = watchedThreadsRepository.findProfilesToSend(type);
-                for (ThreadsToNotify threadsToNotify : toBeSend) {
-
-                    logger.info("Notifying {} users for {} from {} until {} ", threadsToNotify.getProfiles().size(), type, from, to);
-
-                    for (String profileId : threadsToNotify.getProfiles()) {
-                        final List<HashMap> auditDigest = auditRepository.getNotificationDigest(threadsToNotify.getThreadId(), from, to, Arrays.asList(profileId));
-                        logger.info("Notifying {} sending {} ugs {}", profileId, threadsToNotify.getThreadId(), auditDigest.size());
-                        notificationDigestService.digest(auditDigest, profileId, type);
-                    }
-                }
-
-            } catch (SocialException ex) {
-                logger.error("Unable to send notifications", ex);
-            }
-        }
-    }
-
-    @Override
-    public List<Map> getUserSubscriptions() throws SocialException {
-        final Profile p = SocialSecurityUtils.getCurrentProfile();
-        if(p!=null && !p.getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)){
-            return watchedThreadsRepository.findUserWatchedThreads(p.getId().toString());
-        }else{
-            throw new AuthenticationRequiredException("User is not authenticated");
-        }
-    }
-
-    @Override
-    public void changeSubscription(final Profile p, final String threadId, final String frequency) throws NotificationException {
-        if(isBeenWatch(threadId,p.getId().toString())){
-            String frequencyToUse = frequency;
-            if(StringUtils.isBlank(frequencyToUse)){
-                if(p.getAttributes().containsKey("defaultFrequency")){
-                    frequencyToUse=p.getAttribute("defaultFrequency");
-                    if(StringUtils.isBlank(frequencyToUse)){
-                        throw new IllegalArgumentException("Profile defaultFrequency can't be empty");
-                    }
-                }else{
-                    throw new IllegalArgumentException("Profile defaultFrequency must be set or send a valid "
-                        + "frequency");
-                }
-            }
-           watchedThreadsRepository.removeWatcher(threadId,p.getId().toString());
-           watchedThreadsRepository.addWatcher(threadId,p.getId().toString(), frequencyToUse);
-        }
-    }
-
-    protected Date getStartDateByType(final String type) {
-        Calendar cal = Calendar.getInstance();
-
-        if (type.equalsIgnoreCase(NotificationService.WEEKLY)) {
-            cal.add(Calendar.WEEK_OF_YEAR, -1);
-            return cal.getTime();
-        } else if (type.equalsIgnoreCase(NotificationService.DAILY)) {
-            cal.add(Calendar.DAY_OF_MONTH, -1);
-            return cal.getTime();
-        } else if (type.equalsIgnoreCase(NotificationService.INSTANT)) {
-            return lastInstantFire;
-        } else {
-            return null;
-        }
-    }
-
-    public void setInstantTrigger(final SimpleTrigger instantTrigger) {
-        this.instantTrigger = instantTrigger;
-    }
-
-    public void setAuditRepository(AuditRepositoryImpl auditRepository) {
-        this.auditRepository = auditRepository;
-    }
-
-    public void setWatchedThreadsRepository(WatchedThreadsRepositoryImpl watchedThreadsRepository) {
-        this.watchedThreadsRepository = watchedThreadsRepository;
-    }
+	@Override
+	@HasPermission(action = UGC_READ, type = SocialPermission.class)
+	public void subscribeUser(final Profile profile, final String threadId, final String frequency) throws
+		NotificationException {
+		String frequencyToUse = frequency;
+		try {
+			WatchedThread thread = watchedThreadsRepository.findByStringId(threadId);
+			if (thread == null) {
+				log.debug("logging.system.notification.creatingSubscription", threadId);
+				thread = new WatchedThread();
+				thread.setThreadId(threadId);
+				watchedThreadsRepository.save(thread);
+			}
+			log.debug("logging.system.notification.adding", profile, threadId, frequency);
+			if (StringUtils.isBlank(frequency)) {
+				if (profile.getAttributes().containsKey("defaultFrequency")) {
+					frequencyToUse = profile.getAttribute("defaultFrequency");
+					if (StringUtils.isBlank(frequencyToUse)) {
+						throw new IllegalArgumentException("Profile defaultFrequency can't be empty");
+					}
+				} else {
+					throw new IllegalArgumentException("Profile defaultFrequency must be set or send a valid "
+						+ "frequency");
+				}
+			}
+			watchedThreadsRepository.addWatcher(thread.getThreadId(), profile.getId().toString(), frequencyToUse);
+		} catch (MongoDataException e) {
+			throw new NotificationException("Unable to subscribe User", e);
+		}
+	}
 
 
-    public void setProfileAggregatorImpl(ProfileAggregator profileAggregator) {
-        this.profileAggregator = profileAggregator;
-    }
+	@Override
+	@HasPermission(action = UGC_READ, type = SocialPermission.class)
+	public void unSubscribeUser(final String userId, final String threadId) throws NotificationException {
+		try {
+			WatchedThread thread = watchedThreadsRepository.findByStringId(threadId);
+			if (thread != null) {
+				watchedThreadsRepository.removeWatcher(thread.getThreadId(), userId);
+			}
+			log.debug("logging.system.notification.remove", userId, threadId);
+		} catch (MongoDataException e) {
+			throw new NotificationException("Unable to subscribe User", e);
+		}
+	}
 
-    public void setNotificationDigestServiceImpl(NotificationDigestService notificationDigestService) {
-        this.notificationDigestService = notificationDigestService;
-    }
+	@Override
+	public boolean isBeenWatch(final String threadId, final String profileId) throws NotificationException {
+		try {
+			WatchedThread thread = watchedThreadsRepository.isUserSubscribe(threadId, profileId);
+			return thread != null;
+		} catch (MongoDataException e) {
+			throw new NotificationException("Unable to Check if user is subscribed", e);
+		}
+	}
 
-    public void setDisableNotifications(final boolean disableNotifications) {
-        this.disableNotifications = disableNotifications;
-    }
+	@Override
+	public void notify(final String type) {
+		if (!disableNotifications) {
+			Date from = getStartDateByType(type);
+			lastInstantFire = new Date();
+			final Date to = new Date();
+			try {
+				final List<ThreadsToNotify> toBeSend = watchedThreadsRepository.findProfilesToSend(type);
+				for (ThreadsToNotify threadsToNotify : toBeSend) {
+
+					logger.info("Notifying {} users for {} from {} until {} ", threadsToNotify.getProfiles().size(), type, from, to);
+
+					for (String profileId : threadsToNotify.getProfiles()) {
+						final List<HashMap> auditDigest = auditRepository.getNotificationDigest(threadsToNotify.getThreadId(), from, to, Arrays.asList(profileId));
+						logger.info("Notifying {} sending {} ugs {}", profileId, threadsToNotify.getThreadId(), auditDigest.size());
+						notificationDigestService.digest(auditDigest, profileId, type);
+					}
+				}
+
+			} catch (SocialException ex) {
+				logger.error("Unable to send notifications", ex);
+			}
+		}
+	}
+
+	@Override
+	public List<Map> getUserSubscriptions() throws SocialException {
+		final Profile p = SocialSecurityUtils.getCurrentProfile();
+		if (p != null && !p.getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
+			return watchedThreadsRepository.findUserWatchedThreads(p.getId().toString());
+		} else {
+			throw new AuthenticationRequiredException("User is not authenticated");
+		}
+	}
+
+	@Override
+	public void changeSubscription(final Profile p, final String threadId, final String frequency) throws NotificationException {
+		if (isBeenWatch(threadId, p.getId().toString())) {
+			String frequencyToUse = frequency;
+			if (StringUtils.isBlank(frequencyToUse)) {
+				if (p.getAttributes().containsKey("defaultFrequency")) {
+					frequencyToUse = p.getAttribute("defaultFrequency");
+					if (StringUtils.isBlank(frequencyToUse)) {
+						throw new IllegalArgumentException("Profile defaultFrequency can't be empty");
+					}
+				} else {
+					throw new IllegalArgumentException("Profile defaultFrequency must be set or send a valid "
+						+ "frequency");
+				}
+			}
+			watchedThreadsRepository.removeWatcher(threadId, p.getId().toString());
+			watchedThreadsRepository.addWatcher(threadId, p.getId().toString(), frequencyToUse);
+		}
+	}
+
+	protected Date getStartDateByType(final String type) {
+		Calendar cal = Calendar.getInstance();
+
+		if (type.equalsIgnoreCase(NotificationService.WEEKLY)) {
+			cal.add(Calendar.WEEK_OF_YEAR, -1);
+			return cal.getTime();
+		} else if (type.equalsIgnoreCase(NotificationService.DAILY)) {
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			return cal.getTime();
+		} else if (type.equalsIgnoreCase(NotificationService.INSTANT)) {
+			return lastInstantFire;
+		} else {
+			return null;
+		}
+	}
+
+	public void setInstantTrigger(final SimpleTrigger instantTrigger) {
+		this.instantTrigger = instantTrigger;
+	}
+
+	public void setAuditRepository(AuditRepositoryImpl auditRepository) {
+		this.auditRepository = auditRepository;
+	}
+
+	public void setWatchedThreadsRepository(WatchedThreadsRepositoryImpl watchedThreadsRepository) {
+		this.watchedThreadsRepository = watchedThreadsRepository;
+	}
+
+
+	public void setProfileAggregatorImpl(ProfileAggregator profileAggregator) {
+		this.profileAggregator = profileAggregator;
+	}
+
+	public void setNotificationDigestServiceImpl(NotificationDigestService notificationDigestService) {
+		this.notificationDigestService = notificationDigestService;
+	}
+
+	public void setDisableNotifications(final boolean disableNotifications) {
+		this.disableNotifications = disableNotifications;
+	}
 }

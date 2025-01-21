@@ -30,34 +30,33 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class VotesControllerController<T> extends AbstractCommentsController {
 
-    private Logger log = LoggerFactory.getLogger(VotesControllerController.class);
+	private Logger log = LoggerFactory.getLogger(VotesControllerController.class);
 
-    @RequestMapping(value = "{id}/votes/up", method = RequestMethod.POST)
-    @ResponseBody
-    public T voteUp(@PathVariable(value = "id") final String id) throws
-        SocialException {
-        String context = context();
-        String userId = userId();
-        return (T)socialServices.vote(id, VoteOptions.VOTE_UP,userId, context);
-    }
+	@RequestMapping(value = "{id}/votes/up", method = RequestMethod.POST)
+	@ResponseBody
+	public T voteUp(@PathVariable(value = "id") final String id) throws
+		SocialException {
+		String context = context();
+		String userId = userId();
+		return (T) socialServices.vote(id, VoteOptions.VOTE_UP, userId, context);
+	}
 
-    @RequestMapping(value = "{id}/votes/down", method = RequestMethod.POST)
-    @ResponseBody
-    public T voteDown(@PathVariable(value = "id") final String id) throws
-        SocialException {
-        String context = context();
-        String userId = userId();
-        return (T)socialServices.vote(id, VoteOptions.VOTE_DOWN, userId, context);
-    }
+	@RequestMapping(value = "{id}/votes/down", method = RequestMethod.POST)
+	@ResponseBody
+	public T voteDown(@PathVariable(value = "id") final String id) throws
+		SocialException {
+		String context = context();
+		String userId = userId();
+		return (T) socialServices.vote(id, VoteOptions.VOTE_DOWN, userId, context);
+	}
 
-    @RequestMapping(value = "{id}/votes/neutral", method = RequestMethod.POST)
-    @ResponseBody
-    public T voteNeutral(@PathVariable(value = "id") final String id) throws SocialException {
-        String context = context();
-        String userId = userId();
-        return (T)socialServices.vote(id, VoteOptions.VOTE_NEUTRAL, userId, context);
-    }
-
+	@RequestMapping(value = "{id}/votes/neutral", method = RequestMethod.POST)
+	@ResponseBody
+	public T voteNeutral(@PathVariable(value = "id") final String id) throws SocialException {
+		String context = context();
+		String userId = userId();
+		return (T) socialServices.vote(id, VoteOptions.VOTE_NEUTRAL, userId, context);
+	}
 
 
 }

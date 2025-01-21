@@ -153,7 +153,7 @@ public class HierarchyList<T> implements Serializable {
 		return extraCount;
 	}
 
-	@XmlElement(name="list")
+	@XmlElement(name = "list")
 	public List<T> getList() {
 		return list;
 	}

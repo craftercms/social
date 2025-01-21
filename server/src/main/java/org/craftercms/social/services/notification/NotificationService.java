@@ -28,19 +28,19 @@ import org.craftercms.social.exceptions.SocialException;
  */
 public interface NotificationService {
 
-    public static final String WEEKLY = "weekly";
-    public static final String DAILY = "daily";
-    public static final String INSTANT = "instant";
+	public static final String WEEKLY = "weekly";
+	public static final String DAILY = "daily";
+	public static final String INSTANT = "instant";
 
-    void subscribeUser(final Profile profile, final String threadId, final String type) throws NotificationException;
+	void subscribeUser(final Profile profile, final String threadId, final String type) throws NotificationException;
 
-    void notify(final String type);
+	void notify(final String type);
 
-    void unSubscribeUser(final String userId, String threadId) throws NotificationException;
+	void unSubscribeUser(final String userId, String threadId) throws NotificationException;
 
-    boolean isBeenWatch(final String threadId, final String profileId) throws NotificationException;
+	boolean isBeenWatch(final String threadId, final String profileId) throws NotificationException;
 
-    List<Map> getUserSubscriptions() throws SocialException;
+	List<Map> getUserSubscriptions() throws SocialException;
 
-    void changeSubscription(Profile p, String threadId, String frequency) throws NotificationException;
+	void changeSubscription(Profile p, String threadId, String frequency) throws NotificationException;
 }

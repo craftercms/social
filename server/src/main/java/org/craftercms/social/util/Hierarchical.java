@@ -19,11 +19,18 @@ import java.util.List;
 
 public interface Hierarchical<T> {
 	Object getId();
+
 	Object getParentId();
+
 	void addChild(T child);
+
 	List<T> getChildren();
+
 	int getChildCount();
+
 	void incExtraChildCount();
+
 	void incExtraChildCountBy(int count);
+
 	int getExtraChildCount();
 }

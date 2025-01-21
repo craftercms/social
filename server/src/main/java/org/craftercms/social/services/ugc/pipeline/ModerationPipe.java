@@ -27,18 +27,18 @@ import org.craftercms.social.services.ugc.UgcPipe;
 /**
  *
  */
-public class ModerationPipe implements UgcPipe{
+public class ModerationPipe implements UgcPipe {
 
-    private ModerationDecision moderationDecision;
+	private ModerationDecision moderationDecision;
 
-    @Override
-    public <T extends UGC> void process(final T ugc,Map<String,Object> params) throws SocialException {
-        if(ugc instanceof SocialUgc)
-            moderationDecision.needModeration((SocialUgc)ugc);
-    }
+	@Override
+	public <T extends UGC> void process(final T ugc, Map<String, Object> params) throws SocialException {
+		if (ugc instanceof SocialUgc)
+			moderationDecision.needModeration((SocialUgc) ugc);
+	}
 
 
-    public void setModerationDecision(final ModerationDecision moderationDecision) {
-        this.moderationDecision = moderationDecision;
-    }
+	public void setModerationDecision(final ModerationDecision moderationDecision) {
+		this.moderationDecision = moderationDecision;
+	}
 }

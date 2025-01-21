@@ -30,50 +30,51 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ *
  */
 public class SocialPermissionResolver<T> implements PermissionResolver<Profile, T> {
 
-    protected PermissionRepository permissionRepository;
-    protected UGCService ugcService;
-    private Logger log = LoggerFactory.getLogger(SocialPermissionResolver.class);
+	protected PermissionRepository permissionRepository;
+	protected UGCService ugcService;
+	private Logger log = LoggerFactory.getLogger(SocialPermissionResolver.class);
 
-    @Override
-    public Permission getGlobalPermission(final Profile subject) throws PermissionException {
-        return getPermission(subject, null);
-    }
+	@Override
+	public Permission getGlobalPermission(final Profile subject) throws PermissionException {
+		return getPermission(subject, null);
+	}
 
-    @Override
-    public Permission getPermission(final Profile subject, final T object) throws PermissionException {
-        if (object instanceof String) {
-            String ugcId = (String)object;
-            if (ObjectId.isValid(ugcId)) {
-                try {
-                    final UGC ugc = ugcService.read(ugcId, SocialSecurityUtils.getContext());
-                    if (ugc != null) {
-                        if (subject.getId().equals(ugc.getCreatedBy())) {
-                            subject.getRoles().add("OWNER");
-                        }
-                    }
-                } catch (UGCException e) {
-                    log.error("Unable to find UGC with id " + ugcId, e);
-                }
-            }
-        }else if(object instanceof Flag){
-            Flag f = (Flag)object;
-            if(f.getUserId().equalsIgnoreCase(subject.getId().toString())){
-                subject.getRoles().add("OWNER");
-            }
-        }
-        return new SocialPermission(SocialSecurityUtils.getSocialRoles(), permissionRepository,
-            SocialSecurityUtils.getContext());
-    }
+	@Override
+	public Permission getPermission(final Profile subject, final T object) throws PermissionException {
+		if (object instanceof String) {
+			String ugcId = (String) object;
+			if (ObjectId.isValid(ugcId)) {
+				try {
+					final UGC ugc = ugcService.read(ugcId, SocialSecurityUtils.getContext());
+					if (ugc != null) {
+						if (subject.getId().equals(ugc.getCreatedBy())) {
+							subject.getRoles().add("OWNER");
+						}
+					}
+				} catch (UGCException e) {
+					log.error("Unable to find UGC with id " + ugcId, e);
+				}
+			}
+		} else if (object instanceof Flag) {
+			Flag f = (Flag) object;
+			if (f.getUserId().equalsIgnoreCase(subject.getId().toString())) {
+				subject.getRoles().add("OWNER");
+			}
+		}
+		return new SocialPermission(SocialSecurityUtils.getSocialRoles(), permissionRepository,
+			SocialSecurityUtils.getContext());
+	}
 
-    public void setPermissionRepository(final PermissionRepository permissionRepository) {
-        this.permissionRepository = permissionRepository;
-    }
+	public void setPermissionRepository(final PermissionRepository permissionRepository) {
+		this.permissionRepository = permissionRepository;
+	}
 
-    public void setUgcService(UGCService ugcService) {
-        this.ugcService = ugcService;
-    }
+	public void setUgcService(UGCService ugcService) {
+		this.ugcService = ugcService;
+	}
 
 }

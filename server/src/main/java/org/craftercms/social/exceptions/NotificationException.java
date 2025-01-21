@@ -21,11 +21,11 @@ package org.craftercms.social.exceptions;
  */
 public class NotificationException extends UGCException {
 
-    public NotificationException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	public NotificationException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 
-    public NotificationException(final String message) {
-        super(message);
-    }
+	public NotificationException(final String message) {
+		super(message);
+	}
 }

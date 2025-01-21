@@ -39,10 +39,12 @@
   // Core CSS
   @import 'bootstrap-sass/assets/stylesheets/bootstrap/_scaffolding';
   @import 'bootstrap-sass/assets/stylesheets/bootstrap/_type';
+
   h1, h2, h3 {
     margin-top: 0;
     margin-bottom: 0;
   }
+
   @import 'bootstrap-sass/assets/stylesheets/bootstrap/_grid';
   @import 'bootstrap-sass/assets/stylesheets/bootstrap/_tables';
   @import 'bootstrap-sass/assets/stylesheets/bootstrap/_forms';
@@ -66,6 +68,7 @@
         border-bottom-color: rgba(0, 0, 0, 0.2);
         content: '';
       }
+
       &::after {
         position: absolute;
         top: -6px;
@@ -77,11 +80,13 @@
         content: '';
       }
     }
+
     &.has-icons {
       > li {
         > a {
           position: relative;
           padding-left: 30px;
+
           i {
             top: 5px;
             left: 10px;
@@ -111,9 +116,14 @@
 
     cursor: pointer;
     color: $link-color;
-    &:hover { color: $link-hover-color; }
 
-    * { color: inherit; }
+    &:hover {
+      color: $link-hover-color;
+    }
+
+    * {
+      color: inherit;
+    }
 
   }
 

@@ -30,34 +30,34 @@ import org.craftercms.social.services.system.ContextPreferencesService;
  */
 public class SocialFreemarkerLoader implements TemplateLoader {
 
-    private ContextPreferencesService contextPreferencesService;
+	private ContextPreferencesService contextPreferencesService;
 
-    @Override
-    public Object findTemplateSource(final String name) throws IOException {
-        String[] tmp=name.split("/");
-        try {
-            return contextPreferencesService.getNotificationEmailTemplate(tmp[0],tmp[1]);
-        } catch (SocialException e) {
-            throw new IOException("Unable to find Template "+name,e);
-        }
-    }
+	@Override
+	public Object findTemplateSource(final String name) throws IOException {
+		String[] tmp = name.split("/");
+		try {
+			return contextPreferencesService.getNotificationEmailTemplate(tmp[0], tmp[1]);
+		} catch (SocialException e) {
+			throw new IOException("Unable to find Template " + name, e);
+		}
+	}
 
-    @Override
-    public long getLastModified(final Object templateSource) {
-        return new Date().getTime();
-    }
+	@Override
+	public long getLastModified(final Object templateSource) {
+		return new Date().getTime();
+	}
 
-    @Override
-    public Reader getReader(final Object templateSource, final String encoding) throws IOException {
-        return new StringReader(templateSource.toString());
-    }
+	@Override
+	public Reader getReader(final Object templateSource, final String encoding) throws IOException {
+		return new StringReader(templateSource.toString());
+	}
 
-    @Override
-    public void closeTemplateSource(final Object templateSource) throws IOException {
+	@Override
+	public void closeTemplateSource(final Object templateSource) throws IOException {
 
-    }
+	}
 
-    public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
-        this.contextPreferencesService = contextPreferencesService;
-    }
+	public void setContextPreferencesService(final ContextPreferencesService contextPreferencesService) {
+		this.contextPreferencesService = contextPreferencesService;
+	}
 }

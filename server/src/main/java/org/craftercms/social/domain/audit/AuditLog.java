@@ -27,42 +27,42 @@ import org.jongo.marshall.jackson.oid.Id;
 @Document(collectionName = "audit")
 public class AuditLog extends AuditModel {
 
-    private String contextId;
-    private String userId;
-    private String actionName;
+	private String contextId;
+	private String userId;
+	private String actionName;
 
-    public <T extends UGC> AuditLog(T payload) {
-        super();
-        this.setPayload(payload);
-    }
+	public <T extends UGC> AuditLog(T payload) {
+		super();
+		this.setPayload(payload);
+	}
 
-    @Override
-    @Id
-    public String getId() {
-        return super.getId();
-    }
+	@Override
+	@Id
+	public String getId() {
+		return super.getId();
+	}
 
-    public String getContextId() {
-        return contextId;
-    }
+	public String getContextId() {
+		return contextId;
+	}
 
-    public void setContextId(final String contextId) {
-        this.contextId = contextId;
-    }
+	public void setContextId(final String contextId) {
+		this.contextId = contextId;
+	}
 
-    public String getUserId() {
-        return userId;
-    }
+	public String getUserId() {
+		return userId;
+	}
 
-    public void setUserId(final String userId) {
-        this.userId = userId;
-    }
+	public void setUserId(final String userId) {
+		this.userId = userId;
+	}
 
-    public String getActionName() {
-        return actionName;
-    }
+	public String getActionName() {
+		return actionName;
+	}
 
-    public void setActionName(final String actionName) {
-        this.actionName = actionName;
-    }
+	public void setActionName(final String actionName) {
+		this.actionName = actionName;
+	}
 }

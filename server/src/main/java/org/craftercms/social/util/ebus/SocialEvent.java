@@ -28,87 +28,88 @@ import java.util.Map;
  */
 public class SocialEvent<T extends UGC> {
 
-    private T source;
-    private String ugcId;
-    private Map<String,Object> attributes;
-    private InputStream[] attachments;
-    private String attachmentId;
-    private String userId;
-    private final UGCEvent type;
+	private T source;
+	private String ugcId;
+	private Map<String, Object> attributes;
+	private InputStream[] attachments;
+	private String attachmentId;
+	private String userId;
+	private final UGCEvent type;
 
-    public SocialEvent(final T source, final String userId, UGCEvent type) {
-        this.source = source;
-        this.attributes = source.getAttributes();
-        this.ugcId = source.getId().toString();
-        this.userId = userId;
-        this.type = type;
-    }
+	public SocialEvent(final T source, final String userId, UGCEvent type) {
+		this.source = source;
+		this.attributes = source.getAttributes();
+		this.ugcId = source.getId().toString();
+		this.userId = userId;
+		this.type = type;
+	}
 
 
-    public SocialEvent(final String ugcId, final String userId, UGCEvent type) {
-        this.ugcId = ugcId;
-        this.userId = userId;
-        this.type = type;
-        this.attributes = new HashMap<>();
-    }
+	public SocialEvent(final String ugcId, final String userId, UGCEvent type) {
+		this.ugcId = ugcId;
+		this.userId = userId;
+		this.type = type;
+		this.attributes = new HashMap<>();
+	}
 
-    public SocialEvent(final String ugcId, final Map<String, Object> attributes, final String userId, UGCEvent type) {
-        this.ugcId = ugcId;
-        this.attributes = attributes;
-        this.userId = userId;
-        this.type = type;
-    }
+	public SocialEvent(final String ugcId, final Map<String, Object> attributes, final String userId, UGCEvent type) {
+		this.ugcId = ugcId;
+		this.attributes = attributes;
+		this.userId = userId;
+		this.type = type;
+	}
 
-    public SocialEvent(final String ugcId, final String attachmentId, final String userId, UGCEvent type) {
-        this.ugcId = ugcId;
-        this.attachmentId = attachmentId;
-        this.userId = userId;
-        this.type = type;
-        this.attributes = new HashMap<>();
-    }
+	public SocialEvent(final String ugcId, final String attachmentId, final String userId, UGCEvent type) {
+		this.ugcId = ugcId;
+		this.attachmentId = attachmentId;
+		this.userId = userId;
+		this.type = type;
+		this.attributes = new HashMap<>();
+	}
 
-    public SocialEvent(final T source, final InputStream[] attachments, UGCEvent type) {
-        this.source = source;
-        this.ugcId = source.getId().toString();;
-        this.attachments = attachments;
-        this.type = type;
-    }
+	public SocialEvent(final T source, final InputStream[] attachments, UGCEvent type) {
+		this.source = source;
+		this.ugcId = source.getId().toString();
+		;
+		this.attachments = attachments;
+		this.type = type;
+	}
 
-    public SocialEvent(final String ugcId, final InputStream[] attachments, UGCEvent type) {
-        this.ugcId = ugcId;
-        this.attachments = attachments;
-        this.type = type;
-    }
+	public SocialEvent(final String ugcId, final InputStream[] attachments, UGCEvent type) {
+		this.ugcId = ugcId;
+		this.attachments = attachments;
+		this.type = type;
+	}
 
-    public T getSource() {
-        return source;
-    }
+	public T getSource() {
+		return source;
+	}
 
-    public String getUgcId() {
-        return ugcId;
-    }
+	public String getUgcId() {
+		return ugcId;
+	}
 
-    public InputStream[] getAttachments() {
-        return attachments;
-    }
+	public InputStream[] getAttachments() {
+		return attachments;
+	}
 
-    public UGCEvent getType() {
-        return type;
-    }
+	public UGCEvent getType() {
+		return type;
+	}
 
-    public String getUserId() {
-        return userId;
-    }
+	public String getUserId() {
+		return userId;
+	}
 
-    public String getAttachmentId() {
-        return attachmentId;
-    }
+	public String getAttachmentId() {
+		return attachmentId;
+	}
 
-    public void setAttribute(final String key, final Object value) {
-        attributes.put(key,value);
-    }
+	public void setAttribute(final String key, final Object value) {
+		attributes.put(key, value);
+	}
 
-    public <T> T getAttribute(final String key){
-        return (T)attributes.get(key);
-    }
+	public <T> T getAttribute(final String key) {
+		return (T) attributes.get(key);
+	}
 }

@@ -14,29 +14,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var secActions=db.socialContext.find();
-secActions.forEach(function(context){
-    if(db.securityActions.find({"contextId":context._id,
-                                "actionName": "system.securityActions.update"}).count()<=0) {
-        db.securityActions.insert(
-            {
-                "actionName": "system.securityActions.update",
-                "contextId": context._id,
-                roles: ["SOCIAL_ADMIN","SOCIAL_SUPERADMIN"]
-            }
-        );
-    }
+var secActions = db.socialContext.find();
+secActions.forEach(function (context) {
+	if (db.securityActions.find({
+		"contextId": context._id,
+		"actionName": "system.securityActions.update"
+	}).count() <= 0) {
+		db.securityActions.insert(
+			{
+				"actionName": "system.securityActions.update",
+				"contextId": context._id,
+				roles: ["SOCIAL_ADMIN", "SOCIAL_SUPERADMIN"]
+			}
+		);
+	}
 });
 
-if(db.securityActions.find({"contextId":"TEMPLATE_CONTEXT_ACTIONS",
-        "actionName": "system.securityActions.update"}).count()<=0) {
-    db.securityActions.insert(
-        {
-            "actionName": "system.securityActions.update",
-            "contextId": "TEMPLATE_CONTEXT_ACTIONS",
-            roles: ["SOCIAL_ADMIN","SOCIAL_SUPERADMIN"]
-        }
-    );
+if (db.securityActions.find({
+	"contextId": "TEMPLATE_CONTEXT_ACTIONS",
+	"actionName": "system.securityActions.update"
+}).count() <= 0) {
+	db.securityActions.insert(
+		{
+			"actionName": "system.securityActions.update",
+			"contextId": "TEMPLATE_CONTEXT_ACTIONS",
+			roles: ["SOCIAL_ADMIN", "SOCIAL_SUPERADMIN"]
+		}
+	);
 }
 
 

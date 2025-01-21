@@ -8,7 +8,7 @@
   }
 
 
- .panel-heading {
+  .panel-heading {
     padding: 0;
 
     a {
@@ -26,7 +26,10 @@
         line-height: 1;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        &:empty { width: 1em; }
+
+        &:empty {
+          width: 1em;
+        }
 
       }
 

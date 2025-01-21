@@ -31,11 +31,16 @@ import org.craftercms.social.exceptions.SocialException;
  *
  */
 public interface WatchedThreadsRepository extends CrudRepository<WatchedThread> {
-     void removeWatcher(final String thread, final String userId) throws NotificationException;
-     void addWatcher(final String thread, final String userId, final String frequency) throws NotificationException ;
-     WatchedThread isUserSubscribe(final String threadId, final String profileId) throws MongoDataException;
-     Iterable<WatchedThread> findAllWithWatchers() throws NotificationException;
-     List<ThreadsToNotify> findProfilesToSend(final String type) throws NotificationException;
-     List<Map> findUserWatchedThreads(final String profileId) throws SocialException;
+	void removeWatcher(final String thread, final String userId) throws NotificationException;
+
+	void addWatcher(final String thread, final String userId, final String frequency) throws NotificationException;
+
+	WatchedThread isUserSubscribe(final String threadId, final String profileId) throws MongoDataException;
+
+	Iterable<WatchedThread> findAllWithWatchers() throws NotificationException;
+
+	List<ThreadsToNotify> findProfilesToSend(final String type) throws NotificationException;
+
+	List<Map> findUserWatchedThreads(final String profileId) throws SocialException;
 
 }

@@ -14,13 +14,14 @@ ul.#{$app-namespace}-view-options-view {
 
   > li {
     list-style-type: none !important;
+
     > a {
       display: block;
     }
   }
 
   .crafter-social-icon.fa {
-      font-family: 'FontAwesome';
+    font-family: 'FontAwesome';
   }
 
 }

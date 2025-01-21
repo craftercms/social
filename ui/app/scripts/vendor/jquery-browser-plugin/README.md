@@ -21,7 +21,7 @@ Returns true if the current useragent is some version of Firefox.
     $.browser.mozilla;
 
 Reading the browser verion
-    
+
     $.browser.version
 
 ## Things not included in the original jQuery $.browser implementation
@@ -69,7 +69,7 @@ Once Casperjs and the grunt-cli npm package is installed you can execute all the
 ## Development
 
 - Source hosted at [GitHub](https://github.com/gabceb/jquery-browser-plugin)
-- Report issues, questions, feature requests on [GitHub Issues](https://github.com/gabceb/jquery-browser-plugin/issues) 
+- Report issues, questions, feature requests on [GitHub Issues](https://github.com/gabceb/jquery-browser-plugin/issues)
 
 ## Attributions
 

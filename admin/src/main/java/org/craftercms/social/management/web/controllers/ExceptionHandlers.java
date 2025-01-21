@@ -43,53 +43,53 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ExceptionHandlers extends ResponseEntityExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlers.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlers.class);
 
-    private static final String ERROR_KEY = "error";
+	private static final String ERROR_KEY = "error";
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.NOT_FOUND, request);
-    }
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
+		return handleExceptionInternal(e, HttpStatus.NOT_FOUND, request);
+	}
 
-    @ExceptionHandler(InvalidRequestParameterException.class)
-    public ResponseEntity<Object> handleInvalidRequestParameterException(InvalidRequestParameterException e,
-                                                                         WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, request);
-    }
+	@ExceptionHandler(InvalidRequestParameterException.class)
+	public ResponseEntity<Object> handleInvalidRequestParameterException(InvalidRequestParameterException e,
+									     WebRequest request) {
+		return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, request);
+	}
 
-    @ExceptionHandler(ProfileRestServiceException.class)
-    public ResponseEntity<Object> handleProfileRestServiceException(ProfileRestServiceException e, WebRequest request) {
-        return handleExceptionInternal(e, e.getStatus(), request);
-    }
+	@ExceptionHandler(ProfileRestServiceException.class)
+	public ResponseEntity<Object> handleProfileRestServiceException(ProfileRestServiceException e, WebRequest request) {
+		return handleExceptionInternal(e, e.getStatus(), request);
+	}
 
-    @ExceptionHandler(ProfileException.class)
-    public ResponseEntity<Object> handleProfileException(ProfileException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, request);
-    }
+	@ExceptionHandler(ProfileException.class)
+	public ResponseEntity<Object> handleProfileException(ProfileException e, WebRequest request) {
+		return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, request);
+	}
 
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
-                                                             HttpStatusCode status, WebRequest request) {
-        return handleExceptionInternal(ex, headers, status, request);
-    }
+	@Override
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
+								 HttpStatusCode status, WebRequest request) {
+		return handleExceptionInternal(ex, headers, status, request);
+	}
 
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpStatusCode status, WebRequest request) {
-        return handleExceptionInternal(ex, new HttpHeaders(), status, request);
-    }
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpStatusCode status, WebRequest request) {
+		return handleExceptionInternal(ex, new HttpHeaders(), status, request);
+	}
 
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpHeaders headers, HttpStatusCode status,
-                                                             WebRequest request) {
-        logger.error("Request for " + ((ServletWebRequest) request).getRequest().getRequestURI() + " failed " +
-                "with HTTP status " + status, ex);
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpHeaders headers, HttpStatusCode status,
+								 WebRequest request) {
+		logger.error("Request for " + ((ServletWebRequest) request).getRequest().getRequestURI() + " failed " +
+			"with HTTP status " + status, ex);
 
-        String message = ex.getMessage();
+		String message = ex.getMessage();
 
-        if (ex instanceof ProfileRestServiceException) {
-            message = ((ProfileRestServiceException) ex).getDetailMessage();
-        }
+		if (ex instanceof ProfileRestServiceException) {
+			message = ((ProfileRestServiceException) ex).getDetailMessage();
+		}
 
-        return new ResponseEntity<Object>(Collections.singletonMap(ERROR_KEY, message), headers, status);
-    }
+		return new ResponseEntity<Object>(Collections.singletonMap(ERROR_KEY, message), headers, status);
+	}
 
 }

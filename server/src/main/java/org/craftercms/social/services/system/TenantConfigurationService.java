@@ -21,9 +21,9 @@ package org.craftercms.social.services.system;
  */
 public interface TenantConfigurationService {
 
-    String HIDDEN_UGC_STATUS = "hiddenUgcStatus";
+	String HIDDEN_UGC_STATUS = "hiddenUgcStatus";
 
-    <T> T getProperty(final String contextId, final String propertyName);
+	<T> T getProperty(final String contextId, final String propertyName);
 
-    void reloadTenant(String contextId);
+	void reloadTenant(String contextId);
 }

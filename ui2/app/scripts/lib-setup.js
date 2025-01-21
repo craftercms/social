@@ -1,6 +1,6 @@
 (function (S) {
-    'use strict';
+	'use strict';
 
-    S.window.CKEDITOR_BASEPATH = crafter.social.resource('libs/ckeditor/');
+	S.window.CKEDITOR_BASEPATH = crafter.social.resource('libs/ckeditor/');
 
-}) (crafter.social);
+})(crafter.social);

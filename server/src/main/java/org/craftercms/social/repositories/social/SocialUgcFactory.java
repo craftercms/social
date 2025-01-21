@@ -27,21 +27,21 @@ import org.craftercms.social.repositories.social.support.SocialTreeUgc;
  */
 public class SocialUgcFactory<T extends UGC> implements UgcFactory<T> {
 
-    @Override
-    public Class getMainClass() {
-        return SocialUgc.class;
-    }
+	@Override
+	public Class getMainClass() {
+		return SocialUgc.class;
+	}
 
-    @Override
-    public Class<?> getTreeClass() {
-        return SocialTreeUgc.class;
-    }
+	@Override
+	public Class<?> getTreeClass() {
+		return SocialTreeUgc.class;
+	}
 
-    @Override
-    public T newInstance(final T base) {
-        SocialUgc socialUgc = new SocialUgc(base);
-        socialUgc.setModerationStatus(ModerationStatus.UNMODERATED);
-        return (T)socialUgc;
-    }
+	@Override
+	public T newInstance(final T base) {
+		SocialUgc socialUgc = new SocialUgc(base);
+		socialUgc.setModerationStatus(ModerationStatus.UNMODERATED);
+		return (T) socialUgc;
+	}
 
 }

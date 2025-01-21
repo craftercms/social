@@ -32,20 +32,20 @@ import org.craftercms.social.security.SocialSecurityUtils;
  */
 public class SocialSecurePropertyHandler implements SecurePropertyHandler {
 
-    @Override
-    public boolean suppressProperty(final Object propertyName, final String[] roles) {
-        Profile p = SocialSecurityUtils.getCurrentProfile();
-        List<String> currentRoles=new ArrayList<>();
-        if(p!=null && !p.getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)){
-            if(propertyName instanceof Flag){
-                final String userId = ((Flag)propertyName).getUserId();
-                if(userId.equals(p.getId().toString())) {
-                    currentRoles.add("OWNER");
-                }
-            }
-        }
-        currentRoles.addAll(SocialSecurityUtils.getSocialRoles());
-        return CollectionUtils.containsAny(currentRoles, Arrays.asList(roles));
-    }
+	@Override
+	public boolean suppressProperty(final Object propertyName, final String[] roles) {
+		Profile p = SocialSecurityUtils.getCurrentProfile();
+		List<String> currentRoles = new ArrayList<>();
+		if (p != null && !p.getUsername().equalsIgnoreCase(SocialSecurityUtils.ANONYMOUS)) {
+			if (propertyName instanceof Flag) {
+				final String userId = ((Flag) propertyName).getUserId();
+				if (userId.equals(p.getId().toString())) {
+					currentRoles.add("OWNER");
+				}
+			}
+		}
+		currentRoles.addAll(SocialSecurityUtils.getSocialRoles());
+		return CollectionUtils.containsAny(currentRoles, Arrays.asList(roles));
+	}
 
 }

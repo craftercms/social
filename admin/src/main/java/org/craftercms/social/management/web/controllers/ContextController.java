@@ -34,30 +34,29 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/contexts")
 public class ContextController {
 
-    public static final String VIEW_MAIN = "contexts";
+	public static final String VIEW_MAIN = "contexts";
 
-    private static final String IS_LOGGED_USER_SUPERADMIN = "isSuperAdmin";
+	private static final String IS_LOGGED_USER_SUPERADMIN = "isSuperAdmin";
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView viewMain(HttpServletRequest request) {
-        ModelAndView mav = new ModelAndView(VIEW_MAIN);
-        mav.addObject(IS_LOGGED_USER_SUPERADMIN, isSuperAdmin(getLoggedInUser(request)));
-        return mav;
-    }
+	@RequestMapping(method = RequestMethod.GET)
+	public ModelAndView viewMain(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(VIEW_MAIN);
+		mav.addObject(IS_LOGGED_USER_SUPERADMIN, isSuperAdmin(getLoggedInUser(request)));
+		return mav;
+	}
 
-    private boolean isSuperAdmin(final Profile loggedUser) {
-        return loggedUser.getRoles().contains("SOCIAL_SUPERADMIN");
-    }
+	private boolean isSuperAdmin(final Profile loggedUser) {
+		return loggedUser.getRoles().contains("SOCIAL_SUPERADMIN");
+	}
 
-    private Profile getLoggedInUser(HttpServletRequest request) {
-        Authentication auth = SecurityUtils.getAuthentication(request);
-        if (auth != null) {
-            return auth.getProfile();
-        } else {
-            return null;
-        }
-    }
-
+	private Profile getLoggedInUser(HttpServletRequest request) {
+		Authentication auth = SecurityUtils.getAuthentication(request);
+		if (auth != null) {
+			return auth.getProfile();
+		} else {
+			return null;
+		}
+	}
 
 
 }

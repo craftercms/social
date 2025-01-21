@@ -25,15 +25,15 @@ import org.craftercms.social.repositories.SocialContextRepository;
  *
  */
 public class SocialContextRepositoryImpl extends AbstractJongoRepository<SocialContext> implements
-        SocialContextRepository {
+	SocialContextRepository {
 
-    public SocialContextRepositoryImpl() {
-        super();
-    }
+	public SocialContextRepositoryImpl() {
+		super();
+	}
 
-    @Override
-    public SocialContext findById(final String id) throws MongoDataException {
-        String query = getQueryFor("social.context.byId");
-        return findOne(query, id);
-    }
+	@Override
+	public SocialContext findById(final String id) throws MongoDataException {
+		String query = getQueryFor("social.context.byId");
+		return findOne(query, id);
+	}
 }

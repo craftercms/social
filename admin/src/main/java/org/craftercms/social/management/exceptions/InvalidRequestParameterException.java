@@ -23,8 +23,8 @@ package org.craftercms.social.management.exceptions;
  */
 public class InvalidRequestParameterException extends RuntimeException {
 
-    public InvalidRequestParameterException(String message) {
-        super(message);
-    }
+	public InvalidRequestParameterException(String message) {
+		super(message);
+	}
 
 }

@@ -26,25 +26,25 @@ import org.jongo.marshall.jackson.oid.Id;
  */
 public class NotificationDigest<T extends UGC> {
 
-    @Id
-    private String actionType;
+	@Id
+	private String actionType;
 
-    private List<T> ugcForAction;
+	private List<T> ugcForAction;
 
 
-    public String getActionType() {
-        return actionType;
-    }
+	public String getActionType() {
+		return actionType;
+	}
 
-    public void setActionType(final String actionType) {
-        this.actionType = actionType;
-    }
+	public void setActionType(final String actionType) {
+		this.actionType = actionType;
+	}
 
-    public List<T> getUgcForAction() {
-        return ugcForAction;
-    }
+	public List<T> getUgcForAction() {
+		return ugcForAction;
+	}
 
-    public void setUgcForAction(final List<T> ugcForAction) {
-        this.ugcForAction = ugcForAction;
-    }
+	public void setUgcForAction(final List<T> ugcForAction) {
+		this.ugcForAction = ugcForAction;
+	}
 }

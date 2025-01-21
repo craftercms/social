@@ -27,16 +27,16 @@ import org.craftercms.social.exceptions.SocialException;
 /**
  * Created by Carlos Ortiz on 8/21/14.
  */
-public interface AuditRepository extends CrudRepository<AuditLog>{
-    void deleteByIds(List<String> ids) throws SocialException;
+public interface AuditRepository extends CrudRepository<AuditLog> {
+	void deleteByIds(List<String> ids) throws SocialException;
 
-    List<AuditLog> getByDate(String context, Date from, Date to) throws SocialException;
+	List<AuditLog> getByDate(String context, Date from, Date to) throws SocialException;
 
-    List<AuditLog> getByDate(Date from, Date to) throws SocialException;
+	List<AuditLog> getByDate(Date from, Date to) throws SocialException;
 
-    Iterable<AuditLog> getNotificationsToSend(final String threadId, Date from, Date to) throws
-        SocialException;
+	Iterable<AuditLog> getNotificationsToSend(final String threadId, Date from, Date to) throws
+		SocialException;
 
-    List<HashMap> getNotificationDigest(String threadId, Date from, Date to, List<String> profilesToExclude) throws SocialException;
+	List<HashMap> getNotificationDigest(String threadId, Date from, Date to, List<String> profilesToExclude) throws SocialException;
 
 }

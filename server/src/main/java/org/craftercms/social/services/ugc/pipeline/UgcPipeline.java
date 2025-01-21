@@ -28,19 +28,20 @@ import org.craftercms.social.services.ugc.UgcPipe;
  */
 public class UgcPipeline {
 
-    private List<UgcPipe> pipeList;
+	private List<UgcPipe> pipeList;
 
 
-    public <T extends UGC> void processUgc(T ugc) throws SocialException {
-        processUgc(ugc,null);
-    }
-    public <T extends UGC> void processUgc(T ugc,Map<String,Object> params) throws SocialException {
-        for (UgcPipe ugcPipe : pipeList) {
-            ugcPipe.process(ugc,params);
-        }
-    }
+	public <T extends UGC> void processUgc(T ugc) throws SocialException {
+		processUgc(ugc, null);
+	}
 
-    public void setPipeList(final List<UgcPipe> pipeList) {
-        this.pipeList = pipeList;
-    }
+	public <T extends UGC> void processUgc(T ugc, Map<String, Object> params) throws SocialException {
+		for (UgcPipe ugcPipe : pipeList) {
+			ugcPipe.process(ugc, params);
+		}
+	}
+
+	public void setPipeList(final List<UgcPipe> pipeList) {
+		this.pipeList = pipeList;
+	}
 }

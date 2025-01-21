@@ -15,77 +15,98 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.craftercms</groupId>
-	<artifactId>crafter-social-parent</artifactId>
-
-	<name>Crafter Social</name>
-	<description>Crafter Social</description>
-	<url>https://github.com/craftercms/social</url>
-
-	<packaging>pom</packaging>
-
-	<scm>
-		<connection>scm:git:git://github.com/craftercms/social</connection>
-		<developerConnection>scm:git:git://github.com/craftercms/social</developerConnection>
-		<url>scm:git:git://github.com/craftercms/social</url>
-	</scm>
-
-	<parent>
+		<modelVersion>4.0.0</modelVersion>
 		<groupId>org.craftercms</groupId>
-		<artifactId>craftercms</artifactId>
-		<version>5.0.0-SNAPSHOT</version><!-- craftercms version flag -->
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+		<artifactId>crafter-social-parent</artifactId>
 
-	<modules>
-		<module>virus-scanner</module>
-		<module>server</module>
-		<module>admin</module>
-	</modules>
+		<name>Crafter Social</name>
+		<description>Crafter Social</description>
+		<url>https://github.com/craftercms/social</url>
 
-	<profiles>
-		<profile>
-			<id>migrationTool</id>
-			<activation>
-				<property>
-					<name>with-migration-tool</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<modules>
-				<module>migration</module>
-			</modules>
-		</profile>
-	</profiles>
+		<packaging>pom</packaging>
 
-	<repositories>
-		<repository>
-			<id>sonatype-snapshots</id>
-			<name>Sonatype Snapshot Repository</name>
-			<url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</snapshots>
-		</repository>
-	</repositories>
+		<scm>
+				<connection>scm:git:git://github.com/craftercms/social</connection>
+				<developerConnection>scm:git:git://github.com/craftercms/social</developerConnection>
+				<url>scm:git:git://github.com/craftercms/social</url>
+		</scm>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>sonatype-snapshots</id>
-			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>sonatype-staging</id>
-			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+		<parent>
+				<groupId>org.craftercms</groupId>
+				<artifactId>craftercms</artifactId>
+				<version>5.0.0-SNAPSHOT</version><!-- craftercms version flag -->
+				<relativePath/> <!-- lookup parent from repository -->
+		</parent>
+
+		<modules>
+				<module>virus-scanner</module>
+				<module>server</module>
+				<module>admin</module>
+		</modules>
+
+		<build>
+				<plugins>
+						<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-checkstyle-plugin</artifactId>
+								<configuration>
+										<configLocation>https://raw.githubusercontent.com/craftercms/craftercms/refs/heads/develop/checkstyle.xml</configLocation>
+								</configuration>
+								<executions>
+										<execution>
+												<id>validate</id>
+												<phase>validate</phase>
+												<goals>
+														<goal>check</goal>
+												</goals>
+										</execution>
+								</executions>
+						</plugin>
+				</plugins>
+		</build>
+
+		<profiles>
+				<profile>
+						<id>migrationTool</id>
+						<activation>
+								<property>
+										<name>with-migration-tool</name>
+										<value>true</value>
+								</property>
+						</activation>
+						<modules>
+								<module>migration</module>
+						</modules>
+				</profile>
+		</profiles>
+
+		<repositories>
+				<repository>
+						<id>sonatype-snapshots</id>
+						<name>Sonatype Snapshot Repository</name>
+						<url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+						<releases>
+								<enabled>false</enabled>
+						</releases>
+						<snapshots>
+								<enabled>true</enabled>
+								<updatePolicy>always</updatePolicy>
+								<checksumPolicy>fail</checksumPolicy>
+						</snapshots>
+				</repository>
+		</repositories>
+
+		<distributionManagement>
+				<snapshotRepository>
+						<id>sonatype-snapshots</id>
+						<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+				</snapshotRepository>
+				<repository>
+						<id>sonatype-staging</id>
+						<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+		</distributionManagement>
 </project>

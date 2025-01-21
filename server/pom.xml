@@ -16,326 +16,326 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.craftercms</groupId>
-	<artifactId>crafter-social</artifactId>
-
-	<name>Crafter Social</name>
-	<description>Crafter Social</description>
-	<url>https://github.com/craftercms/social/tree/master/server</url>
-
-	<packaging>war</packaging>
-
-	<parent>
+		<modelVersion>4.0.0</modelVersion>
 		<groupId>org.craftercms</groupId>
-		<artifactId>crafter-social-parent</artifactId>
-		<version>5.0.0-SNAPSHOT</version><!-- craftercms version flag -->
-	</parent>
+		<artifactId>crafter-social</artifactId>
 
-	<scm>
-		<connection>scm:git:git://github.com/craftercms/social/</connection>
-		<developerConnection>scm:git:git://github.com/craftercms/social/</developerConnection>
-		<url>scm:git:git://github.com/craftercms/social/</url>
-	</scm>
+		<name>Crafter Social</name>
+		<description>Crafter Social</description>
+		<url>https://github.com/craftercms/social/tree/master/server</url>
 
-	<properties>
-		<test.port>8080</test.port>
-	</properties>
+		<packaging>war</packaging>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.craftercms</groupId>
-			<artifactId>crafter-commons-mongo</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.craftercms</groupId>
-			<artifactId>crafter-commons-utilities</artifactId>
-		</dependency>
+		<parent>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-social-parent</artifactId>
+				<version>5.0.0-SNAPSHOT</version><!-- craftercms version flag -->
+		</parent>
 
-		<dependency>
-			<groupId>org.craftercms</groupId>
-			<artifactId>crafter-commons-audit</artifactId>
-		</dependency>
+		<scm>
+				<connection>scm:git:git://github.com/craftercms/social/</connection>
+				<developerConnection>scm:git:git://github.com/craftercms/social/</developerConnection>
+				<url>scm:git:git://github.com/craftercms/social/</url>
+		</scm>
 
-		<dependency>
-			<groupId>org.craftercms</groupId>
-			<artifactId>crafter-commons-entitlements</artifactId>
-		</dependency>
+		<properties>
+				<test.port>8080</test.port>
+		</properties>
 
-		<dependency>
-			<groupId>org.craftercms</groupId>
-			<artifactId>crafter-security-provider</artifactId>
-		</dependency>
+		<dependencies>
+				<dependency>
+						<groupId>org.craftercms</groupId>
+						<artifactId>crafter-commons-mongo</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.craftercms</groupId>
+						<artifactId>crafter-commons-utilities</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>bson</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>org.craftercms</groupId>
+						<artifactId>crafter-commons-audit</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>jakarta.mail</groupId>
-			<artifactId>jakarta.mail-api</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>org.craftercms</groupId>
+						<artifactId>crafter-commons-entitlements</artifactId>
+				</dependency>
 
-		<!-- Providers -->
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcpg-jdk18on</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>org.craftercms</groupId>
+						<artifactId>crafter-security-provider</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.craftercms</groupId>
-			<artifactId>crafter-profile-client</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>org.mongodb</groupId>
+						<artifactId>bson</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>org.craftercms</groupId>
-			<artifactId>crafter-profile-api</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>jakarta.mail</groupId>
+						<artifactId>jakarta.mail-api</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-oxm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.quartz-scheduler</groupId>
-			<artifactId>quartz</artifactId>
-		</dependency>
+				<!-- Providers -->
+				<dependency>
+						<groupId>org.bouncycastle</groupId>
+						<artifactId>bcpg-jdk18on</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.angus</groupId>
-			<artifactId>angus-mail</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-		</dependency>
-		<!-- Apache Commons -->
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents.client5</groupId>
-			<artifactId>httpclient5</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpmime</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>com.google.guava</groupId>
+						<artifactId>guava</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.craftercms</groupId>
+						<artifactId>crafter-profile-client</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>org.craftercms</groupId>
+						<artifactId>crafter-profile-api</artifactId>
+				</dependency>
 
-		<!-- Servlet -->
-		<!-- JSP -->
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-context-support</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-core</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-context</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-webmvc</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-beans</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-oxm</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-aop</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-web</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-tx</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.quartz-scheduler</groupId>
+						<artifactId>quartz</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>jakarta.servlet.jsp</groupId>
-			<artifactId>jakarta.servlet.jsp-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>jakarta.servlet.jsp.jstl</groupId>
-			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>javax.inject</groupId>
+						<artifactId>javax.inject</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.eclipse.angus</groupId>
+						<artifactId>angus-mail</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.freemarker</groupId>
+						<artifactId>freemarker</artifactId>
+				</dependency>
+				<!-- Apache Commons -->
+				<dependency>
+						<groupId>commons-io</groupId>
+						<artifactId>commons-io</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.apache.commons</groupId>
+						<artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>commons-codec</groupId>
+						<artifactId>commons-codec</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.apache.httpcomponents.client5</groupId>
+						<artifactId>httpclient5</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.apache.httpcomponents</groupId>
+						<artifactId>httpmime</artifactId>
+				</dependency>
 
+				<dependency>
+						<groupId>javax.xml.bind</groupId>
+						<artifactId>jaxb-api</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>com.sun.xml.bind</groupId>
+						<artifactId>jaxb-core</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>com.sun.xml.bind</groupId>
+						<artifactId>jaxb-impl</artifactId>
+				</dependency>
 
-		<!-- Logging -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-jakarta-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j2-impl</artifactId>
-		</dependency>
+				<!-- Servlet -->
+				<!-- JSP -->
+				<dependency>
+						<groupId>jakarta.servlet</groupId>
+						<artifactId>jakarta.servlet-api</artifactId>
+						<scope>provided</scope>
+				</dependency>
+
+				<dependency>
+						<groupId>jakarta.servlet.jsp</groupId>
+						<artifactId>jakarta.servlet.jsp-api</artifactId>
+						<scope>provided</scope>
+				</dependency>
+				<dependency>
+						<groupId>jakarta.servlet.jsp.jstl</groupId>
+						<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+				</dependency>
 
 
-		<!-- Test -->
+				<!-- Logging -->
+				<dependency>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.slf4j</groupId>
+						<artifactId>jcl-over-slf4j</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.apache.logging.log4j</groupId>
+						<artifactId>log4j-api</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.apache.logging.log4j</groupId>
+						<artifactId>log4j-core</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.apache.logging.log4j</groupId>
+						<artifactId>log4j-jakarta-web</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.apache.logging.log4j</groupId>
+						<artifactId>log4j-slf4j2-impl</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
+
+				<!-- Test -->
+
+				<dependency>
+						<groupId>junit</groupId>
+						<artifactId>junit</artifactId>
+						<scope>test</scope>
+				</dependency>
 
 
-		<!-- JSON & XML marshallers -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
+				<!-- JSON & XML marshallers -->
+				<dependency>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-annotations</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-core</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>org.hibernate.validator</groupId>
-			<artifactId>hibernate-validator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+				<dependency>
+						<groupId>org.hibernate.validator</groupId>
+						<artifactId>hibernate-validator</artifactId>
+				</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-test</artifactId>
+						<scope>test</scope>
+				</dependency>
 
-		<!-- virus scanner -->
-		<dependency>
-			<groupId>org.craftercms</groupId>
-			<artifactId>crafter-virus-scanner</artifactId>
-		</dependency>
+				<!-- virus scanner -->
+				<dependency>
+						<groupId>org.craftercms</groupId>
+						<artifactId>crafter-virus-scanner</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-expression</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-expression</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>org.jsoup</groupId>
+						<artifactId>jsoup</artifactId>
+				</dependency>
 
-		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
-		</dependency>
+				<dependency>
+						<groupId>jakarta.xml.bind</groupId>
+						<artifactId>jakarta.xml.bind-api</artifactId>
+				</dependency>
 
-	</dependencies>
+		</dependencies>
 
-	<build>
-		<finalName>crafter-social</finalName>
+		<build>
+				<finalName>crafter-social</finalName>
 
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<filtering>false</filtering>
-			</testResource>
-		</testResources>
+				<testResources>
+						<testResource>
+								<directory>src/test/resources</directory>
+								<filtering>false</filtering>
+						</testResource>
+				</testResources>
 
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<includes>
-						<include>**/unit/**/*.java</include>
-					</includes>
-					<excludes>
-						<exclude>**/integration/**/*.java</exclude>
-						<exclude>**/unit/VirusScannerServiceTest.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<configuration>
-					<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-					<testFailureIgnore>false</testFailureIgnore>
-					<includes>
-						<include>
-							**/integration/**/*.java
-						</include>
-					</includes>
-					<excludes>
-						<exclude>**/*$__CLR*</exclude>
-					</excludes>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<!-- <goal>verify</goal> -->
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+				<plugins>
+						<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-surefire-plugin</artifactId>
+								<configuration>
+										<includes>
+												<include>**/unit/**/*.java</include>
+										</includes>
+										<excludes>
+												<exclude>**/integration/**/*.java</exclude>
+												<exclude>**/unit/VirusScannerServiceTest.java</exclude>
+										</excludes>
+								</configuration>
+						</plugin>
+						<plugin>
+								<artifactId>maven-failsafe-plugin</artifactId>
+								<configuration>
+										<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+										<testFailureIgnore>false</testFailureIgnore>
+										<includes>
+												<include>
+														**/integration/**/*.java
+												</include>
+										</includes>
+										<excludes>
+												<exclude>**/*$__CLR*</exclude>
+										</excludes>
+								</configuration>
+								<executions>
+										<execution>
+												<goals>
+														<goal>integration-test</goal>
+														<!-- <goal>verify</goal> -->
+												</goals>
+										</execution>
+								</executions>
+						</plugin>
+				</plugins>
+		</build>
 </project>

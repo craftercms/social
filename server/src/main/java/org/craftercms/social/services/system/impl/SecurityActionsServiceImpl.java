@@ -34,50 +34,50 @@ import org.slf4j.LoggerFactory;
  * Security Actions Service Default implementation.
  */
 public class SecurityActionsServiceImpl implements SecurityActionsService {
-    private Logger log = LoggerFactory.getLogger(SecurityActionsServiceImpl.class);
+	private Logger log = LoggerFactory.getLogger(SecurityActionsServiceImpl.class);
 
-    private PermissionRepository permissionRepository;
+	private PermissionRepository permissionRepository;
 
-    @Override
-    @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_READ_ACTIONS)
-    public Iterable<SocialSecurityAction> get(final String context) {
-        log.debug("Finding all SecurityActions for {}", context);
-        try {
-            return permissionRepository.findActions(context);
-        } catch (MongoDataException e) {
-            log.error("Unable to find all Security actions for given context", e);
-            return (Iterable)new ArrayList<SocialSecurityAction>();
-        }
-    }
+	@Override
+	@HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_READ_ACTIONS)
+	public Iterable<SocialSecurityAction> get(final String context) {
+		log.debug("Finding all SecurityActions for {}", context);
+		try {
+			return permissionRepository.findActions(context);
+		} catch (MongoDataException e) {
+			log.error("Unable to find all Security actions for given context", e);
+			return (Iterable) new ArrayList<SocialSecurityAction>();
+		}
+	}
 
-    @Override
-    @HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_UPDATE_ACTIONS)
-    public SocialSecurityAction update(final String context, final String actionName,
-                                 final List<String> roles) throws SocialException {
-        log.debug("Updating Roles for {} of context {} to {}", actionName, context, roles);
-        try {
-            if (actionName.toLowerCase().startsWith("system.")) {
-                throw new IllegalArgumentException("System Actions can't be changed");
-            }
-            return permissionRepository.updateSecurityAction(context, actionName, roles);
-        } catch (MongoDataException ex) {
-            log.error("Unable to Update Security Action", ex);
-            throw new SocialException("Unable to removeWatcher Security Action", ex);
-        }
-    }
+	@Override
+	@HasPermission(type = SocialPermission.class, action = SecurityActionNames.SYSTEM_UPDATE_ACTIONS)
+	public SocialSecurityAction update(final String context, final String actionName,
+					   final List<String> roles) throws SocialException {
+		log.debug("Updating Roles for {} of context {} to {}", actionName, context, roles);
+		try {
+			if (actionName.toLowerCase().startsWith("system.")) {
+				throw new IllegalArgumentException("System Actions can't be changed");
+			}
+			return permissionRepository.updateSecurityAction(context, actionName, roles);
+		} catch (MongoDataException ex) {
+			log.error("Unable to Update Security Action", ex);
+			throw new SocialException("Unable to removeWatcher Security Action", ex);
+		}
+	}
 
-    @Override
-    public void save(final SocialSecurityAction action) throws SocialException {
-        log.debug("Creating new Action {}",action);
-        try{
-            permissionRepository.save(action);
-        }catch (MongoDataException ex){
-            log.error("Unable to save new action", ex);
-            throw new SocialException("Unable to save new Action");
-        }
-    }
+	@Override
+	public void save(final SocialSecurityAction action) throws SocialException {
+		log.debug("Creating new Action {}", action);
+		try {
+			permissionRepository.save(action);
+		} catch (MongoDataException ex) {
+			log.error("Unable to save new action", ex);
+			throw new SocialException("Unable to save new Action");
+		}
+	}
 
-    public void setPermissionRepositoryImpl(PermissionRepository permissionRepository) {
-        this.permissionRepository = permissionRepository;
-    }
+	public void setPermissionRepositoryImpl(PermissionRepository permissionRepository) {
+		this.permissionRepository = permissionRepository;
+	}
 }

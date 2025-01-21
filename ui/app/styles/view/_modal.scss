@@ -18,7 +18,9 @@
     @include transition-transform(0.3s ease-out);
   }
 
-  &.in .modal-dialog { @include translate(0, 0)}
+  &.in .modal-dialog {
+    @include translate(0, 0)
+  }
 
   > .modal-dialog {
 
@@ -53,7 +55,12 @@
   z-index: ($zindex-modal-background - 10);
   background-color: $modal-backdrop-bg;
   // Fade for backdrop
-  &.fade { @include opacity(0); }
-  &.in { @include opacity(.8); }
+  &.fade {
+    @include opacity(0);
+  }
+
+  &.in {
+    @include opacity(.8);
+  }
 
 }
