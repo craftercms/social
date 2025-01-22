@@ -16,35 +16,35 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:util="http://www.springframework.org/schema/util"
-	   xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-		<import resource="classpath:crafter/security/security-context.xml"/>
+	<import resource="classpath:crafter/security/security-context.xml"/>
 
-		<bean name="crafter.adminConsoleProperties"
-			  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-				<property name="order" value="0"/>
-				<property name="ignoreUnresolvablePlaceholders" value="true"/>
-				<property name="locations">
-						<list>
-								<value>classpath:crafter/social/management/server-config.properties</value>
-								<value>classpath*:crafter/social/management/extension/server-config.properties</value>
-						</list>
-				</property>
-		</bean>
-		<util:map id="crafter.urlRestrictions">
-				<entry key="/login" value="permitAll()"/>
-				<entry key="/**" value="hasAnyRole({'SOCIAL_SUPERADMIN','SOCIAL_ADMIN'})"/>
-		</util:map>
+	<bean name="crafter.adminConsoleProperties"
+	      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="order" value="0"/>
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+		<property name="locations">
+			<list>
+				<value>classpath:crafter/social/management/server-config.properties</value>
+				<value>classpath*:crafter/social/management/extension/server-config.properties</value>
+			</list>
+		</property>
+	</bean>
+	<util:map id="crafter.urlRestrictions">
+		<entry key="/login" value="permitAll()"/>
+		<entry key="/**" value="hasAnyRole({'SOCIAL_SUPERADMIN','SOCIAL_ADMIN'})"/>
+	</util:map>
 
-		<bean id="crafter.tenantsResolver" class="org.craftercms.security.utils.tenant.AllTenantsResolver">
-				<constructor-arg name="tenantService" ref="crafter.tenantServiceRestClient"/>
-		</bean>
+	<bean id="crafter.tenantsResolver" class="org.craftercms.security.utils.tenant.AllTenantsResolver">
+		<constructor-arg name="tenantService" ref="crafter.tenantServiceRestClient"/>
+	</bean>
 
 
-		<import resource="classpath*:crafter/social/management/extension/services-context.xml"/>
+	<import resource="classpath*:crafter/social/management/extension/services-context.xml"/>
 
 </beans>

@@ -16,28 +16,28 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-		<bean id="social.ApproveContentListener" class="org.craftercms.social.util.ebus.ApproveContentListener" init-method="init">
-				<property name="profileClient" ref="crafter.profileServiceRestClient"/>
-				<property name="tenantConfigurationServiceImpl" ref="social.services.system.tenantConfiguration"/>
-				<property name="socialFreemarkerLoader" ref="social.util.email.notificationFreemarkerLoader"/>
-				<property name="systemDefaultLocale" value="${studio.social.system.defaultLocale}"/>
-				<property name="modelExt" ref="social.notification.emailModelExt"/>
-				<property name="emailService" ref="social.util.emailService"/>
-				<property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
-		</bean>
-		<bean id="social.ApproveContentUpdateListener" class="org.craftercms.social.util.ebus.ApproveContentUpdateListener
+	<bean id="social.ApproveContentListener" class="org.craftercms.social.util.ebus.ApproveContentListener" init-method="init">
+		<property name="profileClient" ref="crafter.profileServiceRestClient"/>
+		<property name="tenantConfigurationServiceImpl" ref="social.services.system.tenantConfiguration"/>
+		<property name="socialFreemarkerLoader" ref="social.util.email.notificationFreemarkerLoader"/>
+		<property name="systemDefaultLocale" value="${studio.social.system.defaultLocale}"/>
+		<property name="modelExt" ref="social.notification.emailModelExt"/>
+		<property name="emailService" ref="social.util.emailService"/>
+		<property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
+	</bean>
+	<bean id="social.ApproveContentUpdateListener" class="org.craftercms.social.util.ebus.ApproveContentUpdateListener
     "
-			  init-method="init">
-				<property name="profileClient" ref="crafter.profileServiceRestClient"/>
-				<property name="tenantConfigurationServiceImpl" ref="social.services.system.tenantConfiguration"/>
-				<property name="socialFreemarkerLoader" ref="social.util.email.notificationFreemarkerLoader"/>
-				<property name="systemDefaultLocale" value="${studio.social.system.defaultLocale}"/>
-				<property name="modelExt" ref="social.notification.emailModelExt"/>
-				<property name="emailService" ref="social.util.emailService"/>
-				<property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
-		</bean>
+	      init-method="init">
+		<property name="profileClient" ref="crafter.profileServiceRestClient"/>
+		<property name="tenantConfigurationServiceImpl" ref="social.services.system.tenantConfiguration"/>
+		<property name="socialFreemarkerLoader" ref="social.util.email.notificationFreemarkerLoader"/>
+		<property name="systemDefaultLocale" value="${studio.social.system.defaultLocale}"/>
+		<property name="modelExt" ref="social.notification.emailModelExt"/>
+		<property name="emailService" ref="social.util.emailService"/>
+		<property name="contextPreferencesService" ref="social.services.system.contextPreferences"/>
+	</bean>
 
 </beans>
