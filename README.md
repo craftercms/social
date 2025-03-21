@@ -1,7 +1,7 @@
 social
 ======
 
-Crafter Social is the social engine for CrafterCMS. It handles User-Generated-Content (UGC) in the form of object ratings, nested comments, and similar. For more information, please visit: http://craftercms.com/docs.
+Crafter Social is the social engine for CrafterCMS. It handles User-Generated-Content (UGC) in the form of object ratings, nested comments, and similar. For more information, please visit: https://craftercms.com/docs.
 
 # Community
 ## Contributors
