@@ -16,6 +16,7 @@
 
 package org.craftercms.social.controllers.rest.v3.comments;
 
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.profile.api.Profile;
@@ -27,7 +28,6 @@ import org.craftercms.social.exceptions.IllegalUgcException;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
 import org.craftercms.social.security.SocialSecurityUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
