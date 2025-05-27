@@ -22,13 +22,13 @@ import java.io.IOException;
 import jakarta.activation.MimetypesFileTypeMap;
 import jakarta.servlet.http.HttpServletResponse;
 
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.io.IOUtils;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.social.controllers.rest.v3.comments.exceptions.UGCNotFound;
 import org.craftercms.social.domain.social.SocialUgc;
 import org.craftercms.social.exceptions.SocialException;
 import org.craftercms.social.exceptions.UGCException;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
