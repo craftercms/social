@@ -59,8 +59,8 @@ info:
         name: GPL 3.0
         url: 'https://www.gnu.org/licenses/gpl-3.0.en.html'
 externalDocs:
-    description: CrafterCMS - Profile
-    url: 'https://craftercms.com/docs/current/reference/modules/social/index.html'
+    description: CrafterCMS - Social
+    url: 'https://craftercms.com/docs/current/reference/modules/social.html'
 tags:
     - name: actions
       description: Security Actions
