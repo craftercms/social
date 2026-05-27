@@ -1641,10 +1641,10 @@ paths:
             tags:
                 - comments
             summary: Delete Comment Attributes
-            operationId: deleteCommentAttributesP
+            operationId: deleteCommentAttributes
             description: |
                 Module: Social <br>
-                Updates the attributes for the given comment.
+                Deletes the attributes for the given comment.
             parameters:
                 - name: id
                   in: path
