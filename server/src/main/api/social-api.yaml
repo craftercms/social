@@ -2556,7 +2556,7 @@ paths:
             tags:
                 - attachments
             summary: Delete Attachment
-            operationId: deleteAttachmentP
+            operationId: deleteAttachment
             description: |
                 Module: Social <br>
                 Deletes a given attachment.
@@ -2606,7 +2606,7 @@ paths:
             tags:
                 - attachments
             summary: Update Attachment Content
-            operationId: deleteAttachmentP
+            operationId: updateAttachment
             description: |
                 Module: Social <br>
                 Deletes a given attachment.
