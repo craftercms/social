@@ -88,7 +88,9 @@ paths:
                 - actions
             summary: Get Current Actions
             operationId: getCurrentActions
-            description: Gets all Security Actions for current context.
+            description: |
+                Module: Social <br>
+                Gets all Security Actions for current context.
             parameters:
                 - name: context
                   in: query
@@ -270,7 +272,9 @@ paths:
                 - actions
             summary: Update Actions
             operationId: updateActions
-            description: Updates the given action name with the Roles.
+            description: |
+                Module: Social <br>
+                Updates the given action name with the Roles.
             parameters:
                 - name: context
                   in: query
@@ -328,7 +332,9 @@ paths:
                 - context
             summary: Get All Social Contexts
             operationId: getAllSocialContexts
-            description: Returns a list of all Social Contexts.
+            description: |
+                Module: Social <br>
+                Returns a list of all Social Contexts.
             responses:
                 '200':
                     description: OK
@@ -361,7 +367,9 @@ paths:
                 - context
             summary: Create Social Context
             operationId: createSocialContext
-            description: Creates a new Social Context.
+            description: |
+                Module: Social <br>
+                Creates a new Social Context.
             parameters:
                 - name: context
                   in: query
@@ -407,7 +415,9 @@ paths:
                 - context
             summary: Add Profile To Social Context
             operationId: addProfileToSocialContext
-            description: Updates the socialContext attribute in the given profile to include the Social Context ID and the list of roles assigned for that context.
+            description: |
+                Module: Social <br>
+                Updates the socialContext attribute in the given profile to include the Social Context ID and the list of roles assigned for that context.
             parameters:
                 - name: id
                   in: path
@@ -486,7 +496,9 @@ paths:
                 - context
             summary: Remove Profile from Social Context
             operationId: removeProfileFromSocialContext
-            description: Updates the socialContext attribute in the given profile to remove the Social Context ID and the list of roles assigned for that context.
+            description: |
+                Module: Social <br>
+                Updates the socialContext attribute in the given profile to remove the Social Context ID and the list of roles assigned for that context.
             parameters:
                 - name: id
                   in: path
@@ -553,7 +565,9 @@ paths:
                 - context
             summary: Update Email Configuration
             operationId: updateEmailConfiguration
-            description: Updates the email configuration for a given Social Context.
+            description: |
+                Module: Social <br>
+                Updates the email configuration for a given Social Context.
             requestBody:
                 required: true
                 content:
@@ -642,7 +656,9 @@ paths:
                 - context
             summary: Get Email Configuration
             operationId: getEmailConfiguration
-            description: Returns an email configuration for a given Social Context.
+            description: |
+                Module: Social <br>
+                Returns an email configuration for a given Social Context.
             parameters:
                 - name: context
                   in: query
@@ -688,7 +704,9 @@ paths:
                 - context
             summary: Update Email Template
             operationId: updateEmailTemplate
-            description: Updates an email template for a given Social Context.
+            description: |
+                Module: Social <br>
+                Updates an email template for a given Social Context.
             requestBody:
                 required: true
                 content:
@@ -738,7 +756,9 @@ paths:
                 - context
             summary: Get Email Template
             operationId: getEmailTemplate
-            description: Returns an email template for a given Social Context.
+            description: |
+                Module: Social <br>
+                Returns an email template for a given Social Context.
             parameters:
                 - name: context
                   in: query
@@ -791,7 +811,9 @@ paths:
                 - context
             summary: Get Context Preferences
             operationId: getContextPreferences
-            description: Returns the preferences for a given Social Context.
+            description: |
+                Module: Social <br>
+                Returns the preferences for a given Social Context.
             parameters:
                 - name: context
                   in: query
@@ -834,7 +856,9 @@ paths:
                 - context
             summary: Update Context Preferences
             operationId: updateContextPreferences
-            description: Updates the preferences for a given Social Context.
+            description: |
+                Module: Social <br>
+                Updates the preferences for a given Social Context.
             requestBody:
                 required: true
                 content:
@@ -874,7 +898,9 @@ paths:
                 - context
             summary: Delete Context Preferences
             operationId: deleteContextPreferences
-            description: Deletes the preferences for a given Social Context.
+            description: |
+                Module: Social <br>
+                Deletes the preferences for a given Social Context.
             requestBody:
                 required: true
                 content:
@@ -925,7 +951,9 @@ paths:
                 - profile
             summary: Clear Cache
             operationId: clearCache
-            description: Clears the Profile Aggregator Cache.
+            description: |
+                Module: Social <br>
+                Clears the Profile Aggregator Cache.
             parameters:
                 - name: profileIds
                   in: query
@@ -958,7 +986,9 @@ paths:
                 - comments
             summary: Create Comment
             operationId: createComment
-            description: Creates a new comment and creates a new thread if needed.
+            description: |
+                Module: Social <br>
+                Creates a new comment and creates a new thread if needed.
             requestBody:
                 required: true
                 content:
@@ -1041,7 +1071,9 @@ paths:
                 - comments
             summary: Update Comment
             operationId: updateCommentPut
-            description: Replace the given comment.
+            description: |
+                Module: Social <br>
+                Replace the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1116,7 +1148,9 @@ paths:
                 - comments
             summary: Get Comment
             operationId: getComment
-            description: Returns the given comment.
+            description: |
+                Module: Social <br>
+                Returns the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1171,7 +1205,9 @@ paths:
                 - comments
             summary: Delete Comment
             operationId: deleteCommentD
-            description: Delete the given comment.
+            description: |
+                Module: Social <br>
+                Delete the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1210,7 +1246,9 @@ paths:
                 - comments
             summary: Delete Comment
             operationId: deleteCommentP
-            description: Deletes the given comment and all its children.
+            description: |
+                Module: Social <br>
+                Deletes the given comment and all its children.
             parameters:
                 - name: id
                   in: path
@@ -1287,7 +1325,9 @@ paths:
                 - comments
             summary: Update Comment
             operationId: updateComment
-            description: Updates the given comment.
+            description: |
+                Module: Social <br>
+                Updates the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1364,7 +1404,9 @@ paths:
                 - comments
             summary: Search Comments
             operationId: searchComment
-            description: Returns all comments that match the search parameter.
+            description: |
+                Module: Social <br>
+                Returns all comments that match the search parameter.
             requestBody:
                 required: true
                 content:
@@ -1442,7 +1484,9 @@ paths:
                 - comments
             summary: Update Comment Attributes
             operationId: updateCommentAttributesPost
-            description: Updates the attributes for the given comment.
+            description: |
+                Module: Social <br>
+                Updates the attributes for the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1493,7 +1537,9 @@ paths:
                 - comments
             summary: Update Comment Attributes
             operationId: updateCommentAttributesPut
-            description: Updates the attributes for the given comment.
+            description: |
+                Module: Social <br>
+                Updates the attributes for the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1544,7 +1590,9 @@ paths:
                 - comments
             summary: Delete Comment Attributes
             operationId: deleteCommentAttributes
-            description: Deletes attributes for the given comment.
+            description: |
+                Module: Social <br>
+                Deletes attributes for the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1593,8 +1641,10 @@ paths:
             tags:
                 - comments
             summary: Delete Comment Attributes
-            operationId: deleteCommentAttributesP
-            description: Updates the attributes for the given comment.
+            operationId: deleteCommentAttributes
+            description: |
+                Module: Social <br>
+                Deletes the attributes for the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1647,7 +1697,9 @@ paths:
                 - comments
             summary: Update Comment Flags
             operationId: updateCommentFlags
-            description: Adds a flag to the given comment.
+            description: |
+                Module: Social <br>
+                Adds a flag to the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1730,7 +1782,9 @@ paths:
                 - comments
             summary: Get Comment Flags
             operationId: getCommentFlags
-            description: Returns all the flags for the given comment.
+            description: |
+                Module: Social <br>
+                Returns all the flags for the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1776,7 +1830,9 @@ paths:
                 - comments
             summary: Delete Comment Flags
             operationId: deleteCommentFlagsP
-            description: Deletes a flag for the given comment.
+            description: |
+                Module: Social <br>
+                Deletes a flag for the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1820,7 +1876,9 @@ paths:
                 - comments
             summary: Delete Comment Flags
             operationId: deleteCommentFlagsD
-            description: Deletes a flag for the given comment.
+            description: |
+                Module: Social <br>
+                Deletes a flag for the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1866,7 +1924,9 @@ paths:
                 - comments
             summary: Moderate Comment
             operationId: moderateCommentPost
-            description: Changes the moderation status of the given comment.
+            description: |
+                Module: Social <br>
+                Changes the moderation status of the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1930,7 +1990,9 @@ paths:
                 - comments
             summary: Moderate Comment
             operationId: moderateCommentPut
-            description: Changes the moderation status of the given comment.
+            description: |
+                Module: Social <br>
+                Changes the moderation status of the given comment.
             parameters:
                 - name: id
                   in: path
@@ -1996,7 +2058,9 @@ paths:
                 - comments
             summary: Get Comments By Moderation Status
             operationId: getCommentsByModerationStatus
-            description: Returns all the comments with a given moderation status.
+            description: |
+                Module: Social <br>
+                Returns all the comments with a given moderation status.
             parameters:
                 - name: status
                   in: path
@@ -2097,7 +2161,9 @@ paths:
                 - comments
             summary: Count Comments By Moderation Status
             operationId: countCommentsByModerationStatus
-            description: Returns the number of comments with a given moderation status.
+            description: |
+                Module: Social <br>
+                Returns the number of comments with a given moderation status.
             parameters:
                 - name: status
                   in: path
@@ -2140,7 +2206,9 @@ paths:
                 - comments
             summary: Get Flagged Comments
             operationId: getFlaggedComments
-            description: Returns all the comments with at least one flag.
+            description: |
+                Module: Social <br>
+                Returns all the comments with at least one flag.
             parameters:
                 - name: context
                   in: query
@@ -2231,7 +2299,9 @@ paths:
                 - comments
             summary: Count Flagged Comments
             operationId: countFlaggedComments
-            description: Returns the number of comments with at least one flag.
+            description: |
+                Module: Social <br>
+                Returns the number of comments with at least one flag.
             parameters:
                 - name: context
                   in: query
@@ -2262,7 +2332,9 @@ paths:
                 - attachments
             summary: Get Attachments
             operationId: getAttachments
-            description: Returns all the attachments for a given comment.
+            description: |
+                Module: Social <br>
+                Returns all the attachments for a given comment.
             parameters:
                 - name: context
                   in: query
@@ -2319,7 +2391,9 @@ paths:
                 - comments
             summary: Create Attachment
             operationId: createAttachment
-            description: Creates an attachment in a given comment.
+            description: |
+                Module: Social <br>
+                Creates an attachment in a given comment.
             parameters:
                 - name: context
                   in: query
@@ -2386,7 +2460,9 @@ paths:
                 - attachments
             summary: Get Attachment Content
             operationId: getAttachmentContent
-            description: Returns the content of a given attachment.
+            description: |
+                Module: Social <br>
+                Returns the content of a given attachment.
             parameters:
                 - name: context
                   in: query
@@ -2431,7 +2507,9 @@ paths:
                 - comments
             summary: Delete Attachment
             operationId: deleteAttachmentD
-            description: Deletes a given attachment.
+            description: |
+                Module: Social <br>
+                Deletes a given attachment.
             parameters:
                 - name: context
                   in: query
@@ -2478,8 +2556,10 @@ paths:
             tags:
                 - attachments
             summary: Delete Attachment
-            operationId: deleteAttachmentP
-            description: Deletes a given attachment.
+            operationId: deleteAttachment
+            description: |
+                Module: Social <br>
+                Deletes a given attachment.
             parameters:
                 - name: context
                   in: query
@@ -2526,8 +2606,10 @@ paths:
             tags:
                 - attachments
             summary: Update Attachment Content
-            operationId: deleteAttachmentP
-            description: Deletes a given attachment.
+            operationId: updateAttachment
+            description: |
+                Module: Social <br>
+                Deletes a given attachment.
             parameters:
                 - name: context
                   in: query
@@ -2587,7 +2669,9 @@ paths:
                 - votes
             summary: Vote Up
             operationId: voteUp
-            description: Toggles a vote up in the given comment from the currently logged user.
+            description: |
+                Module: Social <br>
+                Toggles a vote up in the given comment from the currently logged user.
             parameters:
                 - name: id
                   in: path
@@ -2648,7 +2732,9 @@ paths:
                 - votes
             summary: Vote Down
             operationId: voteDown
-            description: Toggles a vote down in the given comment from the currently logged user.
+            description: |
+                Module: Social <br>
+                Toggles a vote down in the given comment from the currently logged user.
             parameters:
                 - name: id
                   in: path
@@ -2709,7 +2795,9 @@ paths:
                 - votes
             summary: Remove Votes
             operationId: removeVotes
-            description: Clears both up and down votes in the given comment for the currently logged user.
+            description: |
+                Module: Social <br>
+                Clears both up and down votes in the given comment for the currently logged user.
             parameters:
                 - name: id
                   in: path
@@ -2769,7 +2857,9 @@ paths:
                 - threads
             summary: Get Thread Comments
             operationId: getThreadComments
-            description: Returns all comments from the given thread.
+            description: |
+                Module: Social <br>
+                Returns all comments from the given thread.
             parameters:
                 - name: id
                   in: path
@@ -2884,7 +2974,9 @@ paths:
                 - threads
             summary: Get Comment Children
             operationId: getCommentChildren
-            description: Returns all children for a given comment.
+            description: |
+                Module: Social <br>
+                Returns all children for a given comment.
             parameters:
                 - name: id
                   in: path
@@ -2993,7 +3085,9 @@ paths:
                 - threads
             summary: Subscribe
             operationId: subscribePost
-            description: Subscribes the current user to a given thread
+            description: |
+                Module: Social <br>
+                Subscribes the current user to a given thread
             parameters:
                 - name: id
                   in: path
@@ -3043,7 +3137,9 @@ paths:
                 - threads
             summary: Subscribe
             operationId: subscribePut
-            description: Subscribes the current user to a given thread
+            description: |
+                Module: Social <br>
+                Subscribes the current user to a given thread
             parameters:
                 - name: id
                   in: path
@@ -3095,7 +3191,9 @@ paths:
                 - threads
             summary: Update Subscription
             operationId: updateSubscription
-            description: Updates subscription of the current user
+            description: |
+                Module: Social <br>
+                Updates subscription of the current user
             parameters:
                 - name: id
                   in: path
@@ -3148,7 +3246,9 @@ paths:
                 - threads
             summary: Unsubscribe
             operationId: unsubscribeP
-            description: Unsubscribes the current user to a given thread.
+            description: |
+                Module: Social <br>
+                Unsubscribes the current user to a given thread.
             parameters:
                 - name: id
                   in: path
@@ -3190,7 +3290,9 @@ paths:
                 - threads
             summary: Unsubscribe
             operationId: unsubscribeD
-            description: Unsubscribes the current user to a given thread.
+            description: |
+                Module: Social <br>
+                Unsubscribes the current user to a given thread.
             parameters:
                 - name: id
                   in: path
@@ -3234,7 +3336,9 @@ paths:
                 - monitoring
             summary: Get Memory Stats
             operationId: getMemoryStats
-            description: Returns the Crafter Social JVM memory details.
+            description: |
+                Module: Social <br>
+                Returns the Crafter Social JVM memory details.
             parameters:
                 - name: token
                   in: query
@@ -3274,7 +3378,9 @@ paths:
                 - monitoring
             summary: Get Status
             operationId: getStatus
-            description: Returns the Crafter Social JVM status details.
+            description: |
+                Module: Social <br>
+                Returns the Crafter Social JVM status details.
             parameters:
                 - name: token
                   in: query
@@ -3309,7 +3415,9 @@ paths:
                 - monitoring
             summary: Get Version
             operationId: getVersion
-            description: Returns the Crafter Social JVM version details.
+            description: |
+                Module: Social <br>
+                Returns the Crafter Social JVM version details.
             parameters:
                 - name: token
                   in: query
