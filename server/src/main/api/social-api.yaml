@@ -2609,7 +2609,7 @@ paths:
             operationId: deleteAttachmentP
             description: |
                 Module: Social <br>
-                Deletes a given attachment.
+                Updates the content of a given attachment.
             parameters:
                 - name: context
                   in: query
